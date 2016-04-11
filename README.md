@@ -15,7 +15,8 @@ Codes for the CFD lab at TUM for SoSe16 by Tord, Daniel and Vishal.
 - **Local variables**     lower_case
 - **Global variables**    g_lower_case (searchable by g_ prefix)
 
-
+|                       |             |
+| ----------------------|-------------|
 | **Struct**            |  TitleCase  |
 | **Struct Members**    |  lower_case |
 | **Enum**              |  ETitleCase |
