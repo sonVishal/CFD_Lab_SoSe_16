@@ -7,12 +7,12 @@ Codes for the CFD lab at TUM for SoSe16 by Tord, Daniel and Vishal.
 
 |                       |             |
 | ----------------------|-------------|
-| **Struct**            |  TitleCase  |
-| **Struct Members**    |  lower_case |
+| **Macros, Constants**            |  MAX_BUFFER_SIZE  |
+| **Struct and typedef's**    |  GtkWidget (-> camel case with first uppercase letter) |
 | **Enum**              |  ETitleCase |
-| **Enum Members**      |  ALL_CAPS or lowerCase |
-| **Public functions**  |  pfx_TitleCase (pfx = two or three letter module prefix) |
-| **Private functions** |  TitleCase |
+| **Enum Members**      |  ALL_CAPS |
+| **Functions, default (operating on structs)**  |  my_function() (-> classic C style, underscores) |
+| **private Functions (that are there, but shouldn't be called directly, or have obscure uses, e.g. 'helper functions')** |  _destroy_cache() (-> one or more underscores at the beginning) |
 | **Trivial variables** |  i,x,n,f etc... |
-| **Local variables**   |  lower_case |
-| **Global variables**  |  g_lower_case (searchable by g_ prefix) |
+| **Local variables**   |  myVariable (-> camel case with first lowercase letter) |
+| **Global variables**  |  G_GLOBAL_VARIABLE |
