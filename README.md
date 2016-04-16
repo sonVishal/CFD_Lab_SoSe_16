@@ -22,3 +22,8 @@ Codes for the CFD lab at TUM for SoSe16 by Tord, Daniel and Vishal.
 
 (2) https://stackoverflow.com/questions/176118/when-is-it-ok-to-use-a-global-variable-in-c
  
+
+### Line length (?)
+
+Keep the line length to under 80 characters if possible. Then a split screen on
+a laptop can show everything. 
