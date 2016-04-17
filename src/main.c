@@ -71,7 +71,17 @@ int main(int argn, char** args){
     double  eps;
     double  dt_value;
     
-    double** U,V,P;
+    double** U;
+    double** V;
+    double** P;
+
+    /*TODO: Would like the matrices below to be initialized in init_UVP, but 
+      the compiler complains
+    */ 
+
+    U = matrix ( 0 , imax+1 , 0 , jmax+1 );
+    V = matrix ( 0 , imax+1 , 0 , jmax+1 );
+    P = matrix ( 0 , imax+1 , 0 , jmax+1 );
 
 read_parameters( 
     &szFileName,
@@ -96,6 +106,7 @@ read_parameters(
     &eps,
     &dt_value
 );
+
 
 init_uvp(
     UI,
