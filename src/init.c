@@ -56,3 +56,23 @@ int read_parameters( const char *szFileName,       /* name of the file */
 
 
 
+void init_uvp(
+  double UI,
+  double VI,
+  double PI,
+  int imax,
+  int jmax,
+  double **U,
+  double **V,
+  double **P
+){
+    U = matrix ( 0 , imax+1 , 0 , jmax+1 );
+    V = matrix ( 0 , imax+1 , 0 , jmax+1 );
+    P = matrix ( 0 , imax+1 , 0 , jmax+1 );
+    init_matrix( 0 , UI, imax+1, 0, jmax+1, UI );
+    init_matrix( 0 , VI, imax+1, 0, jmax+1, VI );
+    init_matrix( 0 , PI, imax+1, 0, jmax+1, PI );
+}
+
+
+
