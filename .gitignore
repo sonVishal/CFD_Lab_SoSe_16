@@ -1,6 +1,7 @@
 
 # vim created files
 *.swp
+.ycm*
 
 ## C project files
 ## Copied from C.gitignore by GitHub

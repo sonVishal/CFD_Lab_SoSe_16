@@ -104,7 +104,6 @@ read_parameters(
     &dt_value
 );
 
-
 init_uvp(
     UI,
     VI,
