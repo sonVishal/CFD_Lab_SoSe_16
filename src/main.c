@@ -50,7 +50,8 @@ int main(int argn, char** args){
    *       if Benjamin has anything to automize this.
    */
 
-    const char szFileName;
+	/*TODO (DL) we need a dynamic path to the config file (i.e. to the main file)*/
+    const char *szFileName = "[INSERT_PATH_HERE]/cavity100.dat";
     double  Re;
     double  UI;
     double  VI;
@@ -76,13 +77,13 @@ int main(int argn, char** args){
     double** V;
     double** P;
 
+    /*TODO: (DL) not sure why this is here? Allocation happens also in init_uvp*/
     U = matrix ( 0 , imax+1 , 0 , jmax+1 );
     V = matrix ( 0 , imax+1 , 0 , jmax+1 );
     P = matrix ( 0 , imax+1 , 0 , jmax+1 );
 
-
 read_parameters( 
-    &szFileName,
+    szFileName,
     &Re,
     &UI,
     &VI,
@@ -119,7 +120,7 @@ init_uvp(
 calculate_dt(
   Re,
   tau,
-  &dt, 		// pointer to set dt
+  &dt, 		/* pointer to set dt */
   dx,
   dy,
   imax,
@@ -128,5 +129,9 @@ calculate_dt(
   V
 );
 
+
+/*
+ * TODO reminder: deallocation of matrices etc.
+ */
 return -1;
 }
