@@ -1,6 +1,7 @@
 #include "helper.h"
 #include "visual.h"
 #include "init.h"
+#include "uvp.h"
 #include <stdio.h>
 
 
@@ -14,8 +15,8 @@
     * - perform the main loop
     * - trailer: destroy memory allocated and do some statistics
     *
-    * The layout of the grid is decribed by the first figure below, the enumeration
-    * of the whole grid is given by the second figure. All the unknowns corresond
+    * The layout of the grid is described by the first figure below, the enumeration
+    * of the whole grid is given by the second figure. All the unknowns correspond
     * to a two dimensional degree of freedom layout, so they are not stored in
     * arrays, but in a matrix.
     *
@@ -113,6 +114,18 @@ init_uvp(
     U,
     V,
     P
+);
+
+calculate_dt(
+  Re,
+  tau,
+  &dt, 		// pointer to set dt
+  dx,
+  dy,
+  imax,
+  jmax,
+  U,
+  V
 );
 
 return -1;
