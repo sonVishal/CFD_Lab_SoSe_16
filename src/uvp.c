@@ -48,10 +48,13 @@ double p_find_max(double **matrix, int imax, int jmax){
 	double found_max = -DBL_MAX;
 
 	/*TODO: (DL) this is most likely wrong, check out again how the matrix is structured */
-	for(i = 0; i<imax; ++i)
-		for(j = 0; j < jmax; ++j)
-			if(found_max < matrix[i][j])
+	for(i = 0; i<imax; ++i){
+		for(j = 0; j < jmax; ++j){
+			if(found_max < matrix[i][j]){
 				found_max = matrix[i][j];
+			}
+		}
+	}
 
 	return found_max;
 }
@@ -75,13 +78,14 @@ void calculate_dt(
 
 	restriction = dx / fabs(p_find_max(U, imax, jmax));
 	/* TODO: (DL) Think about: maybe just use min function from math.h instead...*/
-	if(min > restriction)
+	if(min > restriction){
 		min = restriction;
+	}
 
 	restriction = dy / fabs(p_find_max(V, imax, jmax));
-	if(min > restriction)
+	if(min > restriction){
 		min = restriction;
-
+	}
 
 	/*TODO: (DL) the case when min == 0, is not described in the instructions.
 	 * For now it is handled like a negative value (leave at value from read_parameter).
