@@ -31,7 +31,13 @@ void calculate_rs(
   double **G,
   double **RS
 ){
-	/* TODO: implement */
+    int i,j;
+
+    for (i = 1; i <= imax; i++) {
+        for (j = 1; j <= jmax; j++) {
+            RS[i][j] = ((F[i][j]-F[i-1][j])/dx + (G[i][j]-G[i][j-1])/dy)/dt;
+        }
+    }
 }
 
 double p_find_max(double **matrix, int imax, int jmax){
@@ -102,5 +108,3 @@ void calculate_uv(
 ){
 	/* TODO implement */
 }
-
-

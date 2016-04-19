@@ -6,7 +6,9 @@ void boundaryvalues(
   double **U,
   double **V
 ){
-    for (int i = 1; i <= imax; i++) {
+    int i,j;
+
+    for (i = 1; i <= imax; i++) {
         // Eq(15)
         V[i][0]         =   0.0;
         V[i][jmax]      =   0.0;
@@ -16,7 +18,7 @@ void boundaryvalues(
         U[i][jmax+1]    =   -U[i][jmax];
     }
 
-    for (int j = 1; j <= jmax; j++) {
+    for (j = 1; j <= jmax; j++) {
         // Eq(15)
         U[0][j]         =   0.0;
         U[imax][j]      =   0.0;
