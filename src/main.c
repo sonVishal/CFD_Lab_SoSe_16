@@ -2,6 +2,7 @@
 #include "visual.h"
 #include "init.h"
 #include "uvp.h"
+#include "sor.h"
 #include <stdio.h>
 
 
