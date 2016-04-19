@@ -118,15 +118,15 @@ init_uvp(
 );
 
 calculate_dt(
-  Re,
-  tau,
-  &dt, 		/* pointer to set dt */
-  dx,
-  dy,
-  imax,
-  jmax,
-  U,
-  V
+    Re,
+    tau,
+    &dt, 		/* pointer to set dt */
+    dx,
+    dy,
+    imax,
+    jmax,
+    U,
+    V
 );
 
 
