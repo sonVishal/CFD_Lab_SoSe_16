@@ -6,7 +6,6 @@ void boundaryvalues(
   double **U,
   double **V
 ){
-    // TODO: Check if memory has been allocated to U and V
     for (int i = 1; i <= imax; i++) {
         // Eq(15)
         V[i][0]         =   0.0;
