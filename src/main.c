@@ -78,6 +78,10 @@ int main(int argn, char** args){
     double** V;
     double** P;
 
+    /* TODO: Multiple calls to init_uvp() would imply
+    that we have the memory allocation over here than
+    inside init_uvp() */
+
 read_parameters(
     szFileName,
     &Re,
