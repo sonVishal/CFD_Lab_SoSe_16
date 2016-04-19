@@ -78,10 +78,6 @@ int main(int argn, char** args){
     double** V;
     double** P;
 
-    U = matrix ( 0 , imax+1 , 0 , jmax+1 );
-    V = matrix ( 0 , imax+1 , 0 , jmax+1 );
-    P = matrix ( 0 , imax+1 , 0 , jmax+1 );
-
 read_parameters(
     szFileName,
     &Re,
