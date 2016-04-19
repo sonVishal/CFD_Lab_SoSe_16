@@ -67,6 +67,9 @@ void init_uvp(
     double **V,
     double **P
 ){
+    U = matrix ( 0 , imax+1 , 0 , jmax+1 );
+    V = matrix ( 0 , imax+1 , 0 , jmax+1 );
+    P = matrix ( 0 , imax+1 , 0 , jmax+1 );
     init_matrix( U , 0, imax+1, 0, jmax+1, UI );
     init_matrix( V , 0, imax+1, 0, jmax+1, VI );
     init_matrix( P , 0, imax+1, 0, jmax+1, PI );
