@@ -4,6 +4,7 @@
 #include "uvp.h"
 #include "sor.h"
 #include <stdio.h>
+#include <unistd.h>
 
 
     /**
@@ -51,8 +52,7 @@ int main(int argn, char** args){
    *       if Benjamin has anything to automize this.
    */
 
-	/*TODO (DL) we need a dynamic path to the config file (i.e. to the main file)*/
-    const char *szFileName = "[INSERT_PATH_HERE]/cavity100.dat";
+    const char *szFileName = "cavity100.dat";
     double  Re;
     double  UI;
     double  VI;
@@ -133,5 +133,5 @@ calculate_dt(
 /*
  * TODO reminder: deallocation of matrices etc.
  */
-return -1;
+return 0;
 }
