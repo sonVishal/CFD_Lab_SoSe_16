@@ -1,7 +1,7 @@
 #include "helper.h"
 #include "init.h"
 
-int read_parameters( 
+int read_parameters(
     const char *szFileName,       /* name of the file */
     double *Re,                /* reynolds number   */
     double *UI,                /* velocity x-direction */
@@ -27,31 +27,31 @@ int read_parameters(
 {
     READ_DOUBLE( szFileName, *xlength );
     READ_DOUBLE( szFileName, *ylength );
-    
+
     READ_DOUBLE( szFileName, *Re    );
     READ_DOUBLE( szFileName, *t_end );
     READ_DOUBLE( szFileName, *dt    );
-    
+
     READ_INT   ( szFileName, *imax );
     READ_INT   ( szFileName, *jmax );
-    
+
     READ_DOUBLE( szFileName, *omg   );
     READ_DOUBLE( szFileName, *eps   );
     READ_DOUBLE( szFileName, *tau   );
     READ_DOUBLE( szFileName, *alpha );
-    
+
     READ_INT   ( szFileName, *itermax );
     READ_DOUBLE( szFileName, *dt_value );
-    
+
     READ_DOUBLE( szFileName, *UI );
     READ_DOUBLE( szFileName, *VI );
     READ_DOUBLE( szFileName, *GX );
     READ_DOUBLE( szFileName, *GY );
     READ_DOUBLE( szFileName, *PI );
-    
+
     *dx = *xlength / (double)(*imax);
     *dy = *ylength / (double)(*jmax);
-    
+
     return 1;
 }
 
@@ -67,14 +67,7 @@ void init_uvp(
     double **V,
     double **P
 ){
-
-    U = matrix ( 0 , imax+1 , 0 , jmax+1 );
-    V = matrix ( 0 , imax+1 , 0 , jmax+1 );
-    P = matrix ( 0 , imax+1 , 0 , jmax+1 );
     init_matrix( U , 0, imax+1, 0, jmax+1, UI );
     init_matrix( V , 0, imax+1, 0, jmax+1, VI );
     init_matrix( P , 0, imax+1, 0, jmax+1, PI );
 }
-
-
-

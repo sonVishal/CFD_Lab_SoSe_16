@@ -24,7 +24,7 @@
     *
     * @image html whole-grid.jpg
     *
-    * Within the main loop the following big steps are done (for some of the 
+    * Within the main loop the following big steps are done (for some of the
     * operations a definition is defined already within uvp.h):
     *
     * - calculate_dt() Determine the maximal time step size.
@@ -46,7 +46,7 @@ int main(int argn, char** args){
 
   /* TODO: Consider making this less annoying by placing function parameters
    *       on a line so one does not have to scroll a long time to look at
-   *       something. Right now I am using automatic folds, but I am not sure 
+   *       something. Right now I am using automatic folds, but I am not sure
    *       if Benjamin has anything to automize this.
    */
 
@@ -72,17 +72,16 @@ int main(int argn, char** args){
     int     itermax;
     double  eps;
     double  dt_value;
-    
+
     double** U;
     double** V;
     double** P;
 
-    /*TODO: (DL) not sure why this is here? Allocation happens also in init_uvp*/
     U = matrix ( 0 , imax+1 , 0 , jmax+1 );
     V = matrix ( 0 , imax+1 , 0 , jmax+1 );
     P = matrix ( 0 , imax+1 , 0 , jmax+1 );
 
-read_parameters( 
+read_parameters(
     szFileName,
     &Re,
     &UI,

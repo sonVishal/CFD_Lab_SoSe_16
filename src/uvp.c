@@ -1,7 +1,7 @@
 #include "uvp.h"
 #include <float.h>
 #include <math.h>
-
+#include <stdio.h>
 
 void calculate_fg(
   double Re,
@@ -73,12 +73,12 @@ void calculate_dt(
 	restriction = Re/(2 * (1/(dx*dx) + 1/(dy*dy)));
 	min = restriction;
 
-	restriction = dx / abs(p_find_max(U, imax, jmax));
+	restriction = dx / fabs(p_find_max(U, imax, jmax));
 	/* TODO: (DL) Think about: maybe just use min function from math.h instead...*/
 	if(min > restriction)
 		min = restriction;
 
-	restriction = dy / abs(p_find_max(V, imax, jmax));
+	restriction = dy / fabs(p_find_max(V, imax, jmax));
 	if(min > restriction)
 		min = restriction;
 
@@ -89,8 +89,8 @@ void calculate_dt(
 	if (min > 0){
 		*dt = tau*min;
 	}else{ /* if(min <= 0) */
-		printf("INFO: computed restriction of 'dt' is negative %d. The value remains"
-				"at %d", min, *dt);
+		printf("INFO: computed restriction of 'dt' is negative %f. The value remains"
+				"at %f", min, *dt);
 	}
 }
 
