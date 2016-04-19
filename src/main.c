@@ -132,5 +132,10 @@ calculate_dt(
 /*
  * TODO reminder: deallocation of matrices etc.
  */
+
+/*Deallocate matrices*/ 
+    free_matrix (U, 0 , imax+1 , 0 , jmax+1 );
+    free_matrix (V, 0 , imax+1 , 0 , jmax+1 );
+    free_matrix (P, 0 , imax+1 , 0 , jmax+1 );
 return -1;
 }
