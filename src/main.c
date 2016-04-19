@@ -51,8 +51,7 @@ int main(int argn, char** args){
    *       if Benjamin has anything to automize this.
    */
 
-	/*TODO (DL) we need a dynamic path to the config file (i.e. to the main file)*/
-    const char *szFileName = "[INSERT_PATH_HERE]/cavity100.dat";
+    const char *szFileName = "cavity100.dat";
     double  Re;
     double  UI;
     double  VI;
@@ -77,6 +76,10 @@ int main(int argn, char** args){
     double** U;
     double** V;
     double** P;
+
+    U = matrix ( 0 , imax+1 , 0 , jmax+1 );
+    V = matrix ( 0 , imax+1 , 0 , jmax+1 );
+    P = matrix ( 0 , imax+1 , 0 , jmax+1 );
 
 read_parameters(
     szFileName,
@@ -134,5 +137,5 @@ calculate_dt(
     free_matrix (U, 0 , imax+1 , 0 , jmax+1 );
     free_matrix (V, 0 , imax+1 , 0 , jmax+1 );
     free_matrix (P, 0 , imax+1 , 0 , jmax+1 );
-return -1;
+return 0;
 }
