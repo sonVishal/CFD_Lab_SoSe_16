@@ -52,7 +52,9 @@ int main(int argn, char** args){
    */
 
 	const char *szFileName;
-    double  Re, UI;
+	const char *szProblem; /* string that describes the output of .vtk files */
+    double  Re;
+	double  UI;
     double  VI;
     double  PI;
     double  GX;
@@ -78,83 +80,109 @@ int main(int argn, char** args){
     double** V;
     double** P;
 
+    double** RS;
+    double** F;
+    double** G;
+
 	if(argn != 2){
 		szFileName = "cavity100.dat";
 	}else{
 		szFileName = args[1];
 	}
 
+	/* TODO: (DL) need to decide how to name our 'problem runs'... furthermore there
+	 * is a if-case needed, wither there is graphical output or not. Current string
+	 * is just a dummy.*/
+	szProblem = "visualizationFile";
+
     U = matrix ( 0 , imax+1 , 0 , jmax+1 );
     V = matrix ( 0 , imax+1 , 0 , jmax+1 );
     P = matrix ( 0 , imax+1 , 0 , jmax+1 );
 
-read_parameters(
-    szFileName,
-    &Re,
-    &UI,
-    &VI,
-    &PI,
-    &GX,
-    &GY,
-    &t_end,
-    &xlength,
-    &ylength,
-    &dt,
-    &dx,
-    &dy,
-    &imax,
-    &jmax,
-    &alpha,
-    &omg,
-    &tau,
-    &itermax,
-    &eps,
-    &dt_value
-);
+    /* TODO: (DL) not so sure if this is correct, but RS at least is treated like a matrix...*/
+    /* TODO: (DL) check matrix size, at the moment just dumped. */
+    RS = matrix ( 0 , imax+1 , 0 , jmax+1 );
+    F = matrix ( 0 , imax+1 , 0 , jmax+1 );
+    G = matrix ( 0 , imax+1 , 0 , jmax+1 );
 
-init_uvp(
-    UI,
-    VI,
-    PI,
-    imax,
-    jmax,
-    U,
-    V,
-    P
-);
+	read_parameters(
+		szFileName,
+		&Re,
+		&UI,
+		&VI,
+		&PI,
+		&GX,
+		&GY,
+		&t_end,
+		&xlength,
+		&ylength,
+		&dt,
+		&dx,
+		&dy,
+		&imax,
+		&jmax,
+		&alpha,
+		&omg,
+		&tau,
+		&itermax,
+		&eps,
+		&dt_value
+	);
 
-/* MAIN LOOP */
-while(t < t_end){
-	/* Select δt according to (14) */
-	calculate_dt( Re, tau,
-	    &dt, dx, dy, imax, jmax, U, V );
+	init_uvp(
+		UI,
+		VI,
+		PI,
+		imax,
+		jmax,
+		U,
+		V,
+		P
+	);
 
-	/* Set boundary values for u and v according to (15),(16) */
+	/* MAIN LOOP */
+	while(t < t_end){
+		/* Select δt according to (14) */
+		calculate_dt( Re, tau,
+			&dt, dx, dy, imax, jmax, U, V );
 
-	/* Compute F(n) and G(n) according to (10),(11),(18) */
+		/* Set boundary values for u and v according to (15),(16) */
+		/* TODO: (DL) not so sure which function this is... */
 
-	/* Compute the right-hand side rs of the pressure equation (12) */
+		/* Compute F(n) and G(n) according to (10),(11),(18) */
+		calculate_fg(Re, GX, GY, alpha, dt, dx, dy,
+		  imax, jmax, U, V, F, G);
 
-	/* Perform a SOR iteration according to (19) -- inner loop */
+		/* Compute the right-hand side rs of the pressure equation (12) */
+		calculate_rs(dt, dx, dy, imax, jmax, F, G, RS);
 
-	/* Compute u(n+1) and v(n+1) according to (8),(9) */
+		/* Perform a SOR iteration according to (19) -- inner loop */
+		/*TODO: (DL) function calls & inner loop is missing */
 
-	/* Output of u, v, p values for visualization, if necessary */
+		/* Compute u(n+1) and v(n+1) according to (8),(9) */
+		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P);
 
-	t += dt;
-	n++;
-}
+		/* Output of u, v, p values for visualization, if necessary */
+		write_vtkFile(szProblem, n, xlength, ylength, imax, jmax,
+			 dx, dy, U, V, P);
 
-/* Output of u, v, p for visualization */
+		t += dt;
+		n++;
+	}
 
+	/* Output of u, v, p for visualization */
+	/* TODO: (DL) not sure if this differs from the above write_vtk file. There's also:
+	 * write_vtkHeader() & write_vtkPointCoordinates()
+	 */
 
-/*
- * TODO reminder: deallocation of matrices etc.
- */
+	/*
+	 * TODO reminder: deallocation of matrices etc.
+	 */
 
-/*Deallocate matrices*/ 
+	/*Deallocate matrices*/
     free_matrix (U, 0 , imax+1 , 0 , jmax+1 );
     free_matrix (V, 0 , imax+1 , 0 , jmax+1 );
     free_matrix (P, 0 , imax+1 , 0 , jmax+1 );
-return 0;
+
+    return 0;
 }
