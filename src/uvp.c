@@ -40,23 +40,22 @@ void calculate_rs(
     }
 }
 
-double p_find_max(double **matrix, int imax, int jmax){
+double p_find_abs_max(double **matrix, int imax, int jmax){
 	int i,j;
 
 	/* equals: minimum (negative) double value; note the "-" (!!)
 	 * https://stackoverflow.com/questions/1153548/minimum-double-value-in-c-c*/
-	double found_max = -DBL_MAX;
+	double foundMax = -DBL_MAX;
 
 	/*TODO: (DL) this is most likely wrong, check out again how the matrix is structured */
 	for(i = 0; i<imax; ++i){
 		for(j = 0; j < jmax; ++j){
-			if(found_max < matrix[i][j]){
-				found_max = matrix[i][j];
+			if(foundMax < fabs(matrix[i][j])){
+				foundMax = fabs(matrix[i][j]);
 			}
 		}
 	}
-
-	return found_max;
+	return foundMax;
 }
 
 void calculate_dt(
@@ -76,26 +75,17 @@ void calculate_dt(
 	restriction = Re/(2 * (1/(dx*dx) + 1/(dy*dy)));
 	min = restriction;
 
-	restriction = dx / fabs(p_find_max(U, imax, jmax));
-	/* TODO: (DL) Think about: maybe just use min function from math.h instead...*/
-	if(min > restriction){
-		min = restriction;
+	restriction = dx / p_find_abs_max(U, imax, jmax);
+	min = fmin(min, restriction);
+
+	restriction = dy / p_find_abs_max(V, imax, jmax);
+	min = fmin(min, restriction);
+
+	if(min <= 0){
+		printf("WARNING: dt has invalid value: %e", min);
 	}
 
-	restriction = dy / fabs(p_find_max(V, imax, jmax));
-	if(min > restriction){
-		min = restriction;
-	}
-
-	/*TODO: (DL) the case when min == 0, is not described in the instructions.
-	 * For now it is handled like a negative value (leave at value from read_parameter).
-	 */
-	if (min > 0){
-		*dt = tau*min;
-	}else{ /* if(min <= 0) */
-		printf("INFO: computed restriction of 'dt' is negative %f. The value remains"
-				"at %f", min, *dt);
-	}
+	*dt = tau*min;
 }
 
 void calculate_uv(
