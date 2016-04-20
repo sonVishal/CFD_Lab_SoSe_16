@@ -3,7 +3,10 @@
 #include "init.h"
 #include "uvp.h"
 #include "sor.h"
+#include "boundary_val.h"
 #include <stdio.h>
+
+/* TODO: (VS) Consider deleting this huge comment */
 
 
     /**
@@ -53,36 +56,24 @@ int main(int argn, char** args){
 
 	const char *szFileName;
 	const char *szProblem; /* string that describes the output of .vtk files */
-    double  Re;
-	double  UI;
-    double  VI;
-    double  PI;
-    double  GX;
-    double  GY;
-    double  t = 0;
-    double  t_end;
-    double  xlength;
-    double  ylength;
-    double  dt;
-    double  dx;
-    double  dy;
-    int     imax;
-    int     jmax;
-    double  alpha;
-    double  omg;
-    double  tau;
-    int     itermax;
-    double  eps;
-    double  dt_value;
-    int 	n = 0;
 
-    double** U;
-    double** V;
-    double** P;
+	/* Geometry data */
+	double  xlength, ylength, dx, dy;
+    int     imax, jmax;
 
-    double** RS;
-    double** F;
-    double** G;
+	/* Time stepping data */
+	double  t = 0, dt, t_end, tau, dt_value;
+	int 	n = 0;
+
+	/* Pressure iteration data */
+	int     itermax, it;
+	double	res, eps, omg, alpha;
+
+	/* Problem dependent quantities */
+	double  Re, UI, VI, PI, GX, GY;
+
+	/* Solution arrays */
+    double	**U, **V, **P, **RS, **F, **G;
 
 	if(argn != 2){
 		szFileName = "cavity100.dat";
@@ -95,59 +86,28 @@ int main(int argn, char** args){
 	 * is just a dummy.*/
 	szProblem = "visualizationFile";
 
-    U = matrix ( 0 , imax+1 , 0 , jmax+1 );
-    V = matrix ( 0 , imax+1 , 0 , jmax+1 );
-    P = matrix ( 0 , imax+1 , 0 , jmax+1 );
+	/* Allocate memory to all the matrices */
+    U	= matrix ( 0 , imax+1 , 0 , jmax+1 );
+    V	= matrix ( 0 , imax+1 , 0 , jmax+1 );
+    P	= matrix ( 0 , imax+1 , 0 , jmax+1 );
+    RS	= matrix ( 1 , imax , 1 , jmax );
+    F	= matrix ( 1 , imax-1 , 1 , jmax );
+    G	= matrix ( 1 , imax , 1 , jmax-1 );
 
-    /* TODO: (DL) not so sure if this is correct, but RS at least is treated like a matrix...*/
-    /* TODO: (DL) check matrix size, at the moment just dumped. */
-    RS = matrix ( 0 , imax+1 , 0 , jmax+1 );
-    F = matrix ( 0 , imax+1 , 0 , jmax+1 );
-    G = matrix ( 0 , imax+1 , 0 , jmax+1 );
+	read_parameters(szFileName, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength,
+		&ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax,
+		&eps, &dt_value);
 
-	read_parameters(
-		szFileName,
-		&Re,
-		&UI,
-		&VI,
-		&PI,
-		&GX,
-		&GY,
-		&t_end,
-		&xlength,
-		&ylength,
-		&dt,
-		&dx,
-		&dy,
-		&imax,
-		&jmax,
-		&alpha,
-		&omg,
-		&tau,
-		&itermax,
-		&eps,
-		&dt_value
-	);
-
-	init_uvp(
-		UI,
-		VI,
-		PI,
-		imax,
-		jmax,
-		U,
-		V,
-		P
-	);
+	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
 
 	/* MAIN LOOP */
 	while(t < t_end){
 		/* Select δt according to (14) */
-		calculate_dt( Re, tau,
-			&dt, dx, dy, imax, jmax, U, V );
+		calculate_dt(Re, tau,
+			&dt, dx, dy, imax, jmax, U, V);
 
 		/* Set boundary values for u and v according to (15),(16) */
-		/* TODO: (DL) not so sure which function this is... */
+		boundaryvalues(imax,jmax,U,V);
 
 		/* Compute F(n) and G(n) according to (10),(11),(18) */
 		calculate_fg(Re, GX, GY, alpha, dt, dx, dy,
@@ -157,7 +117,10 @@ int main(int argn, char** args){
 		calculate_rs(dt, dx, dy, imax, jmax, F, G, RS);
 
 		/* Perform a SOR iteration according to (19) -- inner loop */
-		/*TODO: (DL) function calls & inner loop is missing */
+		it = 0;
+		while (it < itermax && res > eps) {
+			sor(omg, dx, dy, imax, jmax, P, RS, &res);
+		}
 
 		/* Compute u(n+1) and v(n+1) according to (8),(9) */
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P);
@@ -183,6 +146,9 @@ int main(int argn, char** args){
     free_matrix (U, 0 , imax+1 , 0 , jmax+1 );
     free_matrix (V, 0 , imax+1 , 0 , jmax+1 );
     free_matrix (P, 0 , imax+1 , 0 , jmax+1 );
+	free_matrix (RS, 1 , imax , 1 , jmax);
+    free_matrix (F, 1 , imax-1 , 1 , jmax );
+    free_matrix (G, 1 , imax , 1 , jmax-1 );
 
     return 0;
 }
