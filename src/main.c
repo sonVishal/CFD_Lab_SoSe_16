@@ -120,6 +120,7 @@ int main(int argn, char** args){
 		it = 0;
 		while (it < itermax && res > eps) {
 			sor(omg, dx, dy, imax, jmax, P, RS, &res);
+			it++;
 		}
 
 		/* Compute u(n+1) and v(n+1) according to (8),(9) */
