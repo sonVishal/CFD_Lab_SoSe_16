@@ -51,9 +51,8 @@ int main(int argn, char** args){
    *       if Benjamin has anything to automize this.
    */
 
-    const char *szFileName = "cavity100.dat";
-    double  Re;
-    double  UI;
+	const char *szFileName;
+    double  Re, UI;
     double  VI;
     double  PI;
     double  GX;
@@ -76,6 +75,12 @@ int main(int argn, char** args){
     double** U;
     double** V;
     double** P;
+
+	if(argn != 2){
+		szFileName = "cavity100.dat";
+	}else{
+		szFileName = args[1];
+	}
 
     U = matrix ( 0 , imax+1 , 0 , jmax+1 );
     V = matrix ( 0 , imax+1 , 0 , jmax+1 );
