@@ -57,6 +57,7 @@ int main(int argn, char** args){
     double  PI;
     double  GX;
     double  GY;
+    double  t = 0;
     double  t_end;
     double  xlength;
     double  ylength;
@@ -71,6 +72,7 @@ int main(int argn, char** args){
     int     itermax;
     double  eps;
     double  dt_value;
+    int 	n = 0;
 
     double** U;
     double** V;
@@ -121,17 +123,29 @@ init_uvp(
     P
 );
 
-calculate_dt(
-    Re,
-    tau,
-    &dt, 		/* pointer to set dt */
-    dx,
-    dy,
-    imax,
-    jmax,
-    U,
-    V
-);
+/* MAIN LOOP */
+while(t < t_end){
+	/* Select δt according to (14) */
+	calculate_dt( Re, tau,
+	    &dt, dx, dy, imax, jmax, U, V );
+
+	/* Set boundary values for u and v according to (15),(16) */
+
+	/* Compute F(n) and G(n) according to (10),(11),(18) */
+
+	/* Compute the right-hand side rs of the pressure equation (12) */
+
+	/* Perform a SOR iteration according to (19) -- inner loop */
+
+	/* Compute u(n+1) and v(n+1) according to (8),(9) */
+
+	/* Output of u, v, p values for visualization, if necessary */
+
+	t += dt;
+	n++;
+}
+
+/* Output of u, v, p for visualization */
 
 
 /*
