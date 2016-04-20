@@ -103,8 +103,10 @@ int main(int argn, char** args){
 	/* MAIN LOOP */
 	while(t < t_end){
 		/* Select δt according to (14) */
-		calculate_dt(Re, tau,
-			&dt, dx, dy, imax, jmax, U, V);
+		if (tau > 0) {
+			calculate_dt(Re, tau,
+				&dt, dx, dy, imax, jmax, U, V);
+		}
 
 		/* Set boundary values for u and v according to (15),(16) */
 		boundaryvalues(imax,jmax,U,V);
