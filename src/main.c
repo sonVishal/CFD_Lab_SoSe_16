@@ -48,12 +48,6 @@ int main(int argn, char** args){
   * Initializing variables *
   *************************/
 
-  /* TODO: Consider making this less annoying by placing function parameters
-   *       on a line so one does not have to scroll a long time to look at
-   *       something. Right now I am using automatic folds, but I am not sure
-   *       if Benjamin has anything to automize this.
-   */
-
 	const char *szFileName;
 	const char *szProblem; /* string that describes the output of .vtk files */
 
