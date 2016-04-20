@@ -41,6 +41,7 @@
 # Eclipse project files
 .cproject
 .project
+.settings
 
 # executable from makefile
 sim
