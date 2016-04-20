@@ -110,5 +110,17 @@ void calculate_uv(
   double **G,
   double **P
 ){
-	/* TODO implement */
+    int i,j;
+
+	for (i = 1; i < imax; i++) {
+	    for (j = 1; j < jmax; j++) {
+	        U[i][j] = F[i][j] - dt*(P[i+1][j]-P[i][j])/dx;
+            V[i][j] = G[i][j] - dt*(P[i][j+1]-P[i][j])/dy;
+	    }
+        U[i][jmax] = F[i][jmax] - dt*(P[i+1][jmax]-P[i][jmax])/dx;
+	}
+
+    for (j = 1; j < jmax; j++) {
+        V[imax][j] = G[imax][j] - dt*(P[imax][j+1]-P[imax][j])/dy;
+    }
 }
