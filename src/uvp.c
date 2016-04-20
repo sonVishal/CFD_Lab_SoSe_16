@@ -81,11 +81,11 @@ void calculate_dt(
 	restriction = dy / p_find_abs_max(V, imax, jmax);
 	min = fmin(min, restriction);
 
-	if(min <= 0){
-		printf("WARNING: dt has invalid value: %e", min);
-	}
-
 	*dt = tau*min;
+
+	if(*dt <= 0){
+		printf("WARNING: dt has invalid value: %e", *dt);
+	}
 }
 
 void calculate_uv(
