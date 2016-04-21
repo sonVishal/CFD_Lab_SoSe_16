@@ -31,6 +31,9 @@ void calculate_fg(
     double tmpUy1, tmpUy2, tmpVy1, tmpVy2;
     double u_ij, v_ij;
 
+    double dx_4 = 1.0/(4.0*dx);
+    double dy_4 = 1.0/(4.0*dy);
+
     for (j = 1; j <= jmax; j++) {
         for (i = 1; i < imax; i++) {
             get_laplacian(U, dx, dy, i, j, &LapU);
@@ -40,13 +43,13 @@ void calculate_fg(
             tmpUx2  = U[i-1][j] + u_ij;
             dU2dx   = ((tmpUx1*tmpUx1 - tmpUx2*tmpUx2)+
                         alpha*(fabs(tmpUx1)*(u_ij - U[i+1][j]) -
-                        fabs(tmpUx2)*(U[i-1][j] - u_ij)))/4/dx;
+                        fabs(tmpUx2)*(U[i-1][j] - u_ij)))*dx_4;
 
             tmpVx1  = V[i][j] + V[i+1][j];
             tmpVx2  = V[i][j-1] + V[i+1][j-1];
             dUVdy   = ((tmpVx1*(u_ij + U[i][j+1])-tmpVx2*(U[i][j-1] + u_ij)) +
                         alpha*(fabs(tmpVx1)*(u_ij - U[i][j+1]) -
-                        fabs(tmpVx2)*(U[i][j-1] - u_ij)))/4/dy;
+                        fabs(tmpVx2)*(U[i][j-1] - u_ij)))*dy_4;
 
             F[i][j] = U[i][j] + dt*(LapU/Re - dU2dx - dUVdy + GX);
         }
@@ -64,13 +67,13 @@ void calculate_fg(
             tmpUy2  = U[i-1][j] + U[i-1][j+1];
             dUVdx   = ((tmpUy1*(v_ij + V[i+1][j])-tmpUy2*(V[i-1][j] + v_ij)) +
                         alpha*(fabs(tmpUy1)*(v_ij - V[i+1][j]) -
-                        fabs(tmpUy2)*(V[i-1][j] - v_ij)))/4/dx;
+                        fabs(tmpUy2)*(V[i-1][j] - v_ij)))*dx_4;
 
             tmpVy1  = v_ij + V[i][j+1];
             tmpVy2  = V[i][j-1] + v_ij;
             dV2dy   = ((tmpVy1*tmpVy1 - tmpVy2*tmpVy2) +
                         alpha*(fabs(tmpVy1)*(v_ij - V[i][j+1]) -
-                        fabs(tmpVy2)*(V[i][j-1] - v_ij)))/4/dy;
+                        fabs(tmpVy2)*(V[i][j-1] - v_ij)))*dy_4;
 
             G[i][j] = V[i][j] + dt*(LapV/Re - dUVdx - dV2dy + GY);
         }
@@ -91,10 +94,12 @@ void calculate_rs(
   double **RS
 ){
     int i,j;
+    double dtdx = 1.0/(dt*dx);
+    double dtdy = 1.0/(dt*dy);
 
     for (i = 1; i <= imax; i++) {
         for (j = 1; j <= jmax; j++) {
-            RS[i][j] = ((F[i][j]-F[i-1][j])/dx + (G[i][j]-G[i][j-1])/dy)/dt;
+            RS[i][j] = (F[i][j]-F[i-1][j])*dtdx + (G[i][j]-G[i][j-1])*dtdy;
         }
     }
 }
@@ -160,16 +165,18 @@ void calculate_uv(
   double **P
 ){
     int i,j;
+    double dt_dx = dt/dx;
+    double dt_dy = dt/dy;
 
 	for (i = 1; i < imax; i++) {
 	    for (j = 1; j < jmax; j++) {
-	        U[i][j] = F[i][j] - dt*(P[i+1][j]-P[i][j])/dx;
-            V[i][j] = G[i][j] - dt*(P[i][j+1]-P[i][j])/dy;
+	        U[i][j] = F[i][j] - dt_dx*(P[i+1][j]-P[i][j]);
+            V[i][j] = G[i][j] - dt_dy*(P[i][j+1]-P[i][j]);
 	    }
-        U[i][jmax] = F[i][jmax] - dt*(P[i+1][jmax]-P[i][jmax])/dx;
+        U[i][jmax] = F[i][jmax] - dt_dx*(P[i+1][jmax]-P[i][jmax]);
 	}
 
     for (j = 1; j < jmax; j++) {
-        V[imax][j] = G[imax][j] - dt*(P[imax][j+1]-P[imax][j])/dy;
+        V[imax][j] = G[imax][j] - dt_dy*(P[imax][j+1]-P[imax][j]);
     }
 }
