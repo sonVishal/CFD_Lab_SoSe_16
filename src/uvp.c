@@ -31,46 +31,52 @@ void calculate_fg(
     double tmpUy1, tmpUy2, tmpVy1, tmpVy2;
     double u_ij, v_ij;
 
-    for (i = 1; i < imax; i++) {
-        for (j = 1; j <= jmax; j++) {
+    for (j = 1; j <= jmax; j++) {
+        for (i = 1; i < imax; i++) {
             get_laplacian(U, dx, dy, i, j, &LapU);
 
-            u_ij = U[i][j];
-            tmpUx1 = u_ij + U[i+1][j];
-            tmpUx2 = U[i-1][j] + u_ij;
-            dU2dx = ((tmpUx1*tmpUx1 - tmpUx2*tmpUx2)+
-                    alpha*(fabs(tmpUx1)*(tmpUx1-2*U[i+1][j]) -
-                    fabs(tmpUx2)*(tmpUx2-2*u_ij)))/4/dx;
+            u_ij    = U[i][j];
+            tmpUx1  = u_ij + U[i+1][j];
+            tmpUx2  = U[i-1][j] + u_ij;
+            dU2dx   = ((tmpUx1*tmpUx1 - tmpUx2*tmpUx2)+
+                        alpha*(fabs(tmpUx1)*(tmpUx1-2*U[i+1][j]) -
+                        fabs(tmpUx2)*(tmpUx2-2*u_ij)))/4/dx;
 
-            tmpVx1 = V[i][j] + V[i+1][j];
-            tmpVx2 = V[i][j-1] + V[i+1][j-1];
-            dUVdy = ((tmpVx1*(u_ij+U[i][j+1])-tmpVx2*(U[i][j-1]+u_ij)) +
-                alpha*(fabs(tmpVx1)*(u_ij-U[i][j+1]) -
-                    fabs(tmpVx2)*(U[i][j-1]-u_ij)))/4/dy;
+            tmpVx1  = V[i][j] + V[i+1][j];
+            tmpVx2  = V[i][j-1] + V[i+1][j-1];
+            dUVdy   = ((tmpVx1*(u_ij+U[i][j+1])-tmpVx2*(U[i][j-1]+u_ij)) +
+                        alpha*(fabs(tmpVx1)*(u_ij-U[i][j+1]) -
+                        fabs(tmpVx2)*(U[i][j-1]-u_ij)))/4/dy;
 
             F[i][j] = U[i][j] + dt*(LapU/Re - dU2dx - dUVdy + GX);
         }
+        /* Boundary conditions */
+        F[0][j]     = U[0][j];
+        F[imax][j]  = U[imax][j];
     }
 
     for (i = 1; i <= imax; i++) {
         for (j = 1; j < jmax; j++) {
             get_laplacian(V, dx, dy, i, j, &LapV);
 
-            v_ij = V[i][j];
-            tmpUy1 = U[i][j] + U[i][j+1];
-            tmpUy2 = U[i-1][j] + U[i-1][j+1];
-            dUVdx = ((tmpUy1*(v_ij+V[i+1][j])-tmpUy2*(V[i-1][j]+v_ij)) +
-                alpha*(fabs(tmpUy1)*(v_ij-V[i+1][j]) -
-                    fabs(tmpUy2)*(V[i-1][j]-v_ij)))/4/dx;
+            v_ij    = V[i][j];
+            tmpUy1  = U[i][j] + U[i][j+1];
+            tmpUy2  = U[i-1][j] + U[i-1][j+1];
+            dUVdx   = ((tmpUy1*(v_ij+V[i+1][j])-tmpUy2*(V[i-1][j]+v_ij)) +
+                        alpha*(fabs(tmpUy1)*(v_ij-V[i+1][j]) -
+                        fabs(tmpUy2)*(V[i-1][j]-v_ij)))/4/dx;
 
-            tmpVy1 = v_ij + V[i][j+1];
-            tmpVy2 = V[i][j-1] + v_ij;
-            dV2dy = ((tmpVy1*tmpVy1 - tmpVy2*tmpVy2) +
-                alpha*(fabs(tmpVy1)*(tmpVy1 - 2*V[i][j+1]) -
+            tmpVy1  = v_ij + V[i][j+1];
+            tmpVy2  = V[i][j-1] + v_ij;
+            dV2dy   = ((tmpVy1*tmpVy1 - tmpVy2*tmpVy2) +
+                        alpha*(fabs(tmpVy1)*(tmpVy1 - 2*V[i][j+1]) -
                         fabs(tmpVy2)*(tmpVy2 - 2*v_ij)))/4/dy;
 
             G[i][j] = V[i][j] + dt*(LapV/Re - dUVdx - dV2dy + GY);
         }
+        /* Boundary conditions */
+        G[i][0]     = V[i][0];
+        G[i][jmax]  = V[i][jmax];
     }
 }
 
