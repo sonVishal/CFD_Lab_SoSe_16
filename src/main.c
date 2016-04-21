@@ -56,7 +56,7 @@ int main(int argn, char** args){
     int     imax, jmax;
 
 	/* Time stepping data */
-	double  t = 0, dt, t_end, tau, dt_value, dt_value_curr=0.0;
+	double  t = 0, dt, t_end, tau, dt_value;
 	int 	n = 0;
 
 
@@ -69,6 +69,9 @@ int main(int argn, char** args){
 
 	/* Solution arrays */
     double	**U, **V, **P, **RS, **F, **G;
+
+	/* Solution dumps for visualization */
+	int storageNum = 1, dumpFlag = 0;
 
 	if(argn != 2){
 		szFileName = "cavity100.dat";
@@ -104,13 +107,7 @@ int main(int argn, char** args){
 		}
 
 		/* TODO: (DL) need to confirm with B. that this is allowed! */
-		printf("%e\n", t);
-		if(dt_value_curr + dt >= dt_value){
-			dt = dt_value_curr;
-			dt_value_curr = 0.0;
-		}else{
-			dt_value_curr += dt;
-		}
+		dumpFlag = (t + dt > storageNum*dt_value);
 
 		/* Set boundary values for u and v according to (15),(16) */
 		boundaryvalues(imax,jmax,U,V);
@@ -138,9 +135,11 @@ int main(int argn, char** args){
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P);
 
 		/* Output of u, v, p values for visualization, if necessary */
-		if(dt_value_curr == 0.0){
+		if(dumpFlag == 1){
 			write_vtkFile(szProblem, n, xlength, ylength, imax, jmax,
 			   		  dx, dy, U, V, P);
+			printf("%e \t %d \n", t, storageNum);
+			storageNum++;
 		}
 
 		t += dt;
