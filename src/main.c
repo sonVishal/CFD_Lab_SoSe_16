@@ -138,7 +138,7 @@ int main(int argn, char** args){
 		if(dumpFlag == 1){
 			write_vtkFile(szProblem, n, xlength, ylength, imax, jmax,
 			   		  dx, dy, U, V, P);
-			printf("%e \t %d \n", t, storageNum);
+			printf("%e\n", t);
 			storageNum++;
 		}
 
