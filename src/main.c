@@ -98,6 +98,11 @@ int main(int argn, char** args){
 
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
 
+	/* Write the initial conditions for visualization */
+	write_vtkFile(szProblem, n, xlength, ylength, imax, jmax,
+			  dx, dy, U, V, P);
+	printf("INFO: write vtk file at time t=%e \t %d \n", 0.0, 0);
+
 	/* MAIN LOOP */
 	while(t < t_end){
 		/* Select δt according to (14) */
