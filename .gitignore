@@ -45,3 +45,6 @@
 
 # executable from makefile
 sim
+
+# Visualization files
+*.vtk
