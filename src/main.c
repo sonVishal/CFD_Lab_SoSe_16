@@ -128,8 +128,8 @@ int main(int argn, char** args){
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P);
 
 		/* Output of u, v, p values for visualization, if necessary */
-		write_vtkFile(szProblem, n, xlength, ylength, imax, jmax,
-			 dx, dy, U, V, P);
+		/*write_vtkFile(szProblem, n, xlength, ylength, imax, jmax,
+   		  dx, dy, U, V, P);*/
 
 		t += dt;
 		n++;
@@ -139,6 +139,8 @@ int main(int argn, char** args){
 	/* TODO: (DL) not sure if this differs from the above write_vtk file. There's also:
 	 * write_vtkHeader() & write_vtkPointCoordinates()
 	 */
+	 write_vtkFile(szProblem, n, xlength, ylength, imax, jmax,
+		  dx, dy, U, V, P);
 
 	/*
 	 * TODO reminder: deallocation of matrices etc.

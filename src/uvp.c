@@ -5,8 +5,8 @@
 
 void get_laplacian(double **U, double dx, double dy,
     int i, int j, double *Lap) {
-    *Lap = (U[i+1][j] - 2*U[i][j] + U[i-1][j])/dx/dx +
-            (U[i][j+1] - 2*U[i][j] + U[i][j-1])/dy/dy;
+    *Lap = (U[i+1][j] - 2.0*U[i][j] + U[i-1][j])/dx/dx +
+            (U[i][j+1] - 2.0*U[i][j] + U[i][j-1])/dy/dy;
 }
 
 void calculate_fg(
@@ -112,7 +112,7 @@ double p_find_abs_max(double **matrix, int imax, int jmax){
 	double foundMax = -DBL_MAX;
 
 	/*TODO: (DL) this is most likely wrong, check out again how the matrix is structured */
-	for(i = 0; i<imax; ++i){
+	for(i = 0; i < imax; ++i){
 		for(j = 0; j < jmax; ++j){
 			if(foundMax < fabs(matrix[i][j])){
 				foundMax = fabs(matrix[i][j]);
@@ -136,7 +136,7 @@ void calculate_dt(
 	double restriction; /* holds the currently tested restriction */
 	double min;
 
-	restriction = Re/(2 * (1/(dx*dx) + 1/(dy*dy)));
+	restriction = Re/(2.0 * (1.0/(dx*dx) + 1.0/(dy*dy)));
 	min = restriction;
 
 	restriction = dx / p_find_abs_max(U, imax, jmax);

@@ -15,7 +15,7 @@ void boundaryvalues(
 
         /* Eq(16) */
         U[i][0]         =   -U[i][1];
-        U[i][jmax+1]    =   -U[i][jmax];
+        U[i][jmax+1]    =   2.0 - U[i][jmax];
     }
 
     for (j = 1; j <= jmax; j++) {
