@@ -5,8 +5,8 @@
 
 void p_get_laplacian(double **U, double dx, double dy,
     int i, int j, double *Lap) {
-    *Lap = (U[i+1][j] - 2.0*U[i][j] + U[i-1][j])/dx/dx +
-            (U[i][j+1] - 2.0*U[i][j] + U[i][j-1])/dy/dy;
+    *Lap = (U[i+1][j] - 2.0*U[i][j] + U[i-1][j])/(dx*dx) +
+            (U[i][j+1] - 2.0*U[i][j] + U[i][j-1])/(dy*dy);
 }
 
 void calculate_fg(
