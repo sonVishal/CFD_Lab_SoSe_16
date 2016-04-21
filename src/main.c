@@ -60,7 +60,7 @@ int main(int argn, char** args){
 	int 	n = 0;
 
 	/* Pressure iteration data */
-	int     itermax, it;
+	int     it = 0, itermax;
 	double	res, eps, omg, alpha;
 
 	/* Problem dependent quantities */
@@ -80,6 +80,10 @@ int main(int argn, char** args){
 	 * is just a dummy.*/
 	szProblem = "visualizationFile";
 
+	read_parameters(szFileName, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength,
+		&ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax,
+		&eps, &dt_value);
+
 	/* Allocate memory to all the matrices */
     U	= matrix ( 0 , imax+1 , 0 , jmax+1 );
     V	= matrix ( 0 , imax+1 , 0 , jmax+1 );
@@ -88,11 +92,10 @@ int main(int argn, char** args){
     F	= matrix ( 0 , imax , 1 , jmax );
     G	= matrix ( 1 , imax , 0 , jmax );
 
-	read_parameters(szFileName, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength,
-		&ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax,
-		&eps, &dt_value);
-
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
+
+	/* Initialize res to greater than eps so that it enters the sor loop */
+	res = 10*eps;
 
 	/* MAIN LOOP */
 	while(t < t_end){
@@ -113,7 +116,6 @@ int main(int argn, char** args){
 		calculate_rs(dt, dx, dy, imax, jmax, F, G, RS);
 
 		/* Perform a SOR iteration according to (19) -- inner loop */
-		it = 0;
 		while (it < itermax && res > eps) {
 			sor(omg, dx, dy, imax, jmax, P, RS, &res);
 			it++;
