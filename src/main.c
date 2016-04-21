@@ -94,9 +94,6 @@ int main(int argn, char** args){
 
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
 
-	/* Initialize res to greater than eps so that it enters the sor loop */
-	res = 10*eps;
-
 	/* MAIN LOOP */
 	while(t < t_end){
 		/* Select δt according to (14) */
@@ -115,6 +112,8 @@ int main(int argn, char** args){
 		/* Compute the right-hand side rs of the pressure equation (12) */
 		calculate_rs(dt, dx, dy, imax, jmax, F, G, RS);
 
+		/* Initialize res to greater than eps so that it enters the sor loop */
+		res = 10*eps;
 		/* Perform a SOR iteration according to (19) -- inner loop */
 		while (it < itermax && res > eps) {
 			sor(omg, dx, dy, imax, jmax, P, RS, &res);
