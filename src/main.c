@@ -56,8 +56,9 @@ int main(int argn, char** args){
     int     imax, jmax;
 
 	/* Time stepping data */
-	double  t = 0, dt, t_end, tau, dt_value;
+	double  t = 0, dt, t_end, tau, dt_value, dt_value_curr=0.0;
 	int 	n = 0;
+
 
 	/* Pressure iteration data */
 	int     it, itermax;
@@ -78,7 +79,7 @@ int main(int argn, char** args){
 	/* TODO: (DL) need to decide how to name our 'problem runs'... furthermore there
 	 * is a if-case needed, wither there is graphical output or not. Current string
 	 * is just a dummy.*/
-	szProblem = "visualizationFile";
+	szProblem = "pv_files/visualizationFile";
 
 	read_parameters(szFileName, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength,
 		&ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax,
@@ -100,6 +101,15 @@ int main(int argn, char** args){
 		if (tau > 0) {
 			calculate_dt(Re, tau,
 				&dt, dx, dy, imax, jmax, U, V);
+		}
+
+		/* TODO: (DL) need to confirm with B. that this is allowed! */
+		printf("%e\n", t);
+		if(dt_value_curr + dt >= dt_value){
+			dt = dt_value_curr;
+			dt_value_curr = 0.0;
+		}else{
+			dt_value_curr += dt;
 		}
 
 		/* Set boundary values for u and v according to (15),(16) */
@@ -128,8 +138,10 @@ int main(int argn, char** args){
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P);
 
 		/* Output of u, v, p values for visualization, if necessary */
-		/*write_vtkFile(szProblem, n, xlength, ylength, imax, jmax,
-   		  dx, dy, U, V, P);*/
+		if(dt_value_curr == 0.0){
+			write_vtkFile(szProblem, n, xlength, ylength, imax, jmax,
+			   		  dx, dy, U, V, P);
+		}
 
 		t += dt;
 		n++;
@@ -145,7 +157,6 @@ int main(int argn, char** args){
 	/*
 	 * TODO reminder: deallocation of matrices etc.
 	 */
-
 	/*Deallocate matrices*/
     free_matrix (U, 0 , imax+1 , 0 , jmax+1 );
     free_matrix (V, 0 , imax+1 , 0 , jmax+1 );
