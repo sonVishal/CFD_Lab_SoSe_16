@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 
-void get_laplacian(double **U, double dx, double dy,
+void p_get_laplacian(double **U, double dx, double dy,
     int i, int j, double *Lap) {
     *Lap = (U[i+1][j] - 2.0*U[i][j] + U[i-1][j])/dx/dx +
             (U[i][j+1] - 2.0*U[i][j] + U[i][j-1])/dy/dy;
@@ -36,7 +36,7 @@ void calculate_fg(
 
     for (j = 1; j <= jmax; j++) {
         for (i = 1; i < imax; i++) {
-            get_laplacian(U, dx, dy, i, j, &LapU);
+            p_get_laplacian(U, dx, dy, i, j, &LapU);
 
             u_ij    = U[i][j];
             tmpUx1  = u_ij + U[i+1][j];
@@ -51,7 +51,7 @@ void calculate_fg(
                         alpha*(fabs(tmpVx1)*(u_ij - U[i][j+1]) -
                         fabs(tmpVx2)*(U[i][j-1] - u_ij)))*dy_4;
 
-            F[i][j] = U[i][j] + dt*(LapU/Re - dU2dx - dUVdy + GX);
+            F[i][j] = u_ij + dt*(LapU/Re - dU2dx - dUVdy + GX);
         }
         /* Boundary conditions */
         F[0][j]     = U[0][j];
@@ -60,7 +60,7 @@ void calculate_fg(
 
     for (i = 1; i <= imax; i++) {
         for (j = 1; j < jmax; j++) {
-            get_laplacian(V, dx, dy, i, j, &LapV);
+            p_get_laplacian(V, dx, dy, i, j, &LapV);
 
             v_ij    = V[i][j];
             tmpUy1  = U[i][j] + U[i][j+1];
@@ -75,7 +75,7 @@ void calculate_fg(
                         alpha*(fabs(tmpVy1)*(v_ij - V[i][j+1]) -
                         fabs(tmpVy2)*(V[i][j-1] - v_ij)))*dy_4;
 
-            G[i][j] = V[i][j] + dt*(LapV/Re - dUVdx - dV2dy + GY);
+            G[i][j] = v_ij + dt*(LapV/Re - dUVdx - dV2dy + GY);
         }
         /* Boundary conditions */
         G[i][0]     = V[i][0];
