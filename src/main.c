@@ -85,8 +85,8 @@ int main(int argn, char** args){
     V	= matrix ( 0 , imax+1 , 0 , jmax+1 );
     P	= matrix ( 0 , imax+1 , 0 , jmax+1 );
     RS	= matrix ( 1 , imax , 1 , jmax );
-    F	= matrix ( 1 , imax-1 , 1 , jmax );
-    G	= matrix ( 1 , imax , 1 , jmax-1 );
+    F	= matrix ( 0 , imax , 1 , jmax );
+    G	= matrix ( 1 , imax , 0 , jmax );
 
 	read_parameters(szFileName, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength,
 		&ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax,
@@ -144,8 +144,8 @@ int main(int argn, char** args){
     free_matrix (V, 0 , imax+1 , 0 , jmax+1 );
     free_matrix (P, 0 , imax+1 , 0 , jmax+1 );
 	free_matrix (RS, 1 , imax , 1 , jmax);
-    free_matrix (F, 1 , imax-1 , 1 , jmax );
-    free_matrix (G, 1 , imax , 1 , jmax-1 );
+    free_matrix (F, 0 , imax , 1 , jmax );
+    free_matrix (G, 1 , imax , 0 , jmax );
 
     return 0;
 }
