@@ -71,7 +71,7 @@ int main(int argn, char** args){
     double	**U, **V, **P, **RS, **F, **G;
 
 	/* Solution dumps for visualization */
-	int storageNum = 1, dumpFlag = 0;
+	int storageNum = 1, writeVTKFlag = 0;
 
 	if(argn != 2){
 		szFileName = "cavity100.dat";
@@ -107,7 +107,7 @@ int main(int argn, char** args){
 		}
 
 		/* TODO: (DL) need to confirm with B. that this is allowed! */
-		dumpFlag = (t + dt > storageNum*dt_value);
+		writeVTKFlag = (t + dt > storageNum*dt_value);
 
 		/* Set boundary values for u and v according to (15),(16) */
 		boundaryvalues(imax,jmax,U,V);
@@ -135,10 +135,10 @@ int main(int argn, char** args){
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P);
 
 		/* Output of u, v, p values for visualization, if necessary */
-		if(dumpFlag == 1){
+		if(writeVTKFlag){
 			write_vtkFile(szProblem, n, xlength, ylength, imax, jmax,
 			   		  dx, dy, U, V, P);
-			printf("%e \t %d \n", t, storageNum);
+			printf("INFO: write vtk file at time t=%e \t %d \n", t+dt, storageNum);
 			storageNum++;
 		}
 
