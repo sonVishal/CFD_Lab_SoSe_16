@@ -60,7 +60,7 @@ int main(int argn, char** args){
 	int 	n = 0;
 
 	/* Pressure iteration data */
-	int     it = 0, itermax;
+	int     it, itermax;
 	double	res, eps, omg, alpha;
 
 	/* Problem dependent quantities */
@@ -114,6 +114,10 @@ int main(int argn, char** args){
 
 		/* Initialize res to greater than eps so that it enters the sor loop */
 		res = 10*eps;
+
+		/* Initialize iteration counter it */
+		it = 0;
+
 		/* Perform a SOR iteration according to (19) -- inner loop */
 		while (it < itermax && res > eps) {
 			sor(omg, dx, dy, imax, jmax, P, RS, &res);
