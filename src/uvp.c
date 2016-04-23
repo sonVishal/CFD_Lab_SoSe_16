@@ -109,17 +109,16 @@ double p_find_abs_max(double **matrix, int imax, int jmax){
 
 	/* equals: minimum (negative) double value; note the "-" (!!)
 	 * https://stackoverflow.com/questions/1153548/minimum-double-value-in-c-c*/
-	double foundMax = -DBL_MAX;
+	double found_max = -DBL_MAX;
 
-	/*TODO: (DL) this is most likely wrong, check out again how the matrix is structured */
 	for(i = 0; i < imax; ++i){
 		for(j = 0; j < jmax; ++j){
-			if(foundMax < fabs(matrix[i][j])){
-				foundMax = fabs(matrix[i][j]);
+			if(found_max < fabs(matrix[i][j])){
+				found_max = fabs(matrix[i][j]);
 			}
 		}
 	}
-	return foundMax;
+	return found_max;
 }
 
 void calculate_dt(

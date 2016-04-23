@@ -140,6 +140,10 @@ int main(int argn, char** args){
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P);
 
 		/* Output of u, v, p values for visualization, if necessary */
+
+		/* TODO: (DL) according to B. we should plot rather one time step before than one
+		 * after the given dt_value...
+		 */
 		if(writeVTKFlag){
 			write_vtkFile(szProblem, n, xlength, ylength, imax, jmax,
 			   		  dx, dy, U, V, P);
