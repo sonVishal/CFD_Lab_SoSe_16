@@ -14,7 +14,7 @@ Codes for the CFD lab at TUM for SoSe16 by Tord, Daniel and Vishal.
 | **Functions, default (operating on structs)**  |  my_function() (-> classic C style, underscores) |
 | **Private Functions (that are there, but shouldn't be called directly, or have obscure uses, e.g. 'helper functions')** |  p_destroy_cache() (-> prefix "p_" to indicate private function (1)) |
 | **Trivial variables** |  i,x,n,f etc... |
-| **Local variables**   |  myVariable (-> camel case with first lowercase letter) |
+| **Local variables**   |  my_variable (-> with underscore, same in framework) |
 | **Global variables**  |  G_GLOBAL_VARIABLE (-> use global variables with care (2)! prefix "G_" indicates global variable) |
 
 
