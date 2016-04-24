@@ -42,6 +42,7 @@
 .cproject
 .project
 .settings
+.metadata
 
 # executable from makefile
 sim
