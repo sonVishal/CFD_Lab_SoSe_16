@@ -145,14 +145,15 @@ int main(int argn, char** args){
 		it = 0;
 
 		/* Perform a SOR iteration according to (19) -- inner loop */
-        //TODO: (TKS) Print error when it>=itermax. On master branch.
 		while (it < itermax && res > eps) {
 			sor(omg, dx, dy, imax, jmax, P, RS, &res);
 			it++;
 		}
 
 		if(it >= itermax){
-			printf("WARNING: SOR did not converge at t = %f", t);
+			char msg[40];
+			sprintf(msg, "SOR did not converge at time = %f \n", t);
+			ERROR(msg);
 		}
 
 		/* Compute u(n+1) and v(n+1) according to (8),(9) */
@@ -166,6 +167,7 @@ int main(int argn, char** args){
 	write_vtkFile(szProblem, n, xlength, ylength, imax, jmax,
 			dx, dy, U, V, P);
 	printf("INFO: write vtk file at time t=%e \t iteration: %i \t file number: %d \n", t, n, storageNum);
+
 	/*
 	 * TODO reminder: deallocation of matrices etc.
 	 */
