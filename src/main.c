@@ -151,6 +151,10 @@ int main(int argn, char** args){
 			it++;
 		}
 
+		if(it >= itermax){
+			printf("WARNING: SOR did not converge at t = %f", t);
+		}
+
 		/* Compute u(n+1) and v(n+1) according to (8),(9) */
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P);
 
