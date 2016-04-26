@@ -131,6 +131,7 @@ int main(int argn, char** args){
 		it = 0;
 
 		/* Perform a SOR iteration according to (19) -- inner loop */
+        //TODO: (TKS) Print error when it>=itermax. On master branch.
 		while (it < itermax && res > eps) {
 			sor(omg, dx, dy, imax, jmax, P, RS, &res);
 			it++;
