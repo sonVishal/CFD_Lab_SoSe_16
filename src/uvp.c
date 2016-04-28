@@ -134,8 +134,8 @@ double p_find_abs_max(double **matrix, int imax, int jmax){
     /* Initialize maximum value to the first element*/
 	double found_max = fabs(matrix[0][0]);
 
-	for(i = 0; i <= imax; ++i){
-		for(j = 0; j <= jmax; ++j){
+	for(i = 1; i <= imax; ++i){
+		for(j = 1; j <= jmax; ++j){
 			if(found_max < fabs(matrix[i][j])){
 				found_max = fabs(matrix[i][j]);
 			}
@@ -162,10 +162,11 @@ void calculate_dt(
 	restriction = Re/(2.0 * (1.0/(dx*dx) + 1.0/(dy*dy)));
 	min = restriction;
 
-	restriction = dx / p_find_abs_max(U, imax+1, jmax+1);
+	/*TODO: (DL) check: values only in the inner domain or on the extra boundary layer too? */
+	restriction = dx / p_find_abs_max(U, imax, jmax);
 	min = fmin(min, restriction);
 
-	restriction = dy / p_find_abs_max(V, imax+1, jmax+1);
+	restriction = dy / p_find_abs_max(V, imax, jmax);
 	min = fmin(min, restriction);
 
 	*dt = tau*min;
