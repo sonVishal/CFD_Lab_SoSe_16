@@ -1,5 +1,7 @@
 #include "boundary_val.h"
 
+/* Set up boundary values according to
+equations 15 and 16 */
 void boundaryvalues(
   int imax,
   int jmax,

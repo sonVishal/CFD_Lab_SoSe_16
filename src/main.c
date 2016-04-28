@@ -150,6 +150,8 @@ int main(int argn, char** args){
 			it++;
 		}
 
+		/* TODO: (VS) Argue if iterations must be stopped
+		if SOR reaches itermax */
 		if(it >= itermax){
 			char msg[40];
 			sprintf(msg, "SOR did not converge at time = %f \n", t);

@@ -3,12 +3,18 @@
 #include <math.h>
 #include <stdio.h>
 
-void p_get_laplacian(double **U, double dx, double dy,
-    int i, int j, double *Lap) {
-    *Lap = (U[i+1][j] - 2.0*U[i][j] + U[i-1][j])/(dx*dx) +
-            (U[i][j+1] - 2.0*U[i][j] + U[i][j-1])/(dy*dy);
+/* Funcion to get the discrete Laplacian of any matrix U
+at point i,j */
+double p_get_laplacian(double u, double u_east, double u_west,
+    double u_north, double u_south, double dx_2, double dy_2) {
+
+    return (u_west - 2.0*u + u_east)/dx_2 +
+            (u_north - 2.0*u + u_south)/dy_2;
 }
 
+/* Calculate the discretized expressions for the momentum equations
+according to equations 10 and 11 and apply boundary values
+according to equation 18 */
 void calculate_fg(
   double Re,
   double GX,
@@ -26,6 +32,7 @@ void calculate_fg(
 ){
 	int i,j;
     double LapU, LapV;
+    double dx_2 = dx*dx, dy_2 = dy*dy;
     double dU2dx, dUVdy, dUVdx, dV2dy;
     double tmpUx1, tmpUx2, tmpVx1, tmpVx2;
     double tmpUy1, tmpUy2, tmpVy1, tmpVy2;
@@ -34,23 +41,30 @@ void calculate_fg(
     double dx_4 = 1.0/(4.0*dx);
     double dy_4 = 1.0/(4.0*dy);
 
+    /* Calculate F */
     for (j = 1; j <= jmax; j++) {
         for (i = 1; i < imax; i++) {
-            p_get_laplacian(U, dx, dy, i, j, &LapU);
-
             u_ij    = U[i][j];
+
+            /* Get discrete Laplacian of U at i,j */
+            LapU = p_get_laplacian(u_ij,U[i+1][j],U[i-1][j],
+                U[i][j+1],U[i][j-1],dx_2, dy_2);
+
+            /* Compute d(u^2)/dx at i,j */
             tmpUx1  = u_ij + U[i+1][j];
             tmpUx2  = U[i-1][j] + u_ij;
-            dU2dx   = ((tmpUx1*tmpUx1 - tmpUx2*tmpUx2)+
+            dU2dx   = ((tmpUx1*tmpUx1 - tmpUx2*tmpUx2) +
                         alpha*(fabs(tmpUx1)*(u_ij - U[i+1][j]) -
                         fabs(tmpUx2)*(U[i-1][j] - u_ij)))*dx_4;
 
+            /* Compute d(u*v)/dx at i,j */
             tmpVx1  = V[i][j] + V[i+1][j];
             tmpVx2  = V[i][j-1] + V[i+1][j-1];
             dUVdy   = ((tmpVx1*(u_ij + U[i][j+1])-tmpVx2*(U[i][j-1] + u_ij)) +
                         alpha*(fabs(tmpVx1)*(u_ij - U[i][j+1]) -
                         fabs(tmpVx2)*(U[i][j-1] - u_ij)))*dy_4;
 
+            /* Compute F at i,j */
             F[i][j] = u_ij + dt*(LapU/Re - dU2dx - dUVdy + GX);
         }
         /* Boundary conditions */
@@ -58,23 +72,30 @@ void calculate_fg(
         F[imax][j]  = U[imax][j];
     }
 
+    /* Calculate G */
     for (i = 1; i <= imax; i++) {
         for (j = 1; j < jmax; j++) {
-            p_get_laplacian(V, dx, dy, i, j, &LapV);
-
             v_ij    = V[i][j];
+
+            /* Get discrete Laplacian of V at i,j */
+            LapV = p_get_laplacian(v_ij,V[i+1][j],V[i-1][j],
+                V[i][j+1],V[i][j-1],dx_2, dy_2);
+
+            /* Compute d(uv)/dy at i,j */
             tmpUy1  = U[i][j] + U[i][j+1];
             tmpUy2  = U[i-1][j] + U[i-1][j+1];
             dUVdx   = ((tmpUy1*(v_ij + V[i+1][j])-tmpUy2*(V[i-1][j] + v_ij)) +
                         alpha*(fabs(tmpUy1)*(v_ij - V[i+1][j]) -
                         fabs(tmpUy2)*(V[i-1][j] - v_ij)))*dx_4;
 
+            /* Compute d(v^2)/dy at i,j */
             tmpVy1  = v_ij + V[i][j+1];
             tmpVy2  = V[i][j-1] + v_ij;
             dV2dy   = ((tmpVy1*tmpVy1 - tmpVy2*tmpVy2) +
                         alpha*(fabs(tmpVy1)*(v_ij - V[i][j+1]) -
                         fabs(tmpVy2)*(V[i][j-1] - v_ij)))*dy_4;
 
+            /* Compute G at i,j */
             G[i][j] = v_ij + dt*(LapV/Re - dUVdx - dV2dy + GY);
         }
         /* Boundary conditions */
@@ -83,6 +104,8 @@ void calculate_fg(
     }
 }
 
+/* Calculate right hand side of the Pressure Poisson Equation
+according to equation 12 */
 void calculate_rs(
   double dt,
   double dx,
@@ -104,15 +127,15 @@ void calculate_rs(
     }
 }
 
+/* Finds the maximum of the absolute values of a matrix */
 double p_find_abs_max(double **matrix, int imax, int jmax){
 	int i,j;
 
-	/* equals: minimum (negative) double value; note the "-" (!!)
-	 * https://stackoverflow.com/questions/1153548/minimum-double-value-in-c-c*/
-	double found_max = -DBL_MAX;
+    /* Initialize maximum value to the first element*/
+	double found_max = fabs(matrix[0][0]);
 
-	for(i = 0; i < imax; ++i){
-		for(j = 0; j < jmax; ++j){
+	for(i = 0; i <= imax+1; ++i){
+		for(j = 0; j <= jmax+1; ++j){
 			if(found_max < fabs(matrix[i][j])){
 				found_max = fabs(matrix[i][j]);
 			}
@@ -121,6 +144,7 @@ double p_find_abs_max(double **matrix, int imax, int jmax){
 	return found_max;
 }
 
+/* Calculate the adaptive step size using equation 14 */
 void calculate_dt(
   double Re,
   double tau,
@@ -151,6 +175,8 @@ void calculate_dt(
 	}
 }
 
+/* Calculate the updated U and V
+according to equatiosn 8 and 9*/
 void calculate_uv(
   double dt,
   double dx,
@@ -167,15 +193,17 @@ void calculate_uv(
     double dt_dx = dt/dx;
     double dt_dy = dt/dy;
 
+    /* Update U */
 	for (i = 1; i < imax; i++) {
-	    for (j = 1; j < jmax; j++) {
+	    for (j = 1; j <= jmax; j++) {
 	        U[i][j] = F[i][j] - dt_dx*(P[i+1][j]-P[i][j]);
-            V[i][j] = G[i][j] - dt_dy*(P[i][j+1]-P[i][j]);
 	    }
-        U[i][jmax] = F[i][jmax] - dt_dx*(P[i+1][jmax]-P[i][jmax]);
 	}
 
-    for (j = 1; j < jmax; j++) {
-        V[imax][j] = G[imax][j] - dt_dy*(P[imax][j+1]-P[imax][j]);
+    /* Update V */
+    for (i = 1; i <= imax; i++) {
+        for (j = 1; j < jmax; j++) {
+            V[i][j] = G[i][j] - dt_dy*(P[i][j+1]-P[i][j]);
+        }
     }
 }
