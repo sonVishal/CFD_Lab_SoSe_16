@@ -109,7 +109,6 @@ int main(int argn, char** args){
 		}
 
 		/* Output of u, v, p values for visualization, if necessary */
-
 		/*TODO: (DL) note the "+1e-10" in the condition. This makes it a lot cleaner (see output
 		 * on console with and without) However, we should discuss it (leave it? if yes,
 		 * how to justify it?).
@@ -153,9 +152,7 @@ int main(int argn, char** args){
 		/* TODO: (VS) Argue if iterations must be stopped
 		if SOR reaches itermax */
 		if(it >= itermax){
-			char msg[40];
-			sprintf(msg, "SOR did not converge at time = %f \n", t);
-			ERROR(msg);
+			printf("WARNING: SOR did not converge at time = %f with a residual of %f \n", t, res);
 		}
 
 		/* Compute u(n+1) and v(n+1) according to (8),(9) */
