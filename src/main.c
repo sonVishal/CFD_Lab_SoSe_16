@@ -152,7 +152,8 @@ int main(int argn, char** args){
 		/* TODO: (VS) Argue if iterations must be stopped
 		if SOR reaches itermax */
 		if(it >= itermax){
-			printf("WARNING: SOR did not converge at time = %f with a residual of %f \n", t, res);
+			printf("WARNING: SOR did not converge at time = %f with a residual of %f. "
+					"itermax = %i reached. \n", t, res, itermax);
 		}
 
 		/* Compute u(n+1) and v(n+1) according to (8),(9) */
