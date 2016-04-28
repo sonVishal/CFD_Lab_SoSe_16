@@ -134,8 +134,8 @@ double p_find_abs_max(double **matrix, int imax, int jmax){
     /* Initialize maximum value to the first element*/
 	double found_max = fabs(matrix[0][0]);
 
-	for(i = 0; i <= imax+1; ++i){
-		for(j = 0; j <= jmax+1; ++j){
+	for(i = 0; i <= imax; ++i){
+		for(j = 0; j <= jmax; ++j){
 			if(found_max < fabs(matrix[i][j])){
 				found_max = fabs(matrix[i][j]);
 			}
@@ -162,10 +162,10 @@ void calculate_dt(
 	restriction = Re/(2.0 * (1.0/(dx*dx) + 1.0/(dy*dy)));
 	min = restriction;
 
-	restriction = dx / p_find_abs_max(U, imax, jmax);
+	restriction = dx / p_find_abs_max(U, imax+1, jmax+1);
 	min = fmin(min, restriction);
 
-	restriction = dy / p_find_abs_max(V, imax, jmax);
+	restriction = dy / p_find_abs_max(V, imax+1, jmax+1);
 	min = fmin(min, restriction);
 
 	*dt = tau*min;
@@ -176,7 +176,7 @@ void calculate_dt(
 }
 
 /* Calculate the updated U and V
-according to equatiosn 8 and 9*/
+according to equations 8 and 9*/
 void calculate_uv(
   double dt,
   double dx,
