@@ -16,19 +16,19 @@ double p_get_laplacian(double u, double u_east, double u_west,
 according to equations 10 and 11 and apply boundary values
 according to equation 18 */
 void calculate_fg(
-  double Re,
-  double GX,
-  double GY,
-  double alpha,
-  double dt,
-  double dx,
-  double dy,
-  int imax,
-  int jmax,
-  double **U,
-  double **V,
-  double **F,
-  double **G
+    double Re,
+    double GX,
+    double GY,
+    double alpha,
+    double dt,
+    double dx,
+    double dy,
+    int imax,
+    int jmax,
+    double **U,
+    double **V,
+    double **F,
+    double **G
 ){
 	int i,j;
     double LapU, LapV;
@@ -107,14 +107,14 @@ void calculate_fg(
 /* Calculate right hand side of the Pressure Poisson Equation
 according to equation 12 */
 void calculate_rs(
-  double dt,
-  double dx,
-  double dy,
-  int imax,
-  int jmax,
-  double **F,
-  double **G,
-  double **RS
+    double dt,
+    double dx,
+    double dy,
+    int imax,
+    int jmax,
+    double **F,
+    double **G,
+    double **RS
 ){
     int i,j;
     double dtdx = 1.0/(dt*dx);
@@ -146,15 +146,15 @@ double p_find_abs_max(double **matrix, int imax, int jmax){
 
 /* Calculate the adaptive step size using equation 14 */
 void calculate_dt(
-  double Re,
-  double tau,
-  double *dt,
-  double dx,
-  double dy,
-  int imax,
-  int jmax,
-  double **U,
-  double **V
+    double Re,
+    double tau,
+    double *dt,
+    double dx,
+    double dy,
+    int imax,
+    int jmax,
+    double **U,
+    double **V
 ){
 	double restriction; /* holds the currently tested restriction */
 	double min;
@@ -178,16 +178,16 @@ void calculate_dt(
 /* Calculate the updated U and V
 according to equations 8 and 9*/
 void calculate_uv(
-  double dt,
-  double dx,
-  double dy,
-  int imax,
-  int jmax,
-  double **U,
-  double **V,
-  double **F,
-  double **G,
-  double **P
+    double dt,
+    double dx,
+    double dy,
+    int imax,
+    int jmax,
+    double **U,
+    double **V,
+    double **F,
+    double **G,
+    double **P
 ){
     int i,j;
     double dt_dx = dt/dx;
