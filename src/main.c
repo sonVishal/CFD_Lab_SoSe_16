@@ -57,7 +57,6 @@ int main(int argn, char** args){
 	double  t = 0, dt, t_end, tau, dt_value;
 	int 	n = 0;
 
-
 	/* Pressure iteration data */
 	int     it, itermax;
 	double	res, eps, omg, alpha;
@@ -96,13 +95,12 @@ int main(int argn, char** args){
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
 
 	/* Write the initial conditions for visualization */
-	write_vtkFile(szProblem, n, xlength, ylength, imax, jmax,
-			dx, dy, U, V, P);
+	write_vtkFile(szProblem, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
 	printf("INFO: write vtk file at time t=%e \t iteration: %i \t file number: %d \n", t, n, storageNum-1);
 
 	/* MAIN LOOP */
 	while(t < t_end){
-		/* Select δt according to (14) */
+		/* Select dt according to (14) */
 		if (tau > 0) {
 			calculate_dt(Re, tau,
 					&dt, dx, dy, imax, jmax, U, V);
@@ -121,8 +119,7 @@ int main(int argn, char** args){
 			 * Example: dt_value = 0.5
 			 * t = ... 0.40, 0.49(#), 0.51, 0.55 ... (#) write vtk-file
 			 */
-			write_vtkFile(szProblem, n, xlength, ylength, imax, jmax,
-					dx, dy, U, V, P);
+			write_vtkFile(szProblem, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
 			printf("INFO: write vtk file at time t=%e \t iteration: %i \t file number: %d \n", t, n, storageNum);
 			storageNum++;
 		}
@@ -164,18 +161,14 @@ int main(int argn, char** args){
 	}
 
 	/* Output of u, v, p for visualization */
-	write_vtkFile(szProblem, n, xlength, ylength, imax, jmax,
-			dx, dy, U, V, P);
+	write_vtkFile(szProblem, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
 	printf("INFO: write vtk file at time t=%e \t iteration: %i \t file number: %d \n", t, n, storageNum);
 
-	/*
-	 * TODO reminder: deallocation of matrices etc.
-	 */
 	/*Deallocate matrices*/
 	free_matrix (U, 0 , imax+1 , 0 , jmax+1 );
 	free_matrix (V, 0 , imax+1 , 0 , jmax+1 );
 	free_matrix (P, 0 , imax+1 , 0 , jmax+1 );
-	free_matrix (RS, 1 , imax , 1 , jmax);
+	free_matrix (RS, 1 , imax , 1 , jmax );
 	free_matrix (F, 0 , imax , 1 , jmax );
 	free_matrix (G, 1 , imax , 0 , jmax );
 
