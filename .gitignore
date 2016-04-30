@@ -47,6 +47,9 @@
 # Exclude folders
 src/matlab_files
 
+# Exclude testing file
+testingPara.dat
+
 # executable from makefile
 sim
 
