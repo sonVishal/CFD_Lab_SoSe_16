@@ -6,39 +6,38 @@
 #include "boundary_val.h"
 #include <stdio.h>
 
-/* TODO: (VS) Consider deleting this huge comment */
-/**
- * The main operation reads the configuration file, initializes the scenario and
- * contains the main loop. So here are the individual steps of the algorithm:
- *
- * - read the program configuration file using read_parameters()
- * - set up the matrices (arrays) needed using the matrix() command
- * - create the initial setup init_uvp(), init_flag(), output_uvp()
- * - perform the main loop
- * - trailer: destroy memory allocated and do some statistics
- *
- * The layout of the grid is described by the first figure below, the enumeration
- * of the whole grid is given by the second figure. All the unknowns correspond
- * to a two dimensional degree of freedom layout, so they are not stored in
- * arrays, but in a matrix.
- *
- * @image html grid.jpg
- *
- * @image html whole-grid.jpg
- *
- * Within the main loop the following big steps are done (for some of the
- * operations a definition is defined already within uvp.h):
- *
- * - calculate_dt() Determine the maximal time step size.
- * - boundaryvalues() Set the boundary values for the next time step.
- * - calculate_fg() Determine the values of F and G (diffusion and confection).
- *   This is the right hand side of the pressure equation and used later on for
- *   the time step transition.
- * - calculate_rs()
- * - Iterate the pressure poisson equation until the residual becomes smaller
- *   than eps or the maximal number of iterations is performed. Within the
- *   iteration loop the operation sor() is used.
- * - calculate_uv() Calculate the velocity at the next time step.
+    /**
+     * The main operation reads the configuration file, initializes the scenario and
+     * contains the main loop. So here are the individual steps of the algorithm:
+     *
+     * - read the program configuration file using read_parameters()
+     * - set up the matrices (arrays) needed using the matrix() command
+     * - create the initial setup init_uvp(), init_flag(), output_uvp()
+     * - perform the main loop
+     * - trailer: destroy memory allocated and do some statistics
+     *
+     * The layout of the grid is described by the first figure below, the enumeration
+     * of the whole grid is given by the second figure. All the unknowns correspond
+     * to a two dimensional degree of freedom layout, so they are not stored in
+     * arrays, but in a matrix.
+     *
+     * @image html grid.jpg
+     *
+     * @image html whole-grid.jpg
+     *
+     * Within the main loop the following big steps are done (for some of the
+     * operations a definition is defined already within uvp.h):
+     *
+     * - calculate_dt() Determine the maximal time step size.
+     * - boundaryvalues() Set the boundary values for the next time step.
+     * - calculate_fg() Determine the values of F and G (diffusion and confection).
+     *   This is the right hand side of the pressure equation and used later on for
+     *   the time step transition.
+     * - calculate_rs()
+     * - Iterate the pressure poisson equation until the residual becomes smaller
+     *   than eps or the maximal number of iterations is performed. Within the
+     *   iteration loop the operation sor() is used.
+     * - calculate_uv() Calculate the velocity at the next time step.
  */
 int main(int argn, char** args){
 
@@ -54,7 +53,7 @@ int main(int argn, char** args){
 	int     imax, jmax;
 
 	/* Time stepping data */
-	double  t = 0, dt, t_end, tau, dt_value;
+	double  t = 0, dt, t_end, tau, dt_value, print_tol;
 	int 	n = 0;
 
 	/* Pressure iteration data */
@@ -76,9 +75,7 @@ int main(int argn, char** args){
 		szFileName = args[1];
 	}
 
-	/* TODO: (DL) need to decide how to name our 'problem runs'... Current string
-	 * is just a dummy.*/
-	szProblem = "pv_files/visualizationFile";
+	szProblem = "pv_files/worksheet1";
 
 	read_parameters(szFileName, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength,
 			&ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax,
@@ -106,12 +103,14 @@ int main(int argn, char** args){
 					&dt, dx, dy, imax, jmax, U, V);
 		}
 
-		/* Output of u, v, p values for visualization, if necessary */
-		/*TODO: (DL) note the "+1e-10" in the condition. This makes it a lot cleaner (see output
-		 * on console with and without) However, we should discuss it (leave it? if yes,
-		 * how to justify it?).
+		/* Output of u, v, p values for visualization, if necessary
+		   Note the "print_tol" in the condition. This makes it a lot cleaner 
+           (see output on console with and without).
+           This is done to make the right hand side sligthly greater than the
+           time storage value.
 		 */
-		if(t + dt > storageNum*dt_value+1e-10){
+        print_tol = dt*1e-6;
+		if(t + dt > storageNum*dt_value + print_tol){
 			/* The position of writing the .vtk files in the loop differs from the algorithm
 			 * of the assignment sheet. Here we make sure that if 't' is not exactly a multiple
 			 * of dt_value a new vtk-file is generated just before 't' gets larger than the
@@ -146,8 +145,7 @@ int main(int argn, char** args){
 			it++;
 		}
 
-		/* TODO: (VS) Argue if iterations must be stopped
-		if SOR reaches itermax */
+        /*Warning when SOR does not converge*/
 		if(it >= itermax){
 			printf("WARNING: SOR did not converge at time = %f with a residual of %f. "
 					"itermax = %i reached. \n", t, res, itermax);
@@ -155,6 +153,7 @@ int main(int argn, char** args){
 
 		/* Compute u(n+1) and v(n+1) according to (8),(9) */
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P);
+
 
 		t += dt;
 		n++;

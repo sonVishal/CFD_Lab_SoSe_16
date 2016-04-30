@@ -44,8 +44,12 @@
 .settings
 .metadata
 
+# Exclude folders
+src/matlab_files
+
 # executable from makefile
 sim
 
 # Visualization files
 *.vtk
+

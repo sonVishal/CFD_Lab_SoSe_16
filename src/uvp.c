@@ -128,14 +128,14 @@ void calculate_rs(
 }
 
 /* Finds the maximum of the absolute values of a matrix */
-double p_find_abs_max(double **matrix, int imax, int jmax){
+double p_find_abs_max(double **matrix,int imin, int imax, int jmin, int jmax){
 
 	int i,j;
 	/* Initialize maximum value to the first element*/
-	double found_max = fabs(matrix[0][0]);
+	double found_max = fabs(matrix[imin][jmin]);
 
-	for(i = 1; i <= imax; ++i){
-		for(j = 1; j <= jmax; ++j){
+	for(i = imin; i <= imax; ++i){
+		for(j = jmin; j <= jmax; ++j){
 			if(found_max < fabs(matrix[i][j])){
 				found_max = fabs(matrix[i][j]);
 			}
@@ -156,11 +156,14 @@ void calculate_dt(
     double **U,
     double **V
 ){
-	/*TODO: (DL) check: values only in the inner domain or on the extra boundary layer too? */
+
+    // We exclude the extra values in the artificial boundary layer and include
+    // the values inside the  domain and on the boundary.
+
 	double min =
 			fmin(  Re/(2.0 * (1.0/(dx*dx) + 1.0/(dy*dy))), 	/* first term CFL */
-			fmin(  dx / p_find_abs_max(U, imax, jmax), 		/* (nested min) second term CFL */
-				   dy / p_find_abs_max(V, imax, jmax))  ); 	/* third term CFL */
+			fmin(  dx / p_find_abs_max(U, 0, imax,1, jmax), 		/* (nested min) second term CFL */
+				   dy / p_find_abs_max(V, 1, imax,0, jmax))  ); 	/* third term CFL */
 
 	*dt = tau*min;
 	if(*dt <= 0){
