@@ -52,6 +52,7 @@ testingPara.dat
 
 # executable from makefile
 sim
+lbsim
 
 # Visualization files
 *.vtk
