@@ -2,7 +2,20 @@
 
 // TODO: (VS) Comments
 
-void pDotProduct(const double * const u, const double * const v,
+// TODO: (VS) Find a clever way to avoid two functions as well as
+    // conflicting data type error
+void pDotProduct1(const double * const u, const double * const v,
+    double * dotProd) {
+
+    int i;
+    *dotProd = 0.0;
+
+    for (i = 0; i < 3; i++) {
+        *dotProd += u[i]*v[i];
+    }
+}
+
+void pDotProduct2(const double * const u, const int * const v,
     double * dotProd) {
 
     int i;
@@ -51,9 +64,9 @@ void computeFeq(const double * const density, const double * const velocity, dou
     *feq = 0.0;
 
     for (i = 0; i < Q; i++) {
-        pDotProduct(velocity, LATTICEVELOCITIES[i], &dotProd1);
-        pDotProduct(velocity, velocity, &dotProd2);
-        tmp = dotProd/C_S_2;
-        *feq += LATTICEWEIGHTS[i]*(*density)*(1 + tmp + tmp*tmp/2 - dotProd2/2/C_S_2);
+        pDotProduct1(velocity, velocity, &dotProd1);
+        pDotProduct2(velocity, LATTICEVELOCITIES[i], &dotProd2);
+        tmp = dotProd2/C_S_2;
+        *feq += LATTICEWEIGHTS[i]*(*density)*(1 + tmp + tmp*tmp/2 - dotProd1/2/C_S_2);
     }
 }
