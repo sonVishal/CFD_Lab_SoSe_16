@@ -1,18 +1,17 @@
 #include "collision.h"
+#include "LBDefinitions.h"
 
 // Get the post collision cell distribution using BGK update rule
 // for the current cell
 void computePostCollisionDistributions(double *currentCell, const double * const tau, const double *const feq){
     int i;
-    for (i = 0; i < 19; i++) {
+    for (i = 0; i < Q; i++) {
         currentCell[i] = currentCell[i] - (currentCell[i]-feq[i])/(*tau);
     }
 }
 
 // Perform collision for all inner cells
 void doCollision(double *collideField, int *flagField,const double * const tau,int xlength){
-    // Define the number of distributions per cell
-    int Q = 19;
 
     // Define iteration indices
     int idx, x, y, z;

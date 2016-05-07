@@ -62,7 +62,6 @@ void writeVtkOutput(const double * const collideField,
     // Write the point data for the domain
     write_vtkPointCoordinates(fp,xlength);
 
-    int Q = 19;             // Number of lattice components
     int x, y, z;            // iteration variables
     int idx;                // cell index
     double cellDensity;     // cell density

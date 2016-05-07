@@ -38,7 +38,6 @@ void computeDensity(const double *const currentCell, double *density){
 }
 
 void computeVelocity(const double * const currentCell, const double * const density, double *velocity){
-    const int Q = 19;
     int i;
 
     for (i = 0; i < Q; i++) {
@@ -53,7 +52,6 @@ void computeVelocity(const double * const currentCell, const double * const dens
 }
 
 void computeFeq(const double * const density, const double * const velocity, double *feq){
-    const int Q = 19;
     int i;
 
     double dotProd1;
