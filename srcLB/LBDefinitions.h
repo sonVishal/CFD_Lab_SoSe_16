@@ -1,5 +1,8 @@
+#include <math.h>
+
 #ifndef _LBDEFINITIONS_H_
 #define _LBDEFINITIONS_H_
+
 
 // Lattice velocity vectors
 static const int LATTICEVELOCITIES[19][3] = {
