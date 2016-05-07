@@ -8,5 +8,41 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 }
 
 void doCollision(double *collideField, int *flagField,const double * const tau,int xlength){
-    /* TODO */
+    // Define the number of distributions per cell
+    int Q = 19;
+
+    // Define iteration indices
+    int idx, x, y, z;
+
+    // Temporary variables for xlength^2 and xlength^3
+    long int const xlen2 = xlength*xlength;
+
+    // Perform collision on all "inner" cells
+    for (x = 1; x <= xlength ; x++) {
+        for (y = 1; y <= xlength; y++) {
+            for (z = 1; z <= xlength; z++) {
+
+                // Get the index of the first distribution
+                // in the current cell
+                idx = Q*(z*xlen2 + y*xlength + x);
+                double *currentCell = &collideField[idx];
+
+                double density;
+                double velocity[3];
+                double feq[19];
+
+                // Compute the cell density
+                computeDensity(currentCell, &density);
+
+                // Compute the cell velocity
+                computeVelocity(currentCell, &density, velocity);
+
+                // Compute the equilibrium distributions
+                computeFeq(&density,velocity,feq);
+
+                // Compute the post collision distributions
+                computePostCollisionDistributions(currentCell,tau,feq);
+            }
+        }
+    }
 }
