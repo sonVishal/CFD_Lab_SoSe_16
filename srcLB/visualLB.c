@@ -1,5 +1,6 @@
 #include "visualLB.h"
 #include "computeCellValues.h"
+#include "helper.h"
 #include <stdlib.h>
 
 // TODO: (VS) What is the purpose of flagField over here????
@@ -44,14 +45,14 @@ void writeVtkOutput(const double * const collideField,
     {
         char szBuff[80];
         sprintf(szBuff, "Failed to open %s", pFileName);
-        //TODO: ERROR(szBuff);
+        ERROR(szBuff);
         return;
     }
     if(tmp == NULL)
     {
         char szBuff[80];
         sprintf(szBuff, "Failed to open %s", pTempFile);
-        //TODO: ERROR(szBuff);
+        ERROR(szBuff);
         return;
     }
 
@@ -107,7 +108,7 @@ void writeVtkOutput(const double * const collideField,
     {
       char szBuff[80];
       sprintf(szBuff, "Failed to close %s", pTempFile);
-      //TODO: ERROR(szBuff);
+      ERROR(szBuff);
     }
 
     // Open for reading
@@ -116,7 +117,7 @@ void writeVtkOutput(const double * const collideField,
     {
         char szBuff[80];
         sprintf(szBuff, "Failed to open %s", pTempFile);
-        //TODO: ERROR(szBuff);
+        ERROR(szBuff);
         return;
     }
 
@@ -129,14 +130,14 @@ void writeVtkOutput(const double * const collideField,
     {
       char szBuff[80];
       sprintf(szBuff, "Failed to close %s", pFileName);
-      //TODO: ERROR(szBuff);
+      ERROR(szBuff);
     }
 
     // Delete the temporary file
     if (remove(pTempFile)) {
         char szBuff[80];
         sprintf(szBuff, "Failed to delete %s", pTempFile);
-        //TODO: ERROR(szBuff);
+        ERROR(szBuff);
     }
 }
 
@@ -146,7 +147,7 @@ void write_vtkHeader(FILE *fp, int xlength)
     {
         char szBuff[80];
         sprintf(szBuff, "Null pointer in write_vtkHeader");
-        //TODO: ERROR(szBuff);
+        ERROR(szBuff);
         return;
     }
 
