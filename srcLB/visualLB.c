@@ -86,9 +86,9 @@ void writeVtkOutput(const double * const collideField,
     fprintf(tmp,"CELL_DATA %ld \n", xlen3);
     fprintf(tmp, "SCALARS density float 1 \n");
     fprintf(tmp, "LOOKUP_TABLE default \n");
-    for(x = 0; x < xlength; x++) {
-      for(y = 0; y < xlength; y++) {
-          for(z = 0; z < xlength; z++) {
+    for(z = 1; z <= xlength; z++) {
+      for(y = 1; y <= xlength; y++) {
+          for(x = 1; x <= xlength; x++) {
               // Compute the base index for collideField
               idx = Q*(z*xlen2 + y*xlength + x);
 
@@ -176,9 +176,9 @@ void write_vtkPointCoordinates(FILE *fp, int xlength) {
   int x, y, z;
 
   // We have xlength + 1 points for xlength cells in each direction
-  for(x = 0; x <= xlength; x++) {
+  for(z = 0; z <= xlength; z++) {
     for(y = 0; y <= xlength; y++) {
-        for(z = 0; z <= xlength; z++) {
+        for(x = 0; x <= xlength; x++) {
             fprintf(fp, "%f %f %f\n", originX+x*h, originY+y*h, originZ+z*h);
         }
     }

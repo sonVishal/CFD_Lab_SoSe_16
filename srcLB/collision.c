@@ -21,9 +21,9 @@ void doCollision(double *collideField, int *flagField,const double * const tau,i
     long int const xlen2 = xlength*xlength;
 
     // Perform collision on all "inner" cells
-    for (x = 1; x <= xlength ; x++) {
+    for (z = 1; z <= xlength ; z++) {
         for (y = 1; y <= xlength; y++) {
-            for (z = 1; z <= xlength; z++) {
+            for (x = 1; x <= xlength; x++) {
 
                 // Get the index of the first distribution
                 // in the current cell
