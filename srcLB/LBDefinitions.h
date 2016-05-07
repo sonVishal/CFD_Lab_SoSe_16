@@ -1,5 +1,3 @@
-#include <math.h>
-
 #ifndef _LBDEFINITIONS_H_
 #define _LBDEFINITIONS_H_
 
