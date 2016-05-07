@@ -2,30 +2,43 @@
 #include "LBDefinitions.h"
 
 void doStreaming(double *collideField, double *streamField,int *flagField,int xlength){
-
 	/*
 	 * For each FLUID field (this) copy distribution f_i from all neighboring
-	 * cells.
+	 * cells of this.
 	 */
 
+	/* TODO: (DL) if there is time: optimize for cache efficiency.
+	 * First: profile and see how this function adds to total workload (check if it's worth it)
+	 */
+
+	int zoffset, yzoffset, xyzoffset, dist_xyzoffset, cell_xyzoffset; //current cell offset values
+	int n_x, n_y, n_z, n_xyzoffset; 				  				  //neighbor offset values
+
 	for(int z=1; z<=xlength; z++){
-		int zoffset = z*xlength;
+		zoffset = z*xlength;
 
 		for(int y=1; y<=xlength; y++){
-			int yzoffset = xlength*(zoffset + y);
+			yzoffset = xlength*(zoffset + y);
 
 			for(int x=1; x<=xlength; x++){
-				int xyzoffset = yzoffset + x;
+				xyzoffset = yzoffset + x;
 
-				// TODO: (DL) if the indices are correct, I think condition is always true...
-				// printf("Condition check \i", flagField[xyzoffset]);
+				/* TODO: (DL) if the indices are correct,
+				* I think condition is always true... if so: delete if-statement
+				*/
+				// printf("Condition check %i \n", flagField[xyzoffset]);
 
 				if( ! flagField[xyzoffset] ){ //true if FLUID cell
-					int dist_xyzoffset = 19*xyzoffset;
+					cell_xyzoffset = Q*xyzoffset;
 
 					//loop through all neighbors and copy the respective distribution
-					for(int i=0; i<19; ++i){
-						streamField[dist_xyzoffset + i] = collideField[dist_xyzoffset + (19-i)];
+					for(int i=0; i<Q; ++i){
+						n_x = x+LATTICEVELOCITIES[i][0];
+						n_y = y+LATTICEVELOCITIES[i][1];
+						n_z = z+LATTICEVELOCITIES[i][2];
+
+						n_xyzoffset = Q*(xlength*(n_z*xlength + n_y) + n_x);
+						streamField[cell_xyzoffset + i] = collideField[n_xyzoffset + (Q-i)];
 					}
 				}
 			}
