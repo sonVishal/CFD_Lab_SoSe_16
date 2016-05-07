@@ -20,11 +20,12 @@ int main(int argc, char *argv[]){
     double velocityWall[3];
     int timesteps;
     int timestepsPerPlotting;
+    int Q = 19;
 
     readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
 
     /*Initializing pointers*/
-    int totalsize = 19*(xlength+2)*(xlength+2)*(xlength+2);
+    int totalsize = Q*(xlength+2)*(xlength+2)*(xlength+2);
     collideField  = (double *)  malloc((size_t)( totalsize * sizeof( double )));
     streamField   = (double *)  malloc((size_t)( totalsize * sizeof( double )));
     flagField     = (int *)  malloc((size_t)( totalsize * sizeof( double )));
@@ -46,6 +47,11 @@ int main(int argc, char *argv[]){
 	        //writeVtkOutput(collideField,flagField,argv,t,xlength);
 	    }
     }
+
+    free(streamField);
+    free(collideField);
+    free(flagField);
+
     return 0;
 }
 
