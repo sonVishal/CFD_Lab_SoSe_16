@@ -25,9 +25,9 @@ int main(int argc, char *argv[]){
     readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
 
     /*Initializing pointers*/
-    int totalsize = Q*(xlength+2)*(xlength+2)*(xlength+2);
-    collideField  = (double *)  malloc((size_t)( totalsize * sizeof( double )));
-    streamField   = (double *)  malloc((size_t)( totalsize * sizeof( double )));
+    int totalsize = (xlength+2)*(xlength+2)*(xlength+2);
+    collideField  = (double *)  malloc((size_t)( Q*totalsize * sizeof( double )));
+    streamField   = (double *)  malloc((size_t)( Q*totalsize * sizeof( double )));
     flagField     = (int *)  malloc((size_t)( totalsize * sizeof( double )));
 
     initialiseFields(collideField, streamField, flagField, xlength);
