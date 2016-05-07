@@ -1,3 +1,5 @@
+#include "LBDefinitions.h"
+
 #ifndef _COMPUTECELLVALUES_H_
 #define _COMPUTECELLVALUES_H_
 
@@ -15,5 +17,6 @@ void computeVelocity(const double *const currentCell, const double * const densi
  */
 void computeFeq(const double * const density, const double * const velocity, double *feq);
 
-#endif
+void pDotProduct(const double * const u, const double * const v, double * dotProd);
 
+#endif

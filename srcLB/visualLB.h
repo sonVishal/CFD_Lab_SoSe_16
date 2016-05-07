@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include "LBDefinitions.h"
+#include <unistd.h>
+
 #ifndef _VISUALLB_H_
 #define _VISUALLB_H_
 
@@ -7,5 +11,8 @@
  */
 void writeVtkOutput(const double * const collideField, const int * const flagField, const char * filename, unsigned int t, int xlength);
 
-#endif
+void write_vtkPointCoordinates(FILE *fp, int xlength);
 
+void write_vtkHeader(FILE *fp, int xlength);
+
+#endif

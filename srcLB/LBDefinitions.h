@@ -34,5 +34,7 @@ static const double LATTICEWEIGHTS[19] = {
 // Speed of sound
 //TODO: (TKS) For some reason the compiler complains that this is not a constant expression.
 //static const double C_S = 1.0/sqrt(3.0);
+// TODO: (VS) Remove once the above conflict is resolved
+static const double C_S = 1.0;
 
 #endif

@@ -1,5 +1,190 @@
 #include "visualLB.h"
 
-void writeVtkOutput(const double * const collideField, const int * const flagField, const char * filename, unsigned int t, int xlength) {
-  /* TODO */
+// TODO: (VS) Use flagField????
+
+// Function to write VTK output files for visualization
+// Inputs
+// collideField - Probability distribution function
+//                  Length = Q*(xlength+2)^D
+// flagField    - Geometry info about whether a cell is
+//                  FLUID         = 0
+//                  NO_SLIP       = 1
+//                  MOVING_WALL   = 2
+//                  Length        = (xlength+2)^D
+// filename     - Name of the file to which output is to be written
+// t            - Time at which output is to be stored
+// xlength      - Number of cells in one direction
+
+void writeVtkOutput(const double * const collideField,
+    const int * const flagField, const char * filename,
+    unsigned int t, int xlength)
+{
+    // Files related variables
+    char pFileName[80];
+    char pTempFile[80];
+    FILE *tmp = NULL;
+    FILE *fp = NULL;
+
+    // temporary variable for concatenation
+    char ch;
+
+    // Create the file with time information in the name
+    sprintf(pFileName, "%s.%i.vtk", filename, t);
+    sprintf(pTempFile, "temp.vtk");
+    fp  = fopen(pFileName, "w");
+    tmp = fopen(pTempFile, "w");
+
+    // Check if files were opened or not
+    if(fp == NULL)
+    {
+        char szBuff[80];
+        sprintf(szBuff, "Failed to open %s", pFileName);
+        //TODO: ERROR(szBuff);
+        return;
+    }
+    if(tmp == NULL)
+    {
+        char szBuff[80];
+        sprintf(szBuff, "Failed to open %s", pTempFile);
+        //TODO: ERROR(szBuff);
+        return;
+    }
+
+    // Write header for the VTK file
+    write_vtkHeader(fp,xlength);
+
+    // Write the point data for the domain
+    write_vtkPointCoordinates(fp,xlength);
+
+    int Q = 19;             // Number of lattice components
+    int i, x, y, z;         // iteration variables
+    int idx;                // cell index
+    double cellDensity;     // cell density
+    double cellVelocity[3];    // cell average velocity
+
+    // Write cell velocity to the vtk file
+    fprintf(fp,"CELL_DATA %i \n", (xlength+2)*(xlength+2)*(xlength+2));
+    fprintf(fp, "VECTORS velocity float\n");
+    fprintf(fp, "LOOKUP_TABLE default \n");
+
+    // Write cell average density to a temporary vtk file
+    fprintf(tmp,"CELL_DATA %i \n", (xlength+2)*(xlength+2)*(xlength+2));
+    fprintf(tmp, "SCALARS density float 1 \n");
+    fprintf(tmp, "LOOKUP_TABLE default \n");
+    for(x = 0; x < xlength + 2; x++) {
+      for(y = 0; y < xlength + 2; y++) {
+          for(z = 0; z < xlength + 2; z++) {
+              // Compute the base index for collideField
+              idx = Q*(z*xlength*xlength + y*xlength + x);
+
+              // Initialize
+              cellDensity       = 0.0;
+              cellVelocity[0]   = 0.0;
+              cellVelocity[1]   = 0.0;
+              cellVelocity[2]   = 0.0;
+
+              // Compute the cell momemtum and density
+              for (i = 0; i < Q; i++) {
+                  cellDensity       += collideField[idx + i];
+
+                  cellVelocity[0]   +=
+                  collideField[idx + i]*LATTICEVELOCITIES[i][0];
+
+                  cellVelocity[1]   +=
+                  collideField[idx + i]*LATTICEVELOCITIES[i][1];
+
+                  cellVelocity[2]   +=
+                  collideField[idx + i]*LATTICEVELOCITIES[i][2];
+              }
+
+              // Compute cell average velocities
+              cellVelocity[0] /= cellDensity;
+              cellVelocity[1] /= cellDensity;
+              cellVelocity[2] /= cellDensity;
+
+              // Write cell average velocities
+              fprintf(fp, "%f %f %f\n", cellVelocity[0],
+              cellVelocity[1], cellVelocity[2]);
+
+              // Write the cell density
+              fprintf(tmp, "%f\n", cellDensity);
+          }
+      }
+    }
+
+    // Close file
+    if(fclose(tmp))
+    {
+      char szBuff[80];
+      sprintf(szBuff, "Failed to close %s", pTempFile);
+      //TODO: ERROR(szBuff);
+    }
+
+    // Open for reading
+    tmp = fopen(pTempFile, "r");
+    if(tmp == NULL)
+    {
+        char szBuff[80];
+        sprintf(szBuff, "Failed to open %s", pTempFile);
+        //TODO: ERROR(szBuff);
+        return;
+    }
+
+    // Merge the two files
+    while((ch = fgetc(tmp)) != EOF)
+          fputc(ch,fp);
+
+    // Close file
+    if(fclose(fp))
+    {
+      char szBuff[80];
+      sprintf(szBuff, "Failed to close %s", pFileName);
+      //TODO: ERROR(szBuff);
+    }
+
+    // Delete the temporary file
+    if (remove(pTempFile)) {
+        char szBuff[80];
+        sprintf(szBuff, "Failed to delete %s", pTempFile);
+        //TODO: ERROR(szBuff);
+    }
+}
+
+void write_vtkHeader(FILE *fp, int xlength)
+{
+    if(fp == NULL)
+    {
+        char szBuff[80];
+        sprintf(szBuff, "Null pointer in write_vtkHeader");
+        //TODO: ERROR(szBuff);
+        return;
+    }
+
+    fprintf(fp,"# vtk DataFile Version 2.0\n");
+    fprintf(fp,"generated by CFD-lab course output (written by Vishal Sontakke) \n");
+    fprintf(fp,"ASCII\n");
+    fprintf(fp,"\n");
+    fprintf(fp,"DATASET STRUCTURED_GRID\n");
+    fprintf(fp,"DIMENSIONS  %i %i %i \n", xlength+3, xlength+3, xlength+3);
+    fprintf(fp,"POINTS %i float\n", (xlength+3)*(xlength+3)*(xlength+3));
+    fprintf(fp,"\n");
+}
+
+void write_vtkPointCoordinates(FILE *fp, int xlength) {
+  double originX = 0.0;
+  double originY = 0.0;
+  double originZ = 0.0;
+
+  // Define the size of each cell
+  double h = 1/xlength;
+
+  int x, y, z;
+
+  for(x = 0; x <= xlength + 2; x++) {
+    for(y = 0; y <= xlength + 2; y++) {
+        for(z = 0; z <= xlength + 2; z++) {
+            fprintf(fp, "%f %f %f\n", originX+x*h, originY+y*h, originZ+z*h);
+        }
+    }
+  }
 }
