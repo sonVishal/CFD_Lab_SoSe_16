@@ -1,0 +1,16 @@
+# Size of mesh
+xlength              1
+
+# Relaxation time
+tau                  1
+
+# Velocity of moving wall
+xvelocity         2 
+yvelocity         0
+zvelocity         0
+
+# Number of timesteps
+timesteps            2000
+
+# timesteps between each plot
+timestepsPerPlotting 20
