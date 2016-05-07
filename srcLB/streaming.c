@@ -36,9 +36,9 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 						n_x = x+LATTICEVELOCITIES[i][0];
 						n_y = y+LATTICEVELOCITIES[i][1];
 						n_z = z+LATTICEVELOCITIES[i][2];
-
 						n_xyzoffset = Q*(xlength*(n_z*xlength + n_y) + n_x);
-						streamField[cell_xyzoffset + i] = collideField[n_xyzoffset + (Q-i)];
+
+						streamField[cell_xyzoffset + i] = collideField[n_xyzoffset + (Q-i-1)];
 					}
 				}
 			}
