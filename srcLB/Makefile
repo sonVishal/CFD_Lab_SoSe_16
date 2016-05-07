@@ -5,11 +5,11 @@ SOURCES=initLB.c visualLB.c boundary.c collision.c streaming.c computeCellValues
 # --------
 CC=gcc
 
-CFLAGS=-Werror -pedantic -Wall
+CFLAGS=-Werror -pedantic -Wall -std=c99 -g
 
 # Linker flags
 # ------------
-LDFLAGS= 
+LDFLAGS=
 
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=lbsim
@@ -17,7 +17,7 @@ EXECUTABLE=lbsim
 all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $@ $(LDFLAGS) 
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
 
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE)
