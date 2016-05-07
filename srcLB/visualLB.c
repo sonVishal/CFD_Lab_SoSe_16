@@ -3,7 +3,9 @@
 #include <stdlib.h>
 
 // TODO: (VS) What is the purpose of flagField over here????
-// Are we supposed to also show boundary data for visualization??? 
+// Are we supposed to also show boundary data for visualization???
+// Currently not assuming boundary layer is to be included
+// In case boundary layer needs to be included do "+2" everywhere
 
 // Function to write VTK output files for visualization
 // Inputs
@@ -67,18 +69,21 @@ void writeVtkOutput(const double * const collideField,
     // cell average velocity
     double * cellVelocity = (double *)malloc(sizeof(double)*3);
 
+    // Avoid double computation of density for output
+    // Open two files and concatenate them at the end
+
     // Write cell velocity to the vtk file
-    fprintf(fp,"CELL_DATA %i \n", (xlength+2)*(xlength+2)*(xlength+2));
+    fprintf(fp,"CELL_DATA %i \n", (xlength)*(xlength)*(xlength));
     fprintf(fp, "VECTORS velocity float\n");
     fprintf(fp, "LOOKUP_TABLE default \n");
 
     // Write cell average density to a temporary vtk file
-    fprintf(tmp,"CELL_DATA %i \n", (xlength+2)*(xlength+2)*(xlength+2));
+    fprintf(tmp,"CELL_DATA %i \n", (xlength)*(xlength)*(xlength));
     fprintf(tmp, "SCALARS density float 1 \n");
     fprintf(tmp, "LOOKUP_TABLE default \n");
-    for(x = 0; x < xlength + 2; x++) {
-      for(y = 0; y < xlength + 2; y++) {
-          for(z = 0; z < xlength + 2; z++) {
+    for(x = 0; x < xlength; x++) {
+      for(y = 0; y < xlength; y++) {
+          for(z = 0; z < xlength; z++) {
               // Compute the base index for collideField
               idx = Q*(z*xlength*xlength + y*xlength + x);
 
@@ -115,7 +120,7 @@ void writeVtkOutput(const double * const collideField,
         return;
     }
 
-    // Merge the two files
+    // Concatenate the two files
     while((ch = fgetc(tmp)) != EOF)
           fputc(ch,fp);
 
@@ -150,8 +155,8 @@ void write_vtkHeader(FILE *fp, int xlength)
     fprintf(fp,"ASCII\n");
     fprintf(fp,"\n");
     fprintf(fp,"DATASET STRUCTURED_GRID\n");
-    fprintf(fp,"DIMENSIONS  %i %i %i \n", xlength+3, xlength+3, xlength+3);
-    fprintf(fp,"POINTS %i float\n", (xlength+3)*(xlength+3)*(xlength+3));
+    fprintf(fp,"DIMENSIONS  %i %i %i \n", xlength+1, xlength+1, xlength+1);
+    fprintf(fp,"POINTS %i float\n", (xlength+1)*(xlength+1)*(xlength+1));
     fprintf(fp,"\n");
 }
 
@@ -165,9 +170,10 @@ void write_vtkPointCoordinates(FILE *fp, int xlength) {
 
   int x, y, z;
 
-  for(x = 0; x <= xlength + 2; x++) {
-    for(y = 0; y <= xlength + 2; y++) {
-        for(z = 0; z <= xlength + 2; z++) {
+  // We have xlength + 1 points for xlength cells in each direction
+  for(x = 0; x <= xlength; x++) {
+    for(y = 0; y <= xlength; y++) {
+        for(z = 0; z <= xlength; z++) {
             fprintf(fp, "%f %f %f\n", originX+x*h, originY+y*h, originZ+z*h);
         }
     }
