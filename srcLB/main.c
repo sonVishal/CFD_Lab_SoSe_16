@@ -7,6 +7,9 @@
 #include "streaming.h"
 #include "visualLB.h"
 
+//TODO: (TKS) Make LBDefinitions work
+#include "LBDefinitions.h"
+
 int main(int argc, char *argv[]){
 
     double *collideField=NULL;
@@ -20,7 +23,6 @@ int main(int argc, char *argv[]){
     double velocityWall[3];
     int timesteps;
     int timestepsPerPlotting;
-    int Q = 19;
 
     readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
 
