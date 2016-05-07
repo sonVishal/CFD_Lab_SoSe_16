@@ -70,23 +70,27 @@ void writeVtkOutput(const double * const collideField,
     // cell average velocity
     double * cellVelocity = (double *)malloc(sizeof(double)*3);
 
+    // Temporary variables for xlength^2 and xlength^3
+    long int const xlen2 = xlength*xlength;
+    long int const xlen3 = xlen2*xlength;
+
     // Avoid double computation of density for output
     // Open two files and concatenate them at the end
 
     // Write cell velocity to the vtk file
-    fprintf(fp,"CELL_DATA %i \n", (xlength)*(xlength)*(xlength));
+    fprintf(fp,"CELL_DATA %ld \n", xlen3);
     fprintf(fp, "VECTORS velocity float\n");
     fprintf(fp, "LOOKUP_TABLE default \n");
 
     // Write cell average density to a temporary vtk file
-    fprintf(tmp,"CELL_DATA %i \n", (xlength)*(xlength)*(xlength));
+    fprintf(tmp,"CELL_DATA %ld \n", xlen3);
     fprintf(tmp, "SCALARS density float 1 \n");
     fprintf(tmp, "LOOKUP_TABLE default \n");
     for(x = 0; x < xlength; x++) {
       for(y = 0; y < xlength; y++) {
           for(z = 0; z < xlength; z++) {
               // Compute the base index for collideField
-              idx = Q*(z*xlength*xlength + y*xlength + x);
+              idx = Q*(z*xlen2 + y*xlength + x);
 
               computeDensity(&collideField[idx], &cellDensity);
               computeVelocity(&collideField[idx], &cellDensity, cellVelocity);
