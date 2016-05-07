@@ -1,4 +1,5 @@
 #include "initLB.h"
+#include "LBDefinitions.h"
 
 int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
 
@@ -24,6 +25,23 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
 
 void initialiseFields(double *collideField, double *streamField, int *flagField, int xlength){
 
+    //TODO: (TKS) Do a smarter thing to get the correct ws at the right places.
+    //TODO: (TKS) NOT finished
+    //double w[3] = {w1, w2, w3};
 
+    int index;
+    for (int x = 0; x < xlength+1; ++x) {
+        for (int y = 0; y < xlength+1; ++y) {
+            for (int z = 0; z < xlength+1; ++z) {
+                for (int i = 0; i < Q; ++i) {
+                    index = Q*( (z+y)*xlength*xlength + x );
+                    printf("index = %d\n", index);
+                    //collideField[index] = w1;
+                    
+                }
+            }
+        }
+    }
+    
     printf("Initialize fields\n");
 }

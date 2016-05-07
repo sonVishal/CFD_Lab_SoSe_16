@@ -16,6 +16,9 @@ static const int LATTICEVELOCITIES[19][3] = {
 
 // Temporary variables for Lattice weights
 
+//TODO: (TKS) Consider #undef, but then we can't use them other places
+//            in the code. Need to be careful with define.
+
 #define w1 12.0/36.0
 #define w2 2.0/36.0
 #define w3 1.0/36.0
@@ -29,7 +32,7 @@ static const double LATTICEWEIGHTS[19] = {
 };
 
 // Speed of sound
-static const double C_S = 1.0/sqrt(3.0);
-
+//TODO: (TKS) For some reason the compiler complains that this is not a constant expression.
+//static const double C_S = 1.0/sqrt(3.0);
 
 #endif
