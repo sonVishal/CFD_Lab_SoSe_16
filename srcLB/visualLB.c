@@ -2,7 +2,8 @@
 #include "computeCellValues.h"
 #include <stdlib.h>
 
-// TODO: (VS) Use flagField????
+// TODO: (VS) What is the purpose of flagField over here????
+// Are we supposed to also show boundary data for visualization??? 
 
 // Function to write VTK output files for visualization
 // Inputs
