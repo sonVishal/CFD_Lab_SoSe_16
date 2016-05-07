@@ -11,7 +11,7 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 	 * First: profile and see how this function adds to total workload (check if it's worth it)
 	 */
 
-	int zoffset, yzoffset, xyzoffset, dist_xyzoffset, cell_xyzoffset; //current cell offset values
+	int zoffset, yzoffset, xyzoffset, /*dist_xyzoffset,*/ cell_xyzoffset; //current cell offset values
 	int n_x, n_y, n_z, n_xyzoffset; 				  				  //neighbor offset values
 
 	for(int z=1; z<=xlength; z++){

@@ -17,6 +17,10 @@ void computeVelocity(const double *const currentCell, const double * const densi
  */
 void computeFeq(const double * const density, const double * const velocity, double *feq);
 
-void pDotProduct(const double * const u, const double * const v, double * dotProd);
+void pDotProduct1(const double * const u, const double * const v,
+    double * dotProd);
+
+void pDotProduct2(const double * const u, const int * const v,
+    double * dotProd);
 
 #endif
