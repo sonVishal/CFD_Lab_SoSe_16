@@ -14,7 +14,7 @@ int main(int argc, char *argv[]){
 
     /* TODO: (DL) in the worksheet there is "flagField" and "flagfield" -
      * for the moment I think they are the same... */
-    //int *flagField=NULL;
+    int *flagField=NULL;
     int xlength;
     double tau;
     double velocityWall[3];
@@ -23,9 +23,13 @@ int main(int argc, char *argv[]){
 
     readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
 
-    // TODO: initialise pointers here!
+    /*Initializing pointers*/
+    int totalsize = (xlength+2)*(xlength+2)*(xlength+2);
+    collideField  = (double *)  malloc((size_t)( totalsize * sizeof( double )));
+    streamField   = (double *)  malloc((size_t)( totalsize * sizeof( double )));
+    flagField     = (int *)  malloc((size_t)( totalsize * sizeof( double )));
 
-    //initialiseFields(collideField, streamField, flagField, xlength);
+    initialiseFields(collideField, streamField, flagField, xlength);
 
     for(int t = 0; t < timesteps; t++){
 	    double *swap=NULL;
