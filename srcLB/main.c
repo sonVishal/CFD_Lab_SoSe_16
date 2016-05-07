@@ -27,14 +27,15 @@ int main(int argc, char *argv[]){
     readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
 
     /*Initializing pointers*/
-    int totalsize = (xlength+2)*(xlength+2)*(xlength+2);
-    collideField  = (double *)  malloc((size_t)( Q*totalsize * sizeof( double )));
-    streamField   = (double *)  malloc((size_t)( Q*totalsize * sizeof( double )));
-    flagField     = (int *)  calloc((size_t) totalsize, sizeof( int ));
+    size_t totalsize = (xlength+2)*(xlength+2)*(xlength+2);
+    collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
+    streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
+
+    /* TODO: (DL) we could save memory and use 'short' instead of int */
+    /* calloc: only required to set boundary values */
+    flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     initialiseFields(collideField, streamField, flagField, xlength);
-
-
 
     for(int t = 0; t < timesteps; t++){
 	    double *swap=NULL;
