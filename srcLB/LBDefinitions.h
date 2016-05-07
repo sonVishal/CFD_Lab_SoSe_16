@@ -3,6 +3,8 @@
 #ifndef _LBDEFINITIONS_H_
 #define _LBDEFINITIONS_H_
 
+// Number of lattice directions
+static const int Q = 19;
 
 // Lattice velocity vectors
 static const int LATTICEVELOCITIES[19][3] = {
@@ -13,9 +15,10 @@ static const int LATTICEVELOCITIES[19][3] = {
 };
 
 // Temporary variables for Lattice weights
-static const double w1 = 12.0/36.0;
-static const double w2 = 2.0/36.0;
-static const double w3 = 1.0/36.0;
+
+#define w1 12.0/36.0
+#define w2 2.0/36.0
+#define w3 1.0/36.0
 
 // Lattice weights
 static const double LATTICEWEIGHTS[19] = {
@@ -27,5 +30,6 @@ static const double LATTICEWEIGHTS[19] = {
 
 // Speed of sound
 static const double C_S = 1.0/sqrt(3.0);
+
 
 #endif
