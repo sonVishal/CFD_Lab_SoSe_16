@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
     int totalsize = (xlength+2)*(xlength+2)*(xlength+2);
     collideField  = (double *)  malloc((size_t)( Q*totalsize * sizeof( double )));
     streamField   = (double *)  malloc((size_t)( Q*totalsize * sizeof( double )));
-    flagField     = (int *)  calloc((size_t)( totalsize, sizeof( double )));
+    flagField     = (int *)  calloc((size_t) totalsize, sizeof( int ));
 
     initialiseFields(collideField, streamField, flagField, xlength);
 
