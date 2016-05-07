@@ -15,8 +15,6 @@ int main(int argc, char *argv[]){
     double *collideField=NULL;
     double *streamField=NULL;
 
-    /* TODO: (DL) in the worksheet there is "flagField" and "flagfield" -
-     * for the moment I think they are the same... */
     int *flagField=NULL;
     int xlength;
     double tau;
@@ -31,7 +29,6 @@ int main(int argc, char *argv[]){
     collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
     streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
 
-    /* TODO: (DL) we could save memory and use 'short' instead of int */
     /* calloc: only required to set boundary values */
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
