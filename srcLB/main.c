@@ -14,27 +14,31 @@ int main(int argc, char *argv[]){
 
     /* TODO: (DL) in the worksheet there is "flagField" and "flagfield" -
      * for the moment I think they are the same... */
-    int *flagfield=NULL;
-    int xlength; double tau;
+    int *flagField=NULL;
+    int xlength;
+    double tau;
     double velocityWall[3];
     int timesteps;
     int timestepsPerPlotting;
 
-    readParameters( &xlength,&tau,&velocityWall,timesteps,timestepsPerPlotting,argc, argv);
+    readParameters(&xlength, &tau, &velocityWall, &timesteps, &timestepsPerPlotting,argc, argv);
     // TODO: initialise pointers here!
 
-    initialiseFields(collideField,streamField,flagfield,xlength);
+    initialiseFields(collideField, streamField, flagField, xlength);
 
     for(int t = 0; t < timesteps; t++){
 	double *swap=NULL;
-	doStreaming(collideField,streamField,flagfield,xlength);
-	swap = collideField; collideField = streamField;
+	doStreaming(collideField,streamField,flagField,xlength);
+
+	swap = collideField;
+	collideField = streamField;
 	streamField = swap;
-	doCollision(collideField,flagfield,&tau,xlength);
-	treatBoundary(collideField,flagfield,velocityWall,xlength);
+
+	doCollision(collideField,flagField,&tau,xlength);
+	treatBoundary(collideField,flagField,velocityWall,xlength);
 
 	if (t%timestepsPerPlotting==0){
-	    writeVtkOutput(collideField,flagfield,argv,t,xlength);
+	    writeVtkOutput(collideField,flagField,argv,t,xlength);
 	}
     }
     return 0;
