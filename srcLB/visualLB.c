@@ -1,4 +1,6 @@
 #include "visualLB.h"
+#include "computeCellValues.h"
+#include <stdlib.h>
 
 // TODO: (VS) Use flagField????
 
@@ -57,10 +59,12 @@ void writeVtkOutput(const double * const collideField,
     write_vtkPointCoordinates(fp,xlength);
 
     int Q = 19;             // Number of lattice components
-    int i, x, y, z;         // iteration variables
+    int x, y, z;            // iteration variables
     int idx;                // cell index
     double cellDensity;     // cell density
-    double cellVelocity[3];    // cell average velocity
+
+    // cell average velocity
+    double * cellVelocity = (double *)malloc(sizeof(double)*3);
 
     // Write cell velocity to the vtk file
     fprintf(fp,"CELL_DATA %i \n", (xlength+2)*(xlength+2)*(xlength+2));
@@ -77,30 +81,8 @@ void writeVtkOutput(const double * const collideField,
               // Compute the base index for collideField
               idx = Q*(z*xlength*xlength + y*xlength + x);
 
-              // Initialize
-              cellDensity       = 0.0;
-              cellVelocity[0]   = 0.0;
-              cellVelocity[1]   = 0.0;
-              cellVelocity[2]   = 0.0;
-
-              // Compute the cell momemtum and density
-              for (i = 0; i < Q; i++) {
-                  cellDensity       += collideField[idx + i];
-
-                  cellVelocity[0]   +=
-                  collideField[idx + i]*LATTICEVELOCITIES[i][0];
-
-                  cellVelocity[1]   +=
-                  collideField[idx + i]*LATTICEVELOCITIES[i][1];
-
-                  cellVelocity[2]   +=
-                  collideField[idx + i]*LATTICEVELOCITIES[i][2];
-              }
-
-              // Compute cell average velocities
-              cellVelocity[0] /= cellDensity;
-              cellVelocity[1] /= cellDensity;
-              cellVelocity[2] /= cellDensity;
+              computeDensity(&collideField[idx], &cellDensity);
+              computeVelocity(&collideField[idx], &cellDensity, cellVelocity);
 
               // Write cell average velocities
               fprintf(fp, "%f %f %f\n", cellVelocity[0],
@@ -111,6 +93,8 @@ void writeVtkOutput(const double * const collideField,
           }
       }
     }
+
+    free(cellVelocity);
 
     // Close file
     if(fclose(tmp))
