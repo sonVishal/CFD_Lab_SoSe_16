@@ -1,4 +1,4 @@
-#include "../src2/collision.h"
+#include "collision.h"
 
 void computePostCollisionDistributions(double *currentCell, const double * const tau, const double *const feq){
   /* TODO */
@@ -7,4 +7,3 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 void doCollision(double *collideField, int *flagField,const double * const tau,int xlength){
   /* TODO */
 }
-

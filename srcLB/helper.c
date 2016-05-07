@@ -1,4 +1,4 @@
-#include "../src2/helper.h"
+#include "helper.h"
 
 #include <ctype.h>
 #include <errno.h>

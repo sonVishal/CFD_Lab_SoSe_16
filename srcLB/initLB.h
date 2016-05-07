@@ -1,6 +1,6 @@
 #ifndef _INITLB_H_
 #define _INITLB_H_
-#include "../src2/helper.h"
+#include "helper.h"
 
 
 /* reads the parameters for the lid driven cavity scenario from a config file */
@@ -19,4 +19,3 @@ int readParameters(
 void initialiseFields(double *collideField, double *streamField,int *flagField, int xlength);
 
 #endif
-

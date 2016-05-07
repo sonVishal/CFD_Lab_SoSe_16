@@ -1,4 +1,4 @@
-#include "../src2/initLB.h"
+#include "initLB.h"
 
 int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
   /* TODO */
@@ -12,4 +12,3 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
 void initialiseFields(double *collideField, double *streamField, int *flagField, int xlength){
   /* TODO */
 }
-

@@ -1,4 +1,4 @@
-#include "../src2/computeCellValues.h"
+#include "computeCellValues.h"
 
 void computeDensity(const double *const currentCell, double *density){
   /* TODO */
@@ -11,4 +11,3 @@ void computeVelocity(const double * const currentCell, const double * const dens
 void computeFeq(const double * const density, const double * const velocity, double *feq){
  /* TODO */
 }
-

@@ -1,7 +1,7 @@
 #ifndef _COLLISION_H_
 #define _COLLISION_H_
 
-#include "../src2/computeCellValues.h"
+#include "computeCellValues.h"
 
 /** computes the post-collision distribution functions according to the BGK update rule and
  *  stores the results again at the same position.
@@ -14,4 +14,3 @@ void computePostCollisionDistributions(double *currentCell, const double * const
  */
 void doCollision(double *collideField,int *flagField,const double * const tau,int xlength);
 #endif
-
