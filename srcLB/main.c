@@ -6,8 +6,6 @@
 #include "initLB.h"
 #include "streaming.h"
 #include "visualLB.h"
-
-//TODO: (TKS) Make LBDefinitions work
 #include "LBDefinitions.h"
 
 int main(int argc, char *argv[]){
@@ -25,11 +23,11 @@ int main(int argc, char *argv[]){
     readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
 
     /*Initializing pointers*/
-    size_t totalsize = (xlength+2)*(xlength+2)*(xlength+2);
-    collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
-    streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
+    size_t totalsize = Q*(xlength+2)*(xlength+2)*(xlength+2);
+    collideField  = (double *)  malloc(totalsize * sizeof( double ));
+    streamField   = (double *)  malloc(totalsize * sizeof( double ));
 
-    /* calloc: only required to set boundary values */
+    /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     initialiseFields(collideField, streamField, flagField, xlength);
