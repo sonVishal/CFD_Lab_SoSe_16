@@ -7,11 +7,7 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 	 * cells of this.
 	 */
 
-	/* TODO: (DL) if there is time: optimize for cache efficiency.
-	 * First: profile and see how this function adds to total workload (check if it's worth it)
-	 */
-
-	int zoffset, yzoffset, xyzoffset;  // Dummy variables to save computation
+	int zoffset, yzoffset, xyzoffset;  // Temporary variables to save computation
     int current_cell_index;            // Position of first direction entry of the cell
                                        // positioned at (x,y,z)
 
