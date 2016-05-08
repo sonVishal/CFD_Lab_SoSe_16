@@ -38,23 +38,16 @@ static inline void setBounceBack(double *collideField, const double * const wall
 	if(type == 1){
 		collideField[cell_xyzoffset + i] = collideField[n_xyzoffset + (Q-i-1)];
 	}else if(type == 2){
-		//c_2 = ||c_i||^2 -- squared to need not take the square root
-		int c_2 = c[0] + c[1] + c[2];
-
-		if(c_2 == 0){
-			printf("WARNING: c_2 is zero, which should not happen here!!! \n");
-		}
-
-		/*TODO: (DL) used the w_i values directly which was not smart :) */
-//		double w_i = c_2 == 1 ? w2 : w3;
 
 		double density = 0;
 		double dot_uwall_c = 0;
 		computeDensity(&collideField[n_xyzoffset], &density);
 		pDotProduct2(wallVelocity, &c[0], &dot_uwall_c);
 
+		double weight = LATTICEWEIGHTS[i];
+
 		collideField[cell_xyzoffset + i] = collideField[n_xyzoffset + (Q-i-1)] +
-				2 * w_i * dot_uwall_c / (C_S*C_S);
+				2 * weight * dot_uwall_c / (C_S*C_S);
 
 	}else{
 		printf("WARNING: a FLUID cell appeared - this should not happen!!\n");
