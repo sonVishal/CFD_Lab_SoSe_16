@@ -29,6 +29,10 @@ static const double LATTICEWEIGHTS[19] = {
     w3, w2, w3, w3
 };
 
+#undef w1
+#undef w2
+#undef w3
+
 // Speed of sound
 // TODO: (VS) The value of 1.0/sqrt(3.0) as of now,
 // has been obtained using Julia Arbitraty Precision Arithmetic
