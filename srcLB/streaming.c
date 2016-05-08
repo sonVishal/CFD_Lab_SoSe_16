@@ -14,8 +14,7 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
     //TODO: (TKS) Found the whole offset notation a bit confusing. maybe just
     //            make a variable called index in the inner loop. That feels
     //            more descriptive. index = z*xlength^2 +y*ylength + x gives
-    //            index of cell at position (x,y,z).
-    //            
+    //            index of cell at position (x,y,z)
 
 	int zoffset, yzoffset, xyzoffset, cell_xyzoffset; //current cell offset values
 	int n_x, n_y, n_z, n_xyzoffset; 				  //neighbor offset values
@@ -29,14 +28,23 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 			for(int x=1; x<=xlength; x++){
 				xyzoffset = yzoffset + x;
 
-    			//loop through all neighbors and copy the respective distribution
-				for(int i=0; i<Q; ++i){
-					n_x = x+LATTICEVELOCITIES[i][0];
-					n_y = y+LATTICEVELOCITIES[i][1];
-					n_z = z+LATTICEVELOCITIES[i][2];
-					n_xyzoffset = Q*(xlength*(n_z*xlength + n_y) + n_x);
+				/* TODO: (DL) if the indices are correct,
+				* I think condition is always true... if so: delete if-statement
+				*/
+				// printf("Condition check %i \n", flagField[xyzoffset]);
 
-					streamField[cell_xyzoffset + i] = collideField[n_xyzoffset + (Q-i-1)];
+				if( ! flagField[xyzoffset] ){ //true if FLUID cell
+					cell_xyzoffset = Q*xyzoffset;
+
+					//loop through all neighbors and copy the respective distribution
+					for(int i=0; i<Q; ++i){
+						n_x = x+LATTICEVELOCITIES[i][0];
+						n_y = y+LATTICEVELOCITIES[i][1];
+						n_z = z+LATTICEVELOCITIES[i][2];
+						n_xyzoffset = Q*(xlength*(n_z*xlength + n_y) + n_x);
+
+						streamField[cell_xyzoffset + i] = collideField[n_xyzoffset + (Q-i-1)];
+					}
 				}
 			}
 		}
