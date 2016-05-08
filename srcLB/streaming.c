@@ -11,6 +11,11 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 	 * First: profile and see how this function adds to total workload (check if it's worth it)
 	 */
 
+    //TODO: (TKS) Found the whole offset notation a bit confusing. maybe just
+    //            make a variable called index in the inner loop. That feels
+    //            more descriptive. index = z*xlength^2 +y*ylength + x gives
+    //            index of cell at position (x,y,z)
+
 	int zoffset, yzoffset, xyzoffset, cell_xyzoffset; //current cell offset values
 	int n_x, n_y, n_z, n_xyzoffset; 				  //neighbor offset values
 
