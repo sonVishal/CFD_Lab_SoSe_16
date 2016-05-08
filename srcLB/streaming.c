@@ -1,6 +1,7 @@
 #include "streaming.h"
 #include "LBDefinitions.h"
 
+//TODO: (TKS) Think of what we need flagField for
 void doStreaming(double *collideField, double *streamField,int *flagField,int xlength){
 	/*
 	 * For each FLUID field (this) copy distribution f_i from all neighboring
@@ -11,8 +12,11 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 	 * First: profile and see how this function adds to total workload (check if it's worth it)
 	 */
 
-	int zoffset, yzoffset, xyzoffset, current_cell_index; //current cell offset values
-	int n_x, n_y, n_z, n_cell_index; 				  //neighbor offset values
+	int zoffset, yzoffset, xyzoffset;  // Dummy variables to save computation
+    int current_cell_index;            // Position of first direction entry of the cell
+                                       // positioned at (x,y,z)
+
+	int n_x, n_y, n_z, n_cell_index;  // Neighbor offset values
 
 	for(int z=1; z<=xlength; z++){
 		zoffset = z*xlength;
@@ -31,7 +35,8 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 				if( ! flagField[xyzoffset] ){ //true if FLUID cell
 					current_cell_index = Q*xyzoffset;
 
-					//loop through all neighbors and copy the respective distribution
+					// Loop through all neighbors and copy their respective 
+                    // distributions to the streamField.
 					for(int i=0; i<Q; ++i){
 						n_x = x+LATTICEVELOCITIES[i][0];
 						n_y = y+LATTICEVELOCITIES[i][1];
