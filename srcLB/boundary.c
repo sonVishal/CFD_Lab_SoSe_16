@@ -9,6 +9,10 @@
  * I'm not sure if this is the 'best' way how I approached this in the first go (got more complex than I first thought).
  *
  * The basic idea is, to not go through ALL cells but only the boundary cells to reduce read accesses.
+ * Also I wanted to implement it cache efficient. That is, the different boundary walls are
+ * treated separately (to prevent too many scattered accesses).
+ *
+ * This way the z-fixed fall and the y-fixed boundary walls profit from cache. The x-fixed wall is bad.
  *
  * So for each fixed (x,y,z) there is one function at the moment -- the 'direction' indicates in which direction
  * the domain lies (e.g. x is fixed, +1 -> in positive x direction there are in-domain cells).
@@ -17,7 +21,6 @@
  * computations. Maybe later on it is worth to handle callbacks and only have 1 function.
  *
  * At the moment dont trust the indices etc. too much - until now the main importance was the structure!
- *
  */
 
 /* TODO: (DL)
@@ -42,7 +45,8 @@ static inline void setBounceBack(double *collideField, const double * const wall
 			printf("WARNING: c_2 is zero, which should not happen here!!! \n");
 		}
 
-		double w_i = c_2 == 1 ? w2 : w3;
+		/*TODO: (DL) used the w_i values directly which was not smart :) */
+//		double w_i = c_2 == 1 ? w2 : w3;
 
 		double density = 0;
 		double dot_uwall_c = 0;
