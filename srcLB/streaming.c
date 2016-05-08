@@ -13,8 +13,15 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 
     //TODO: (TKS) Found the whole offset notation a bit confusing. maybe just
     //            make a variable called index in the inner loop. That feels
-    //            more descriptive. index = z*xlength^2 +y*ylength + x gives
-    //            index of cell at position (x,y,z)
+    //            more descriptive. index = Q(z*xlength^2 +y*ylength + x) gives
+    //            index of the first direction in a cell at position (x,y,z)
+    //
+    //            Suggested name changes:
+    //            cell_xyzoffset --> index or current_cell_index
+    //            n_xyzoffset --> n_index or n_cell_index
+    //
+    //            remove zoffsett etc.
+    //
 
 	int zoffset, yzoffset, xyzoffset, cell_xyzoffset; //current cell offset values
 	int n_x, n_y, n_z, n_xyzoffset; 				  //neighbor offset values
