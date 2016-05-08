@@ -33,20 +33,20 @@
  */
 
 static inline void setBounceBack(double *collideField, const double * const wallVelocity,
-		const int type, const int i, const int cell_xyzoffset, const int n_xyzoffset, const int *c) {
+		const int type, const int i, const int current_cell_index, const int n_cell_index, const int *c) {
 
 	if(type == 1){
-		collideField[cell_xyzoffset + i] = collideField[n_xyzoffset + (Q-i-1)];
+		collideField[current_cell_index + i] = collideField[n_cell_index + (Q-i-1)];
 	}else if(type == 2){
 
 		double density = 0;
 		double dot_uwall_c = 0;
-		computeDensity(&collideField[n_xyzoffset], &density);
+		computeDensity(&collideField[n_cell_index], &density);
 		pDotProduct2(wallVelocity, &c[0], &dot_uwall_c);
 
 		double weight = LATTICEWEIGHTS[i];
 
-		collideField[cell_xyzoffset + i] = collideField[n_xyzoffset + (Q-i-1)] +
+		collideField[current_cell_index + i] = collideField[n_cell_index + (Q-i-1)] +
 				2 * weight * dot_uwall_c / (C_S*C_S);
 
 	}else{
@@ -63,13 +63,13 @@ void pxWalls(double *collideField, const int * const flagField, const double * c
 		int zoffset = z*xlength_2;
 		for(int y = 0; y <= xlength; ++y){
 			int xyz_offset = zoffset + y*xlength + x;
-			int cell_xyzoffset = Q*xyz_offset;
+			int current_cell_index = Q*xyz_offset;
 
 			for(int i = 0; i < Q; ++i){
 				if(LATTICEVELOCITIES[i][0] == direction){
 					int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
-					int n_xyzoffset = Q*( (z+c[0])*xlength_2 + (y+c[1])*xlength + x+c[0] );
-					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, cell_xyzoffset, n_xyzoffset, c);
+					int n_cell_index = Q*( (z+c[0])*xlength_2 + (y+c[1])*xlength + x+c[0] );
+					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
 				}
 			}
 		}
@@ -86,13 +86,13 @@ void pyWalls(double *collideField, const int * const flagField, const double * c
 		for(int x = 0; x < xlength; ++x){
 
 			int xyz_offset = zoffset + yoffset + x;
-			int cell_xyzoffset = Q*xyz_offset;
+			int current_cell_index = Q*xyz_offset;
 
 			for(int i = 0; i < Q; ++i){
 				if(LATTICEVELOCITIES[i][1] == direction){
 					int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
-					int n_xyzoffset = Q*( (z+c[0])*xlength_2 + (y+c[1])*xlength + x+c[0] );
-					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, cell_xyzoffset, n_xyzoffset, c);
+					int n_cell_index = Q*( (z+c[0])*xlength_2 + (y+c[1])*xlength + x+c[0] );
+					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
 				}
 			}
 		}
@@ -109,13 +109,13 @@ void pzWalls(double *collideField, const int * const flagField, const double * c
 		for(int x = 0; x < xlength; ++x){
 
 			int xyz_offset = yzoffset + x;
-			int cell_xyzoffset = Q*xyz_offset;
+			int current_cell_index = Q*xyz_offset;
 
 			for(int i = 0; i < Q; ++i){
 				if(LATTICEVELOCITIES[i][2] == direction){
 					int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
-					int n_xyzoffset = Q*( (z+c[0])*xlength_2 + (y+c[1])*xlength + x+c[0] );
-					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, cell_xyzoffset, n_xyzoffset, c);
+					int n_cell_index = Q*( (z+c[0])*xlength_2 + (y+c[1])*xlength + x+c[0] );
+					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
 				}
 			}
 		}

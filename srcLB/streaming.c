@@ -1,7 +1,6 @@
 #include "streaming.h"
 #include "LBDefinitions.h"
 
-//TODO: (TKS) Think of what we need flagField for
 void doStreaming(double *collideField, double *streamField,int *flagField,int xlength){
 	/*
 	 * For each FLUID field (this) copy distribution f_i from all neighboring
