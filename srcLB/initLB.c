@@ -26,6 +26,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
     /*Setting initial distributions*/
     //f_i(x,0) = f^eq(1,0,0) = w_i
+
     int x,y,z;
     for ( z = 0; z <= xlength+1; ++z) {
         for ( y = 0; y <= xlength+1; ++y) {
@@ -38,7 +39,9 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
         }
     }
 
+
     /*Lopping over boundary of flagFields*/
+    //All points set to zero at initialisation
 
     int flag  = 1;
     int flagz = 1;
