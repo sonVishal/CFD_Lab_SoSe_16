@@ -17,9 +17,9 @@ static const int LATTICEVELOCITIES[19][3] = {
 //TODO: (TKS) Consider #undef, but then we can't use them other places
 //            in the code. Need to be careful with define.
 
-#define w1 12.0/36.0
-#define w2 2.0/36.0
-#define w3 1.0/36.0
+#define w1 12.0/36.0  /* if ||c_i|| = 0 */
+#define w2 2.0/36.0   /* if ||c_i|| = 1 */
+#define w3 1.0/36.0   /* if ||c_i|| = sqrt(2) */
 
 // Lattice weights
 static const double LATTICEWEIGHTS[19] = {

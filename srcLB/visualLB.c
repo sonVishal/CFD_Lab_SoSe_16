@@ -57,10 +57,10 @@ void writeVtkOutput(const double * const collideField,
     }
 
     // Write header for the VTK file
-    write_vtkHeader(fp,xlength);
+    writevtkHeader(fp,xlength);
 
     // Write the point data for the domain
-    write_vtkPointCoordinates(fp,xlength);
+    writevtkPointCoordinates(fp,xlength);
 
     int x, y, z;            // iteration variables
     int idx;                // cell index
@@ -144,7 +144,7 @@ void writeVtkOutput(const double * const collideField,
     }
 }
 
-void write_vtkHeader(FILE *fp, int xlength)
+void writevtkHeader(FILE *fp, int xlength)
 {
     if(fp == NULL)
     {
@@ -164,7 +164,7 @@ void write_vtkHeader(FILE *fp, int xlength)
     fprintf(fp,"\n");
 }
 
-void write_vtkPointCoordinates(FILE *fp, int xlength) {
+void writevtkPointCoordinates(FILE *fp, int xlength) {
   double originX = 0.0;
   double originY = 0.0;
   double originZ = 0.0;
