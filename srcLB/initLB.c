@@ -22,26 +22,50 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
   return 0;
 }
 
-
 void initialiseFields(double *collideField, double *streamField, int *flagField, int xlength){
 
-    //TODO: (TKS) Do a smarter thing to get the correct ws at the right places.
-    //TODO: (TKS) NOT finished
-    //double w[3] = {w1, w2, w3};
-
-    int index;
-    for (int x = 0; x < xlength+1; ++x) {
-        for (int y = 0; y < xlength+1; ++y) {
-            for (int z = 0; z < xlength+1; ++z) {
+    /*Setting initial distributions*/
+    //f_i(x,0) = f^eq(1,0,0) = w_i
+    int x,y,z;
+    for ( z = 0; z <= xlength+1; ++z) {
+        for ( y = 0; y <= xlength+1; ++y) {
+            for ( x = 0; x <= xlength+1; ++x) {
                 for (int i = 0; i < Q; ++i) {
-                    index = Q*( (z+y)*xlength*xlength + x );
-                    printf("index = %d\n", index);
-                    //collideField[index] = w1;
-                    
+                    collideField[i] = LATTICEWEIGHTS[i];
+                    streamField[i]  = LATTICEWEIGHTS[i];
                 }
             }
         }
     }
-    
-    printf("Initialize fields\n");
+
+    /*Lopping over boundary of flagFields*/
+
+    int flag  = 1;
+    int flagz = 1;
+
+    // b: boundary variable
+    for (int b = 0; b <= xlength+1; b = b+xlength+1) {
+
+        if(b > 0){
+            flagz = 2;
+        }
+
+        for (int i = 0; i < xlength+1; ++i) {
+            for (int j = 0; j < xlength+1; ++j) {
+                // Remember: 
+                //flagField(x,y,z)=flagField[x + y*xlength + z*xlength*xlength]
+
+                /*Set boundary flag at z-boundaries*/
+                flagField[j + i*xlength + b*xlength*xlength] = flagz;
+
+                /*Set boundary flag at y-boundaries*/
+                flagField[j + b*xlength + i*xlength*xlength] = flag;
+
+                /*Set boundary flag at x-boundaries*/
+                flagField[b + j*xlength + i*xlength*xlength] = flag;
+
+            }
+        }
+    }
+
 }
