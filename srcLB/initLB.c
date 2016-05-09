@@ -34,16 +34,16 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     int const xlen2 = (xlength+2)*(xlength+2);
 
     // Temporary variables for z and y offsets
-    int zOffset, yOffset;
+    int zOffset, yzOffset;
 
     int x,y,z;
     for ( z = 0; z <= xlength+1; ++z) {
         zOffset = z*xlen2;
         for ( y = 0; y <= xlength+1; ++y) {
-            yOffset = y*(xlength+2);
+            yzOffset = y*(xlength+2) + zOffset;
             for ( x = 0; x <= xlength+1; ++x) {
                 // Compute the base index
-                idx = Q*(zOffset + yOffset + x);
+                idx = Q*(yzOffset + x);
                 for (int i = 0; i < Q; ++i) {
                     collideField[idx+i] = LATTICEWEIGHTS[i];
                     streamField[idx+i]  = LATTICEWEIGHTS[i];
@@ -56,40 +56,53 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     /*Lopping over boundary of flagFields*/
     //All points set to zero at initialisation
 
-    int flag  = 1;
-    int flagz = 1;
-
-    // Temporary offset variables
-    int bOffset1, bOffset2, iOffset1, iOffset2;
-
-    // b: boundary variable
-    for (int b = 0; b <= xlength+1; b = b+xlength+1) {
-        bOffset1 = b*(xlength+2);
-        bOffset2 = b*xlen2;
-
-        if(b > 0){
-            flagz = 2;
-        }
-
-        for (int i = 0; i < xlength+1; ++i) {
-            iOffset1 = i*(xlength+2);
-            iOffset2 = i*xlen2;
-            
-            for (int j = 0; j < xlength+1; ++j) {
-                // Remember:
-                //flagField(x,y,z)=flagField[x + y*xlength + z*xlength*xlength]
-
-                /*Set boundary flag at z-boundaries*/
-                flagField[j + iOffset1 + bOffset2] = flagz;
-
-                /*Set boundary flag at y-boundaries*/
-                flagField[j + bOffset1 + iOffset2] = flag;
-
-                /*Set boundary flag at x-boundaries*/
-                flagField[b + j*xlength + iOffset2] = flag;
-
-            }
+    // These are the no-slip walls
+    // z = 0
+    for (y = 0; y <= xlength+1; y++) {
+        idx = y*(xlength+2);
+        for (x = 0; x <= xlength+1; x++) {
+            flagField[x+idx] = 1;
         }
     }
 
+    // x = 0
+    for (z = 1; z <= xlength; z++) {
+        zOffset = z*xlen2;
+        for (y = 0; y <= xlength+1; y++) {
+            flagField[zOffset+y*(xlength+2)] = 1;
+        }
+    }
+
+    // x = xlength+1
+    for (z = 1; z <= xlength; z++) {
+        zOffset = z*xlen2 + xlength + 1;
+        for (y = 0; y <= xlength+1; y++) {
+            flagField[zOffset+y*(xlength+2)] = 1;
+        }
+    }
+
+    // y = 0
+    for (z = 1; z <= xlength; z++) {
+        zOffset = z*xlen2;
+        for (x = 1; x <= xlength; x++) {
+            flagField[zOffset+x] = 1;
+        }
+    }
+    // y = xlength+1
+    for (z = 1; z <= xlength; z++) {
+        zOffset = z*xlen2 + (xlength+1)*(xlength+2);
+        for (x = 1; x <= xlength; x++) {
+            flagField[zOffset+x] = 1;
+        }
+    }
+
+    // This is the moving wall
+    // z = xlength+1
+    zOffset = (xlength+1)*xlen2;
+    for (y = 0; y <= xlength+1; y++) {
+        idx = zOffset + y*(xlength+2);
+        for (x = 0; x <= xlength+1; x++) {
+            flagField[x+idx] = 2;
+        }
+    }
 }

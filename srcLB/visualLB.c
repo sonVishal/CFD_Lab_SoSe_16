@@ -69,9 +69,8 @@ void writeVtkOutput(const double * const collideField,
     // cell average velocity
     double * cellVelocity = (double *)malloc(sizeof(double)*3);
 
-    // Temporary variables for (xlength+2)^2 and (xlength+2)^3
+    // Temporary variables for (xlength+2)^2
     int const xlen2 = (xlength+2)*(xlength+2);
-    int const xlen3 = xlen2*(xlength+2);
 
     // Temporary variables for z and y offsets
     int zOffset, yOffset;
