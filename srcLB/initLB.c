@@ -31,7 +31,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     int idx;
 
     // Temporary variables for xlength^2 and xlength^3
-    int const xlen2 = xlength*xlength;
+    int const xlen2 = (xlength+2)*(xlength+2);
 
     // Temporary variables for z and y offsets
     int zOffset, yOffset;
@@ -40,7 +40,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     for ( z = 0; z <= xlength+1; ++z) {
         zOffset = z*xlen2;
         for ( y = 0; y <= xlength+1; ++y) {
-            yOffset = y*xlength;
+            yOffset = y*(xlength+2);
             for ( x = 0; x <= xlength+1; ++x) {
                 // Compute the base index
                 idx = Q*(zOffset + yOffset + x);
@@ -64,7 +64,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
     // b: boundary variable
     for (int b = 0; b <= xlength+1; b = b+xlength+1) {
-        bOffset1 = b*xlength;
+        bOffset1 = b*(xlength+2);
         bOffset2 = b*xlen2;
 
         if(b > 0){
@@ -72,7 +72,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
         }
 
         for (int i = 0; i < xlength+1; ++i) {
-            iOffset1 = i*xlength;
+            iOffset1 = i*(xlength+2);
             iOffset2 = i*xlen2;
             
             for (int j = 0; j < xlength+1; ++j) {
