@@ -68,7 +68,7 @@ void pxWalls(double *collideField, const int * const flagField, const double * c
 			for(int i = 0; i < Q; ++i){
 				if(LATTICEVELOCITIES[i][0] == direction){
 					int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
-					int n_cell_index = Q*( (z+c[0])*xlength_2 + (y+c[1])*xlength + x+c[0] );
+					int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*xlength + x+c[0] );
 					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
 				}
 			}
@@ -91,7 +91,7 @@ void pyWalls(double *collideField, const int * const flagField, const double * c
 			for(int i = 0; i < Q; ++i){
 				if(LATTICEVELOCITIES[i][1] == direction){
 					int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
-					int n_cell_index = Q*( (z+c[0])*xlength_2 + (y+c[1])*xlength + x+c[0] );
+					int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*xlength + x+c[0] );
 					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
 				}
 			}
@@ -114,7 +114,7 @@ void pzWalls(double *collideField, const int * const flagField, const double * c
 			for(int i = 0; i < Q; ++i){
 				if(LATTICEVELOCITIES[i][2] == direction){
 					int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
-					int n_cell_index = Q*( (z+c[0])*xlength_2 + (y+c[1])*xlength + x+c[0] );
+					int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*xlength + x+c[0] );
 					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
 				}
 			}
@@ -126,13 +126,13 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 	//Loop over boundary cells only
 
 	/* TODO: Try to find optimizing ways - not cache friendly walls: */
-	pxWalls(collideField, flagField, 0, 0,       xlength,  1);
-	pxWalls(collideField, flagField, 0, xlength + 1, xlength, -1);
+	pxWalls(collideField, flagField, wallVelocity, 0,         xlength,  1);
+	pxWalls(collideField, flagField, wallVelocity, xlength+1, xlength, -1);
 
-	pyWalls(collideField, flagField, 0, 0,       xlength,  1);
-	pyWalls(collideField, flagField, 0, xlength + 1, xlength, -1);
+	pyWalls(collideField, flagField, wallVelocity, 0,         xlength,  1);
+	pyWalls(collideField, flagField, wallVelocity, xlength+1, xlength, -1);
 
 	/* most cache friendly walls */
-	pzWalls(collideField, flagField, 0, 0,       xlength,  1);
-	pzWalls(collideField, flagField, wallVelocity, xlength + 1, xlength, -1);
+	pzWalls(collideField, flagField, wallVelocity, 0,         xlength,  1);
+	pzWalls(collideField, flagField, wallVelocity, xlength+1, xlength, -1);
 }
