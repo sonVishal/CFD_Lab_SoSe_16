@@ -57,17 +57,17 @@ static inline void setBounceBack(double *collideField, const double * const wall
 void pxWalls(double *collideField, const int * const flagField, const double * const wallVelocity, const int x,
 		const int xlength, const int direction){
 
-	int xlength_2 = xlength*xlength;
+	int xlength_2 = (xlength+2)*(xlength+2);
 
 	for(int z = 0; z <= xlength; ++z){
 		int zoffset = z*xlength_2;
 		for(int y = 0; y <= xlength; ++y){
-			int xyz_offset = zoffset + y*xlength + x;
+			int xyz_offset = zoffset + y*(xlength+2) + x;
 			int current_cell_index = Q*xyz_offset;
 
 			for(int i = 0; i < Q; ++i){
 				int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
-				int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*xlength + x+c[0]);
+				int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*(xlength+2) + x+c[0]);
 				if(LATTICEVELOCITIES[i][1] == direction &&  //check direction
 						n_cell_index >= 0 && n_cell_index <=Q*(xlength+2)*(xlength+2)*(xlength+2) && //check valid index
 						flagField[n_cell_index] == 0 // check if it is FLUID field (and not another boundary cell)
@@ -81,8 +81,8 @@ void pxWalls(double *collideField, const int * const flagField, const double * c
 
 void pyWalls(double *collideField, const int * const flagField, const double * const wallVelocity, const int y,
 		const int xlength, const int direction){
-	int xlength_2 = xlength*xlength;
-	int yoffset = y*xlength;
+	int xlength_2 = (xlength+2)*(xlength+2);
+	int yoffset = y*(xlength+2);
 
 	for(int z = 0; z < xlength; ++z){
 		int zoffset = z*xlength_2;
@@ -93,7 +93,7 @@ void pyWalls(double *collideField, const int * const flagField, const double * c
 
 			for(int i = 0; i < Q; ++i){
 				int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
-				int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*xlength + x+c[0]);
+				int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*(xlength+2) + x+c[0]);
 				if(LATTICEVELOCITIES[i][1] == direction &&  //check direction
 						n_cell_index >= 0 && n_cell_index <=Q*(xlength+2)*(xlength+2)*(xlength+2) && //check valid index
 						flagField[n_cell_index] == 0 // check if it is FLUID field (and not another boundary cell)
@@ -107,11 +107,11 @@ void pyWalls(double *collideField, const int * const flagField, const double * c
 
 void pzWalls(double *collideField, const int * const flagField, const double * const wallVelocity, const int z,
 		const int xlength, const int direction){
-	int xlength_2 = xlength * xlength;
-	int zoffset = z*xlength*xlength;
+	int xlength_2 = (xlength+2) * (xlength+2);
+	int zoffset = z*xlength_2;
 
 	for(int y = 0; y < xlength; ++y){
-		int yzoffset = y*xlength + zoffset;
+		int yzoffset = y*(xlength+2) + zoffset;
 		for(int x = 0; x < xlength; ++x){
 
 			int xyz_offset = yzoffset + x;
@@ -119,7 +119,7 @@ void pzWalls(double *collideField, const int * const flagField, const double * c
 
 			for(int i = 0; i < Q; ++i){
 				int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
-				int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*xlength + x+c[0]);
+				int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*(xlength+2) + x+c[0]);
 				if(LATTICEVELOCITIES[i][1] == direction &&  //check direction
 						n_cell_index >= 0 && n_cell_index <=Q*(xlength+2)*(xlength+2)*(xlength+2) && //check valid index
 						flagField[n_cell_index] == 0 // check if it is FLUID field (and not another boundary cell)
