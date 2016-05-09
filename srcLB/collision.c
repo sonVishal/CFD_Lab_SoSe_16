@@ -36,7 +36,7 @@ void doCollision(double *collideField, int *flagField,const double * const tau,i
 
                 // Allocate memory to local cell parameters
                 double density;
-                double velocity[3];
+                double velocity[3] = {0,0,0};
                 double feq[19];
 
                 // Compute the cell density
