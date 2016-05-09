@@ -90,7 +90,7 @@ void writeVtkOutput(const double * const collideField,
             yzOffset = zOffset + y*(xlength+2);
             for(x = 1; x <= xlength; x++) {
                 // Compute the base index for collideField
-                idx = Q*(zOffset + yzOffset + x);
+                idx = Q*(yzOffset + x);
 
                 computeDensity(&collideField[idx], &cellDensity);
                 computeVelocity(&collideField[idx], &cellDensity, cellVelocity);
