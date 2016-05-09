@@ -31,6 +31,10 @@
 /* TODO (DL) Think about: somehow join these pWall functions
  */
 
+/*
+ * TODO: (DL) treat overlapping cells (double computation of corner values)
+ */
+
 static inline void setBounceBack(double *collideField, const double * const wallVelocity,
 		const int type, const int i, const int current_cell_index, const int n_cell_index, const int *c) {
 
