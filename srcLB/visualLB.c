@@ -70,8 +70,8 @@ void writeVtkOutput(const double * const collideField,
     double * cellVelocity = (double *)malloc(sizeof(double)*3);
 
     // Temporary variables for xlength^2 and xlength^3
-    int const xlen2 = xlength*xlength;
-    int const xlen3 = xlen2*xlength;
+    int const xlen2 = (xlength+2)*(xlength+2);
+    int const xlen3 = xlen2*(xlength+2);
 
     // Temporary variables for z and y offsets
     int zOffset, yOffset;
@@ -88,7 +88,7 @@ void writeVtkOutput(const double * const collideField,
     for(z = 1; z <= xlength; z++) {
         zOffset = z*xlen2;
         for(y = 1; y <= xlength; y++) {
-            yOffset = y*xlength;
+            yOffset = y*(xlength+2);
             for(x = 1; x <= xlength; x++) {
                 // Compute the base index for collideField
                 idx = Q*(zOffset + yOffset + x);
