@@ -17,6 +17,7 @@ int main(int argc, char *argv[]){
     int xlength;
     double tau;
     double velocityWall[3];
+    int t = 0;
     int timesteps;
     int timestepsPerPlotting;
 
@@ -36,7 +37,10 @@ int main(int argc, char *argv[]){
 
     initialiseFields(collideField, streamField, flagField, xlength);
 
-    for(int t = 0; t < timesteps; t++){
+    printf("INFO: write vtk file at time t = %d \n", t);
+    writeVtkOutput(collideField,flagField,fName,t,xlength);
+
+    for(t = 1; t <= timesteps; t++){
 	    double *swap=NULL;
 	    doStreaming(collideField,streamField,flagField,xlength);
 
@@ -48,6 +52,7 @@ int main(int argc, char *argv[]){
 	    treatBoundary(collideField,flagField,velocityWall,xlength);
 
 	    if (t%timestepsPerPlotting==0){
+            printf("INFO: write vtk file at time t = %d \n", t);
 	        writeVtkOutput(collideField,flagField,fName,t,xlength);
 	    }
     }
