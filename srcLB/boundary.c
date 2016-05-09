@@ -28,8 +28,7 @@
  * (and make function not static
  */
 
-/* TODO (DL) Think about: join all these pWall functions and provide callback functions that determine how
- * to compute the index!
+/* TODO (DL) Think about: somehow join these pWall functions
  */
 
 static inline void setBounceBack(double *collideField, const double * const wallVelocity,
@@ -59,9 +58,9 @@ void pxWalls(double *collideField, const int * const flagField, const double * c
 
 	int xlength_2 = (xlength+2)*(xlength+2);
 
-	for(int z = 0; z <= xlength; ++z){
+	for(int z = 0; z <= xlength+1; ++z){
 		int zoffset = z*xlength_2;
-		for(int y = 0; y <= xlength; ++y){
+		for(int y = 0; y <= xlength+1; ++y){
 			int xyz_offset = zoffset + y*(xlength+2) + x;
 			int current_cell_index = Q*xyz_offset;
 
@@ -70,8 +69,9 @@ void pxWalls(double *collideField, const int * const flagField, const double * c
 				int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*(xlength+2) + x+c[0]);
 				if(LATTICEVELOCITIES[i][1] == direction &&  //check direction
 						n_cell_index >= 0 && n_cell_index <=Q*(xlength+2)*(xlength+2)*(xlength+2) && //check valid index
-						flagField[n_cell_index] == 0 // check if it is FLUID field (and not another boundary cell)
+						flagField[n_cell_index] == 0 // check if neighbor is FLUID field (and not another boundary cell)
 				){
+					printf("%i \n", flagField[xyz_offset]);
 					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
 				}
 			}
@@ -84,9 +84,9 @@ void pyWalls(double *collideField, const int * const flagField, const double * c
 	int xlength_2 = (xlength+2)*(xlength+2);
 	int yoffset = y*(xlength+2);
 
-	for(int z = 0; z < xlength; ++z){
+	for(int z = 0; z <= xlength+1; ++z){
 		int zoffset = z*xlength_2;
-		for(int x = 0; x < xlength; ++x){
+		for(int x = 0; x <= xlength+1; ++x){
 
 			int xyz_offset = zoffset + yoffset + x;
 			int current_cell_index = Q*xyz_offset;
@@ -96,7 +96,7 @@ void pyWalls(double *collideField, const int * const flagField, const double * c
 				int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*(xlength+2) + x+c[0]);
 				if(LATTICEVELOCITIES[i][1] == direction &&  //check direction
 						n_cell_index >= 0 && n_cell_index <=Q*(xlength+2)*(xlength+2)*(xlength+2) && //check valid index
-						flagField[n_cell_index] == 0 // check if it is FLUID field (and not another boundary cell)
+						flagField[n_cell_index] == 0 // check if neighbor is FLUID field (and not another boundary cell)
 				){
 					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
 				}
@@ -110,9 +110,9 @@ void pzWalls(double *collideField, const int * const flagField, const double * c
 	int xlength_2 = (xlength+2) * (xlength+2);
 	int zoffset = z*xlength_2;
 
-	for(int y = 0; y < xlength; ++y){
+	for(int y = 0; y <= xlength+1; ++y){
 		int yzoffset = y*(xlength+2) + zoffset;
-		for(int x = 0; x < xlength; ++x){
+		for(int x = 0; x <= xlength+1; ++x){
 
 			int xyz_offset = yzoffset + x;
 			int current_cell_index = Q*xyz_offset;
@@ -122,8 +122,9 @@ void pzWalls(double *collideField, const int * const flagField, const double * c
 				int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*(xlength+2) + x+c[0]);
 				if(LATTICEVELOCITIES[i][1] == direction &&  //check direction
 						n_cell_index >= 0 && n_cell_index <=Q*(xlength+2)*(xlength+2)*(xlength+2) && //check valid index
-						flagField[n_cell_index] == 0 // check if it is FLUID field (and not another boundary cell)
+						flagField[n_cell_index] == 0 // check if neighbor is FLUID field (and not another boundary cell)
 				){
+					printf("FLAG ID: %i \n", flagField[xyz_offset]); //TODO: (DL) delete... just for testing
 					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
 				}
 			}
@@ -134,6 +135,10 @@ void pzWalls(double *collideField, const int * const flagField, const double * c
 void treatBoundary(double *collideField, int* flagField, const double * const wallVelocity, int xlength){
 	//Loop over boundary cells only
 
+	/* most cache friendly walls */
+	pzWalls(collideField, flagField, wallVelocity, 0,       xlength,  1);
+	pzWalls(collideField, flagField, wallVelocity, xlength + 1, xlength, -1);
+
 	/* TODO: Try to find optimizing ways - not cache friendly walls: */
 	pxWalls(collideField, flagField, wallVelocity, 0,       xlength,  1);
 	pxWalls(collideField, flagField, wallVelocity, xlength  + 1, xlength, -1);
@@ -141,7 +146,4 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 	pyWalls(collideField, flagField, wallVelocity, 0,       xlength,  1);
 	pyWalls(collideField, flagField, wallVelocity, xlength + 1, xlength, -1);
 
-	/* most cache friendly walls */
-	pzWalls(collideField, flagField, wallVelocity, 0,       xlength,  1);
-	pzWalls(collideField, flagField, wallVelocity, xlength + 1, xlength, -1);
 }
