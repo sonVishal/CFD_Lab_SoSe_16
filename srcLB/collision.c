@@ -19,14 +19,19 @@ void doCollision(double *collideField, int *flagField,const double * const tau,i
     // Temporary variables for xlength^2 and xlength^3
     long int const xlen2 = xlength*xlength;
 
+    // Temporary variables for z and y offsets
+    int zOffset, yOffset;
+
     // Perform collision on all "inner" cells
     for (z = 1; z <= xlength ; z++) {
+        zOffset = z*xlen2;
         for (y = 1; y <= xlength; y++) {
+            yOffset = y*xlength;
             for (x = 1; x <= xlength; x++) {
 
                 // Get the index of the first distribution
                 // in the current cell
-                idx = Q*(z*xlen2 + y*xlength + x);
+                idx = Q*(zOffset + yOffset + x);
                 double *currentCell = &collideField[idx];
 
                 // Allocate memory to local cell parameters

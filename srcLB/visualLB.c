@@ -73,6 +73,9 @@ void writeVtkOutput(const double * const collideField,
     long int const xlen2 = xlength*xlength;
     long int const xlen3 = xlen2*xlength;
 
+    // Temporary variables for z and y offsets
+    int zOffset, yOffset;
+
     // Avoid double computation of density for output
     // Open two files and concatenate them at the end
 
@@ -86,22 +89,24 @@ void writeVtkOutput(const double * const collideField,
     fprintf(tmp, "SCALARS density float 1 \n");
     fprintf(tmp, "LOOKUP_TABLE default \n");
     for(z = 1; z <= xlength; z++) {
-      for(y = 1; y <= xlength; y++) {
-          for(x = 1; x <= xlength; x++) {
-              // Compute the base index for collideField
-              idx = Q*(z*xlen2 + y*xlength + x);
+        zOffset = z*xlen2;
+        for(y = 1; y <= xlength; y++) {
+            yOffset = y*xlength;
+            for(x = 1; x <= xlength; x++) {
+                // Compute the base index for collideField
+                idx = Q*(zOffset + yOffset + x);
 
-              computeDensity(&collideField[idx], &cellDensity);
-              computeVelocity(&collideField[idx], &cellDensity, cellVelocity);
+                computeDensity(&collideField[idx], &cellDensity);
+                computeVelocity(&collideField[idx], &cellDensity, cellVelocity);
 
-              // Write cell average velocities
-              fprintf(fp, "%f %f %f\n", cellVelocity[0],
-              cellVelocity[1], cellVelocity[2]);
+                // Write cell average velocities
+                fprintf(fp, "%f %f %f\n", cellVelocity[0],
+                cellVelocity[1], cellVelocity[2]);
 
-              // Write the cell density
-              fprintf(tmp, "%f\n", cellDensity);
-          }
-      }
+                // Write the cell density
+                fprintf(tmp, "%f\n", cellDensity);
+            }
+        }
     }
 
     free(cellVelocity);
@@ -109,9 +114,9 @@ void writeVtkOutput(const double * const collideField,
     // Close file
     if(fclose(tmp))
     {
-      char szBuff[80];
-      sprintf(szBuff, "Failed to close %s", pTempFile);
-      ERROR(szBuff);
+        char szBuff[80];
+        sprintf(szBuff, "Failed to close %s", pTempFile);
+        ERROR(szBuff);
     }
 
     // Open for reading
@@ -126,14 +131,14 @@ void writeVtkOutput(const double * const collideField,
 
     // Concatenate the two files
     while((ch = fgetc(tmp)) != EOF)
-          fputc(ch,fp);
+    fputc(ch,fp);
 
     // Close file
     if(fclose(fp))
     {
-      char szBuff[80];
-      sprintf(szBuff, "Failed to close %s", pFileName);
-      ERROR(szBuff);
+        char szBuff[80];
+        sprintf(szBuff, "Failed to close %s", pFileName);
+        ERROR(szBuff);
     }
 
     // Delete the temporary file
@@ -165,21 +170,21 @@ void writevtkHeader(FILE *fp, int xlength)
 }
 
 void writevtkPointCoordinates(FILE *fp, int xlength) {
-  double originX = 0.0;
-  double originY = 0.0;
-  double originZ = 0.0;
+    double originX = 0.0;
+    double originY = 0.0;
+    double originZ = 0.0;
 
-  // Define the size of each cell
-  double h = 1/xlength;
+    // Define the size of each cell
+    double h = 1/xlength;
 
-  int x, y, z;
+    int x, y, z;
 
-  // We have xlength + 1 points for xlength cells in each direction
-  for(z = 0; z <= xlength; z++) {
-    for(y = 0; y <= xlength; y++) {
-        for(x = 0; x <= xlength; x++) {
-            fprintf(fp, "%f %f %f\n", originX+x*h, originY+y*h, originZ+z*h);
+    // We have xlength + 1 points for xlength cells in each direction
+    for(z = 0; z <= xlength; z++) {
+        for(y = 0; y <= xlength; y++) {
+            for(x = 0; x <= xlength; x++) {
+                fprintf(fp, "%f %f %f\n", originX+x*h, originY+y*h, originZ+z*h);
+            }
         }
     }
-  }
 }
