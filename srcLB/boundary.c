@@ -126,13 +126,13 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 	//Loop over boundary cells only
 
 	/* TODO: Try to find optimizing ways - not cache friendly walls: */
-	pxWalls(collideField, flagField, 0, 0,       xlength,  1);
-	pxWalls(collideField, flagField, 0, xlength + 1, xlength, -1);
+	pxWalls(collideField, flagField, wallVelocity, 0,       xlength,  1);
+	pxWalls(collideField, flagField, wallVelocity, xlength, xlength, -1);
 
-	pyWalls(collideField, flagField, 0, 0,       xlength,  1);
-	pyWalls(collideField, flagField, 0, xlength + 1, xlength, -1);
+	pyWalls(collideField, flagField, wallVelocity, 0,       xlength,  1);
+	pyWalls(collideField, flagField, wallVelocity, xlength, xlength, -1);
 
 	/* most cache friendly walls */
-	pzWalls(collideField, flagField, 0, 0,       xlength,  1);
-	pzWalls(collideField, flagField, wallVelocity, xlength + 1, xlength, -1);
+	pzWalls(collideField, flagField, wallVelocity, 0,       xlength,  1);
+	pzWalls(collideField, flagField, wallVelocity, xlength, xlength, -1);
 }
