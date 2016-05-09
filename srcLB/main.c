@@ -20,6 +20,10 @@ int main(int argc, char *argv[]){
     int timesteps;
     int timestepsPerPlotting;
 
+    // File printing parameters
+    char fName[80];
+    sprintf(fName, "pv_files/test");
+
     readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
 
     /*Initializing pointers*/
@@ -44,7 +48,7 @@ int main(int argc, char *argv[]){
 	    treatBoundary(collideField,flagField,velocityWall,xlength);
 
 	    if (t%timestepsPerPlotting==0){
-	        //writeVtkOutput(collideField,flagField,argv,t,xlength);
+	        writeVtkOutput(collideField,flagField,fName,t,xlength);
 	    }
     }
 
