@@ -81,6 +81,6 @@ void computeFeq(const double * const density, const double * const velocity, dou
         pDotProduct1(velocity, velocity, &dotProd1);
         pDotProduct2(velocity, LATTICEVELOCITIES[i], &dotProd2);
         tmp = dotProd2/C_S_2;
-        *feq += LATTICEWEIGHTS[i]*(*density)*(1 + tmp + tmp*tmp/2 - dotProd1/2/C_S_2);
+        feq[i] = LATTICEWEIGHTS[i]*(*density)*(1 + tmp + tmp*tmp/2 - dotProd1/2/C_S_2);
     }
 }
