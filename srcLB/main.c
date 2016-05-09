@@ -14,7 +14,7 @@ int checkNaN(double *field, int xlength){
     	for(int y = 0; y<=xlength+1; y++){
     		for(int x = 0; x<=xlength+1; x++){
     			for(int i = 0; i < Q; ++i){
-    				double val = field[Q*(z*(xlength+2)*(xlength+2) + y*xlength + x)];
+    				double val = field[Q*(z*(xlength+2)*(xlength+2) + y*xlength + x)+i];
     				if(val != val){ //True if nan!
     					return 1;
     				}
