@@ -5,7 +5,7 @@ SOURCES=initLB.c visualLB.c boundary.c collision.c streaming.c computeCellValues
 # --------
 CC=gcc
 
-CFLAGS=-Werror -pedantic -Wall -std=c99 -g
+CFLAGS=-Werror -pedantic -Wall -std=c99
 
 # Linker flags
 # ------------
@@ -21,6 +21,12 @@ $(EXECUTABLE): $(OBJECTS)
 
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE)
+
+debug:
+	CFLAGS += -enable-checking -g -O0 -v -da -Q
+
+clean_debug:
+	rm -f *.expand *.vregs *.into_cfglayout *.jump *.reginfo *.outof_cfglayout *.split1 *.dfinit *.mode_sw *.asmcons *.ira *.reload *.split2 *.pro_and_epilogue *.jump2 *.stack *.alignments *.mach *.barriers *.shorten *.nothrow *.dwarf2 *.final *.dfinish
 
 
 $(OBJECTS): %.o : %.c

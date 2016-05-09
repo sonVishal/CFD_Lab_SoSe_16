@@ -69,7 +69,9 @@ void pxWalls(double *collideField, const int * const flagField, const double * c
 				if(LATTICEVELOCITIES[i][0] == direction){
 					int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
 					int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*xlength + x+c[0] );
-					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
+					if (n_cell_index >= 0 && n_cell_index <=Q*(xlength+2)*(xlength+2)*(xlength+2)) {
+						setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
+					}
 				}
 			}
 		}
@@ -92,7 +94,9 @@ void pyWalls(double *collideField, const int * const flagField, const double * c
 				if(LATTICEVELOCITIES[i][1] == direction){
 					int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
 					int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*xlength + x+c[0] );
-					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
+					if (n_cell_index >= 0 && n_cell_index <=Q*(xlength+2)*(xlength+2)*(xlength+2)) {
+						setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
+					}
 				}
 			}
 		}
@@ -115,7 +119,9 @@ void pzWalls(double *collideField, const int * const flagField, const double * c
 				if(LATTICEVELOCITIES[i][2] == direction){
 					int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
 					int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*xlength + x+c[0] );
-					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
+					if (n_cell_index >= 0 && n_cell_index <=Q*(xlength+2)*(xlength+2)*(xlength+2)) {
+						setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
+					}
 				}
 			}
 		}
