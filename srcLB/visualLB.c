@@ -69,7 +69,7 @@ void writeVtkOutput(const double * const collideField,
     // cell average velocity
     double * cellVelocity = (double *)malloc(sizeof(double)*3);
 
-    // Temporary variables for xlength^2 and xlength^3
+    // Temporary variables for (xlength+2)^2 and (xlength+2)^3
     int const xlen2 = (xlength+2)*(xlength+2);
     int const xlen3 = xlen2*(xlength+2);
 
@@ -79,7 +79,7 @@ void writeVtkOutput(const double * const collideField,
     // Open two files and concatenate them at the end
 
     // Write cell velocity to the vtk file
-    fprintf(fp,"\nCELL_DATA %d \n", xlen3);
+    fprintf(fp,"\nCELL_DATA %d \n", xlength*xlength*xlength);
     fprintf(fp, "\nVECTORS velocity float\n");
 
     // Write cell average density to a temporary vtk file
