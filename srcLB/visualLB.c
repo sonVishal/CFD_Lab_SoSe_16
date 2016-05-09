@@ -80,10 +80,9 @@ void writeVtkOutput(const double * const collideField,
 
     // Write cell velocity to the vtk file
     fprintf(fp,"\nCELL_DATA %d \n", xlen3);
-    fprintf(fp, "VECTORS velocity float\n");
+    fprintf(fp, "\nVECTORS velocity float\n");
 
     // Write cell average density to a temporary vtk file
-    fprintf(tmp,"\nCELL_DATA %d \n", xlen3);
     fprintf(tmp, "SCALARS density float 1 \n");
     fprintf(tmp, "LOOKUP_TABLE default \n");
     for(z = 1; z <= xlength; z++) {
