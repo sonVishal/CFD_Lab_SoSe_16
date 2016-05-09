@@ -73,7 +73,7 @@ void writeVtkOutput(const double * const collideField,
     int const xlen2 = (xlength+2)*(xlength+2);
 
     // Temporary variables for z and y offsets
-    int zOffset, yOffset;
+    int zOffset, yzOffset;
 
     // Open two files and concatenate them at the end
 
@@ -87,10 +87,10 @@ void writeVtkOutput(const double * const collideField,
     for(z = 1; z <= xlength; z++) {
         zOffset = z*xlen2;
         for(y = 1; y <= xlength; y++) {
-            yOffset = y*(xlength+2);
+            yzOffset = zOffset + y*(xlength+2);
             for(x = 1; x <= xlength; x++) {
                 // Compute the base index for collideField
-                idx = Q*(zOffset + yOffset + x);
+                idx = Q*(zOffset + yzOffset + x);
 
                 computeDensity(&collideField[idx], &cellDensity);
                 computeVelocity(&collideField[idx], &cellDensity, cellVelocity);
