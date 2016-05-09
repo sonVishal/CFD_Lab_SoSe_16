@@ -120,7 +120,7 @@ void pzWalls(double *collideField, const int * const flagField, const double * c
 				if(n_cell_index >= 0 && n_cell_index <=Q*(xlength+2)*(xlength+2)*(xlength+2) && //check valid index
 						flagField[n_cell_index] == 0 // check if neighbor is FLUID field (and not another boundary cell)
 				){
-					printf("FLAG ID: %i \n", flagField[xyz_offset]); //TODO: (DL) delete... just for testing
+					// printf("FLAG ID: %i \n", flagField[xyz_offset]); //TODO: (DL) delete... just for testing
 					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
 				}
 			}
