@@ -28,7 +28,6 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 				//printf("Condition check %i \n", flagField[xyzoffset]);
 
 				if( ! flagField[xyzoffset] ){ //true if FLUID cell
-                    //TODO: (TKS) current cell index may be wrong.
 					current_cell_index = Q*xyzoffset;
 
 					// Loop through all neighbors and copy their respective 
