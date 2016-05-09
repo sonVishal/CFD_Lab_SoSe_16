@@ -14,10 +14,10 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 	int n_x, n_y, n_z, n_cell_index;  // Neighbor offset values
 
 	for(int z=1; z<=xlength; z++){
-		zoffset = z*xlength;
+		zoffset = z*(xlength+2);
 
 		for(int y=1; y<=xlength; y++){
-			yzoffset = xlength*(zoffset + y);
+			yzoffset = (xlength+2)*(zoffset + y);
 
 			for(int x=1; x<=xlength; x++){
 				xyzoffset = yzoffset + x;
@@ -36,7 +36,7 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 						n_x = x+LATTICEVELOCITIES[i][0];
 						n_y = y+LATTICEVELOCITIES[i][1];
 						n_z = z+LATTICEVELOCITIES[i][2];
-						n_cell_index = Q*(xlength*(n_z*xlength + n_y) + n_x);
+						n_cell_index = Q*((xlength+2)*(n_z*(xlength+2) + n_y) + n_x);
 
 						streamField[current_cell_index + i] = collideField[n_cell_index + (Q-i-1)];
 					}
