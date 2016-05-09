@@ -8,7 +8,7 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 	 */
 
 	int zoffset, yzoffset, xyzoffset;  // Temporary variables to save computation
-    int current_cell_index;            // Position of first direction entry of the cell
+    int current_cell_index;            // Position of last direction entry of the cell
                                        // positioned at (x,y,z)
 
 	int n_x, n_y, n_z, n_cell_index;  // Neighbor offset values
@@ -25,9 +25,10 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 				/* TODO: (DL) if the indices are correct,
 				* I think condition is always true... if so: delete if-statement
 				*/
-				// printf("Condition check %i \n", flagField[xyzoffset]);
+				//printf("Condition check %i \n", flagField[xyzoffset]);
 
 				if( ! flagField[xyzoffset] ){ //true if FLUID cell
+                    //TODO: (TKS) current cell index may be wrong.
 					current_cell_index = Q*xyzoffset;
 
 					// Loop through all neighbors and copy their respective 
