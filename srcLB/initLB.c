@@ -1,12 +1,17 @@
+
+#include <math.h>
 #include "initLB.h"
 #include "LBDefinitions.h"
 
+//TODO: (TKS) Add a switch between doing automatic computation of tau and taking it in as a parameter?
 int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
 
     double xvelocity, yvelocity, zvelocity;
+    double Re;
+    double u_wall;
 
     READ_INT(*argv, *xlength);
-    READ_DOUBLE(*argv, *tau);
+    READ_DOUBLE(*argv, Re);
 
     READ_DOUBLE(*argv, xvelocity);
     READ_DOUBLE(*argv, yvelocity);
@@ -18,6 +23,18 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
 
     READ_INT(*argv, *timesteps);
     READ_INT(*argv, *timestepsPerPlotting);
+
+    /*Calculates tau from the Reynolds number*/
+    u_wall = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity); 
+    *tau    =  3*u_wall*(*xlength)/Re +0.5;
+    printf("Calculated tau = %f\n\n", *tau);
+
+    if(*tau<0.5){
+        return -1;
+    }
+    if(*tau>2){
+        return -2;
+    }
 
   return 0;
 }

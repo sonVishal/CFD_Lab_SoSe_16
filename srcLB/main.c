@@ -43,7 +43,17 @@ int main(int argc, char *argv[]){
     char fName[80];
     sprintf(fName, "pv_files/test");
 
-    readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
+    /*Read parameters and check the bounds on tau*/
+    int err_check = readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
+    if(err_check == -1){
+        printf("ERROR: tau<0.5\n");
+        return(-1);
+    }
+    else if(err_check == -2){
+        printf("ERROR: tau>2\n");
+        return(-2);
+
+    }
 
     /*Initializing pointers*/
     size_t totalsize = (xlength+2)*(xlength+2)*(xlength+2);

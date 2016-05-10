@@ -2,7 +2,11 @@
 xlength              10
 
 # Relaxation time
-tau                  1
+# In recent version calculated from the Reynolds number
+#tau                  1
+
+# Reynolds Number
+Re                    0.1
 
 # Velocity of moving wall
 xvelocity         0.00167
