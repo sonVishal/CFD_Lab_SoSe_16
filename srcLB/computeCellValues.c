@@ -73,9 +73,6 @@ void computeFeq(const double * const density, const double * const velocity, dou
     double C_S_2 = C_S*C_S;
     double tmp;
 
-    // Initialize to 0.0
-    *feq = 0.0;
-
     // Compute the equilibrium distribution for each component
     for (i = 0; i < Q; i++) {
         pDotProduct1(velocity, velocity, &dotProd1);
