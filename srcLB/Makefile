@@ -9,7 +9,7 @@ CFLAGS=-Werror -pedantic -Wall -std=c99 #-enable-checking -g -O0 -v -da -Q
 
 # Linker flags
 # ------------
-LDFLAGS= -lm -gp
+LDFLAGS= -lm -pg
 
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=lbsim
