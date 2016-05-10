@@ -70,9 +70,10 @@ void pxWalls(double *collideField, const int * const flagField, const double * c
 
 			for(int i = 0; i < Q; ++i){
 				int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
-				int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*(xlength+2) + x+c[0]);
+				int n_xyzoffset = (z+c[2])*xlength_2 + (y+c[1])*(xlength+2) + x+c[0];
+				int n_cell_index = Q*n_xyzoffset;
 				if(n_cell_index >= 0 && n_cell_index <=Q*(xlength+2)*(xlength+2)*(xlength+2) && //check valid index
-						flagField[xyz_offset] == 0 // check if neighbor is FLUID field (and not another boundary cell)
+						flagField[n_xyzoffset] == 0 // check if neighbor is FLUID field (and not another boundary cell)
 				){
 					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
 				}
@@ -95,9 +96,10 @@ void pyWalls(double *collideField, const int * const flagField, const double * c
 
 			for(int i = 0; i < Q; ++i){
 				int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
-				int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*(xlength+2) + x+c[0]);
+				int n_xyzoffset = (z+c[2])*xlength_2 + (y+c[1])*(xlength+2) + x+c[0];
+				int n_cell_index = Q*n_xyzoffset;
 				if(n_cell_index >= 0 && n_cell_index <=Q*(xlength+2)*(xlength+2)*(xlength+2) && //check valid index
-						flagField[xyz_offset] == 0 // check if neighbor is FLUID field (and not another boundary cell)
+						flagField[n_xyzoffset] == 0 // check if neighbor is FLUID field (and not another boundary cell)
 				){
 					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
 				}
@@ -120,9 +122,10 @@ void pzWalls(double *collideField, const int * const flagField, const double * c
 
 			for(int i = 0; i < Q; ++i){
 				int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
-				int n_cell_index = Q*( (z+c[2])*xlength_2 + (y+c[1])*(xlength+2) + x+c[0]);
+				int n_xyzoffset = (z+c[2])*xlength_2 + (y+c[1])*(xlength+2) + x+c[0];
+				int n_cell_index = Q*n_xyzoffset;
 				if(n_cell_index >= 0 && n_cell_index <=Q*(xlength+2)*(xlength+2)*(xlength+2) && //check valid index
-						flagField[xyz_offset] == 0 // check if neighbor is FLUID field (and not another boundary cell)
+						flagField[n_xyzoffset] == 0 // check if neighbor is FLUID field (and not another boundary cell)
 				){
 					// printf("FLAG ID: %i \n", flagField[xyz_offset]); //TODO: (DL) delete... just for testing
 					setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
