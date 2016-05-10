@@ -3,7 +3,6 @@
 #include "initLB.h"
 #include "LBDefinitions.h"
 
-//TODO: (TKS) Add a switch between doing automatic computation of tau and taking it in as a parameter?
 int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
 
     double xvelocity, yvelocity, zvelocity;
