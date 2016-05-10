@@ -82,3 +82,5 @@ lbsim
 *.dwarf2
 *.final
 *.dfinish
+*.dbg
+.fuse_hidden*

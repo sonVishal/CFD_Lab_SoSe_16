@@ -41,7 +41,7 @@ int main(int argc, char *argv[]){
 
     // File printing parameters
     char fName[80];
-    sprintf(fName, "pv_files/test");
+    snprintf(fName, 80, "pv_files/test");
 
     /*Read parameters and check the bounds on tau*/
     int err_check = readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);

@@ -33,12 +33,12 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 					// Loop through all neighbors and copy their respective
                     // distributions to the streamField.
 					for(int i=0; i<Q; ++i){
-						n_x = x+LATTICEVELOCITIES[i][0];
-						n_y = y+LATTICEVELOCITIES[i][1];
-						n_z = z+LATTICEVELOCITIES[i][2];
+						n_x = x-LATTICEVELOCITIES[i][0];
+						n_y = y-LATTICEVELOCITIES[i][1];
+						n_z = z-LATTICEVELOCITIES[i][2];
 						n_cell_index = Q*((xlength+2)*(n_z*(xlength+2) + n_y) + n_x);
 
-						streamField[current_cell_index + i] = collideField[n_cell_index + (Q-i-1)];
+						streamField[current_cell_index + i] = collideField[n_cell_index + i];
 					}
 				}
 			}
