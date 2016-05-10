@@ -5,11 +5,11 @@ SOURCES=initLB.c visualLB.c boundary.c collision.c streaming.c computeCellValues
 # --------
 CC=gcc
 
-CFLAGS=-Werror -pedantic -Wall -std=c99 -O3 # -pg -enable-checking -g -O0 -v -da -Q
+CFLAGS=-Werror -pedantic -Wall -std=c99 -O0 -g -pg # -enable-checking -v -da -Q
 
 # Linker flags
 # ------------
-LDFLAGS= -lm # -pg
+LDFLAGS= -lm -pg
 
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=lbsim
