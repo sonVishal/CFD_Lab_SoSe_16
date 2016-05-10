@@ -58,8 +58,10 @@ void computeVelocity(const double * const currentCell, const double * const dens
 void computeFeq(const double * const density, const double * const velocity, double *feq){
 
     // Temporary variables for speed of sound squared and ^4
-    double const cs_2 = C_S*C_S;
-    double const cs_4_2 = 2*cs_2*cs_2;
+	/* TODO(DL): since it is called that often and having the most work, I made these static
+	*  to only compute these values once! */
+    static double const cs_2 = C_S*C_S;
+    static double const cs_4_2 = 2*cs_2*cs_2;
 
     // Temporary variable for velocity
     double const ux = velocity[0];
@@ -67,7 +69,7 @@ void computeFeq(const double * const density, const double * const velocity, dou
     double const uz = velocity[2];
 
     // Temporary variable for 1-(u.u)/(2*cs²)
-    double const u_u = 1-(ux*ux+uy*uy+uz*uz)/2/cs_2;
+    double const u_u = 1-(ux*ux+uy*uy+uz*uz)/(2*cs_2);
 
     // Temporary variables for density*LATTICEWEIGHTS
     // There are only 3 different LATTTICEWEIGHTS
