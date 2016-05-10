@@ -1,5 +1,8 @@
 #include "computeCellValues.h"
 
+// TODO: (VS) Keep old code in comment for all functions
+// so that it is clear what was done before optimizing for speed
+
 /** computes the density from the particle distribution functions stored at
  *  currentCell. currentCell thus denotes the address of the first particle
  *  distribution function of the respective cell.
