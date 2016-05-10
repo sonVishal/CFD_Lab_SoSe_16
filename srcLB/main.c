@@ -8,24 +8,6 @@
 #include "visualLB.h"
 #include "LBDefinitions.h"
 
-int checkNaN(double *field, int xlength){
-    //TODO: (DL) delete!! just for debugging
-    for(int z = 0; z<=xlength+1; z++){
-    	for(int y = 0; y<=xlength+1; y++){
-    		for(int x = 0; x<=xlength+1; x++){
-    			for(int i = 0; i < Q; ++i){
-    				double val = field[Q*(z*(xlength+2)*(xlength+2) + y*xlength + x)+i];
-    				if(val != val){ //True if nan!
-    					return 1;
-    				}
-    			}
-    		}
-    	}
-    }
-    return 0;
-}
-
-
 int main(int argc, char *argv[]){
 
     double *collideField=NULL;
@@ -78,10 +60,6 @@ int main(int argc, char *argv[]){
 	    streamField = swap;
 
 	    doCollision(collideField,flagField,&tau,xlength);
-	    if(checkNaN(collideField, xlength)){
-	    	printf("nan occured at time %i\n", t);
-	    }
-
 	    treatBoundary(collideField,flagField,velocityWall,xlength);
 
 	    if (t%timestepsPerPlotting==0){

@@ -23,9 +23,9 @@ static inline void setBounceBack(double *collideField, const double * const wall
 	}else if(type == 2){
 
 		double density = 0;
-		double dot_uwall_c = 0;
+		double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
 		computeDensity(&collideField[n_cell_index], &density);
-		pDotProduct2(wallVelocity, &c[0], &dot_uwall_c);
+		//pDotProduct2(wallVelocity, &c[0], &dot_uwall_c);
 
 		double weight = LATTICEWEIGHTS[i];
 

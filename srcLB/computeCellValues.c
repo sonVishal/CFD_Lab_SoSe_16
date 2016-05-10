@@ -1,87 +1,96 @@
 #include "computeCellValues.h"
 
-// TODO: (VS) Find a clever way to avoid two functions as well as
-    // conflicting data type error
-
-// Function to compute dot product of 3D vectors u and v
-void pDotProduct1(const double * const u, const double * const v,
-    double * dotProd) {
-
-    int i;
-    *dotProd = 0.0;
-
-    for (i = 0; i < 3; i++) {
-        *dotProd += u[i]*v[i];
-    }
-}
-
-// Function to compute dot product of 3D vectors u and lattice velocities c[i]
-void pDotProduct2(const double * const u, const int * const v,
-    double * dotProd) {
-
-    int i;
-    *dotProd = 0.0;
-
-    for (i = 0; i < 3; i++) {
-        *dotProd += u[i]*v[i];
-    }
-}
-
 /** computes the density from the particle distribution functions stored at
  *  currentCell. currentCell thus denotes the address of the first particle
  *  distribution function of the respective cell.
  *  The result is stored in density.
  */
 void computeDensity(const double *const currentCell, double *density){
-    int i;
-
-    // Initialize to 0.0
-    *density = 0.0;
-
-    // Compute the cell density
-    for (i = 0; i < Q; i++) {
-        *density += currentCell[i];
-    }
+    // Compute cell density
+    *density = currentCell[0]+currentCell[1]+currentCell[2]+currentCell[3]+
+        currentCell[4]+currentCell[5]+currentCell[6]+currentCell[7]+
+        currentCell[8]+currentCell[9]+currentCell[10]+currentCell[11]+
+        currentCell[12]+currentCell[13]+currentCell[14]+currentCell[15]+
+        currentCell[16]+currentCell[17]+currentCell[18];
 }
 
 /** computes the velocity within currentCell and stores the result in velocity */
 void computeVelocity(const double * const currentCell, const double * const density, double *velocity){
-    int i;
+    // Unroll the loop for cache efficient access
+    // Blocks of 4 for efficient cache access
 
-    velocity[0] = 0.0;
-    velocity[1] = 0.0;
-    velocity[2] = 0.0;
+    // 0 to 3
+    velocity[0] = -currentCell[1]+currentCell[3];
+    velocity[1] = -currentCell[0];
+    velocity[2] = -(currentCell[0]+currentCell[1]+currentCell[2]+currentCell[3]);
 
-    // Compute the cell momentum
-    for (i = 0; i < Q; i++) {
-        velocity[0] += currentCell[i]*LATTICEVELOCITIES[i][0];
-        velocity[1] += currentCell[i]*LATTICEVELOCITIES[i][1];
-        velocity[2] += currentCell[i]*LATTICEVELOCITIES[i][2];
-    }
+    // 4 to 7
+    velocity[0] += -currentCell[5]+currentCell[7];
+    velocity[1] += currentCell[4]-(currentCell[5]+currentCell[6]+currentCell[7]);
+    velocity[2] += -currentCell[4];
 
-    // Divide the momentum by density to get velocities
-    velocity[0] /= *density;
-    velocity[1] /= *density;
-    velocity[2] /= *density;
+    // 8 to 11
+    velocity[0] += -currentCell[8]+currentCell[10]-currentCell[11];
+    velocity[1] += currentCell[11];
+
+    // 12 to 15
+    velocity[0] += currentCell[13]-currentCell[15];
+    velocity[1] += currentCell[12]+currentCell[13]-currentCell[14];
+    velocity[2] += currentCell[14]+currentCell[15];
+
+    // 16 to 18
+    velocity[0] += currentCell[17];
+    velocity[1] += currentCell[18];
+    velocity[2] += currentCell[16]+currentCell[17]+currentCell[18];
+
+    // Divide by density
+    velocity[0] /= (*density);
+    velocity[1] /= (*density);
+    velocity[2] /= (*density);
 }
 
 /** computes the equilibrium distributions for all particle distribution
  *  functions of one cell from density and velocity and stores the results in feq.
  */
 void computeFeq(const double * const density, const double * const velocity, double *feq){
-    int i;
 
-    // Temporary variables
-    double dotProd1;
-    double dotProd2;
-    double C_S_2 = C_S*C_S;
-    double tmp;
+    // Temporary variables for speed of sound squared and ^4
+    double const cs_2 = C_S*C_S;
+    double const cs_4_2 = 2*cs_2*cs_2;
 
-    // Compute the equilibrium distribution for each component
-    for (i = 0; i < Q; i++) {
-        pDotProduct1(velocity, velocity, &dotProd1);
-        pDotProduct2(velocity, LATTICEVELOCITIES[i], &dotProd2);
-        tmp = dotProd2/C_S_2;
-        feq[i] = LATTICEWEIGHTS[i]*(*density)*(1 + tmp + tmp*tmp/2 - dotProd1/(2*C_S_2));
-    }
+    // Temporary variable for velocity
+    double const ux = velocity[0];
+    double const uy = velocity[1];
+    double const uz = velocity[2];
+
+    // Temporary variable for 1-(u.u)/(2*cs²)
+    double const u_u = 1-(ux*ux+uy*uy+uz*uz)/2/cs_2;
+
+    // Temporary variables for density*LATTICEWEIGHTS
+    // There are only 3 different LATTTICEWEIGHTS
+    double const d1 = (*density)*LATTICEWEIGHTS[0];
+    double const d2 = (*density)*LATTICEWEIGHTS[2];
+    double const d3 = (*density)*LATTICEWEIGHTS[9];
+
+    // Unroll loop
+    feq[0]  = d1*(u_u + (-uy-uz)*(1/cs_2 + (-uy-uz)/cs_4_2));
+    feq[1]  = d1*(u_u + (-ux-uz)*(1/cs_2 + (-ux-uz)/cs_4_2));
+    feq[2]  = d2*(u_u + (-uz)*(1/cs_2 + (-uz)/cs_4_2));
+    feq[3]  = d1*(u_u + (ux-uz)*(1/cs_2 + (ux-uz)/cs_4_2));
+    feq[4]  = d1*(u_u + (uy-uz)*(1/cs_2 + (uy-uz)/cs_4_2));
+    feq[5]  = d1*(u_u + (-ux-uy)*(1/cs_2 + (-ux-uy)/cs_4_2));
+    feq[6]  = d2*(u_u + (-uy)*(1/cs_2 + (-uy)/cs_4_2));
+    feq[7]  = d1*(u_u + (ux-uy)*(1/cs_2 + (ux-uy)/cs_4_2));
+    feq[8]  = d2*(u_u + (-ux)*(1/cs_2 + (-ux)/cs_4_2));
+    feq[9]  = d3*(u_u);
+    feq[10] = d2*(u_u + (ux)*(1/cs_2 + (ux)/cs_4_2));
+    feq[11] = d1*(u_u + (-ux+uy)*(1/cs_2 + (-ux+uy)/cs_4_2));
+    feq[12] = d2*(u_u + (uy)*(1/cs_2 + (uy)/cs_4_2));
+    feq[13] = d1*(u_u + (ux+uy)*(1/cs_2 + (ux+uy)/cs_4_2));
+    feq[14] = d1*(u_u + (-uy+uz)*(1/cs_2 + (-uy+uz)/cs_4_2));
+    feq[15] = d1*(u_u + (-ux+uz)*(1/cs_2 + (-ux+uz)/cs_4_2));
+    feq[16] = d2*(u_u + (uz)*(1/cs_2 + (uz)/cs_4_2));
+    feq[17] = d1*(u_u + (ux+uz)*(1/cs_2 + (ux+uz)/cs_4_2));
+    feq[18] = d1*(u_u + (uy+uz)*(1/cs_2 + (uy+uz)/cs_4_2));
+
 }
