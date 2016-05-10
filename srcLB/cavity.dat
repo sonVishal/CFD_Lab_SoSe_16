@@ -5,7 +5,7 @@ xlength              10
 tau                  1
 
 # Velocity of moving wall
-xvelocity         2 
+xvelocity         0.00167
 yvelocity         0
 zvelocity         0
 
