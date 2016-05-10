@@ -7,41 +7,74 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 	 * cells of this.
 	 */
 
-	int zoffset, yzoffset, xyzoffset;  // Temporary variables to save computation
-    int current_cell_index;            // Position of first direction entry of the cell
-                                       // positioned at (x,y,z)
+	int xlen_2 = xlength+2;
+	int xlen_2sq = xlen_2*xlen_2;
+	int totalSize = xlen_2*xlen_2sq;
 
-	int n_x, n_y, n_z, n_cell_index;  // Neighbor offset values
+	int i;
 
-	for(int z=1; z<=xlength; z++){
-		zoffset = z*(xlength+2);
+	int nextCellIndex, currentCellIndex;
 
-		for(int y=1; y<=xlength; y++){
-			yzoffset = (xlength+2)*(zoffset + y);
+	for (i = 0; i < totalSize; i++) {
+		if (flagField[i] == 0) {
+			currentCellIndex = Q*i;
 
-			for(int x=1; x<=xlength; x++){
-				xyzoffset = yzoffset + x;
+			// Loop unroll
+			nextCellIndex = Q*(i+xlen_2sq+xlen_2);
+			streamField[currentCellIndex] = collideField[nextCellIndex];
 
-				/* TODO: (DL) if the indices are correct,
-				* I think condition is always true... if so: delete if-statement
-				*/
-				//printf("Condition check %i \n", flagField[xyzoffset]);
+			nextCellIndex = Q*(i+xlen_2sq+1);
+			streamField[currentCellIndex+1] = collideField[nextCellIndex+1];
 
-				if( ! flagField[xyzoffset] ){ //true if FLUID cell
-					current_cell_index = Q*xyzoffset;
+			nextCellIndex = Q*(i+xlen_2sq);
+			streamField[currentCellIndex+2] = collideField[nextCellIndex+2];
 
-					// Loop through all neighbors and copy their respective
-                    // distributions to the streamField.
-					for(int i=0; i<Q; ++i){
-						n_x = x-LATTICEVELOCITIES[i][0];
-						n_y = y-LATTICEVELOCITIES[i][1];
-						n_z = z-LATTICEVELOCITIES[i][2];
-						n_cell_index = Q*((xlength+2)*(n_z*(xlength+2) + n_y) + n_x);
+			nextCellIndex = Q*(i+xlen_2sq-1);
+			streamField[currentCellIndex+3] = collideField[nextCellIndex+3];
 
-						streamField[current_cell_index + i] = collideField[n_cell_index + i];
-					}
-				}
-			}
+			nextCellIndex = Q*(i+xlen_2sq-xlen_2);
+			streamField[currentCellIndex+4] = collideField[nextCellIndex+4];
+
+			nextCellIndex = Q*(i+xlen_2+1);
+			streamField[currentCellIndex+5] = collideField[nextCellIndex+5];
+
+			nextCellIndex = Q*(i+xlen_2);
+			streamField[currentCellIndex+6] = collideField[nextCellIndex+6];
+
+			nextCellIndex = Q*(i+xlen_2-1);
+			streamField[currentCellIndex+7] = collideField[nextCellIndex+7];
+
+			nextCellIndex = Q*(i+1);
+			streamField[currentCellIndex+8] = collideField[nextCellIndex+8];
+
+			streamField[currentCellIndex+9] = collideField[currentCellIndex+9];
+
+			nextCellIndex = Q*(i-1);
+			streamField[currentCellIndex+10] = collideField[nextCellIndex+10];
+
+			nextCellIndex = Q*(i+1-xlen_2);
+			streamField[currentCellIndex+11] = collideField[nextCellIndex+11];
+
+			nextCellIndex = Q*(i-xlen_2);
+			streamField[currentCellIndex+12] = collideField[nextCellIndex+12];
+
+			nextCellIndex = Q*(i-1-xlen_2);
+			streamField[currentCellIndex+13] = collideField[nextCellIndex+13];
+
+			nextCellIndex = Q*(i+xlen_2-xlen_2sq);
+			streamField[currentCellIndex+14] = collideField[nextCellIndex+14];
+
+			nextCellIndex = Q*(i+1-xlen_2sq);
+			streamField[currentCellIndex+15] = collideField[nextCellIndex+15];
+
+			nextCellIndex = Q*(i-xlen_2sq);
+			streamField[currentCellIndex+16] = collideField[nextCellIndex+16];
+
+			nextCellIndex = Q*(i-1-xlen_2sq);
+			streamField[currentCellIndex+17] = collideField[nextCellIndex+17];
+
+			nextCellIndex = Q*(i-xlen_2-xlen_2sq);
+			streamField[currentCellIndex+18] = collideField[nextCellIndex+18];
 		}
 	}
 }
