@@ -84,3 +84,6 @@ lbsim
 *.dfinish
 *.dbg
 .fuse_hidden*
+
+# Shell executables
+*.sh
