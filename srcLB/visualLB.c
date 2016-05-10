@@ -67,7 +67,7 @@ void writeVtkOutput(const double * const collideField,
     double cellDensity;     // cell density
 
     // cell average velocity
-    double * cellVelocity = (double *)malloc(sizeof(double)*3);
+    double cellVelocity[3] = {0.0,0.0,0.0};
 
     // Temporary variables for (xlength+2)^2
     int const xlen2 = (xlength+2)*(xlength+2);
@@ -93,7 +93,7 @@ void writeVtkOutput(const double * const collideField,
                 idx = Q*(yzOffset + x);
 
                 computeDensity(&collideField[idx], &cellDensity);
-                computeVelocity(&collideField[idx], &cellDensity, cellVelocity);
+                computeVelocity(&collideField[idx], &cellDensity, &cellVelocity[0]);
 
                 // Write cell average velocities
                 fprintf(fp, "%f %f %f\n", cellVelocity[0],
@@ -104,8 +104,6 @@ void writeVtkOutput(const double * const collideField,
             }
         }
     }
-
-    free(cellVelocity);
 
     // Close file
     if(fclose(tmp))
@@ -129,11 +127,17 @@ void writeVtkOutput(const double * const collideField,
     while((ch = fgetc(tmp)) != EOF)
         fputc(ch,fp);
 
-    // Close file
+    // Close files
     if(fclose(fp))
     {
         char szBuff[80];
         sprintf(szBuff, "Failed to close %s", pFileName);
+        ERROR(szBuff);
+    }
+    if(fclose(tmp))
+    {
+        char szBuff[80];
+        sprintf(szBuff, "Failed to close %s", pTempFile);
         ERROR(szBuff);
     }
 

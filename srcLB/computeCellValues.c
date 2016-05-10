@@ -10,7 +10,7 @@
  */
 void computeDensity(const double *const currentCell, double *density){
     // Compute cell density
-    *density = currentCell[0]+currentCell[1]+currentCell[2]+currentCell[3]+
+    (*density) = currentCell[0]+currentCell[1]+currentCell[2]+currentCell[3]+
         currentCell[4]+currentCell[5]+currentCell[6]+currentCell[7]+
         currentCell[8]+currentCell[9]+currentCell[10]+currentCell[11]+
         currentCell[12]+currentCell[13]+currentCell[14]+currentCell[15]+
