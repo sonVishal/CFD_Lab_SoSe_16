@@ -1,0 +1,1 @@
+valgrind --error-exitcode=1 --tool=memcheck --leak-check=full --track-origins=yes ./lbsim
