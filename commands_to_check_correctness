@@ -1,0 +1,3 @@
+gprof lbsim gmon.out > gprofTest.dbg cat gprofTest.dbg
+
+valgrind --error-exitcode=1 --tool=memcheck --leak-check=full --track-origins=yes --log-file="valgrindCheck.dbg" --show-leak-kinds=all -v ./lbsim cavity.dat
