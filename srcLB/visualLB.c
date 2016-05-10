@@ -161,25 +161,18 @@ void writevtkHeader(FILE *fp, int xlength)
     fprintf(fp,"\n");
     fprintf(fp,"DATASET STRUCTURED_GRID\n");
     fprintf(fp,"DIMENSIONS  %i %i %i \n", xlength+1, xlength+1, xlength+1);
-    fprintf(fp,"POINTS %i float\n", (xlength+1)*(xlength+1)*(xlength+1));
+    fprintf(fp,"POINTS %i integer\n", (xlength+1)*(xlength+1)*(xlength+1));
     fprintf(fp,"\n");
 }
 
 void writevtkPointCoordinates(FILE *fp, int xlength) {
-    double originX = 0.0;
-    double originY = 0.0;
-    double originZ = 0.0;
-
-    // Define the size of each cell
-    double h = 1.0/xlength;
-
     int x, y, z;
 
     // We have xlength + 1 points for xlength cells in each direction
     for(z = 0; z <= xlength; z++) {
         for(y = 0; y <= xlength; y++) {
             for(x = 0; x <= xlength; x++) {
-                fprintf(fp, "%f %f %f\n", originX+x*h, originY+y*h, originZ+z*h);
+                fprintf(fp, "%d %d %d\n", x, y, z);
             }
         }
     }
