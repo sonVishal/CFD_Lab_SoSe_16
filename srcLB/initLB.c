@@ -26,7 +26,7 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
 
     /*Calculates tau from the Reynolds number*/
     u_wall = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity); 
-    *tau    =  3*u_wall*(*xlength)/Re +0.5;
+    *tau    =  u_wall*(*xlength)/(C_S*C_S*Re) +0.5;
     printf("Calculated tau = %f\n\n", *tau);
 
     if(*tau<0.5){
