@@ -44,6 +44,7 @@ int main(int argc, char *argv[]){
     snprintf(fName, 80, "pv_files/test");
 
     /*Read parameters and check the bounds on tau*/
+    //tau is calculated automatically from the reynoldsnumber
     int err_check = readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
     if(err_check == -1){
         printf("ERROR: tau<0.5\n");
