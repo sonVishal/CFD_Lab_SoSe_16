@@ -1,5 +1,6 @@
 #include "streaming.h"
 #include "LBDefinitions.h"
+#include <stdio.h>
 
 void doStreaming(double *collideField, double *streamField,int *flagField,int xlength){
 	/*
@@ -8,8 +9,8 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 	 */
 
 	int zoffset, yzoffset, xyzoffset;  // Temporary variables to save computation
-    int current_cell_index;            // Position of first direction entry of the cell
-                                       // positioned at (x,y,z)
+	int current_cell_index;            // Position of first direction entry of the cell
+	// positioned at (x,y,z)
 
 	int n_x, n_y, n_z, n_cell_index;  // Neighbor offset values
 
@@ -22,25 +23,25 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 			for(int x=1; x<=xlength; x++){
 				xyzoffset = yzoffset + x;
 
-				/* TODO: (DL) if the indices are correct,
-				* I think condition is always true... if so: delete if-statement
-				*/
-				//printf("Condition check %i \n", flagField[xyzoffset]);
+				//Code snippet in case of debugging. We dont check for FLUID condition because it is
+				//always true (iterating only FLUID cells) by setting the indices correctly.
+//				if(flagField[xyzoffset]){
+//					printf("Condition check %i \n",flagField[xyzoffset] );
+//				}
 
-				if( ! flagField[xyzoffset] ){ //true if FLUID cell
-					current_cell_index = Q*xyzoffset;
+				current_cell_index = Q*xyzoffset;
 
-					// Loop through all neighbors and copy their respective
-                    // distributions to the streamField.
-					for(int i=0; i<Q; ++i){
-						n_x = x-LATTICEVELOCITIES[i][0];
-						n_y = y-LATTICEVELOCITIES[i][1];
-						n_z = z-LATTICEVELOCITIES[i][2];
-						n_cell_index = Q*((xlength+2)*(n_z*(xlength+2) + n_y) + n_x);
+				// Loop through all neighbors and copy their respective
+				// distributions to the streamField.
+				for(int i=0; i<Q; ++i){
+					n_x = x-LATTICEVELOCITIES[i][0];
+					n_y = y-LATTICEVELOCITIES[i][1];
+					n_z = z-LATTICEVELOCITIES[i][2];
+					n_cell_index = Q*((xlength+2)*(n_z*(xlength+2) + n_y) + n_x);
 
-						streamField[current_cell_index + i] = collideField[n_cell_index + i];
-					}
+					streamField[current_cell_index + i] = collideField[n_cell_index + i];
 				}
+
 			}
 		}
 	}
