@@ -28,11 +28,8 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     *tau    =  u_wall*(*xlength)/(C_S*C_S*Re) +0.5;
     printf("Calculated tau = %f\n\n", *tau);
 
-    if(*tau<0.5){
+    if(*tau<0.5 || *tau>2){
         return -1;
-    }
-    if(*tau>2){
-        return -2;
     }
 
   return 0;
