@@ -4,10 +4,25 @@
 // Get the post collision cell distribution using BGK update rule
 // for the current cell
 void computePostCollisionDistributions(double *currentCell, const double * const tau, const double *const feq){
-    int i;
-    for (i = 0; i < Q; i++) {
-        currentCell[i] = currentCell[i] - (currentCell[i]-feq[i])/(*tau);
-    }
+        currentCell[0]  = currentCell[0]  - (currentCell[0]  - feq[0])/(*tau);
+        currentCell[1]  = currentCell[1]  - (currentCell[1]  - feq[1])/(*tau);
+        currentCell[2]  = currentCell[2]  - (currentCell[2]  - feq[2])/(*tau);
+        currentCell[3]  = currentCell[3]  - (currentCell[3]  - feq[3])/(*tau);
+        currentCell[4]  = currentCell[4]  - (currentCell[4]  - feq[4])/(*tau);
+        currentCell[5]  = currentCell[5]  - (currentCell[5]  - feq[5])/(*tau);
+        currentCell[6]  = currentCell[6]  - (currentCell[6]  - feq[6])/(*tau);
+        currentCell[7]  = currentCell[7]  - (currentCell[7]  - feq[7])/(*tau);
+        currentCell[8]  = currentCell[8]  - (currentCell[8]  - feq[8])/(*tau);
+        currentCell[9]  = currentCell[9]  - (currentCell[9]  - feq[9])/(*tau);
+        currentCell[10] = currentCell[10] - (currentCell[10] - feq[10])/(*tau);
+        currentCell[11] = currentCell[11] - (currentCell[11] - feq[11])/(*tau);
+        currentCell[12] = currentCell[12] - (currentCell[12] - feq[12])/(*tau);
+        currentCell[13] = currentCell[13] - (currentCell[13] - feq[13])/(*tau);
+        currentCell[14] = currentCell[14] - (currentCell[14] - feq[14])/(*tau);
+        currentCell[15] = currentCell[15] - (currentCell[15] - feq[15])/(*tau);
+        currentCell[16] = currentCell[16] - (currentCell[16] - feq[16])/(*tau);
+        currentCell[17] = currentCell[17] - (currentCell[17] - feq[17])/(*tau);
+        currentCell[18] = currentCell[18] - (currentCell[18] - feq[18])/(*tau);
 }
 
 // Perform collision for all inner cells
