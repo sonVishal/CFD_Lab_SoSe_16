@@ -62,12 +62,17 @@ void doCollision(double *collideField, int *flagField,const double * const tau,i
                 double *currentCell = &collideField[idx];
 
                 // Allocate memory to local cell parameters
+                //TODO: (TKS) is this cheaper than allocating outside loop structure
+                //            and looping over to initialize?
                 double density;
                 double velocity[3] = {0,0,0};
                 double feq[19];
 
                 // Compute the cell density
                 computeDensity(currentCell, &density);
+                if(density < 0.98){
+                    ERROR("ERROR: Density change is too high (Aborting)");
+                }
 
                 // Compute the cell velocity
                 computeVelocity(currentCell, &density, velocity);
