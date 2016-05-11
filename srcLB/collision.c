@@ -1,5 +1,7 @@
 #include "collision.h"
 #include "LBDefinitions.h"
+#include "helper.h"
+
 #include <stdio.h>
 
 // Get the post collision cell distribution using BGK update rule
@@ -9,10 +11,9 @@ void computePostCollisionDistributions(double *currentCell, const double * const
     for ( int i = 0;  i< Q; ++i ) {
         currentCell[i]  = currentCell[i]  - (currentCell[i]  - feq[i])/(*tau);
         //TODO: (TKS) This makes it run 6 sec slower on O3
-        //TODO: Make it actually abort.
-        //if(currentCell[i]<0){
-            //printf("ERROR: Encountered negative particle distribution (Aborting)\n");
-        //}
+        if(currentCell[i]<0){
+            ERROR("ERROR: Encountered negative particle distribution (Aborting)\n");
+        }
     }
     //TODO: (TKS) loops run better for O3, rolling out better for O0
     //      Need to decide which version we are going for.
