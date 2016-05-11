@@ -7,8 +7,13 @@ void computePostCollisionDistributions(double *currentCell, const double * const
     //double tau_val = *tau;
     for ( int i = 0;  i< Q; ++i ) {
         currentCell[i]  = currentCell[i]  - (currentCell[i]  - feq[i])/(*tau);
+        if(currentCell[i]<0){
+            printf("ERROR: Encountered negative particle distribution (Aborting)\n");
+        }
     }
     //TODO: loops run better for O3, rolling out better for O0
+    //      Need to decide which version we are going for.
+    //      If going for the one below, need to implement neg- particle check for it.
         //currentCell[0]  = currentCell[0]  - (currentCell[0]  - feq[0])/(*tau);
         //currentCell[1]  = currentCell[1]  - (currentCell[1]  - feq[1])/(*tau);
         //currentCell[2]  = currentCell[2]  - (currentCell[2]  - feq[2])/(*tau);
