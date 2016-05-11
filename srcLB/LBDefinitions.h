@@ -36,5 +36,5 @@ static const double LATTICEWEIGHTS[19] = {
 // Speed of sound
 // TODO: (VS) The value of 1.0/sqrt(3.0) as of now,
 // has been obtained using Julia Arbitraty Precision Arithmetic
-static const double C_S = 0.57735026918962576;
+#define C_S 0.57735026918962576
 #endif
