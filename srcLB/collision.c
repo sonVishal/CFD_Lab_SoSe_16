@@ -70,7 +70,8 @@ void doCollision(double *collideField, int *flagField,const double * const tau,i
 
                 // Compute the cell density
                 computeDensity(currentCell, &density);
-                if(density < 0.98){
+                printf("%f\n", fabs(density-1));
+                if(fabs(density-1) > 0.001){
                     ERROR("ERROR: Density change is too high (Aborting)");
                 }
 
