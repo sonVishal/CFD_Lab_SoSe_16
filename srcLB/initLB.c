@@ -2,6 +2,7 @@
 #include <math.h>
 #include "initLB.h"
 #include "LBDefinitions.h"
+#include "helper.h"
 
 int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
 
@@ -29,7 +30,7 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     printf("Calculated tau = %f\n\n", *tau);
 
     if(*tau<0.5 || *tau>2){
-        return -1;
+        ERROR("ERROR: tau is out of stability region (aborting) \n");
     }
 
   return 0;

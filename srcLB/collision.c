@@ -2,8 +2,6 @@
 #include "LBDefinitions.h"
 #include "helper.h"
 
-#include <stdio.h>
-
 // Get the post collision cell distribution using BGK update rule
 // for the current cell
 void computePostCollisionDistributions(double *currentCell, const double * const tau, const double *const feq){

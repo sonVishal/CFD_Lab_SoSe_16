@@ -27,11 +27,7 @@ int main(int argc, char *argv[]){
 
     /*Read parameters and check the bounds on tau*/
     //tau is calculated automatically from the reynoldsnumber
-    int err_check = readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
-    if(err_check == -1){
-        printf("ERROR: tau is out of stability region (aborting) \n");
-        return(-1);
-    }
+    readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
 
     /*Initializing pointers*/
     int totalsize = (xlength+2)*(xlength+2)*(xlength+2);
