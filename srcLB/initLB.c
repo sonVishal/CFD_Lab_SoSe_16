@@ -44,7 +44,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     // current cell index
     int idx;
 
-    // Temporary variables for xlength^2 and xlength^3
+    // Temporary variables for xlength^2
     int const xlen2 = (xlength+2)*(xlength+2);
 
     // Temporary variables for z and y offsets
