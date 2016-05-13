@@ -1,0 +1,18 @@
+
+
+% question 4. Consider the equation below, how do we model convective-,
+%              and viscous contributions in LBM?
+
+\section{Convective-/viscous term}
+
+Consider the boltzmann equation, 
+\begin{equation}
+    \frac{\delta f}{\delta t} + \vec{v}\cdot\nabla{f} = -\Delta(f-f^{eq}),
+\end{equation}
+
+and the BGK approximation
+
+\begin{equation}
+    \Delta (f - f^{eq}) = -\frac{1}{\tau}(f - f^{eq})
+\end{equation}
+
