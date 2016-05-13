@@ -4,6 +4,20 @@
 
 \section{Linear LBM to non-linear NSE}
 
+In the LBM we have a linear update rule,
 
+\begin{equation}
+    f_i(\vec{x} + \vec{c}_{i}dt, t + dt) = f_i(\vec{x},t) - \frac{1}{\tau} ( f_i(\vec{x},t) - f_{i}^{eq}),
+\end{equation}
+
+which gives us the updated distribution of particles with velocity $\vec{c}_i$ 
+at position $\vec{x} + \vec{c}_idt$ and time $t+dt$. $i = 0:Q-1$ where $Q$ is 
+the size of our velocity space.\\
+
+\subsection{Heuristic argument}
+
+The NSE solves a global system on a macroscale. To get the macroscopic 
+velocities from the LBM velocities we need to integrate the velocity 
+density distribution over the velocity set. We hence introduce nonlinearity.\\
 
 
