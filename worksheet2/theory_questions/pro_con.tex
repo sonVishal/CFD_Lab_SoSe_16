@@ -1,0 +1,45 @@
+\section{Pros and cons of LB}
+
+\subsection{Pros}
+\begin{itemize}
+    \item Explicit update rule, no system of equations to solve.
+    \begin{itemize}
+        \item Done by doing a trick. Introduce a new distribution function 
+              and see that the sum over states give the same global quantities.
+    \end{itemize}
+
+    \item Easy to parallelize.
+        \begin{itemize}
+            \item Each cell only depend locally on the neighbouring cells in
+                  the streaming step and only on itself in the collision.
+        \end{itemize}
+
+    \item Simulating mesoscale
+        \begin{itemize}
+            \item Unlike NS, LB looks at distributions of "bunches" of
+                  particles. May catch behaviour too fine for NS to detect.
+            %\item e.g. fluid running through small cracks. %Find right place to put this
+        \end{itemize}
+    \item Can handle multiphase flows relatively easy.
+        \begin{itemize}
+            \item Usually done by modifying the collision operator.
+        \end{itemize}
+
+\end{itemize}
+
+\subsection{Cons}
+\begin{itemize}
+    \item Explicit update rule
+        \begin{itemize}
+            \item Need small timesteps.
+            \item Finite propagation speed of information.
+        \end{itemize}
+
+    \item Only using a square grid can be limiting.
+    
+
+        
+        
+        
+
+\end{itemize}

@@ -87,3 +87,7 @@ lbsim
 
 # Shell executables
 *.sh
+
+# Latex files
+*.log
+*.aux

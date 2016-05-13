@@ -1,0 +1,190 @@
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{settings}
+
+\newcommand{\version}{1.0}    % The current version of the document
+\newcommand{\revised}{\today} % The last time the document  was revised
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%		Including packages		%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%TODO: Consider using tabu instead of longtables and tabular.
+%TODO: Consider making new label/reference commands.
+%TODO: Consider bibtex vs biber and using biblatex.
+%TODO: Consider sorting packages.
+
+%Bibliography test
+
+%\usepackage[
+%backend=biber,
+%style=alphabetic,
+%citestyle=phys
+%]{biblatex}
+%\RequirePackage{csquotes} %used by biblatex
+
+% \addbibresource{bibliography.bib} %Imports bibliography file
+
+\RequirePackage[english]{babel}%....................................% Make the default language English
+\RequirePackage[final]{graphicx}%...................................% Provides more options to \includegraphics
+\RequirePackage{array}%.............................................% Additional options in tables (Extension of array and tabular environment)
+\RequirePackage[table, usenames]{xcolor}%...........................% Color extension
+\RequirePackage{parskip}%...........................................% Tidies up changes to \parskip and \parindent
+\RequirePackage{amsmath,amsbsy,mathtools}%.................................% Math packages
+\RequirePackage{booktabs}%..........................................% Enhance the quality of tables 
+\RequirePackage[utf8]{inputenc}%....................................% Sets input encoding
+\RequirePackage{multirow}%..........................................% Allows tabular cells spanning multiple rows
+\RequirePackage{hhline}%............................................% Identical to cline, but cline is noe compatible with rowcolor.
+\RequirePackage{float}%.............................................% Improved interface for floating objects
+\RequirePackage{subfig}%............................................% Makes it possible to break figures into subfigures.
+\RequirePackage{longtable}%.........................................% Allow tables to flow over page boundaries
+\RequirePackage[T1]{fontenc}%.......................................% Standard package for selecting font encodings
+\RequirePackage{lmodern}%...........................................% Makes it possible to search for accented words in latin modern fonts
+\RequirePackage{enumitem}%..........................................% Control layout of itemize, enumerate, description
+\RequirePackage[bottom = 2.5 cm, headheight = 23 pt]{geometry}%.....% Options for the layout of the document. Header, foot, margin etc.
+\RequirePackage{fancyhdr}%..........................................% Adds additional options to header and foot
+\RequirePackage{titlesec}%..........................................% Select alternative section titles
+\RequirePackage{textcomp}%..........................................% LATEX support for the Text Companion fonts
+\RequirePackage{bm}%................................................% To make simultanious bold and italic font in equations.
+%\RequirePackage{siunitx}%...........................................% Include the \SI command which gives correct units.
+%\RequirePackage{layout}%............................................% For printing the layout
+%\RequirePackage{imakeidx}%..........................................% Handles multiple indecies
+%\RequirePackage{nomencl}%...........................................% Produces list of symbols using MakeIndex programme. May want to include later.
+%\RequirePackage{placeins}%..........................................% Defines \FloatBarrier
+%\RequirePackage{pbox}%..............................................% For making boxes of text. Can be used to force linebreaks in tables.
+%\RequirePackage[final]{pdfpages}%...................................% To include pdf pages.
+
+% Defining colors. Needed for a package below
+
+\definecolor{myred}{rgb}{0.7,0,0.0}
+\definecolor{myblue}{rgb}{0,0,0.8}
+\definecolor{mygreen}{rgb}{0,0.7,0.2}
+\definecolor{mypurple}{rgb}{0.6,0,0.8}
+\definecolor{logoblue}{rgb}{0.05,0.25,0.47}
+% END color.
+
+\RequirePackage[breaklinks=true, bookmarks=true, pdfview={Fit}, pdfstartview={Fit}, colorlinks=true, linkcolor=myblue, urlcolor=blue, citecolor=mygreen, hypertexnames=false]{hyperref}%..% Hyperlinks
+\RequirePackage{bookmark}%..........................................% Options for bookmarks and better algorithm
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%		Defining commands		%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%------------------------------------%
+% Labeling and referenceing commands %
+%------------------------------------%
+
+\newcommand\tablabel[1]{\hypertarget{htab:#1}{\label{tab:#1}}}
+\newcommand\seclabel[1]{\hypertarget{hsec:#1}{\label{sec:#1}}}
+\newcommand\subseclabel[1]{\hypertarget{hsubsec:#1}{\label{subsec:#1}}}
+\newcommand\subsubseclabel[1]{\hypertarget{hsubsubsec:#1}{\label{subsubsec:#1}}}
+\newcommand\eqlabel[1]{\hypertarget{heq:#1}{\label{eq:#1}}}
+\newcommand\figlabel[1]{\hypertarget{hfig:#1}{\label{fig:#1}}}
+\newcommand\chaplabel[1]{\hypertarget{hchap:#1}{\label{chap:#1}}}
+
+\newcommand{\figref}[1]{{Figure \ref{fig:#1}}}
+\newcommand{\tabref}[1]{Table \ref{tab:#1}}
+\newcommand{\secref}[1]{Section \ref{sec:#1}}
+\newcommand{\subsecref}[1]{Subsection \ref{subsec:#1}}
+\newcommand{\subsubsecref}[1]{Subsubsection \ref{subsubsec:#1}}
+\newcommand{\equref}[1]{Eq. \ref{eq:#1}}
+\newcommand{\chapref}[1]{Chapter \ref{chap:#1}}
+\newcommand{\mysection}[2]{\section{#1}\label{sec:#2}}
+
+%-----------------%
+% Figure commands %
+%-----------------%
+
+\newcommand{\autofigure}[5]{
+	\begin{figure}[!ht]%[!ht]
+		\begin{center}
+			\resizebox{#3\textwidth}{!}{\rotatebox{#4}{\includegraphics{#1}}}
+			\caption{#2}
+			\figlabel{#5}
+		\end{center}
+	\end{figure}
+}
+
+
+\newcommand{\myfigt}[6]{
+	\begin{figure}[h]% [t]
+		\begin{center}
+			\subfloat[#3]
+			{\resizebox{0.45\textwidth}{!}{\includegraphics{#1}}}
+			\subfloat[#4]
+			{\resizebox{0.45\textwidth}{!}{\includegraphics{#2}}}
+		\end{center}
+		\caption{#5}
+		\figlabel{#6}
+	\end{figure}
+}
+
+%--------------------------%
+%      Table commands      %
+%--------------------------%
+
+% Alignment commands %
+
+%\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+%\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+%\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+%--------------------------%
+% Foot and Header commands %
+%--------------------------%
+
+\newcommand{\SetStandardHeader}{
+	\fancyhead[RE,LO]{}
+	\fancyhead[RO,LE]{Section \thesection}
+}
+
+\newcommand{\SetStandardFoot}{
+	\fancyfoot[RE,LO]{{Version \version}}
+	\fancyfoot[C]{\thepage}
+	\fancyfoot[RO,LE]{{} }
+}
+
+\newcommand{\SetCustomHeader}[3]{
+	\fancyhead[RE,LO]{#1}
+	\fancyhead[C]{#2}
+	\fancyhead[RO,LE]{#3}
+}
+
+\newcommand{\SetCustomFoot}[3]{
+	\fancyfoot[RE,LO]{#1}
+	\fancyfoot[C]{#2}
+	\fancyfoot[RO,LE]{#3}
+}
+
+\renewcommand\headrulewidth{0.4pt}
+\renewcommand\footrulewidth{0.4pt}
+
+
+%---------------------%
+% Sectioning commands %
+%---------------------%
+
+% Use these if you want alphabetical parts instead of numerical.
+% \renewcommand{\thepart}{\Alph{part}}
+% \renewcommand{\thechapter}{\thepart\arabic{chapter}}
+% \renewcommand{\thesection}{\thechapter\vspace{5pt}.\arabic{section}}
+
+%------------------------%
+% Miscellaneous commands %
+%------------------------%
+
+%Creates a blank page
+\newcommand{\BlankPage}{\FloatBarrier \newpage \quad \newpage \FloatBarrier} 
+
+% \renewcommand*{\familydefault}{\sfdefault}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%		Miscellaneous Settings		%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pdfoptionpdfminorversion = 6 %.........% Set the PDF version built to 1.6
+
+
+
