@@ -2,3 +2,78 @@
 % question 5: Show that the collision rule in LBM preserves mass and momentum.
 
 \section{Conservation of mass and momentum in the collision rule}
+
+
+Collision rule:
+\begin{equation}
+    f_i^*(\vec{x}, \, t) = f_i(\vec{x}, \, t) - \frac{1}{\tau}(f_i(\vec{x},\, t) - f_i^{eq}(\vec{x}, \, t))
+\label{collision}
+\end{equation}
+
+
+Approximation to the equilibrium state which holds when the distribution is close to equilibrium:
+
+\begin{equation}
+    f_i^{eq}(\vec{x}, \, t) \approx w_i\rho 
+    \left[ 1 + 
+    \frac{ \vec{c}_i \cdot \vec{u} }{c_s^2} + 
+    \frac{(\vec{c}_i \cdot \vec{u})^2}{c_s^4} -
+    \frac{\vec{u}\cdot\vec{u}}{c_s^2}
+    \right].
+\label{approx}
+\end{equation}
+
+Properties on $w_i$ (there are more, but only these are needed here):
+
+\begin{equation}
+    c_s^2 = \sum_{i=0}^{Q-1} w_i\cdot c_i ^2,
+\label{prop1}
+\end{equation}
+
+\begin{equation}
+    \sum_{i=0}^{Q-1} w_i = 1,
+\label{prop2}
+\end{equation}
+
+\begin{equation}
+    \sum_{i=0}^{Q-1} w_i \cdot c_i^\alpha = 0 \quad  \alpha = x,\, y, \, z.
+\label{prop3}
+\end{equation}
+
+Before the collision step we have the density
+\begin{equation}
+\rho = \sum_{i=0}^{Q-1} f_i(\vec{x}, \, t) .
+\end{equation}
+
+After the collision the density is
+
+\begin{equation}
+    \rho^* = \sum_{i=0}^{Q-1} f_i^*(\vec{x}, \, t).
+\end{equation}
+
+
+Lets first look at the sum over the equilibrium distribution:
+
+\begin{equation}
+    \sum_{i=0}^{Q-1} f_i^{eq}(\vec{x}, \, t) =  \sum_{i=0}^{Q-1} \left( 
+     w_i\rho \left[ 1 + 
+    \frac{ \vec{c}_i \cdot \vec{u} }{c_s^2} + 
+    \frac{(\vec{c}_i \cdot \vec{u})^2}{c_s^4} -
+    \frac{\vec{u}\cdot\vec{u}}{c_s^2}
+    \right]
+    \right).
+\label{sum_eq}
+\end{equation}
+
+By virtue of eq. \ref{prop1}, \ref{prop2} and \ref{prop3} eq. \ref{sum_eq} becomes after some calculation
+\begin{equation}
+    \sum_{i=0}^{Q-1} f_i^{eq}(\vec{x}, \, t) =  \rho.
+\end{equation}
+
+Hence the after collison density becomes
+
+\begin{equation}
+    \rho^* = \rho,
+\end{equation}
+
+and we have mass conservation.
