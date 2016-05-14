@@ -1,9 +1,16 @@
 #include "streaming.h"
 #include "LBDefinitions.h"
 
+
+/* Another (obsolete) version where we iterated over FLUID cells with 3 loops (x,y,z) turned out to
+ * to be slower than the current version.
+ *
+ * Here we just iterate over flagField and depending of the value carrying out the streaming.
+ * Furthermore, the loop is unrolled which gained better performance.
+ */
 void doStreaming(double *collideField, double *streamField,int *flagField,int xlength){
 	/*
-	 * For each FLUID field (this) copy distribution f_i from all neighboring
+	 * Each FLUID cell (this) copies the distribution f_i-values of all neighboring
 	 * cells of this.
 	 */
 
@@ -11,27 +18,34 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 	int xlen_2sq = xlen_2*xlen_2;
 	int totalSize = xlen_2*xlen_2sq;
 
-	int i;
-
 	int nextCellIndex, currentCellIndex;
 
-	for (i = 0; i < totalSize; i++) {
+	for (int i = 0; i < totalSize; i++) {
 		if (flagField[i] == 0) {
 			currentCellIndex = Q*i;
 
 			// Loop unroll
+			//current cell to neighbor cell in direction LATTICEVELOCITIES[18] = {0,1,1}
+			//distribution j = 0
 			nextCellIndex = Q*(i+xlen_2sq+xlen_2);
 			streamField[currentCellIndex] = collideField[nextCellIndex];
 
+			//current cell to neighbor cell in direction LATTICEVELOCITIES[17] = {1,0,1}
+			//distribution j = 1
 			nextCellIndex = Q*(i+xlen_2sq+1);
 			streamField[currentCellIndex+1] = collideField[nextCellIndex+1];
 
+			//current cell to neighbor cell in direction LATTICEVELOCITIES[16] = {0,0,1}
+			//distribution j = 2
 			nextCellIndex = Q*(i+xlen_2sq);
 			streamField[currentCellIndex+2] = collideField[nextCellIndex+2];
 
+			//current cell to neighbor cell in direction LATTICEVELOCITIES[Q-j-1]
+			//distribution j = 3
 			nextCellIndex = Q*(i+xlen_2sq-1);
 			streamField[currentCellIndex+3] = collideField[nextCellIndex+3];
 
+			//etc...
 			nextCellIndex = Q*(i+xlen_2sq-xlen_2);
 			streamField[currentCellIndex+4] = collideField[nextCellIndex+4];
 
