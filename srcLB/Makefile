@@ -7,12 +7,6 @@ CC=gcc
 
 CFLAGS=-Werror -pedantic -Wall -std=c99 #-O0 -g -pg # -enable-checking -v -da -Q
 
-ifeq ($@,speed)
-CFLAGS += -DNO_CHECKS -O3  #-O0 -g -pg # -enable-checking -v -da -Q
-else
-CFLAGS += -O0
-endif
-
 # Linker flags
 # ------------
 LDFLAGS= -lm #-pg
@@ -20,9 +14,11 @@ LDFLAGS= -lm #-pg
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=lbsim
 
-all:	$(EXECUTABLE)
+all: CFLAGS+= -O0
+all: clean $(EXECUTABLE)
 
-speed: $(EXECUTABLE)
+speed: CFLAGS+= -DNO_CHECKS -O3
+speed: clean $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
