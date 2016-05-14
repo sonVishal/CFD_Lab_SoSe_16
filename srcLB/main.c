@@ -29,6 +29,14 @@ int main(int argc, char *argv[]){
     //tau is calculated automatically from the reynoldsnumber
     readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
 
+#ifdef NO_CHECKS
+    printf("INFO: The compiler directive NO_CHECKS is enabled. Sexecution times are gained, "
+    		"at the cost of less correctness checks!\n");
+#else
+    printf("INFO: The compiler directive NO_CHECKS is disables. Checks for "
+    		"correctness are carried out at the cost of execution speed!\n");
+#endif
+
     /*Initializing pointers*/
     int totalsize = (xlength+2)*(xlength+2)*(xlength+2);
     collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
@@ -42,7 +50,7 @@ int main(int argc, char *argv[]){
     printf("INFO: write vtk file at time t = %d \n", t);
     writeVtkOutput(collideField,flagField,fName,t,xlength);
 
-    for(t = 1; t <= timesteps; t++){
+    for(t = 1; t <= 2; t++){
 	    double *swap=NULL;
 	    doStreaming(collideField,streamField,flagField,xlength);
 
