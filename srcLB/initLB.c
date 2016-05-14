@@ -27,10 +27,20 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     /*Calculates tau from the Reynolds number*/
     u_wall = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity); 
     *tau    =  u_wall*(*xlength)/(C_S*C_S*Re) +0.5;
-    printf("Calculated tau = %f\n\n", *tau);
+    printf("INFO: Calculated tau = %f\n", *tau);
 
     if(*tau<0.5 || *tau>2){
-        ERROR("ERROR: tau is out of stability region (aborting) \n");
+        ERROR("tau is out of stability region (aborting) \n");
+    }
+
+    double wallSpeed = sqrt(velocityWall[0]*velocityWall[0] +
+    		velocityWall[1]*velocityWall[1] +
+			velocityWall[2]*velocityWall[2]);
+
+    printf("INFO: Wall speed = %f \n\n", wallSpeed);
+
+    if(wallSpeed >= C_S){
+    	ERROR("Wall speed is supersonic (aborting). \n");
     }
 
   return 0;
