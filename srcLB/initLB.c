@@ -33,13 +33,9 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
         ERROR("tau is out of stability region (aborting) \n");
     }
 
-    double wallSpeed = sqrt(velocityWall[0]*velocityWall[0] +
-    		velocityWall[1]*velocityWall[1] +
-			velocityWall[2]*velocityWall[2]);
+    printf("INFO: Wall speed = %f \n\n", u_wall);
 
-    printf("INFO: Wall speed = %f \n\n", wallSpeed);
-
-    if(wallSpeed >= C_S){
+    if(u_wall >= C_S){
     	ERROR("Wall speed is supersonic (aborting). \n");
     }
 
