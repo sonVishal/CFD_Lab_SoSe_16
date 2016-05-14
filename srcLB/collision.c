@@ -15,6 +15,7 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 
 #ifndef NO_CHECKS
 		if(currentCell[i]<0){
+			printf("INFO: cell value of %f detected. \n", currentCell[i]);
 			ERROR("Encountered negative particle distribution (Aborting)\n");
 		}
 #endif
@@ -46,7 +47,7 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 }
 
 // Perform collision for all inner cells
-void doCollision(double *collideField, int *flagField,const double * const tau,int xlength){
+void doCollision(double *collideField, int *flagField,const double * const tau, int xlength){
 
 	// Define iteration indices
 	int idx, x, y, z;
@@ -57,7 +58,7 @@ void doCollision(double *collideField, int *flagField,const double * const tau,i
 	// Temporary variables for z and y offsets
 	int zOffset, yOffset;
 
-	// Perform collision on all "inner" cells
+	// Perform collision on all "inner" (FLUID) cells
 	for (z = 1; z <= xlength ; z++) {
 		zOffset = z*xlen2;
 		for (y = 1; y <= xlength; y++) {
@@ -78,7 +79,8 @@ void doCollision(double *collideField, int *flagField,const double * const tau,i
 				computeDensity(currentCell, &density);
 
 #ifndef NO_CHECKS
-				if(fabs(density-1) > 0.001){
+				if(fabs(density-1) > 0.035){
+					printf("INFO: density of %f detected at x=%i, y=%i, z=%i \n", density, x, y, z);
 					ERROR("Density change is too high (Aborting)");
 				}
 #endif
