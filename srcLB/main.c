@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
     readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
 
 #ifdef NO_CHECKS
-    printf("INFO: The compiler directive NO_CHECKS is enabled. Sexecution times are gained, "
+    printf("INFO: The compiler directive NO_CHECKS is enabled. Execution times are gained, "
     		"at the cost of less correctness checks!\n");
 #else
     printf("INFO: The compiler directive NO_CHECKS is disables. Checks for "
