@@ -15,7 +15,7 @@ OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=lbsim
 
 all: CFLAGS+= -O0
-all: clean $(EXECUTABLE)
+all: $(EXECUTABLE)
 
 speed: CFLAGS+= -DNO_CHECKS -O3
 speed: clean $(EXECUTABLE)
