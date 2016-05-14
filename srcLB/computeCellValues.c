@@ -1,15 +1,18 @@
 #include "computeCellValues.h"
 
-// TODO: (VS) Keep old code in comment for all functions
-// so that it is clear what was done before optimizing for speed
-
 /** computes the density from the particle distribution functions stored at
  *  currentCell. currentCell thus denotes the address of the first particle
  *  distribution function of the respective cell.
  *  The result is stored in density.
  */
 void computeDensity(const double *const currentCell, double *density){
-    // Compute cell density
+    /* Semantics of unrolled loop:
+     *
+	 *	for (i = 0; i < Q; i++) {
+	 *		 *density += currentCell[i];
+	 *	}
+     */
+
     (*density) = currentCell[0]+currentCell[1]+currentCell[2]+currentCell[3]+
         currentCell[4]+currentCell[5]+currentCell[6]+currentCell[7]+
         currentCell[8]+currentCell[9]+currentCell[10]+currentCell[11]+
@@ -19,9 +22,18 @@ void computeDensity(const double *const currentCell, double *density){
 
 /** computes the velocity within currentCell and stores the result in velocity */
 void computeVelocity(const double * const currentCell, const double * const density, double *velocity){
-    // Unroll the loop for cache efficient access
-    // Blocks of 4 for efficient cache access
 
+	/* Semantics of unrolled loop:
+	 *
+	 * for (i = 0; i < Q; i++) {
+	 * 	   velocity[0] += currentCell[i]*LATTICEVELOCITIES[i][0];
+	 * 	   velocity[1] += currentCell[i]*LATTICEVELOCITIES[i][1];
+	 * 	   velocity[2] += currentCell[i]*LATTICEVELOCITIES[i][2];
+	 * }
+	 */
+
+	// Unroll the loop for cache efficient access
+    // Blocks of 4 for efficient cache access
     // 0 to 3
     velocity[0] = -currentCell[1]+currentCell[3];
     velocity[1] = -currentCell[0];
@@ -59,7 +71,7 @@ void computeFeq(const double * const density, const double * const velocity, dou
 
     // Temporary variables for speed of sound squared and ^4
 	/* TODO(DL): since it is called that often and having the most work, I made these static
-	*  to only compute these values once! */
+	*  to only compute these values once! Check if we want that for the final version...?!*/
     static double const cs_2 = C_S*C_S;
     static double const cs_4_2 = 2*C_S*C_S*C_S*C_S;
 
@@ -76,6 +88,16 @@ void computeFeq(const double * const density, const double * const velocity, dou
     double const d1 = (*density)*LATTICEWEIGHTS[0];
     double const d2 = (*density)*LATTICEWEIGHTS[2];
     double const d3 = (*density)*LATTICEWEIGHTS[9];
+
+
+    /* Semantics of unrolled loop:
+     * for (i = 0; i < Q; i++) {
+	 *		dot_product(velocity, velocity);
+	 *		dot_product(velocity, LATTICEVELOCITIES[i]);
+	 *		tmp = dotProd2/C_S_2;
+	 *		feq[i] = LATTICEWEIGHTS[i]*(*density)*(1 + tmp + tmp*tmp/2 - dotProd1/(2*C_S_2));
+	 *	}
+	 */
 
     // Unroll loop
     feq[0]  = d1*(u_u + (-uy-uz)*(1/cs_2 + (-uy-uz)/cs_4_2));

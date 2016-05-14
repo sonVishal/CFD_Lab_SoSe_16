@@ -49,7 +49,7 @@ void doCollision(double *collideField, int *flagField,const double * const tau,i
 	int idx, x, y, z;
 
 	// Temporary variables for xlength^2
-	long int const xlen2 = (xlength+2)*(xlength+2);
+	int const xlen2 = (xlength+2)*(xlength+2);
 
 	// Temporary variables for z and y offsets
 	int zOffset, yOffset;
@@ -67,8 +67,14 @@ void doCollision(double *collideField, int *flagField,const double * const tau,i
 				double *currentCell = &collideField[idx];
 
 				// Allocate memory to local cell parameters
-				//TODO: (TKS) is this cheaper than allocating outside loop structure
-				//            and looping over to initialize?
+				/* TODO: (TKS) is this cheaper than allocating outside loop structure
+				            and looping over to initialize?
+
+				(DL) regarding to this: https://stackoverflow.com/questions/26541095/stack-allocation-inside-a-loop
+				 it does not matter .. so we can leave it here, the {0,0,0} costs a bit and not necessarily required
+				 anymore because in computeVelocity the values get first set with "=", instead of "+=" directly...
+				 may still be safer to leave it - cost me some debugging time before ;-) */
+
 				double density;
 				double velocity[3] = {0,0,0};
 				double feq[19];

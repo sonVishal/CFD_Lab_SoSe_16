@@ -10,6 +10,7 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     double Re;
     double u_wall;
 
+    /* Read values from file given in argv */
     READ_INT(*argv, *xlength);
     READ_DOUBLE(*argv, Re);
 
@@ -26,10 +27,10 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
 
     /*Calculates tau from the Reynolds number*/
     u_wall = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity); 
-    *tau    =  u_wall*(*xlength)/(C_S*C_S*Re) +0.5;
+    *tau    =  u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
     printf("INFO: Calculated tau = %f\n", *tau);
 
-    if(*tau<0.5 || *tau>2){
+    if(*tau<=0.5 || *tau>2){
         ERROR("tau is out of stability region (aborting) \n");
     }
 
@@ -56,6 +57,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     // Temporary variables for z and y offsets
     int zOffset, yzOffset;
 
+    /* initialize collideField and streamField */
     int x,y,z;
     for ( z = 0; z <= xlength+1; ++z) {
         zOffset = z*xlen2;
@@ -73,11 +75,11 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     }
 
 
-    /*Lopping over boundary of flagFields*/
-    //All points set to zero at initialisation
+    /*Looping over boundary of flagFields*/
+    //All points set to zero at initialization
 
-    // These are the no-slip walls
-    // z = 0
+    //These are the no-slip walls
+    //fixed: z = 0
     for (y = 0; y <= xlength+1; y++) {
         idx = y*(xlength+2);
         for (x = 0; x <= xlength+1; x++) {
@@ -85,30 +87,34 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
         }
     }
 
-    // x = 0
-    for (z = 1; z <= xlength; z++) {
+    //fixed: x = 0
+    for (z = 1; z <= xlength; z++) { //from 1 to not include previous cells again from z=0
         zOffset = z*xlen2;
         for (y = 0; y <= xlength+1; y++) {
             flagField[zOffset+y*(xlength+2)] = 1;
         }
     }
 
-    // x = xlength+1
-    for (z = 1; z <= xlength; z++) {
+    //fixed: x = xlength+1
+    for (z = 1; z <= xlength; z++) { //from 1 to not include previous cells again from z=0
         zOffset = z*xlen2 + xlength + 1;
         for (y = 0; y <= xlength+1; y++) {
             flagField[zOffset+y*(xlength+2)] = 1;
         }
     }
 
-    // y = 0
+    //fixed: y = 0
+    //from 1:xlength only, to not conclude cells at upper, lower, left and right edges
+    //The edge cells are set in the other loops.
     for (z = 1; z <= xlength; z++) {
         zOffset = z*xlen2;
         for (x = 1; x <= xlength; x++) {
             flagField[zOffset+x] = 1;
         }
     }
-    // y = xlength+1
+
+    //fixed: y = xlength+1
+    //same reasoning for index range as in fixed y=0
     for (z = 1; z <= xlength; z++) {
         zOffset = z*xlen2 + (xlength+1)*(xlength+2);
         for (x = 1; x <= xlength; x++) {
@@ -116,8 +122,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
         }
     }
 
-    // This is the moving wall
-    // z = xlength+1
+    // This is the moving wall. All cells at z=xlength+1 are included (also the edge cells).
+    // fixed: z = xlength+1
     zOffset = (xlength+1)*xlen2;
     for (y = 0; y <= xlength+1; y++) {
         idx = zOffset + y*(xlength+2);
