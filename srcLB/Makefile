@@ -5,7 +5,13 @@ SOURCES=initLB.c visualLB.c boundary.c collision.c streaming.c computeCellValues
 # --------
 CC=gcc
 
-CFLAGS=-Werror -pedantic -Wall -std=c99 -O3 #-O0 -g -pg # -enable-checking -v -da -Q
+CFLAGS=-Werror -pedantic -Wall -std=c99 #-O0 -g -pg # -enable-checking -v -da -Q
+
+ifeq ($@,speed)
+CFLAGS += -DNO_CHECKS -O3  #-O0 -g -pg # -enable-checking -v -da -Q
+else
+CFLAGS += -O0
+endif
 
 # Linker flags
 # ------------
@@ -14,7 +20,9 @@ LDFLAGS= -lm #-pg
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=lbsim
 
-all: $(EXECUTABLE)
+all:	$(EXECUTABLE)
+
+speed: $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
