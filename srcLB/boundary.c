@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "boundary.h"
+#include "helper.h"
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 
