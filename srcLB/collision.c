@@ -9,10 +9,13 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 	for ( int i = 0;  i< Q; ++i ) {
 		currentCell[i] = currentCell[i]  - (currentCell[i]  - feq[i])/(*tau);
 		//TODO: (TKS) This makes it run 6 sec slower on O3
+		/*TODO: (DL): I think 6 sec. is in the range of variance.. so I think we should not unroll,
+		 * because the loop is also easier to read.
+		 */
 
 #ifndef NO_CHECKS
 		if(currentCell[i]<0){
-			ERROR("ERROR: Encountered negative particle distribution (Aborting)\n");
+			ERROR("Encountered negative particle distribution (Aborting)\n");
 		}
 #endif
 
@@ -67,16 +70,8 @@ void doCollision(double *collideField, int *flagField,const double * const tau,i
 				double *currentCell = &collideField[idx];
 
 				// Allocate memory to local cell parameters
-				/* TODO: (TKS) is this cheaper than allocating outside loop structure
-				            and looping over to initialize?
-
-				(DL) regarding to this: https://stackoverflow.com/questions/26541095/stack-allocation-inside-a-loop
-				 it does not matter .. so we can leave it here, the {0,0,0} costs a bit and not necessarily required
-				 anymore because in computeVelocity the values get first set with "=", instead of "+=" directly...
-				 may still be safer to leave it - cost me some debugging time before ;-) */
-
 				double density;
-				double velocity[3] = {0,0,0};
+				double velocity[3];
 				double feq[19];
 
 				// Compute the cell density
@@ -84,7 +79,7 @@ void doCollision(double *collideField, int *flagField,const double * const tau,i
 
 #ifndef NO_CHECKS
 				if(fabs(density-1) > 0.001){
-					ERROR("ERROR: Density change is too high (Aborting)");
+					ERROR("Density change is too high (Aborting)");
 				}
 #endif
 
