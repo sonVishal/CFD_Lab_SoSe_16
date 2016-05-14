@@ -50,7 +50,7 @@ int main(int argc, char *argv[]){
     printf("INFO: write vtk file at time t = %d \n", t);
     writeVtkOutput(collideField,flagField,fName,t,xlength);
 
-    for(t = 1; t <= 2; t++){
+    for(t = 1; t <= timesteps; t++){
 	    double *swap=NULL;
 	    doStreaming(collideField,streamField,flagField,xlength);
 
