@@ -24,7 +24,7 @@ int main(int argc, char *argv[]){
 
     // File printing parameters
     char fName[80];
-    snprintf(fName, 80, "pv_files/test");
+    snprintf(fName, 80, "pv_files/worksheet2");
 
     /*Read parameters and check the bounds on tau*/
     //tau is calculated automatically from the reynoldsnumber
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]){
     printf("\nINFO TIMING:\n");
     printf("Execution time (main loop): \t\t %.3f seconds \n", time_spent);
     printf("#cells (including boundary): \t\t %i cells \n", totalsize);
-    printf("Mega Lattice Updates per Seconds \t %f MLUPS: \n", (totalsize*timesteps)/(1000000*time_spent));
+    printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n", (totalsize*timesteps)/(1000000*time_spent));
 
     free(streamField);
     free(collideField);
