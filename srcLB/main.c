@@ -7,6 +7,7 @@
 #include "streaming.h"
 #include "visualLB.h"
 #include "LBDefinitions.h"
+#include <time.h>
 
 int main(int argc, char *argv[]){
 
@@ -50,6 +51,11 @@ int main(int argc, char *argv[]){
     printf("INFO: write vtk file at time t = %d \n", t);
     writeVtkOutput(collideField,flagField,fName,t,xlength);
 
+    //Timing variables:
+    clock_t begin_timing, end_timing;
+    double time_spent;
+
+    begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
 	    double *swap=NULL;
 	    doStreaming(collideField,streamField,flagField,xlength);
@@ -66,6 +72,14 @@ int main(int argc, char *argv[]){
 	        writeVtkOutput(collideField,flagField,fName,t,xlength);
 	    }
     }
+    end_timing = clock();
+    time_spent = (double)(end_timing - begin_timing) / CLOCKS_PER_SEC;
+
+    printf("\n===============================================================\n");
+    printf("\nINFO TIMING:\n");
+    printf("Execution time (main loop): \t\t %.3f seconds \n", time_spent);
+    printf("#cells (including boundary): \t\t %i cells \n", totalsize);
+    printf("Mega Lattice Updates per Seconds \t %f MLUPS: \n", (totalsize*timesteps)/(1000000*time_spent));
 
     free(streamField);
     free(collideField);
