@@ -3,6 +3,8 @@
 
 \section{Conservation of mass and momentum in the streaming rule}
 
+TODO: Consider momentum
+
 \subsection{Heuristic argument}
 
 \subsubsection{Single cell}
@@ -18,5 +20,9 @@ different than before the streaming.
 
 \subsubsection{Over neighbouring cells}
 
-
+The same argument as before may be applied to a collection of cells which are not
+the entire domain. If we have a subset of cells there is always some that stream
+out of the subset and get distributions streamed in from the outside. Since the 
+distributions streamed in are independent of each other the mass in this subset
+of cells is not necessarily conserved between timesteps.
 
