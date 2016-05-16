@@ -31,4 +31,9 @@ static const double LATTICEWEIGHTS[19] = {
 
 // Speed of sound
 #define C_S ((double)0.57735026918962576) // double cast to guarantee type safety
+
+// Tolerances
+static const double densityTol  = 0.03;
+static const double machNrTol   = 0.1;
+
 #endif

@@ -8,10 +8,6 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 	//double tau_val = *tau;
 	for ( int i = 0;  i< Q; ++i ) {
 		currentCell[i] = currentCell[i]  - (currentCell[i]  - feq[i])/(*tau);
-		//TODO: (TKS) This makes it run 6 sec slower on O3
-		/*TODO: (DL): I think 6 sec. is in the range of variance.. so I think we should not unroll,
-		 * because the loop is also easier to read.
-		 */
 
 #ifndef NO_CHECKS
 		if(currentCell[i]<0){
@@ -20,31 +16,7 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 			ERROR(msg);
 		}
 #endif
-
-
 	}
-	//TODO: (TKS) loops run better for O3, rolling out better for O0
-	//      Need to decide which version we are going for.
-	//      If going for the one below, need to implement neg- particle check for it.
-	//currentCell[0]  = currentCell[0]  - (currentCell[0]  - feq[0])/(*tau);
-	//currentCell[1]  = currentCell[1]  - (currentCell[1]  - feq[1])/(*tau);
-	//currentCell[2]  = currentCell[2]  - (currentCell[2]  - feq[2])/(*tau);
-	//currentCell[3]  = currentCell[3]  - (currentCell[3]  - feq[3])/(*tau);
-	//currentCell[4]  = currentCell[4]  - (currentCell[4]  - feq[4])/(*tau);
-	//currentCell[5]  = currentCell[5]  - (currentCell[5]  - feq[5])/(*tau);
-	//currentCell[6]  = currentCell[6]  - (currentCell[6]  - feq[6])/(*tau);
-	//currentCell[7]  = currentCell[7]  - (currentCell[7]  - feq[7])/(*tau);
-	//currentCell[8]  = currentCell[8]  - (currentCell[8]  - feq[8])/(*tau);
-	//currentCell[9]  = currentCell[9]  - (currentCell[9]  - feq[9])/(*tau);
-	//currentCell[10] = currentCell[10] - (currentCell[10] - feq[10])/(*tau);
-	//currentCell[11] = currentCell[11] - (currentCell[11] - feq[11])/(*tau);
-	//currentCell[12] = currentCell[12] - (currentCell[12] - feq[12])/(*tau);
-	//currentCell[13] = currentCell[13] - (currentCell[13] - feq[13])/(*tau);
-	//currentCell[14] = currentCell[14] - (currentCell[14] - feq[14])/(*tau);
-	//currentCell[15] = currentCell[15] - (currentCell[15] - feq[15])/(*tau);
-	//currentCell[16] = currentCell[16] - (currentCell[16] - feq[16])/(*tau);
-	//currentCell[17] = currentCell[17] - (currentCell[17] - feq[17])/(*tau);
-	//currentCell[18] = currentCell[18] - (currentCell[18] - feq[18])/(*tau);
 }
 
 // Perform collision for all inner cells
@@ -80,10 +52,9 @@ void doCollision(double *collideField, int *flagField,const double * const tau, 
 				computeDensity(currentCell, &density);
 
 #ifndef NO_CHECKS
-				/* TODO: (DL) discuss: final value we want to have our tolerance*/
-				/* TODO: should we set these tolerances somewhere else? E.g. in LBDefinitions, or cavity.dat?*/
-				double TOL = 0.03;
-				if(fabs(density-1) > TOL){
+				// We check if the density deviation is more than densityTol%
+				// This value can be changed in LBDefinitions.h
+				if(fabs(density-1) > densityTol){
 					char msg[120];
 					sprintf(msg, "A density value (%f) outside the given tolerance of %.2f %% was detected in cell: "
 							"x=%i, y=%i, z=%i", density, (TOL*100), x, y, z);

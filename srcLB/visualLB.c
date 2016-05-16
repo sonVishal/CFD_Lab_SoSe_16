@@ -3,11 +3,6 @@
 #include "helper.h"
 #include <stdlib.h>
 
-// TODO: (VS) What is the purpose of flagField over here????
-// Are we supposed to also show boundary data for visualization???
-// Currently not assuming boundary layer is to be included
-// In case boundary layer needs to be included do "+2" everywhere
-
 // Function to write VTK output files for visualization
 // Inputs
 // collideField - Probability distribution function
@@ -149,6 +144,7 @@ void writeVtkOutput(const double * const collideField,
     }
 }
 
+// Header for the VTK files
 void writevtkHeader(FILE *fp, int xlength)
 {
     if(fp == NULL)

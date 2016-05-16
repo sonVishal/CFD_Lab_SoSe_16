@@ -70,8 +70,8 @@ void computeVelocity(const double * const currentCell, const double * const dens
 void computeFeq(const double * const density, const double * const velocity, double *feq){
 
     // Temporary variables for speed of sound squared and ^4
-	/* TODO(DL): since it is called that often and having the most work, I made these static
-	*  to only compute these values once! Check if we want that for the final version...?!*/
+	// Since it is called that often and having the most work, we made these static
+	// to only compute these values once!
     static double const cs_2 = C_S*C_S;
     static double const cs_4_2 = 2*C_S*C_S*C_S*C_S;
 

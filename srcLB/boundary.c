@@ -4,10 +4,6 @@
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 
-/*
- * TODO: (DL) treat overlapping cells (double computation of corner values)
- */
-
 /* Enum that gives a distinction of the walls with respective to the fixed value of (x,y,z) */
 enum WALLS{E_XFIXED, E_YFIXED, E_ZFIXED};
 

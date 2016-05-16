@@ -25,9 +25,9 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     READ_INT(*argv, *timestepsPerPlotting);
 
     /*Calculates tau from the Reynolds number*/
-    u_wall = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity);
+    u_wall  = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity);
     *tau    =  u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
-    machNr = u_wall/C_S;
+    machNr  = u_wall/C_S;
 
     printf("\nINFO: Calculated tau = %f \n", *tau);
     printf("\nINFO: Wall speed = %f \n", u_wall);
@@ -39,12 +39,15 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     }
 
     if(*tau<=0.5 || *tau>2){
-        ERROR("tau is out of stability region (aborting)! \n");
+        ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
     }
 
-    /*TODO: (DL) discuss: what values do we want to allow, Ma << 1 given */
-    if(machNr > 0.1){
-    	ERROR("Mach number is too large (aborting)! \n");
+    /*We allow user defined mach number tolerance for Ma << 1 (default = 0.1)
+      To change please look at LBDefinitions.h*/
+    if(machNr > machNrTol){
+        char buffer[80];
+        snprintf(buffer, 80, "Mach number is larger than %f (aborting)! \n",machNrTol);
+    	ERROR(buffer);
     }
 
 
@@ -96,7 +99,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     }
 
     //fixed: x = 0
-    for (z = 1; z <= xlength; z++) { //from 1 to not include previous cells again from z=0
+    //We start at 1 to not include previous cells again from z = 0
+    for (z = 1; z <= xlength; z++) {
         zOffset = z*xlen2;
         for (y = 0; y <= xlength+1; y++) {
             flagField[zOffset+y*(xlength+2)] = 1;
@@ -104,7 +108,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     }
 
     //fixed: x = xlength+1
-    for (z = 1; z <= xlength; z++) { //from 1 to not include previous cells again from z=0
+    //We start at 1 to not include previous cells again from z = 0
+    for (z = 1; z <= xlength; z++) {
         zOffset = z*xlen2 + xlength + 1;
         for (y = 0; y <= xlength+1; y++) {
             flagField[zOffset+y*(xlength+2)] = 1;
@@ -112,7 +117,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     }
 
     //fixed: y = 0
-    //from 1:xlength only, to not conclude cells at upper, lower, left and right edges
+    //from 1:xlength only, to not include cells at upper, lower, left and right edges
     //The edge cells are set in the other loops.
     for (z = 1; z <= xlength; z++) {
         zOffset = z*xlen2;

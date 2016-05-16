@@ -17,10 +17,26 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 	int xlen_2 = xlength+2;
 	int xlen_2sq = xlen_2*xlen_2;
 	int totalSize = xlen_2*xlen_2sq;
+	int i;
 
 	int nextCellIndex, currentCellIndex;
 
-	for (int i = 0; i < totalSize; i++) {
+	// Semantics for the loop unrolling
+	// int j;
+	// for (i = 0; i < totalSize; i++) {
+	// 	if (flagField[i] == 0) {
+	// 		currentCellIndex = Q*i;
+	// 		for (j = 0; j < Q; j++) {
+	// 			nextCellIndex = Q*(i-LATTICEVELOCITIES[j][0]-
+	// 				xlen_2*LATTICEVELOCITIES[j][1]-
+	// 				xlen_2sq*LATTICEVELOCITIES[j][2]);
+	// 			streamField[currentCellIndex] = collideField[nextCellIndex];
+	// 		}
+	// 	}
+	// }
+
+	// Loop unrolling done to increase speed
+	for (i = 0; i < totalSize; i++) {
 		if (flagField[i] == 0) {
 			currentCellIndex = Q*i;
 
