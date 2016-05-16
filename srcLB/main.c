@@ -41,7 +41,8 @@ int main(int argc, char *argv[]){
     		"at the cost of less correctness checks during runtime!\n");
 #else
     printf("INFO: The compiler directive NO_CHECKS is disabled. Checks for "
-    		"correctness are carried out at the cost of execution speed!\n");
+    		"correctness are carried out at the cost of execution speed!\n"
+            "Use \"make speed\" for a faster execution time.\n");
 #endif
 
     /*Allocate memory to pointers*/
