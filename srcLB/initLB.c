@@ -86,7 +86,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
 
     /*Looping over boundary of flagFields*/
-    //All points set to zero at initialization
+    //All points set to zero at memory allocation (using calloc)
 
     //These are the no-slip walls
     //fixed: z = 0
