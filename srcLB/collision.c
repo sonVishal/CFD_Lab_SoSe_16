@@ -57,7 +57,7 @@ void doCollision(double *collideField, int *flagField,const double * const tau, 
 				if(fabs(density-1) > densityTol){
 					char msg[120];
 					sprintf(msg, "A density value (%f) outside the given tolerance of %.2f %% was detected in cell: "
-							"x=%i, y=%i, z=%i", density, (TOL*100), x, y, z);
+							"x=%i, y=%i, z=%i", density, (densityTol*100), x, y, z);
 					ERROR(msg);
 				}
 #endif
