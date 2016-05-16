@@ -6,33 +6,34 @@
  *  The result is stored in density.
  */
 void computeDensity(const double *const currentCell, double *density){
-    /* Semantics of unrolled loop:
-     *
-	 *	for (i = 0; i < Q; i++) {
-	 *		 *density += currentCell[i];
-	 *	}
-     */
-
-    (*density) = currentCell[0]+currentCell[1]+currentCell[2]+currentCell[3]+
-        currentCell[4]+currentCell[5]+currentCell[6]+currentCell[7]+
-        currentCell[8]+currentCell[9]+currentCell[10]+currentCell[11]+
-        currentCell[12]+currentCell[13]+currentCell[14]+currentCell[15]+
-        currentCell[16]+currentCell[17]+currentCell[18];
+    // Density is the sum of the distributions in the current lattice
+    int i;
+    *density = 0.0;
+	for (i = 0; i < Q; i++) {
+		 *density += currentCell[i];
+	}
 }
 
 /** computes the velocity within currentCell and stores the result in velocity */
 void computeVelocity(const double * const currentCell, const double * const density, double *velocity){
 
-	/* Semantics of unrolled loop:
-	 *
-	 * for (i = 0; i < Q; i++) {
-	 * 	   velocity[0] += currentCell[i]*LATTICEVELOCITIES[i][0];
-	 * 	   velocity[1] += currentCell[i]*LATTICEVELOCITIES[i][1];
-	 * 	   velocity[2] += currentCell[i]*LATTICEVELOCITIES[i][2];
-	 * }
-	 */
+    // Velocity is the momentum divided by the density
+    // Momentum is the sum of the product of lattice velocity with distribution
+
+    // Semantics of the unrolled loop
+    // velocity[0] = 0.0;
+    // velocity[1] = 0.0;
+    // velocity[2] = 0.0;
+    // int i;
+	// for (i = 0; i < Q; i++) {
+	// 	   velocity[0] += currentCell[i]*LATTICEVELOCITIES[i][0];
+	// 	   velocity[1] += currentCell[i]*LATTICEVELOCITIES[i][1];
+	// 	   velocity[2] += currentCell[i]*LATTICEVELOCITIES[i][2];
+	// }
 
 	// Unroll the loop for cache efficient access
+    // Improved speed even with -O3 flag
+
     // Blocks of 4 for efficient cache access
     // 0 to 3
     velocity[0] = -currentCell[1]+currentCell[3];
@@ -89,17 +90,19 @@ void computeFeq(const double * const density, const double * const velocity, dou
     double const d2 = (*density)*LATTICEWEIGHTS[2];
     double const d3 = (*density)*LATTICEWEIGHTS[9];
 
-
-    /* Semantics of unrolled loop:
-     * for (i = 0; i < Q; i++) {
-	 *		dot_product(velocity, velocity);
-	 *		dot_product(velocity, LATTICEVELOCITIES[i]);
-	 *		tmp = dotProd2/C_S_2;
-	 *		feq[i] = LATTICEWEIGHTS[i]*(*density)*(1 + tmp + tmp*tmp/2 - dotProd1/(2*C_S_2));
-	 *	}
-	 */
+    // Semantics for the unrolled loop
+    // int i;
+    //
+    // for (i = 0; i < Q; i++) {
+	// 	double dotProd1 = ux*ux + uy*uy + uz*uz;
+	// 	double dotProd2 = ux*LATTICEVELOCITIES[i][0]
+    //                     + uy*LATTICEVELOCITIES[i][1]
+    //                     + uz*LATTICEVELOCITIES[i][2];
+	// 	feq[i] = LATTICEWEIGHTS[i]*(*density)*(1 + dotProd2/cs_2 + dotProd2*dotProd2/cs_4_2 - dotProd1/(2*cs_2));
+	// }
 
     // Unroll loop
+    // Faster even with -O3
     feq[0]  = d1*(u_u + (-uy-uz)*(1/cs_2 + (-uy-uz)/cs_4_2));
     feq[1]  = d1*(u_u + (-ux-uz)*(1/cs_2 + (-ux-uz)/cs_4_2));
     feq[2]  = d2*(u_u + (-uz)*(1/cs_2 + (-uz)/cs_4_2));
