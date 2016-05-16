@@ -7,8 +7,7 @@
 int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
 
     double xvelocity, yvelocity, zvelocity;
-    double Re;
-    double u_wall;
+    double Re, u_wall, machNr;
 
     /* Read values from file given in argv */
     READ_INT(*argv, *xlength);
@@ -28,13 +27,20 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     /*Calculates tau from the Reynolds number*/
     u_wall = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity); 
     *tau    =  u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
-    printf("INFO: Calculated tau = %f\n", *tau);
+    machNr = u_wall/C_S;
 
+    printf("INFO: Calculated tau = %f \n", *tau);
+    printf("INFO: Wall speed = %f \n", u_wall);
+    printf("INFO: Mach number = %f \n\n", machNr);
+
+    /* valid settings check*/
     if(*tau<=0.5 || *tau>2){
         ERROR("tau is out of stability region (aborting) \n");
     }
-
-    printf("INFO: Wall speed = %f \n\n", u_wall);
+    /*TODO: (DL) discuss: what values do we want to allow, Ma << 1 given */
+    if(machNr > 0.1){
+    	ERROR("Mach number is too large! (Aborting) \n");
+    }
 
     if(u_wall >= C_S){
     	ERROR("Wall speed is supersonic (aborting). \n");

@@ -13,10 +13,11 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 		 * because the loop is also easier to read.
 		 */
 
-#ifndef NO_CHECKS
+		#ifndef NO_CHECKS
 		if(currentCell[i]<0){
-			printf("INFO: cell value of %f detected. \n", currentCell[i]);
-			ERROR("Encountered negative particle distribution (Aborting)\n");
+			char msg[100];
+			sprintf(msg, "A negative cell particle distribution (value=%f) was detected!! (Aborting)", currentCell[i]);
+			ERROR(msg);
 		}
 #endif
 
@@ -79,9 +80,14 @@ void doCollision(double *collideField, int *flagField,const double * const tau, 
 				computeDensity(currentCell, &density);
 
 #ifndef NO_CHECKS
-				if(fabs(density-1) > 0.035){
-					printf("INFO: density of %f detected at x=%i, y=%i, z=%i \n", density, x, y, z);
-					ERROR("Density change is too high (Aborting)");
+				/* TODO: (DL) discuss: final value we want to have our tolerance*/
+				/* TODO: should we set these tolerances somewhere else? E.g. in LBDefinitions, or cavity.dat?*/
+				double TOL = 0.03;
+				if(fabs(density-1) > TOL){
+					char msg[120];
+					sprintf(msg, "A density value (%f) outside the given tolerance of %.2f %% was detected in cell: "
+							"x=%i, y=%i, z=%i", density, (TOL*100), x, y, z);
+					ERROR(msg);
 				}
 #endif
 
