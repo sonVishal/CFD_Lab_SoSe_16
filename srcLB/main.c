@@ -34,7 +34,7 @@ int main(int argc, char *argv[]){
     printf("INFO: The compiler directive NO_CHECKS is enabled. Faster execution time is gained, "
     		"at the cost of less correctness checks during runtime!\n");
 #else
-    printf("INFO: The compiler directive NO_CHECKS is disables. Checks for "
+    printf("INFO: The compiler directive NO_CHECKS is disabled. Checks for "
     		"correctness are carried out at the cost of execution speed!\n");
 #endif
 
@@ -47,6 +47,9 @@ int main(int argc, char *argv[]){
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     initialiseFields(collideField, streamField, flagField, xlength);
+
+    printf("\nINFO: Storing cell data in VTK files.\n      Please use the"
+    " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
 
     printf("INFO: write vtk file at time t = %d \n", t);
     writeVtkOutput(collideField,flagField,fName,t,xlength);
