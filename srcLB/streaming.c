@@ -30,12 +30,14 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 	// 			nextCellIndex = Q*(i-LATTICEVELOCITIES[j][0]-
 	// 				xlen_2*LATTICEVELOCITIES[j][1]-
 	// 				xlen_2sq*LATTICEVELOCITIES[j][2]);
-	// 			streamField[currentCellIndex] = collideField[nextCellIndex];
+	// 			streamField[currentCellIndex+j] = collideField[nextCellIndex+j];
 	// 		}
 	// 	}
 	// }
 
-	// Loop unrolling done to increase speed
+	// Inner loop unrolling
+	// Faster even with -O3
+	// Up to 2 seconds with xlength = 30
 	for (i = 0; i < totalSize; i++) {
 		if (flagField[i] == 0) {
 			currentCellIndex = Q*i;
