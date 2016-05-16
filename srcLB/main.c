@@ -82,10 +82,8 @@ int main(int argc, char *argv[]){
     printf("\nINFO TIMING:\n");
     printf("Execution time (main loop): \t\t %.3f seconds \n", time_spent);
     printf("#cells (including boundary): \t\t %i cells \n", totalsize);
-
-    //no overlow in computation, therefore 2 divisions
     printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
-    		((totalsize)/(1000000*time_spent))*(timesteps/(1000000*time_spent)));
+    		(totalsize/(1000000*time_spent))*timesteps);
 
     free(streamField);
     free(collideField);
