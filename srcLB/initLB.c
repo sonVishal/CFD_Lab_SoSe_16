@@ -49,8 +49,7 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
         snprintf(buffer, 80, "Mach number is larger than %f (aborting)! \n",machNrTol);
     	ERROR(buffer);
     }
-
-
+    
   return 0;
 }
 
