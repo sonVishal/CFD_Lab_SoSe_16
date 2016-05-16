@@ -13,7 +13,7 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 		 * because the loop is also easier to read.
 		 */
 
-		#ifndef NO_CHECKS
+#ifndef NO_CHECKS
 		if(currentCell[i]<0){
 			char msg[100];
 			sprintf(msg, "A negative cell particle distribution (value=%f) was detected!! (Aborting)", currentCell[i]);
