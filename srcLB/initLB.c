@@ -29,23 +29,22 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     *tau    =  u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
     machNr = u_wall/C_S;
 
-
     printf("\nINFO: Calculated tau = %f \n", *tau);
-    printf("INFO: Wall speed = %f \n", u_wall);
-    printf("INFO: Mach number = %f \n\n", machNr);
+    printf("\nINFO: Wall speed = %f \n", u_wall);
+    printf("\nINFO: Mach number = %f \n\n", machNr);
 
     /* valid settings check*/
     if(*tau<=0.5 || *tau>2){
-        ERROR("tau is out of stability region (aborting) \n");
+        ERROR("tau is out of stability region (aborting)! \n");
     }
 
     /*TODO: (DL) discuss: what values do we want to allow, Ma << 1 given */
     if(machNr > 0.1){
-    	ERROR("Mach number is too large! (Aborting) \n");
+    	ERROR("Mach number is too large (aborting)! \n");
     }
 
     if(u_wall >= C_S){
-    	ERROR("Wall speed is supersonic (aborting). \n");
+    	ERROR("Wall speed is supersonic (aborting)! \n");
     }
 
   return 0;
