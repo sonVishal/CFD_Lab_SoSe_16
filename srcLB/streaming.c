@@ -5,8 +5,8 @@
 /* Another (obsolete) version where we iterated over FLUID cells with 3 loops (x,y,z) turned out to
  * to be slower than the current version.
  *
- * Here we just iterate over flagField and depending of the value carrying out the streaming.
- * Furthermore, the loop is unrolled which gained better performance.
+ * Here we just iterate over flagField and depending on the value (if FLUID cell) carry out the streaming.
+ * Furthermore, the loop is unrolled, which gained better performance.
  */
 void doStreaming(double *collideField, double *streamField,int *flagField,int xlength){
 	/*
@@ -22,7 +22,7 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int xl
 	int nextCellIndex, currentCellIndex;
 
 	// Semantics for the loop unrolling
-	// int j;
+	// int i, j;
 	// for (i = 0; i < totalSize; i++) {
 	// 	if (flagField[i] == 0) {
 	// 		currentCellIndex = Q*i;

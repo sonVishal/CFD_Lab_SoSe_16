@@ -1,4 +1,3 @@
-
 #include <math.h>
 #include "initLB.h"
 #include "LBDefinitions.h"
