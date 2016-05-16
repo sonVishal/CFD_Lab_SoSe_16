@@ -34,6 +34,10 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     printf("\nINFO: Mach number = %f \n\n", machNr);
 
     /* valid settings check*/
+    if(u_wall >= C_S){
+    	ERROR("Wall speed is supersonic (aborting)! \n");
+    }
+
     if(*tau<=0.5 || *tau>2){
         ERROR("tau is out of stability region (aborting)! \n");
     }
@@ -43,9 +47,6 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     	ERROR("Mach number is too large (aborting)! \n");
     }
 
-    if(u_wall >= C_S){
-    	ERROR("Wall speed is supersonic (aborting)! \n");
-    }
 
   return 0;
 }
