@@ -28,6 +28,10 @@ int main(int argc, char *argv[]){
     char fName[80];
     snprintf(fName, 80, "pv_files/worksheet2");
 
+    //Timing variables:
+    clock_t begin_timing, end_timing;
+    double time_spent;
+
     /*Read parameters and check the bounds on tau*/
     //tau is calculated automatically from the reynoldsnumber
     readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
@@ -57,10 +61,6 @@ int main(int argc, char *argv[]){
     // Write the VTK at t = 0
     printf("INFO: write vtk file at time t = %d \n", t);
     writeVtkOutput(collideField,flagField,fName,t,xlength);
-
-    //Timing variables:
-    clock_t begin_timing, end_timing;
-    double time_spent;
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
