@@ -1,0 +1,87 @@
+\documentclass[a4paper]{article}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{amssymb}
+\usepackage{todonotes}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{cancel}
+
+\newcommand\norm[1]{\left\lVert#1\right\rVert}		%norm
+\newcommand{\td}[1]{\todo[inline]{#1}}  			%inline todo
+\newcommand{\qm}[1]{``#1"}							%quotation marks
+\newcommand{\ra}{\rightarrow}						%right array
+\newcommand{\NP}{\noindent\rule{\textwidth}{1pt}\newline} 	%separator line
+\newcommand{\abs}[1]{\left\vert#1\right\vert} 			%absolute values
+\newcommand{\dotp}[2]{\langle#1,#2\rangle} 			%dotproduct
+\newcommand{\seq}[3]{(#3_{#1}, \ldots, #3_{#2})}
+
+
+\begin{document}
+
+\part{Worksheet 3}
+
+\section{Backlog}
+\begin{enumerate}
+\item Tool to create scenarios (domain + obstacles
+
+\begin{enumerate}
+\item \td{Group disussion:}
+what "tool" are we using to create domains? (consider: should be easy to "integrate" and flexible enough to build "complex" scenarios)
+\item[] \textbf{Programmatically}... Matlab/Python - just create a boolean matrix, and tell which "pixels" are obstacles, matrix can also be plotted easily, etc.
+\item[] \textbf{Graphically}... "Paint"-like drawing and then reading via a script?
+\item \td{Group decision}
+Do we use "read\_pgm"? (see page 12 (3) \url{https://en.wikipedia.org/wiki/Netpbm_format})
+\end{enumerate}
+
+\item Adapt parameter file, read parameter and check for correctness
+
+\begin{enumerate}
+\item Variable length in all three directions (x\_length, y\_length, z\_length); adapt signature of functions; see page 12 (1)
+\item substitute \qm{wallVelocity} by an array of parameter, for inflow condition; see page 12 (2)
+\end{enumerate}
+
+\item adapt initializeFields according to the current problem we are simulating; see page 12 (3)
+
+\begin{enumerate}
+\item extent signature of initializeFields with "*char problem", which contains the name of scenario
+\item set flagField according to the current geometry (created in step 1)
+\item using of \qm{read\_pmg} can be used to initialize flagField \todo{Decide !!}
+\item Check for correctness, is there is any illegal bondary (too thin)?
+\end{enumerate}
+
+\item  Write treatBoundary again
+\begin{enumerate}
+\item implement other boundary conditions (Free-Slip, Inflow, Outflow); see page 12 (2)
+\item rewrite iteration such that arbitrary geometries are handled
+\end{enumerate}
+
+\item Scenarios
+\begin{enumerate}
+\item Create scenarios given in worksheet (page 13) 
+\item Save results and paraview visualization files in a special folder, (Note: page 13, \qm{Please bring your computer[...] to speed up the review process})
+\item Create some own scenarios/tests
+\item \qm{Use the features provided by ParaView excessively to analyze the flows.} $ \ra $ generate outputs and save them for discussion/understanding/oral exam 
+\end{enumerate}
+
+\item Tests for plausibility
+\begin{enumerate}
+\item Find given given examples and see if our results match
+\item Test small trivial examples
+\end{enumerate}
+
+\end{enumerate} 
+
+
+\section{Consider from worksheet!}
+
+\begin{itemize}
+\item Changes of parameters or boundary conditions should no longer require modifications in the source code, nor recompilation of the program.
+\item Demonstrate, that the program works properly by providing solutions for the examples shown in the last section.
+\item Implement the possibility to perform computations of the problems that are defined by setting the boundary pressure. Check your program with the plane shear flow and the flow over a step.
+\item With the help of ParaView, visualize the Karman vortex street and the flow over a step. Use the features provided by ParaView excessively to analyze the flow
+\end{itemize}
+
+
+\end{document}
