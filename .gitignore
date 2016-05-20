@@ -91,3 +91,4 @@ lbsim
 # Latex files
 *.log
 *.aux
+*.synctex.gz
