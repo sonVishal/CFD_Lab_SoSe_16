@@ -25,18 +25,16 @@
 \section{Backlog}
 \begin{enumerate}
 \item Tool to create scenarios (domain + obstacles
-
 \begin{enumerate}
 \item \td{Group disussion:}
-what "tool" are we using to create domains? (consider: should be easy to "integrate" and flexible enough to build "complex" scenarios)
-\item[] \textbf{Programmatically}... Matlab/Python - just create a boolean matrix, and tell which "pixels" are obstacles, matrix can also be plotted easily, etc.
-\item[] \textbf{Graphically}... "Paint"-like drawing and then reading via a script?
-\item \td{Group decision}
-Do we use "read\_pgm"? (see page 12 (3) \url{https://en.wikipedia.org/wiki/Netpbm_format})
+what \qm{tool} are we using to create domains? (consider: should be easy to \qm{integrate} and flexible enough to build \qm{complex} scenarios)
+\item[] \textbf{Programmatically}... Matlab/Python - just create a boolean matrix, and tell which "pixels" are obstacles, matrix can also be plotted easily, etc. There are also scaling functions to make it larger, etc.
+\item[] \textbf{Graphically}... \qm{Paint}-like drawing and then reading via a script?
+\item \td{Group discussion:}
+Do we use \qm{read\_pgm}? (see page 12 (3) \url{https://en.wikipedia.org/wiki/Netpbm_format})
 \end{enumerate}
 
 \item Adapt parameter file, read parameter and check for correctness
-
 \begin{enumerate}
 \item Variable length in all three directions (x\_length, y\_length, z\_length); adapt signature of functions; see page 12 (1)
 \item substitute \qm{wallVelocity} by an array of parameter, for inflow condition; see page 12 (2)
@@ -47,14 +45,15 @@ Do we use "read\_pgm"? (see page 12 (3) \url{https://en.wikipedia.org/wiki/Netpb
 \begin{enumerate}
 \item extent signature of initializeFields with "*char problem", which contains the name of scenario
 \item set flagField according to the current geometry (created in step 1)
-\item using of \qm{read\_pmg} can be used to initialize flagField \todo{Decide !!}
-\item Check for correctness, is there is any illegal bondary (too thin)?
+\item using of \qm{read\_pmg} \todo{Decide !!} can be used to initialize flagField 
+\item Check for correctness, is there is any illegal boundary (too thin)?
 \end{enumerate}
 
 \item  Write treatBoundary again
 \begin{enumerate}
 \item implement other boundary conditions (Free-Slip, Inflow, Outflow); see page 12 (2)
 \item rewrite iteration such that arbitrary geometries are handled
+\item try to improve performance (that can, for example, involve additional steps in the initialization of the simulation)
 \end{enumerate}
 
 \item Scenarios
@@ -75,7 +74,6 @@ Do we use "read\_pgm"? (see page 12 (3) \url{https://en.wikipedia.org/wiki/Netpb
 
 
 \section{Consider from worksheet!}
-
 \begin{itemize}
 \item Changes of parameters or boundary conditions should no longer require modifications in the source code, nor recompilation of the program.
 \item Demonstrate, that the program works properly by providing solutions for the examples shown in the last section.
