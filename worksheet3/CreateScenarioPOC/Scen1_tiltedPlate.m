@@ -30,4 +30,4 @@ xlabel('z');
 ylabel('x');
 
 %imwrite(scen, 'test.jpg');
-pgmwrite(scen, 'test');
+pgmwrite(scen, 'TiltedPlate');
