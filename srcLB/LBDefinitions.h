@@ -36,4 +36,15 @@ static const double LATTICEWEIGHTS[19] = {
 static const double densityTol  = 0.03;
 static const double machNrTol   = 0.1;
 
+
+enum E_BOUND_TYPE{
+	FLUID,
+	NO_SLIP,
+	MOVING,
+	FREE_SLIP,
+	INFLOW,
+	PRESSURE_IN
+};
+
+
 #endif
