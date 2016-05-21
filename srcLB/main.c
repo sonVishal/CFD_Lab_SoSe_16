@@ -85,7 +85,7 @@ int main(int argc, char *argv[]){
 	    streamField = swap;
 
 	    doCollision(collideField,flagField,&tau,xlength);
-	    treatBoundary(collideField,flagField,velocityWall,xlength);
+	    treatBoundary(collideField,flagField,velocityWall, &xlength);
 
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);

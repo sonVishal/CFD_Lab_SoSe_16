@@ -4,139 +4,116 @@
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 
-/* Enum that gives a distinction of the walls with respective to the fixed value of (x,y,z) */
-enum WALLS{E_XFIXED, E_YFIXED, E_ZFIXED};
+void p_handleNoSlip(double *collideField, int const * const flagField, const int current_cell_index,
+		int const * const point, int const * const xlength){
+	int n_cell_index;
 
-/* Helper function that carries out the moving wall or bounce back condition, depending on flag 'type'.
- * The value in flagField corresponding to the current cell (current_cell_index) has to indicate a boundary
- * cell (flag 1 or 2), the value in flagField corresponding to neighboring cell (n_cell_index) has to
- * be a cell in the domain (= FLUID cell of flag 0).
- */
-void p_setBounceBack(double *collideField, const double * const wallVelocity,
-		const int type, const int i, const int current_cell_index, const int n_cell_index, const int *c) {
+	for(int i = 0; i < Q; i++){
+		int n_point[3] = {point[0] + LATTICEVELOCITIES[i][0],
+				point[1] + LATTICEVELOCITIES[i][1],
+				point[2] + LATTICEVELOCITIES[i][2]};
+		n_cell_index = Q*(n_point[2]*xlength[2]*xlength[2] + n_point[1]*xlength[1] + n_point[0]);
 
-	if(type == 1){ 			//bounce back
-		/* equation 17 */
-		collideField[current_cell_index + i] = collideField[n_cell_index + (Q-i-1)];
-	}else if(type == 2){ 	//moving wall
-
-		double density = 0;
-		computeDensity(&collideField[n_cell_index], &density);
-
-		double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
-		double weight = LATTICEWEIGHTS[i];
-
-		/* equation 19 */
-		collideField[current_cell_index + i] = collideField[n_cell_index + (Q-i-1)] +
-				2 * weight * dot_uwall_c / (C_S*C_S);
-
-	}else{ 		//Wrong input parameter
-		ERROR("A FLUID cell appeared when setting boundaries. This should not happen!!\n");
-	}
-}
-
-/* Helper function that computes the offset of the current cell. 'Inner' corresponds to the first value of (x,y,z)
- * that is not fixed; 'outer' to the second value. By this ordering a better cache efficiency is obtained.
- * WallIdx has to be a valid index from the enum WALLS.
- */
-int p_computeCellOffset(const int outer, const int inner, const int fixedValue, const int xlength, const int wallIdx){
-	switch (wallIdx) {
-		case E_XFIXED:
-			//outer = Z, inner = Y
-			return (xlength+2) * (outer*(xlength+2) + inner) + fixedValue;
-		case E_YFIXED:
-			//outer = Z, inner = X
-			return (xlength+2) * (outer*(xlength+2) + fixedValue) + inner;
-		case E_ZFIXED:
-			//outer = Y, inner = X
-			return (xlength+2) * (fixedValue*(xlength+2) + outer) + inner;
-		default:
-			ERROR("Invalid wall index occured. This should not happen !!!");
-			return -1;
-	}
-}
-
-/* Helper function similar to p_computeCellOffset, except that it computes the offset value
- * of a neighboring cell in the direction of 'c_vec'.
- * There are no checks that guarantee that the computed offset value is valid.
- * For example, when the current cell is on the boundary and 'c_vec' points away from the inner value.
- */
-int p_computeNeighborCellOffset(int outer, int inner, int fixedValue,
-		const int * const c_vec, const int xlength, const int wallIdx){
-	switch (wallIdx) {
-		case E_XFIXED:
-			outer 		+= c_vec[2];	//= Z
-			inner 		+= c_vec[1];	//= Y
-			fixedValue 	+= c_vec[0];	//= X
-			return (xlength+2) * (outer*(xlength+2) + inner) + fixedValue;
-		case E_YFIXED:
-			outer 		+= c_vec[2];	//= Z
-			inner 		+= c_vec[0];	//= X
-			fixedValue 	+= c_vec[1];	//= Y
-			return (xlength+2) * (outer*(xlength+2) + fixedValue) + inner;
-		case E_ZFIXED:
-			outer 		+= c_vec[1];	//= Y
-			inner 		+= c_vec[0];	//= X
-			fixedValue 	+= c_vec[2];	//= Z
-			return (xlength+2) * (fixedValue*(xlength+2) + outer) + inner;
-
-		default:
-			ERROR("Invalid wall index occured. This should not happen !!!");
-			return -1;
-	}
-}
-
-/* Helper function that treats a single boundary wall. The wall itself is described with wallIdx
- * (from enum WALLS) and the 'fixedValue' (generally 0 or xlength+1).
- */
-
-void p_treatSingleWall(double *collideField, const int * const flagField,
-		const int fixedValue, const double * const wallVelocity, const int xlength, const int wallIdx){
-
-	//variable needed at check whether it is an in-domain (FLUID) cell
-	int maxValidIndex = Q*(xlength+2)*(xlength+2)*(xlength+2);
-
-	//k - corresponds to the 'outer' value when computing the offset
-	for(int k = 0; k <= xlength+1; ++k){
-		//j - corresponds to the 'inner' value
-		for(int j = 0; j <= xlength+1; ++j){
-
-			//flagField[xyz_offset] should only be a boundary cell (checked in p_setBounceBack)
-			int xyz_offset = p_computeCellOffset(k, j, fixedValue, xlength, wallIdx);
-			int current_cell_index = Q*xyz_offset;
-
-			for(int i = 0; i < Q; ++i){
-				int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
-				int n_xyzoffset = p_computeNeighborCellOffset(k, j, fixedValue, c, xlength, wallIdx);
-				int n_cell_index = Q*n_xyzoffset;
-
-				//check (1) valid index: in case the direction of vector 'c' points to a non-existing cell
-				//check (2) that the neighboring cell is a FLUID cell in the domain (and not another boundary cell)
-				if(n_cell_index >= 0 && n_cell_index < maxValidIndex &&
-						flagField[n_xyzoffset] == 0
-				){
-					p_setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
-				}
-			}
+		if(flagField[n_cell_index] == FLUID){ /* TODO: (DL) check also for valid index */
+			collideField[current_cell_index + i] = collideField[n_cell_index + (Q-i-1)];
 		}
 	}
 }
 
-/* Helper function that does both boundary walls for the fixed value provided in the enum WALLS.
- * The fixed value is set to 0 and xlength+1.
- */
-void p_setWallBoundaries(double *collideField, const int * const flagField,
-		const double * const wallVelocity, const int xlength, const int wallIdx){
+void p_handleMovingWall(double *collideField, const int currentCellIndex,
+		int const * const point, int const * const xlength, double const * const wallVelocity){
 
-	//Fixed value of 0
-	p_treatSingleWall(collideField, flagField, 0,         wallVelocity, xlength, wallIdx);
+	int n_cell_index;
+	double density;
 
-	//Fixed value of xlength+1
-	p_treatSingleWall(collideField, flagField, xlength+1, wallVelocity, xlength, wallIdx);
+	for(int i = 0; i < Q; i++){
+		int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
+		int n_point[3] = {point[0] + c[0], point[1] + c[1], point[2] + c[2]};
+		n_cell_index = Q*(n_point[2]*xlength[2]*xlength[2] + n_point[1]*xlength[1] + n_point[0]);
+
+		if(n_cell_index == FLUID){ /* TODO: (DL) check also for valid index */
+			double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
+			double weight = LATTICEWEIGHTS[i];
+			computeDensity(&collideField[n_cell_index], &density);
+
+			collideField[currentCellIndex + i] = collideField[n_cell_index + (Q-i-1)] +
+					2 * weight * dot_uwall_c / (C_S*C_S);
+		}
+	}
 }
 
-void treatBoundary(double *collideField, int* flagField, const double * const wallVelocity, int xlength){
-	p_setWallBoundaries(collideField, flagField, wallVelocity, xlength, E_XFIXED);
-	p_setWallBoundaries(collideField, flagField, wallVelocity, xlength, E_YFIXED);
-	p_setWallBoundaries(collideField, flagField, wallVelocity, xlength, E_ZFIXED);
+
+void p_handleFreeSlip(){
+	ERROR("TODO");
+	/*
+	 * The free-slip boundaries are closely related to the no-slip boundary,
+	 * as it can be seen in Fig. 2.1. Note that the implementation of these
+	 * boundaries requires more effort and communication, since the particle
+	 * distribution functions are not copied into the ones opposing them in
+	 * the boundaries but they are mirrored into the boundary cell. By doing
+	 * so the velocity tangential to the boundary is preserved. Care has to be
+	 * taken at corners, since there the “mirrored” particle distributions will
+	 * pass the boundary.
+	 */
+}
+
+void p_handleInflow(){
+	/* TODO: See page 12 for description and equation (2.2) */
+	ERROR("TODO");
+}
+
+void p_handleOutflow(){
+	/* TODO: See page 11 for description and equation (2.1) */
+
+	ERROR("TODO");
+}
+
+void p_handleInPressure(){
+	/* See page 12 for description and equation (2.2) */
+	ERROR("TODO");
+}
+
+void treatBoundary(double *collideField, int* flagField, const double * const wallVelocity, int *xlength){
+
+	int xyz_offset, flag ,currentCellIndex;
+
+	for(int z = 0; z <= xlength[0]+1; ++z){
+		for(int y = 0; y <= xlength[1]+1; ++y){
+			for(int x = 0; x <= xlength[2]+1; ++x){
+				//TODO: (DL) make function for index (therefore not optimized)
+				xyz_offset = (z*xlength[2]*xlength[2] + y*xlength[1] + x);
+				flag = flagField[xyz_offset];
+
+				int point[3] = {x,y,z};
+
+				if (flag != 0) {
+					currentCellIndex = Q*xyz_offset;
+
+					switch(flag){
+					case NO_SLIP:
+						p_handleNoSlip(collideField, flagField, currentCellIndex, point, xlength);
+						break;
+					case MOVING:
+						p_handleMovingWall(collideField, currentCellIndex, point, xlength, wallVelocity);
+						break;
+					case FREE_SLIP:
+						p_handleFreeSlip();
+						break;
+					case INFLOW:
+						p_handleInflow();
+						break;
+					case OUTFLOW:
+						p_handleOutflow();
+						break;
+					case PRESSURE_IN:
+						p_handleInPressure();
+						break;
+					default:
+						ERROR("TODO");
+						break;
+					}
+				}
+			}
+		}
+	}
 }
