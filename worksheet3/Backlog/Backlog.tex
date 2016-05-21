@@ -24,24 +24,23 @@
 
 \section{Backlog}
 \begin{enumerate}
-\item Tool to create scenarios (domain + obstacles
+\item \textbf{Tool to create scenarios (domain + obstacles)}
 \begin{enumerate}
-\item \td{Group disussion:}
+\item \td{Group disussion: (see github issue \url{https://github.com/sonVishal/CFD_Lab_SoSe_16/issues/2})}
 what \qm{tool} are we using to create domains? (consider: should be easy to \qm{integrate} and flexible enough to build \qm{complex} scenarios)
 \item[] \textbf{Programmatically}... Matlab/Python - just create a boolean matrix, and tell which "pixels" are obstacles, matrix can also be plotted easily, etc. There are also scaling functions to make it larger, etc.
 \item[] \textbf{Graphically}... \qm{Paint}-like drawing and then reading via a script?
-\item \td{Group discussion:}
+\item \td{Group discussion: (see github issue \url{https://github.com/sonVishal/CFD_Lab_SoSe_16/issues/2})}
 Do we use \qm{read\_pgm}? (see page 12 (3) \url{https://en.wikipedia.org/wiki/Netpbm_format})
 \end{enumerate}
 
-\item Adapt parameter file, read parameter and check for correctness
+\item \textbf{Adapt parameter file, read parameter and check for correctness}
 \begin{enumerate}
 \item Variable length in all three directions (x\_length, y\_length, z\_length); adapt signature of functions; see page 12 (1)
 \item substitute \qm{wallVelocity} by an array of parameter, for inflow condition; see page 12 (2)
 \end{enumerate}
 
-\item adapt initializeFields according to the current problem we are simulating; see page 12 (3)
-
+\item \textbf{adapt initializeFields according to the current problem we are simulating; see page 12 (3)}
 \begin{enumerate}
 \item extent signature of initializeFields with "*char problem", which contains the name of scenario
 \item set flagField according to the current geometry (created in step 1)
@@ -49,13 +48,14 @@ Do we use \qm{read\_pgm}? (see page 12 (3) \url{https://en.wikipedia.org/wiki/Ne
 \item Check for correctness, is there is any illegal boundary (too thin)?
 \end{enumerate}
 
-\item  Write treatBoundary again
+\item  \textbf{Write treatBoundary again}
 \begin{enumerate}
 \item implement other boundary conditions (Free-Slip, Inflow, Outflow); see page 12 (2)
 \item rewrite iteration such that arbitrary geometries are handled
 \item try to improve performance (that can, for example, involve additional steps in the initialization of the simulation)
 \end{enumerate}
 
+<<<<<<< HEAD
 \item Rewrite WriteVTKOutput again
 \begin{enumerate}
 	\item Currently it is restricted to the previous worksheet
@@ -63,6 +63,11 @@ Do we use \qm{read\_pgm}? (see page 12 (3) \url{https://en.wikipedia.org/wiki/Ne
 \end{enumerate}
 
 \item Scenarios
+=======
+\item \textbf{Adapt visualLB.c to visualize \textsl{OBSTACLE} cells correctly}
+
+\item \textbf{Scenarios}
+>>>>>>> e12a88fc9fd52a4c32af43e46ee432fd8dd33b59
 \begin{enumerate}
 \item Create scenarios given in worksheet (page 13)
 \item Save results and paraview visualization files in a special folder, (Note: page 13, \qm{Please bring your computer[...] to speed up the review process})
@@ -70,7 +75,7 @@ Do we use \qm{read\_pgm}? (see page 12 (3) \url{https://en.wikipedia.org/wiki/Ne
 \item \qm{Use the features provided by ParaView excessively to analyze the flows.} $ \ra $ generate outputs and save them for discussion/understanding/oral exam
 \end{enumerate}
 
-\item Tests for plausibility
+\item \textbf{Tests for plausibility}
 \begin{enumerate}
 \item Find given given examples and see if our results match
 \item Test small trivial examples
