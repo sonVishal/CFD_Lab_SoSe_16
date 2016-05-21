@@ -92,3 +92,6 @@ lbsim
 *.log
 *.aux
 *.synctex.gz
+
+# Matlab
+*.m~
