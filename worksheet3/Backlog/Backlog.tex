@@ -56,18 +56,25 @@ Do we use \qm{read\_pgm}? (see page 12 (3) \url{https://en.wikipedia.org/wiki/Ne
 \item try to improve performance (that can, for example, involve additional steps in the initialization of the simulation)
 \end{enumerate}
 
+\item Rewrite WriteVTKOutput again
+\begin{enumerate}
+	\item Currently it is restricted to the previous worksheet
+	\item One possible way would be to use \qm{read\_pgm}\todo{Decide!!} and store the column and line number to help in creating the coordinates corresponding to different types of cells. Then iterate over the flag field and print out only the fluid cells
+\end{enumerate}
+
 \item Scenarios
 \begin{enumerate}
-\item Create scenarios given in worksheet (page 13) 
+\item Create scenarios given in worksheet (page 13)
 \item Save results and paraview visualization files in a special folder, (Note: page 13, \qm{Please bring your computer[...] to speed up the review process})
 \item Create some own scenarios/tests
-\item \qm{Use the features provided by ParaView excessively to analyze the flows.} $ \ra $ generate outputs and save them for discussion/understanding/oral exam 
+\item \qm{Use the features provided by ParaView excessively to analyze the flows.} $ \ra $ generate outputs and save them for discussion/understanding/oral exam
 \end{enumerate}
 
 \item Tests for plausibility
 \begin{enumerate}
 \item Find given given examples and see if our results match
 \item Test small trivial examples
+\item Test \qm{free-slip} with half the domain against the normal simulation for example of \qm{Plane shear force} (see section 2.4(b) page 12)
 \end{enumerate}
 
 \end{enumerate} 
