@@ -24,9 +24,8 @@ int main(int argc, char *argv[]){
     int timesteps;
     int timestepsPerPlotting;
 
-    // File printing parameters
-    char fName[80];
-    snprintf(fName, 80, "pv_files/worksheet2");
+    //To be safe allocating memory for max line length (defined in helper.h)
+    char problem[MAX_LINE_LENGTH];
 
     //Timing variables:
     clock_t begin_timing, end_timing;
@@ -34,7 +33,16 @@ int main(int argc, char *argv[]){
 
     /*Read parameters and check the bounds on tau*/
     //tau is calculated automatically from the reynoldsnumber
-    readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
+    readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,
+    		problem, argc, &argv[1]);
+
+
+    /* TODO: (DL) the current name includes also the file ending '.pgm' maybe we
+     * don't want that or gives trouble with paraview...
+     */
+    // File printing parameters
+    char fName[MAX_LINE_LENGTH+9]; // 9 chars for 'pv_files/'
+    snprintf(fName, MAX_LINE_LENGTH+9, "pv_files/%s", problem);
 
 #ifdef NO_CHECKS
     printf("INFO: The compiler directive NO_CHECKS is enabled. Faster execution time is gained, "
@@ -54,7 +62,11 @@ int main(int argc, char *argv[]){
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     // Initialize all the fields
-    initialiseFields(collideField, streamField, flagField, xlength);
+    initialiseFields(collideField, streamField, flagField, xlength, problem);
+
+    //TODO: (DL) DELETE RETURN VALUE WHEN FINISHED THE INITIALIZATION FOR WS3
+    return 1;
+
 
     printf("\nINFO: Storing cell data in VTK files.\n      Please use the"
     " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");

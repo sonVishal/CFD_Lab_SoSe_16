@@ -3,15 +3,19 @@
 #include "LBDefinitions.h"
 #include "helper.h"
 
-int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
+int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps,
+		int *timestepsPerPlotting, char *problem,
+		int argc, char *argv[]){
 
     double xvelocity, yvelocity, zvelocity;
-    double Re, u_wall, machNr;
+    double Re; //u_wall, machNr;
 
     /* Read values from file given in argv */
     READ_INT(*argv, *xlength);
-    READ_DOUBLE(*argv, Re);
 
+    READ_STRING(*argv, problem);
+
+    READ_DOUBLE(*argv, Re);
     READ_DOUBLE(*argv, xvelocity);
     READ_DOUBLE(*argv, yvelocity);
     READ_DOUBLE(*argv, zvelocity);
@@ -23,36 +27,48 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     READ_INT(*argv, *timesteps);
     READ_INT(*argv, *timestepsPerPlotting);
 
+
+
+
+    /*TODO: (DL) the characteristic velocity, characteristic length, mach number are
+     * no longer valid (using values valid for cavity)
+     *
+     * I suggest we create a new function where we check for valid checkings only!
+     *
+     * For now all checks are comment out.
+     */
+
     /*Calculates tau from the Reynolds number*/
-    u_wall  = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity);
-    *tau    =  u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
-    machNr  = u_wall/C_S;
 
-    printf("\nINFO: Calculated tau = %f \n", *tau);
-    printf("\nINFO: Wall speed = %f \n", u_wall);
-    printf("\nINFO: Mach number = %f \n\n", machNr);
+//    u_wall  = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity);
+//    *tau    =  u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
+//    machNr  = u_wall/C_S;
+//    printf("\nINFO: Calculated tau = %f \n", *tau);
+//    printf("\nINFO: Wall speed = %f \n", u_wall);
+//    printf("\nINFO: Mach number = %f \n\n", machNr);
 
-    /* valid settings check*/
-    if(u_wall >= C_S){
-    	ERROR("Wall speed is supersonic (aborting)! \n");
-    }
-
-    if(*tau<=0.5 || *tau>2){
-        ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
-    }
-
-    /*We allow user defined mach number tolerance for Ma << 1 (default = 0.1)
-      To change please look at LBDefinitions.h*/
-    if(machNr > machNrTol){
-        char buffer[80];
-        snprintf(buffer, 80, "Mach number is larger than %f (aborting)! \n",machNrTol);
-    	ERROR(buffer);
-    }
+//    /* valid settings check*/
+//    if(u_wall >= C_S){
+//    	ERROR("Wall speed is supersonic (aborting)! \n");
+//    }
+//
+//    if(*tau<=0.5 || *tau>2){
+//        ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
+//    }
+//
+//    /*We allow user defined mach number tolerance for Ma << 1 (default = 0.1)
+//      To change please look at LBDefinitions.h*/
+//    if(machNr > machNrTol){
+//        char buffer[80];
+//        snprintf(buffer, 80, "Mach number is larger than %f (aborting)! \n",machNrTol);
+//    	ERROR(buffer);
+//    }
     
   return 0;
 }
 
-void initialiseFields(double *collideField, double *streamField, int *flagField, int xlength){
+void initialiseFields(double *collideField, double *streamField, int *flagField,
+		int xlength, char *scenario){
 
     /*Setting initial distributions*/
     //f_i(x,0) = f^eq(1,0,0) = w_i

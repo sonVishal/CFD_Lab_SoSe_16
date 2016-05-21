@@ -1,3 +1,8 @@
+# ################## N O T E ###################
+# FROM WS3 this file is not supported anymore, go back to commit bc430e3bf8c8455340499013d650ee9b83a1a7e5 (hash)
+# to use this file
+# TODO: should we just delete it?
+
 # Size of mesh
 xlength              40
 

@@ -1,0 +1,20 @@
+# depth in y-direction (the scenarios are set and displayed on the x-z plane)
+#TODO: xlength has same name, because it is still named like that in the framework
+xlength              5
+
+#Scenario (filename of pgm file in folder /scenarios)
+problem Step.pgm
+
+# Reynolds Number
+Re                    10
+
+# Velocity of moving wall
+xvelocity         0
+yvelocity         0
+zvelocity         0
+
+# Number of timesteps
+timesteps            2000
+
+# timesteps between each plot
+timestepsPerPlotting 20
