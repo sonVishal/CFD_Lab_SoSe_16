@@ -10,8 +10,13 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     double xvelocity, yvelocity, zvelocity;
     double Re; //u_wall, machNr;
 
+    int ylength, zlength; //Temporary for reading
+
+
     /* Read values from file given in argv */
     READ_INT(*argv, *xlength);
+    READ_INT(*argv, ylength);
+    READ_INT(*argv, zlength);
 
     READ_STRING(*argv, problem);
 
@@ -68,94 +73,94 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
 }
 
 void initialiseFields(double *collideField, double *streamField, int *flagField,
-		int xlength, char *scenario){
+		int *xlength, char *scenario){
 
-    /*Setting initial distributions*/
-    //f_i(x,0) = f^eq(1,0,0) = w_i
-
-    // current cell index
-    int idx;
-
-    // Temporary variables for xlength^2
-    int const xlen2 = (xlength+2)*(xlength+2);
-
-    // Temporary variables for z and y offsets
-    int zOffset, yzOffset;
-
-    /* initialize collideField and streamField */
-    int x,y,z;
-    for ( z = 0; z <= xlength+1; ++z) {
-        zOffset = z*xlen2;
-        for ( y = 0; y <= xlength+1; ++y) {
-            yzOffset = y*(xlength+2) + zOffset;
-            for ( x = 0; x <= xlength+1; ++x) {
-                // Compute the base index
-                idx = Q*(yzOffset + x);
-                for (int i = 0; i < Q; ++i) {
-                    collideField[idx+i] = LATTICEWEIGHTS[i];
-                    streamField[idx+i]  = LATTICEWEIGHTS[i];
-                }
-            }
-        }
-    }
-
-
-    /*Looping over boundary of flagFields*/
-    //All points set to zero at memory allocation (using calloc)
-
-    //These are the no-slip walls
-    //fixed: z = 0
-    for (y = 0; y <= xlength+1; y++) {
-        idx = y*(xlength+2);
-        for (x = 0; x <= xlength+1; x++) {
-            flagField[x+idx] = 1;
-        }
-    }
-
-    //fixed: x = 0
-    //We start at 1 to not include previous cells again from z = 0
-    for (z = 1; z <= xlength; z++) {
-        zOffset = z*xlen2;
-        for (y = 0; y <= xlength+1; y++) {
-            flagField[zOffset+y*(xlength+2)] = 1;
-        }
-    }
-
-    //fixed: x = xlength+1
-    //We start at 1 to not include previous cells again from z = 0
-    for (z = 1; z <= xlength; z++) {
-        zOffset = z*xlen2 + xlength + 1;
-        for (y = 0; y <= xlength+1; y++) {
-            flagField[zOffset+y*(xlength+2)] = 1;
-        }
-    }
-
-    //fixed: y = 0
-    //from 1:xlength only, to not include cells at upper, lower, left and right edges
-    //The edge cells are set in the other loops.
-    for (z = 1; z <= xlength; z++) {
-        zOffset = z*xlen2;
-        for (x = 1; x <= xlength; x++) {
-            flagField[zOffset+x] = 1;
-        }
-    }
-
-    //fixed: y = xlength+1
-    //same reasoning for index range as in fixed y=0
-    for (z = 1; z <= xlength; z++) {
-        zOffset = z*xlen2 + (xlength+1)*(xlength+2);
-        for (x = 1; x <= xlength; x++) {
-            flagField[zOffset+x] = 1;
-        }
-    }
-
-    // This is the moving wall. All cells at z=xlength+1 are included (also the edge cells).
-    // fixed: z = xlength+1
-    zOffset = (xlength+1)*xlen2;
-    for (y = 0; y <= xlength+1; y++) {
-        idx = zOffset + y*(xlength+2);
-        for (x = 0; x <= xlength+1; x++) {
-            flagField[x+idx] = 2;
-        }
-    }
+//    /*Setting initial distributions*/
+//    //f_i(x,0) = f^eq(1,0,0) = w_i
+//
+//    // current cell index
+//    int idx;
+//
+//    // Temporary variables for xlength^2
+//    int const xlen2 = (xlength+2)*(xlength+2);
+//
+//    // Temporary variables for z and y offsets
+//    int zOffset, yzOffset;
+//
+//    /* initialize collideField and streamField */
+//    int x,y,z;
+//    for ( z = 0; z <= xlength+1; ++z) {
+//        zOffset = z*xlen2;
+//        for ( y = 0; y <= xlength+1; ++y) {
+//            yzOffset = y*(xlength+2) + zOffset;
+//            for ( x = 0; x <= xlength+1; ++x) {
+//                // Compute the base index
+//                idx = Q*(yzOffset + x);
+//                for (int i = 0; i < Q; ++i) {
+//                    collideField[idx+i] = LATTICEWEIGHTS[i];
+//                    streamField[idx+i]  = LATTICEWEIGHTS[i];
+//                }
+//            }
+//        }
+//    }
+//
+//
+//    /*Looping over boundary of flagFields*/
+//    //All points set to zero at memory allocation (using calloc)
+//
+//    //These are the no-slip walls
+//    //fixed: z = 0
+//    for (y = 0; y <= xlength+1; y++) {
+//        idx = y*(xlength+2);
+//        for (x = 0; x <= xlength+1; x++) {
+//            flagField[x+idx] = 1;
+//        }
+//    }
+//
+//    //fixed: x = 0
+//    //We start at 1 to not include previous cells again from z = 0
+//    for (z = 1; z <= xlength; z++) {
+//        zOffset = z*xlen2;
+//        for (y = 0; y <= xlength+1; y++) {
+//            flagField[zOffset+y*(xlength+2)] = 1;
+//        }
+//    }
+//
+//    //fixed: x = xlength+1
+//    //We start at 1 to not include previous cells again from z = 0
+//    for (z = 1; z <= xlength; z++) {
+//        zOffset = z*xlen2 + xlength + 1;
+//        for (y = 0; y <= xlength+1; y++) {
+//            flagField[zOffset+y*(xlength+2)] = 1;
+//        }
+//    }
+//
+//    //fixed: y = 0
+//    //from 1:xlength only, to not include cells at upper, lower, left and right edges
+//    //The edge cells are set in the other loops.
+//    for (z = 1; z <= xlength; z++) {
+//        zOffset = z*xlen2;
+//        for (x = 1; x <= xlength; x++) {
+//            flagField[zOffset+x] = 1;
+//        }
+//    }
+//
+//    //fixed: y = xlength+1
+//    //same reasoning for index range as in fixed y=0
+//    for (z = 1; z <= xlength; z++) {
+//        zOffset = z*xlen2 + (xlength+1)*(xlength+2);
+//        for (x = 1; x <= xlength; x++) {
+//            flagField[zOffset+x] = 1;
+//        }
+//    }
+//
+//    // This is the moving wall. All cells at z=xlength+1 are included (also the edge cells).
+//    // fixed: z = xlength+1
+//    zOffset = (xlength+1)*xlen2;
+//    for (y = 0; y <= xlength+1; y++) {
+//        idx = zOffset + y*(xlength+2);
+//        for (x = 0; x <= xlength+1; x++) {
+//            flagField[x+idx] = 2;
+//        }
+//    }
 }

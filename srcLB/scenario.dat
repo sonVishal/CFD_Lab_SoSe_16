@@ -1,6 +1,8 @@
 # depth in y-direction (the scenarios are set and displayed on the x-z plane)
 #TODO: xlength has same name, because it is still named like that in the framework
 xlength              5
+xlength 	     10
+xlength		     10
 
 #Scenario (filename of pgm file in folder /scenarios)
 problem Step.pgm

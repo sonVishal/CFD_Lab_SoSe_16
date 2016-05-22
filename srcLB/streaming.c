@@ -8,7 +8,7 @@
  * Here we just iterate over flagField and depending on the value (if FLUID cell) carry out the streaming.
  * Furthermore, the loop is unrolled, which gained better performance.
  */
-void doStreaming(double *collideField, double *streamField,int *flagField,int xlength){
+void doStreaming(double *collideField, double *streamField,int *flagField,int *xlength){
 	/*
 	 * Each FLUID cell (this) copies the distribution f_i-values of all neighboring
 	 * cells of this.

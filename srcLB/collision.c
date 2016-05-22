@@ -20,7 +20,7 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 }
 
 // Perform collision for all inner cells
-void doCollision(double *collideField, int *flagField,const double * const tau, int xlength){
+void doCollision(double *collideField, int *flagField,const double * const tau, int *xlength){
 
 	// Define iteration indices
 	int idx, x, y, z;
@@ -32,11 +32,11 @@ void doCollision(double *collideField, int *flagField,const double * const tau, 
 	int zOffset, yOffset;
 
 	// Perform collision on all "inner" (FLUID) cells
-	for (z = 1; z <= xlength ; z++) {
+	for (z = 1; z <= xlength[2] ; z++) {
 		zOffset = z*xlen2;
-		for (y = 1; y <= xlength; y++) {
+		for (y = 1; y <= xlength[1]; y++) {
 			yOffset = y*(xlength+2);
-			for (x = 1; x <= xlength; x++) {
+			for (x = 1; x <= xlength[0]; x++) {
 
 				// Get the index of the first distribution
 				// in the current cell

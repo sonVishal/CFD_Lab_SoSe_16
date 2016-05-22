@@ -17,7 +17,7 @@ int main(int argc, char *argv[]){
     int *flagField          =NULL;
 
     // Simulation parameters
-    int xlength;
+    int xlength[3];
     double tau;
     double velocityWall[3];
     int t = 0;
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]){
 
     /*Read parameters and check the bounds on tau*/
     //tau is calculated automatically from the reynoldsnumber
-    readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,
+    readParameters(xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,
     		problem, argc, &argv[1]);
 
 
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]){
 #endif
 
     /*Allocate memory to pointers*/
-    int totalsize = (xlength+2)*(xlength+2)*(xlength+2);
+    int totalsize = (xlength[0]+2)*(xlength[1]+2)*(xlength[2]+2);
     collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
     streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
 
@@ -84,8 +84,8 @@ int main(int argc, char *argv[]){
 	    collideField = streamField;
 	    streamField = swap;
 
-	    doCollision(collideField,flagField,&tau,xlength);
-	    treatBoundary(collideField,flagField,velocityWall, &xlength);
+	    doCollision(collideField,flagField,&tau, xlength);
+	    treatBoundary(collideField,flagField,velocityWall, xlength);
 
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);
