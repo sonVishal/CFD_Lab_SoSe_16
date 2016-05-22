@@ -55,6 +55,7 @@ int main(int argc, char *argv[]){
 #endif
 
     /*Allocate memory to pointers*/
+    //                   X             Y              Z
     int totalsize = (xlength[0]+2)*(xlength[1]+2)*(xlength[2]+2);
     collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
     streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
@@ -63,7 +64,7 @@ int main(int argc, char *argv[]){
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     // Initialize all the fields
-    initialiseFields(collideField, streamField, flagField, xlength, problem);
+    initialiseFields(collideField, streamField, flagField, xlength, boundPara, problem);
 
     //TODO: (DL) DELETE RETURN VALUE WHEN FINISHED THE INITIALIZATION FOR WS3
     return 1;

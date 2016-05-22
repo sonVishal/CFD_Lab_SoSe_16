@@ -22,6 +22,7 @@ void p_readWall(char *argv[], t_boundPara *boundPara){
 	boundPara->wallVelocity[2] = z_velocity;
 	boundPara->rhoRef = rhoRef;
 	boundPara->rhoIn = rhoIn;
+
 }
 
 int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *timesteps,
@@ -62,8 +63,7 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     /*TODO: (DL) the characteristic velocity, characteristic length, mach number are
      * no longer valid (using values valid for cavity)
      *
-     * I suggest we create a new function where we check for valid checkings only!
-     *
+     * I suggest we create a new function where we check for valid settings only!
      * For now all checks are comment out.
      */
 
@@ -97,98 +97,95 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 }
 
 void initialiseFields(double *collideField, double *streamField, int *flagField,
-		int *xlength, char *scenario){
+		int *xlength, t_boundPara *boundPara, char *problem){
 
-	/* TODO: (DL) set flagfield according to domain (pgm file), the values set in
-	 * parameter file (*xlength) and the type of boundary set in the parameter file.
+	/* TODO: (DL) many segfaults at the moment, check indices (also for different
+	 * x,y,z values...
 	 */
 
-//    /*Setting initial distributions*/
-//    //f_i(x,0) = f^eq(1,0,0) = w_i
-//
-//    // current cell index
-//    int idx;
-//
-//    // Temporary variables for xlength^2
-//    int const xlen2 = (xlength+2)*(xlength+2);
-//
-//    // Temporary variables for z and y offsets
-//    int zOffset, yzOffset;
-//
-//    /* initialize collideField and streamField */
-//    int x,y,z;
-//    for ( z = 0; z <= xlength+1; ++z) {
-//        zOffset = z*xlen2;
-//        for ( y = 0; y <= xlength+1; ++y) {
-//            yzOffset = y*(xlength+2) + zOffset;
-//            for ( x = 0; x <= xlength+1; ++x) {
-//                // Compute the base index
-//                idx = Q*(yzOffset + x);
-//                for (int i = 0; i < Q; ++i) {
-//                    collideField[idx+i] = LATTICEWEIGHTS[i];
-//                    streamField[idx+i]  = LATTICEWEIGHTS[i];
-//                }
-//            }
-//        }
-//    }
-//
-//
-//    /*Looping over boundary of flagFields*/
-//    //All points set to zero at memory allocation (using calloc)
-//
-//    //These are the no-slip walls
-//    //fixed: z = 0
-//    for (y = 0; y <= xlength+1; y++) {
-//        idx = y*(xlength+2);
-//        for (x = 0; x <= xlength+1; x++) {
-//            flagField[x+idx] = 1;
-//        }
-//    }
-//
-//    //fixed: x = 0
-//    //We start at 1 to not include previous cells again from z = 0
-//    for (z = 1; z <= xlength; z++) {
-//        zOffset = z*xlen2;
-//        for (y = 0; y <= xlength+1; y++) {
-//            flagField[zOffset+y*(xlength+2)] = 1;
-//        }
-//    }
-//
-//    //fixed: x = xlength+1
-//    //We start at 1 to not include previous cells again from z = 0
-//    for (z = 1; z <= xlength; z++) {
-//        zOffset = z*xlen2 + xlength + 1;
-//        for (y = 0; y <= xlength+1; y++) {
-//            flagField[zOffset+y*(xlength+2)] = 1;
-//        }
-//    }
-//
-//    //fixed: y = 0
-//    //from 1:xlength only, to not include cells at upper, lower, left and right edges
-//    //The edge cells are set in the other loops.
-//    for (z = 1; z <= xlength; z++) {
-//        zOffset = z*xlen2;
-//        for (x = 1; x <= xlength; x++) {
-//            flagField[zOffset+x] = 1;
-//        }
-//    }
-//
-//    //fixed: y = xlength+1
-//    //same reasoning for index range as in fixed y=0
-//    for (z = 1; z <= xlength; z++) {
-//        zOffset = z*xlen2 + (xlength+1)*(xlength+2);
-//        for (x = 1; x <= xlength; x++) {
-//            flagField[zOffset+x] = 1;
-//        }
-//    }
-//
-//    // This is the moving wall. All cells at z=xlength+1 are included (also the edge cells).
-//    // fixed: z = xlength+1
-//    zOffset = (xlength+1)*xlen2;
-//    for (y = 0; y <= xlength+1; y++) {
-//        idx = zOffset + y*(xlength+2);
-//        for (x = 0; x <= xlength+1; x++) {
-//            flagField[x+idx] = 2;
-//        }
-//    }
+    /*Setting initial distributions*/
+    //f_i(x,0) = f^eq(1,0,0) = w_i
+
+    // current cell index
+    int idx;
+
+    // Temporary variables for xlength^2
+    int const zlen2 = (xlength[2]+2)*(xlength[2]+2);
+
+    /* initialize collideField and streamField */
+    int x,y,z;
+    for ( z = 0; z <= xlength[2]+1; ++z) {
+        for ( y = 0; y <= xlength[1]+1; ++y) {
+            for ( x = 0; x <= xlength[0]+1; ++x) {
+				int xyzoffset = z*zlen2 + y*xlength[1] + x;
+				printf("xmax=%i ymax=%i zmax=%i \n", xlength[0], xlength[1], xlength[2]);
+			    printf("x=%i y=%i z=%i \n", x,y,z);
+			    printf("totalsize=%i, idx=%i \n", Q*(xlength[0]+2)*(xlength[1]+2)*(xlength[2]+2), Q*xyzoffset);
+				/*TODO: (DL) maybe it's required to set certain boundaries/obstacles
+				 * differently... in the cavity we set also the boundaries, so for now
+				 * there is no check
+				 */
+				// Compute the base index
+                idx = Q*xyzoffset;
+                for (int i = 0; i < Q; ++i) {
+                    collideField[idx+i] = LATTICEWEIGHTS[i];
+                    streamField[idx+i]  = LATTICEWEIGHTS[i];
+                }
+            }
+        }
+    }
+
+    int type1, type2;
+
+    //Do the domain enclosing boundaries (ghost layers) first and set type accordingly.
+    type1 = boundPara[XZ_FRONT].type;
+    type2 = boundPara[XZ_BACK].type;
+    for(int z=0; z <= xlength[2]+1; ++z){
+    	for(int y=0; y <= xlength[0]+1; ++x){
+    		flagField[z*zlen2 + x] = type1; 				  //y = 0
+    		flagField[z*zlen2 + xlength[1]+1 + x] = type2;    // y = xlength[1]+1
+    	}
+    }
+
+    type1 = boundPara[XY_LEFT].type;
+    type2 = boundPara[XY_RIGHT].type;
+    for(int y=0; y <= xlength[1]+1; ++y){
+    	for(int x=0; y <= xlength[0]+1; ++x){
+    		flagField[xlength[1]+1 + x] = type1; 						 //z = 0
+    		flagField[(xlength[2]+1)*zlen2 + y*xlength[1] + x] = type2;  //z =xlength[2]+1
+    	}
+    }
+
+    type1 = boundPara[YZ_BOTTOM].type;
+    type2 = boundPara[YZ_TOP].type;
+    for(int z=0; z <= xlength[2]+1; ++z){
+    	for(int y=0; y <= xlength[1]+1; ++y){
+    		flagField[z*zlen2 + y*(xlength[1]+1)] = type1;  			     //x= 0
+    		flagField[z*zlen2 + y*(xlength[1]+1) + (xlength[0]+1)] = type2;  //x=xlength[0]+1
+    	}
+    }
+
+
+    /* TODO: (DL) For the moment the pgm file is assumed to have the same
+     * size as the values set in the parameter file (.dat).
+     */
+    int **pgmMatrix = read_pgm(problem);
+
+    //NOTE: only domain (ghost layer were set previously)
+    for(int z=1; z <= xlength[2]; ++z){
+    	for (int y = 1; y <= xlength[1]; ++y) {
+			for (int x = 1; x <= xlength[0]; ++x) {
+				int xyzoffset = z*zlen2 + y*xlength[1] + x;
+				int type_domain = pgmMatrix[z][x];
+
+				flagField[xyzoffset] = type_domain;
+			}
+		}
+    }
+
+    /* TODO: (DL) I doubt that the cast in the beginning is correct. However,
+     * there is no free_matrix provided for int matrices (which is returned by
+     * read_pgm. At the moment this is anyway a temporary solution!
+     */
+    free_matrix((double**) pgmMatrix, 0,0,xlength[0]+1, xlength[2]+1);
 }
