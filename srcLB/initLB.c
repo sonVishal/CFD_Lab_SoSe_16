@@ -180,11 +180,11 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     int **pgmMatrix = read_pgm(problem);
 
     //NOTE: only domain (ghost layer were set previously)
-    for(z = 1; z < zlen2; ++z){
+    for(z = 1; z <= xlength[2]; ++z){
 		offset1 = z*xlen2*ylen2;
-    	for (y = 1; y < ylen2; ++y) {
+    	for (y = 1; y <= xlength[1]; ++y) {
 			offset2 = offset1 + y*ylen2;
-			for (x = 1; x < xlen2; ++x) {
+			for (x = 1; x <= xlength[0]; ++x) {
 				int xyzoffset = offset2 + x;
 				int type_domain = pgmMatrix[z][xlen2-1-x]; // values are mirrored
 				flagField[xyzoffset] = type_domain;
