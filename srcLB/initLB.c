@@ -183,33 +183,25 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
      */
     int **pgmMatrix = read_pgm(problem);
 
-	// TODO: (VS) This is completely wrong.
-	// The way PGM matrix is stored is weird so the indices are not like this
-	// If you do not believe me then see the output of the for loop below
-
     //NOTE: only domain (ghost layer were set previously)
-    // for(z = 1; z <= xlength[2]; ++z){
-	// 	offset1 = z*xlen2*ylen2;
-    // 	for (y = 1; y <= xlength[1]; ++y) {
-	// 		offset2 = offset1 + y*ylen2;
-	// 		for (x = 1; x <= xlength[0]; ++x) {
-	// 			int xyzoffset = offset2 + x;
-	// 			int type_domain = pgmMatrix[z][x];
-	// 			flagField[xyzoffset] = type_domain;
-	// 		}
-	// 	}
+    for(z = 1; z <= xlength[2]; ++z){
+		offset1 = z*xlen2*ylen2;
+    	for (y = 1; y <= xlength[1]; ++y) {
+			offset2 = offset1 + y*ylen2;
+			for (x = 1; x <= xlength[0]; ++x) {
+				int xyzoffset = offset2 + x;
+				int type_domain = pgmMatrix[z][xlength[0]+1-x];
+				flagField[xyzoffset] = type_domain;
+			}
+		}
+    }
+
+	// for (x = 0; x < xlen2; x++) {
+    //     for (z = 0; z < zlen2; z++) {
+    //         printf("%d ",pgmMatrix[z][xlength[0]+1-x]);
+    //     }
+    //     printf("\n");
     // }
 
-	for (x = 0; x < xlen2; x++) {
-		for (z = 0; z < zlen2; z++) {
-			printf("%d ",pgmMatrix[x][z]);
-		}
-		printf("\n");
-	}
-
-    /* TODO: (DL) I doubt that the cast in the beginning is correct. However,
-     * there is no free_matrix provided for int matrices (which is returned by
-     * read_pgm. At the moment this is anyway a temporary solution!
-     */
     free_imatrix(pgmMatrix,0,zlen2,0,xlen2);
 }
