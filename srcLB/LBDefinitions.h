@@ -49,5 +49,22 @@ enum E_BOUND_TYPE{
 	OBSTACLE
 };
 
+enum E_BOUNDARIES{
+	XY_LEFT,
+	XY_RIGHT,
+	YZ_BOTTOM,
+	YZ_TOP,
+	XZ_FRONT,
+	XZ_BACK,
+	NUM_WALLS //would be currently 6 (to have this dynamically, can be used in for loops)
+};
+
+typedef struct {
+	int type;
+	double wallVelocity[3];
+	double rhoRef;
+	double rhoIn;
+} t_boundPara;
+
 
 #endif
