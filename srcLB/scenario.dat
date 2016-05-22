@@ -7,13 +7,70 @@ z_length	     10
 #Scenario (filename of pgm file in folder /scenarios)
 problem Step.pgm
 
+# Settings for boundary walls
+					
+#                   x+--------------------------------------------------xx
+#                 xxx|               top YZ                        xxxxx|
+#               xx---|------------------------------------------xxx     |
+#               |    |                                          |       |
+#               |    |                                          |       |
+#  left XY      |    |                                          |       |    right XY
+#            ^  |    |                                          |       |
+#         (X)|  |    |                                          |       |
+#               |    +------------------------------------------|-------x
+#               |   xx     ^                                    |    xxxx
+#               |   x  (Y)/         bottom YZ                   |   xx
+#               |  x                                            | xxx
+#               +xx---------------------------------------------xxx
+                                  (Z) ->
+
+# TODO: we could support to set in type the string and compare to the enum, but this is "extra work"
+# see how it is done: https://stackoverflow.com/questions/9907160/how-to-convert-enum-names-to-string-in-c
+
+# USE FOR BOUNDARY CONDITION 
+# NO_SLIP = 1 
+# MOVING = 2 
+# FREE_SLIP = 3 
+# INFLOW = 4 
+# OUTFLOW = 5 
+# PRESSURE_IN = 6
+
+# do not use FLUID = 0 or OBSTACLE = 7
+
+# XY wall left
+type 1
+x_velocity 0.0
+y_velocity 1.0
+z_velocity 0.0
+rhoRef -1.0 
+rhoIn -1.0
+
+# XY wall right
+type 1
+x_velocity 0.0
+y_velocity 0.0
+z_velocity 0.0
+rhoRef -1.0
+rhoIn -1.0
+
+# YZ wall - bottom
+type 1
+x_velocity 0.0
+y_velocity 0.0
+z_velocity 0.0
+rhoRef -1.0
+rhoIn -1.0
+
+# YZ wall - top
+type 1
+x_velocity 0.0
+y_velocity 0.0
+z_velocity 0.0
+rhoRef -1.0
+rhoIn -1.0
+
 # Reynolds Number
 Re                    10
-
-# Velocity of moving wall
-xvelocity         0
-yvelocity         0
-zvelocity         0
 
 # Number of timesteps
 timesteps            2000

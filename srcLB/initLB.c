@@ -1,42 +1,86 @@
-#include <math.h>
 #include "initLB.h"
 #include "LBDefinitions.h"
 #include "helper.h"
+
+
+/* TODO: (DL) Maybe these separated functions are not required, we can also simply
+ * read&save every time all values, but depending on type just consider the relevant...
+ */
+
+void p_handleMovingWall(){ // ENUM ID: 2
+
+}
+
+void p_handleInflow(){ // ENUM ID: 4
+
+}
+
+void p_handlePressure(){ // ENUM ID: 6
+
+}
+
+// Read values, but they are all not required...
+void p_handleDefault(){ // ENUM ID: 1, 3, 5
+
+}
+
+void p_readWall(char *argv[]){
+	int type;
+    READ_INT(*argv, type);
+    switch(type){
+    case MOVING:
+    	p_handleMovingWall();
+    	break;
+    case INFLOW:
+    	p_handleInflow();
+    	break;
+    case PRESSURE_IN:
+    	p_handlePressure();
+    	break;
+    default:
+    	p_handleDefault();
+    }
+}
 
 int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps,
 		int *timestepsPerPlotting, char *problem,
 		int argc, char *argv[]){
 
-    double xvelocity, yvelocity, zvelocity;
+	/* TODO: (DL) Where and how do we save our values for the boundary ??
+	 * We maybe could create a struct, that contains all information for the boundary...?!
+	 * */
+
     double Re; //u_wall, machNr;
 
     int x_length, y_length, z_length; //Temporary for reading
 
-
     /* Read values from file given in argv */
+    //Domain
     READ_INT(*argv, x_length);
     READ_INT(*argv, y_length);
     READ_INT(*argv, z_length);
-
     xlength[0] = x_length;
     xlength[1] = y_length;
     xlength[2] = z_length;
 
+    //PGM-file that describes the scenario (located in /scenarios)
     READ_STRING(*argv, problem);
 
+    //read *left XY* wall:
+    p_readWall(argv);
+
+    //read *right XY* wall:
+    p_readWall(argv);
+
+    //read *bottom YZ* wall:
+    p_readWall(argv);
+
+    //read *top YZ* wall:
+    p_readWall(argv);
+
     READ_DOUBLE(*argv, Re);
-    READ_DOUBLE(*argv, xvelocity);
-    READ_DOUBLE(*argv, yvelocity);
-    READ_DOUBLE(*argv, zvelocity);
-
-    velocityWall[0] = xvelocity;
-    velocityWall[1] = yvelocity;
-    velocityWall[2] = zvelocity;
-
     READ_INT(*argv, *timesteps);
     READ_INT(*argv, *timestepsPerPlotting);
-
-
 
 
     /*TODO: (DL) the characteristic velocity, characteristic length, mach number are
@@ -78,6 +122,10 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
 
 void initialiseFields(double *collideField, double *streamField, int *flagField,
 		int *xlength, char *scenario){
+
+	/* TODO: (DL) set flagfield according to domain (pgm file), the values set in
+	 * parameter file (*xlength) and the type of boundary set in the parameter file.
+	 */
 
 //    /*Setting initial distributions*/
 //    //f_i(x,0) = f^eq(1,0,0) = w_i
