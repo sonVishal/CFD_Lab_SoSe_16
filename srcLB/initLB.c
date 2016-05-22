@@ -116,14 +116,13 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 	int const xlen2		= xlength[0]+2;
 	int const ylen2		= xlength[1]+2;
 	int const zlen2		= xlength[2]+2;
-	int const zlen2sq	= zlen2*zlen2;
 	int offset1, offset2;
 
     /* initialize collideField and streamField */
     for ( z = 0; z < zlen2; ++z) {
-		offset1 = z*zlen2sq;
+		offset1 = z*xlen2*ylen2;
         for ( y = 0; y < ylen2; ++y) {
-			offset2 = offset1 + y*ylen2;
+			offset2 = offset1 + y*xlen2;
             for ( x = 0; x < xlen2; ++x) {
 				int xyzoffset =  offset2 + x;
 				// printf("xmax=%i ymax=%i zmax=%i \n", xlength[0], xlength[1], xlength[2]);
@@ -149,8 +148,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     type1 = boundPara[XZ_FRONT].type;
     type2 = boundPara[XZ_BACK].type;
     for(z = 0; z < zlen2; ++z){
-		offset1 = z*zlen2sq;
-		offset2 = offset1 + (xlength[1]+1)*ylen2;
+		offset1 = z*xlen2*ylen2;
+		offset2 = offset1 + (xlength[1]+1)*xlen2;
     	for(x = 0; x < xlen2; ++x){
     		flagField[offset1 + x] = type1; // y = 0
     		flagField[offset2 + x] = type2; // y = xlength[1]+1
@@ -160,8 +159,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     type1 = boundPara[XY_LEFT].type;
     type2 = boundPara[XY_RIGHT].type;
     for(y = 0; y < ylen2; ++y){
-		offset1 = y*ylen2;
-		offset2 = offset1 + (xlength[2]+1)*zlen2sq;
+		offset1 = y*xlen2;
+		offset2 = offset1 + (xlength[2]+1)*xlen2*ylen2;
     	for(x = 0; x < xlen2; ++x){
     		flagField[offset1 + x] = type1; // z = 0
     		flagField[offset2 + x] = type2; // z = xlength[2]+1
@@ -171,33 +170,42 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     type1 = boundPara[YZ_BOTTOM].type;
     type2 = boundPara[YZ_TOP].type;
     for(z = 0; z < zlen2; ++z){
-		offset1 = z*zlen2sq;
+		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + xlength[0] + 1;
-		flagField[offset1 + y*ylen2] = type1; // x = 0
     	for(y = 0; y < ylen2; ++y){
-    		flagField[offset2 + y*ylen2] = type2; // x = xlength[0]+1
+			flagField[offset1 + y*xlen2] = type1; // x = 0
+    		flagField[offset2 + y*xlen2] = type2; // x = xlength[0]+1
     	}
     }
-
-	return;
 
     /* TODO: (DL) For the moment the pgm file is assumed to have the same
      * size as the values set in the parameter file (.dat).
      */
     int **pgmMatrix = read_pgm(problem);
 
+	// TODO: (VS) This is completely wrong.
+	// The way PGM matrix is stored is weird so the indices are not like this
+	// If you do not believe me then see the output of the for loop below
+
     //NOTE: only domain (ghost layer were set previously)
-    for(z = 1; z <= xlength[2]; ++z){
-		offset1 = z*zlen2sq;
-    	for (y = 1; y <= xlength[1]; ++y) {
-			offset2 = offset1 + y*ylen2;
-			for (x = 1; x <= xlength[0]; ++x) {
-				int xyzoffset = offset2 + x;
-				int type_domain = pgmMatrix[z][x];
-				flagField[xyzoffset] = type_domain;
-			}
+    // for(z = 1; z <= xlength[2]; ++z){
+	// 	offset1 = z*xlen2*ylen2;
+    // 	for (y = 1; y <= xlength[1]; ++y) {
+	// 		offset2 = offset1 + y*ylen2;
+	// 		for (x = 1; x <= xlength[0]; ++x) {
+	// 			int xyzoffset = offset2 + x;
+	// 			int type_domain = pgmMatrix[z][x];
+	// 			flagField[xyzoffset] = type_domain;
+	// 		}
+	// 	}
+    // }
+
+	for (x = 0; x < xlen2; x++) {
+		for (z = 0; z < zlen2; z++) {
+			printf("%d ",pgmMatrix[x][z]);
 		}
-    }
+		printf("\n");
+	}
 
     /* TODO: (DL) I doubt that the cast in the beginning is correct. However,
      * there is no free_matrix provided for int matrices (which is returned by
