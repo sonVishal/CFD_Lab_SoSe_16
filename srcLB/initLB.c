@@ -17,6 +17,8 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     READ_INT(*argv, *xlength);
     READ_INT(*argv, ylength);
     READ_INT(*argv, zlength);
+    xlength[1] = ylength;
+    xlength[2] = zlength;
 
     READ_STRING(*argv, problem);
 

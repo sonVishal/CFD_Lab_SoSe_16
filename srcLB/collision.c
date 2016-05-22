@@ -26,7 +26,7 @@ void doCollision(double *collideField, int *flagField,const double * const tau, 
 	int idx, x, y, z;
 
 	// Temporary variables for xlength^2
-	int const xlen2 = (xlength+2)*(xlength+2);
+	int const xlen2 = (xlength[2]+2)*(xlength[2]+2);
 
 	// Temporary variables for z and y offsets
 	int zOffset, yOffset;
@@ -35,7 +35,7 @@ void doCollision(double *collideField, int *flagField,const double * const tau, 
 	for (z = 1; z <= xlength[2] ; z++) {
 		zOffset = z*xlen2;
 		for (y = 1; y <= xlength[1]; y++) {
-			yOffset = y*(xlength+2);
+			yOffset = y*(xlength[1]+2);
 			for (x = 1; x <= xlength[0]; x++) {
 
 				// Get the index of the first distribution

@@ -14,9 +14,10 @@ void doStreaming(double *collideField, double *streamField,int *flagField,int *x
 	 * cells of this.
 	 */
 
-	int xlen_2 = xlength+2;
-	int xlen_2sq = xlen_2*xlen_2;
-	int totalSize = xlen_2*xlen_2sq;
+	//TODO:(DL) Check if this is correct, xlen_2 is always y-offset; xlen_2sq is always z-offset
+	int xlen_2 = xlength[1]+2;
+	int xlen_2sq = (xlength[2]+2)*(xlength[2]+2);
+	int totalSize = (xlength[0]+2)*(xlength[1]+2)*(xlength[2]+2);
 	int i;
 
 	int nextCellIndex, currentCellIndex;
