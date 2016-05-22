@@ -5,7 +5,7 @@ SOURCES=initLB.c visualLB.c boundary.c collision.c streaming.c computeCellValues
 # --------
 CC=gcc
 
-CFLAGS=-Werror -g -pedantic -Wall -std=c99 #-O0 -pg -enable-checking -v -da -Q
+CFLAGS=-Werror -g -pedantic -Wall -std=c99 #-O0 -g -enable-checking -v -da -Q
 
 # Linker flags
 # ------------
