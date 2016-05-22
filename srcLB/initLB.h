@@ -1,13 +1,14 @@
 #ifndef _INITLB_H_
 #define _INITLB_H_
 #include "helper.h"
+#include "LBDefinitions.h"
 
 
 /* reads the parameters for the lid driven cavity scenario from a config file */
 int readParameters(
     int *xlength,                       /* reads domain size. Parameter name: "xlength" */
     double *tau,                        /* relaxation parameter tau. Parameter name: "tau" */
-    double *velocityWall,               /* velocity of the lid. Parameter name: "characteristicvelocity" */
+	t_boundPara *boundPara,             /* velocity of the lid. Parameter name: "characteristicvelocity" */
     int *timesteps,                     /* number of timesteps. Parameter name: "timesteps" */
     int *timestepsPerPlotting,          /* timesteps between subsequent VTK plots. Parameter name: "vtkoutput" */
     char *problem, 						/* scenario name which should be a .pgm file */

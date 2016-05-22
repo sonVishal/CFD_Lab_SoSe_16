@@ -9,6 +9,7 @@
 #include "LBDefinitions.h"
 #include <time.h>
 
+
 int main(int argc, char *argv[]){
 
     // Distribution function vectors
@@ -23,6 +24,7 @@ int main(int argc, char *argv[]){
     int t = 0;
     int timesteps;
     int timestepsPerPlotting;
+    t_boundPara boundPara[NUM_WALLS];
 
     //To be safe allocating memory for max line length (defined in helper.h)
     char problem[MAX_LINE_LENGTH];
@@ -33,9 +35,8 @@ int main(int argc, char *argv[]){
 
     /*Read parameters and check the bounds on tau*/
     //tau is calculated automatically from the reynoldsnumber
-    readParameters(xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,
+    readParameters(xlength, &tau, boundPara, &timesteps, &timestepsPerPlotting,
     		problem, argc, &argv[1]);
-
 
     /* TODO: (DL) the current name includes also the file ending '.pgm' maybe we
      * don't want that or gives trouble with paraview...

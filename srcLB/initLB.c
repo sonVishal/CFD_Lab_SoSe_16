@@ -2,56 +2,41 @@
 #include "LBDefinitions.h"
 #include "helper.h"
 
-
-/* TODO: (DL) Maybe these separated functions are not required, we can also simply
- * read&save every time all values, but depending on type just consider the relevant...
- */
-
-void p_readMovingWall(){ // ENUM ID: 2
-
-}
-
-void p_readInflow(){ // ENUM ID: 4
-
-}
-
-void p_readPressure(){ // ENUM ID: 6
-
-}
-
-// Read values, but they are all not required...
-void p_readDefault(){ // ENUM ID: 1, 3, 5
-
-}
-
-void p_readWall(char *argv[]){
+void p_readWall(char *argv[], t_boundPara *boundPara){
 	int type;
-    READ_INT(*argv, type);
-    switch(type){
-    case MOVING:
-    	p_readMovingWall();
-    	break;
-    case INFLOW:
-    	p_readInflow();
-    	break;
-    case PRESSURE_IN:
-    	p_readPressure();
-    	break;
-    default:
-    	p_readDefault();
-    }
+	double x_velocity, y_velocity, z_velocity;
+	double rhoRef, rhoIn;
+
+	READ_INT(*argv, type);
+
+	READ_DOUBLE(*argv, x_velocity);
+	READ_DOUBLE(*argv, y_velocity);
+	READ_DOUBLE(*argv, z_velocity);
+
+	READ_DOUBLE(*argv, rhoRef);
+	READ_DOUBLE(*argv, rhoIn);
+
+	boundPara->type = type;
+	boundPara->wallVelocity[0] = x_velocity;
+	boundPara->wallVelocity[1] = y_velocity,
+	boundPara->wallVelocity[2] = z_velocity;
+	boundPara->rhoRef = rhoRef;
+	boundPara->rhoIn = rhoIn;
 }
 
-int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps,
+int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *timesteps,
 		int *timestepsPerPlotting, char *problem,
 		int argc, char *argv[]){
 
-	/* TODO: (DL) Where and how do we save our values for the boundary ??
-	 * We maybe could create a struct, that contains all information for the boundary...?!
-	 * */
+	if(argc != 2){
+		char msg[200];
+		snprintf(msg, 200, "There are %i arguments provided to the simulation. Only 1 argument "
+				"providing \nthe path+filename (of relative to working directory) of the scenario "
+				"is accepted!", argc-1);
+		ERROR(msg);
+	}
 
     double Re; //u_wall, machNr;
-
     int x_length, y_length, z_length; //Temporary for reading
 
     /* Read values from file given in argv */
@@ -66,28 +51,13 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     //PGM-file that describes the scenario (located in /scenarios)
     READ_STRING(*argv, problem);
 
-    //read *left XY* wall:
-    p_readWall(argv);
-
-    //read *right XY* wall:
-    p_readWall(argv);
-
-    //read *bottom YZ* wall:
-    p_readWall(argv);
-
-    //read *top YZ* wall:
-    p_readWall(argv);
-
-    //read *front YZ* wall:
-    p_readWall(argv);
-
-    //read *back YZ* wall:
-    p_readWall(argv);
+    for(int b=XY_LEFT; b <= XZ_BACK; b++){
+    	p_readWall(argv, &boundPara[b]);
+    }
 
     READ_DOUBLE(*argv, Re);
     READ_INT(*argv, *timesteps);
     READ_INT(*argv, *timestepsPerPlotting);
-
 
     /*TODO: (DL) the characteristic velocity, characteristic length, mach number are
      * no longer valid (using values valid for cavity)
