@@ -10,15 +10,17 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     double xvelocity, yvelocity, zvelocity;
     double Re; //u_wall, machNr;
 
-    int ylength, zlength; //Temporary for reading
+    int x_length, y_length, z_length; //Temporary for reading
 
 
     /* Read values from file given in argv */
-    READ_INT(*argv, *xlength);
-    READ_INT(*argv, ylength);
-    READ_INT(*argv, zlength);
-    xlength[1] = ylength;
-    xlength[2] = zlength;
+    READ_INT(*argv, x_length);
+    READ_INT(*argv, y_length);
+    READ_INT(*argv, z_length);
+
+    xlength[0] = x_length;
+    xlength[1] = y_length;
+    xlength[2] = z_length;
 
     READ_STRING(*argv, problem);
 
