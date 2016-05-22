@@ -5,7 +5,7 @@ y_length 	     30
 z_length	     50
 
 #Scenario (filename of pgm file in folder /scenarios)
-problem scenarios/Step_1.pgm
+problem scenarios/Step.pgm
 
 # Settings for boundary walls
 
