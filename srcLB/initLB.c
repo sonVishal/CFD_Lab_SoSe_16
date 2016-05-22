@@ -179,6 +179,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     	}
     }
 
+	return;
+
     /* TODO: (DL) For the moment the pgm file is assumed to have the same
      * size as the values set in the parameter file (.dat).
      */

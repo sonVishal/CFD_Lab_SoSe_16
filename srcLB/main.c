@@ -57,18 +57,22 @@ int main(int argc, char *argv[]){
     /*Allocate memory to pointers*/
     //                   X             Y              Z
     int totalsize = (xlength[0]+2)*(xlength[1]+2)*(xlength[2]+2);
+
     collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
+    if (collideField == 0) ERROR("Storage cannot be allocated");
+
     streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
+    if (streamField == 0) ERROR("Storage cannot be allocated");
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
+    if (flagField == 0) ERROR("Storage cannot be allocated");
 
     // Initialize all the fields
     initialiseFields(collideField, streamField, flagField, xlength, boundPara, problem);
 
     //TODO: (DL) DELETE RETURN VALUE WHEN FINISHED THE INITIALIZATION FOR WS3
     return 1;
-
 
     printf("\nINFO: Storing cell data in VTK files.\n      Please use the"
     " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
