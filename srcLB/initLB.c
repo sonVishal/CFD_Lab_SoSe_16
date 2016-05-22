@@ -203,5 +203,5 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
      * there is no free_matrix provided for int matrices (which is returned by
      * read_pgm. At the moment this is anyway a temporary solution!
      */
-    free_matrix((double**) pgmMatrix, 0,0,xlength[0]+1, xlength[2]+1);
+    free_imatrix(pgmMatrix,0,zlen2,0,xlen2);
 }
