@@ -173,6 +173,9 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
     /* TODO: (DL) For the moment the pgm file is assumed to have the same
      * size as the values set in the parameter file (.dat).
+     *
+     * see issue: https://github.com/sonVishal/CFD_Lab_SoSe_16/issues/5
+     *
      */
     int **pgmMatrix = read_pgm(problem);
 
@@ -183,7 +186,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 			offset2 = offset1 + y*ylen2;
 			for (x = 1; x < xlen2; ++x) {
 				int xyzoffset = offset2 + x;
-				int type_domain = pgmMatrix[z][xlen2-1-x];
+				int type_domain = pgmMatrix[z][xlen2-1-x]; // values are mirrored
 				flagField[xyzoffset] = type_domain;
 			}
 		}
@@ -195,6 +198,17 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 //         }
 //         printf("\n");
 //     }
+//
+//	 printf("##############################################\n");
+//
+//	 //Compare with one layer in the flagfield:
+//	 for(x = 0; x < xlen2; ++x){
+//		 for(z = 0; z < zlen2; ++z){
+//			 y = 3;
+//			 printf("%d ",flagField[z*xlen2*ylen2 + y*xlen2 + x]);
+//		 }
+//		 printf("\n");
+//	 }
 
     free_imatrix(pgmMatrix,0,zlen2,0,xlen2);
 }

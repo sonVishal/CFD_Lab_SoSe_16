@@ -76,14 +76,18 @@ void p_handleInPressure(){
 void treatBoundary(double *collideField, int* flagField, const double * const wallVelocity, int *xlength){
 
 	int xyz_offset, flag ,currentCellIndex;
+	int const xlen2 = xlength[0]+2;
+	int const ylen2 = xlength[1]+2;
+	int const zlen2 = xlength[1]+2;
 
-	for(int z = 0; z <= xlength[0]+1; ++z){
-		for(int y = 0; y <= xlength[1]+1; ++y){
-			for(int x = 0; x <= xlength[2]+1; ++x){
-				//TODO: (DL) make function for index (therefore not optimized)
-				xyz_offset = (z*xlength[2]*xlength[2] + y*xlength[1] + x);
+	for(int z = 0; z < zlen2; ++z){
+		int offset1 = z*xlen2*ylen2;
+		for(int y = 0; y < ylen2; ++y){
+			int offset2 = offset1 + y*xlen2;
+			for(int x = 0; x < xlen2; ++x){
+				xyz_offset = offset2 + x;
+
 				flag = flagField[xyz_offset];
-
 				if (flag != FLUID) {
 					currentCellIndex = Q*xyz_offset;
 					int point[3] = {x,y,z};
