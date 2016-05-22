@@ -99,10 +99,6 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 void initialiseFields(double *collideField, double *streamField, int *flagField,
 		int *xlength, t_boundPara *boundPara, char *problem){
 
-	/* TODO: (DL) many segfaults at the moment, check indices (also for different
-	 * x,y,z values...
-	 */
-
     /*Setting initial distributions*/
     //f_i(x,0) = f^eq(1,0,0) = w_i
 
@@ -125,9 +121,6 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 			offset2 = offset1 + y*xlen2;
             for ( x = 0; x < xlen2; ++x) {
 				int xyzoffset =  offset2 + x;
-				// printf("xmax=%i ymax=%i zmax=%i \n", xlength[0], xlength[1], xlength[2]);
-			    // printf("x=%i y=%i z=%i \n", x,y,z);
-			    // printf("totalsize=%i, idx=%i \n", Q*xlen2*ylen2*zlen2, Q*xyzoffset);
 				/*TODO: (DL) maybe it's required to set certain boundaries/obstacles
 				 * differently... in the cavity we set also the boundaries, so for now
 				 * there is no check
@@ -184,24 +177,24 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     int **pgmMatrix = read_pgm(problem);
 
     //NOTE: only domain (ghost layer were set previously)
-    for(z = 1; z <= xlength[2]; ++z){
+    for(z = 1; z < zlen2; ++z){
 		offset1 = z*xlen2*ylen2;
-    	for (y = 1; y <= xlength[1]; ++y) {
+    	for (y = 1; y < ylen2; ++y) {
 			offset2 = offset1 + y*ylen2;
-			for (x = 1; x <= xlength[0]; ++x) {
+			for (x = 1; x < xlen2; ++x) {
 				int xyzoffset = offset2 + x;
-				int type_domain = pgmMatrix[z][xlength[0]+1-x];
+				int type_domain = pgmMatrix[z][xlen2-1-x];
 				flagField[xyzoffset] = type_domain;
 			}
 		}
     }
 
-	// for (x = 0; x < xlen2; x++) {
-    //     for (z = 0; z < zlen2; z++) {
-    //         printf("%d ",pgmMatrix[z][xlength[0]+1-x]);
-    //     }
-    //     printf("\n");
-    // }
+//	 for (x = 0; x < xlen2; x++) {
+//         for (z = 0; z < zlen2; z++) {
+//             printf("%d ",pgmMatrix[z][xlength[0]+1-x]);
+//         }
+//         printf("\n");
+//     }
 
     free_imatrix(pgmMatrix,0,zlen2,0,xlen2);
 }
