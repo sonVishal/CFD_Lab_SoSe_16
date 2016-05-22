@@ -84,10 +84,9 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 				xyz_offset = (z*xlength[2]*xlength[2] + y*xlength[1] + x);
 				flag = flagField[xyz_offset];
 
-				int point[3] = {x,y,z};
-
-				if (flag != 0) {
+				if (flag != FLUID) {
 					currentCellIndex = Q*xyz_offset;
+					int point[3] = {x,y,z};
 
 					switch(flag){
 					case NO_SLIP:
@@ -107,6 +106,9 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 						break;
 					case PRESSURE_IN:
 						p_handleInPressure();
+						break;
+					case OBSTACLE:
+						p_handleNoSlip(collideField, flagField, currentCellIndex, point, xlength);
 						break;
 					default:
 						ERROR("TODO");
