@@ -7,20 +7,20 @@
  * read&save every time all values, but depending on type just consider the relevant...
  */
 
-void p_handleMovingWall(){ // ENUM ID: 2
+void p_readMovingWall(){ // ENUM ID: 2
 
 }
 
-void p_handleInflow(){ // ENUM ID: 4
+void p_readInflow(){ // ENUM ID: 4
 
 }
 
-void p_handlePressure(){ // ENUM ID: 6
+void p_readPressure(){ // ENUM ID: 6
 
 }
 
 // Read values, but they are all not required...
-void p_handleDefault(){ // ENUM ID: 1, 3, 5
+void p_readDefault(){ // ENUM ID: 1, 3, 5
 
 }
 
@@ -29,16 +29,16 @@ void p_readWall(char *argv[]){
     READ_INT(*argv, type);
     switch(type){
     case MOVING:
-    	p_handleMovingWall();
+    	p_readMovingWall();
     	break;
     case INFLOW:
-    	p_handleInflow();
+    	p_readInflow();
     	break;
     case PRESSURE_IN:
-    	p_handlePressure();
+    	p_readPressure();
     	break;
     default:
-    	p_handleDefault();
+    	p_readDefault();
     }
 }
 
@@ -76,6 +76,12 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     p_readWall(argv);
 
     //read *top YZ* wall:
+    p_readWall(argv);
+
+    //read *front YZ* wall:
+    p_readWall(argv);
+
+    //read *back YZ* wall:
     p_readWall(argv);
 
     READ_DOUBLE(*argv, Re);
