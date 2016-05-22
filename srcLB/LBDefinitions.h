@@ -36,7 +36,8 @@ static const double LATTICEWEIGHTS[19] = {
 static const double densityTol  = 0.03;
 static const double machNrTol   = 0.1;
 
-
+//Note: better not change the order, because at the moment it is defined in the parameter
+//files using the integer value!
 enum E_BOUND_TYPE{
 	FLUID,
 	NO_SLIP,
