@@ -34,6 +34,7 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 		int *timestepsPerPlotting, char *problem,
 		int argc, char *argv[]){
 
+
 	if(argc != 2){
 		char msg[200];
 		snprintf(msg, 200, "There are %i arguments provided to the simulation. Only 1 argument "
@@ -42,10 +43,18 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 		ERROR(msg);
 	}
 
+	int MODE;
     double Re; //u_wall, machNr;
     int x_length, y_length, z_length; //Temporary for reading
     int skip = 0; // How many of the same named variable should be skipped when 
               // calling READ_<TYPE>.
+
+
+    /* TODO: (DL) Make case distinction for different SETTING_MODE's
+     * some modes have additional parameter (such as STEP_FLOW)
+     */
+    READ_INT(*argv, MODE, 0);
+
 
     /* Read values from file given in argv */
     //Domain
@@ -194,8 +203,13 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
     char file[MAX_LINE_LENGTH+10]; //+10 for 'scenarios/'
     snprintf(file, MAX_LINE_LENGTH+10, "scenarios/%s", problem);
-
     int **pgmMatrix = read_pgm(file);
+
+
+    /* TODO: (DL) check the obstacles in the the domain if there are any
+     * 'thin boundaries' (or other illegal positioning, if there is).
+     */
+
 
     //NOTE: only domain (ghost layer were set previously)
     for(z = 1; z <= xlength[2]; ++z){

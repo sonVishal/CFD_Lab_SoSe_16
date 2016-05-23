@@ -39,7 +39,7 @@ int main(int argc, char *argv[]){
     		problem, argc, &argv[1]);
 
     /* TODO: (DL) the current name includes also the file ending '.pgm' maybe we
-     * don't want that or gives trouble with paraview...
+     * dont want that..
      */
     // File printing parameters
     char fName[MAX_LINE_LENGTH+9]; // 9 chars for 'pv_files/'
