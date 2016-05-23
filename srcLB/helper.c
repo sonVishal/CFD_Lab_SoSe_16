@@ -91,7 +91,7 @@ void errhandler( int nLine, const char *szFile, const char *szString )
 /* function. To maintain the string over several program calls, it has to be */
 /* copied!!!                                                                 */
 /*                                                                           */
-char* find_string( const char* szFileName, const char *szVarName )
+char* find_string( const char* szFileName, const char *szVarName, int skip )
 {
     int nLine = 0;
     int i;
@@ -142,6 +142,10 @@ char* find_string( const char* szFileName, const char *szVarName )
         /* read next line if the correct name wasn't found */
         if( strcmp( szVarName, szName)) continue;
 
+        /*Check if the correct number of variables with th same name */
+        /*have been skipped and if not decrement skip and continue*/
+        if(skip-- != 0) continue;
+
         /* remove all leading blnkets and tabs from the value string  */
         while( isspace( (int)*szValue) ) ++szValue;
         if( *szValue == '\n' || strlen( szValue) == 0)
@@ -156,7 +160,7 @@ char* find_string( const char* szFileName, const char *szVarName )
     return NULL;                /* dummy to satisfy the compiler  */
 }
 
-void read_string( const char* szFileName, const char* szVarName, char*   pVariable)
+void read_string( const char* szFileName, const char* szVarName, char*   pVariable, int skip)
 {
     char* szValue = NULL;       /* string containg the read variable value */
 
@@ -165,9 +169,9 @@ void read_string( const char* szFileName, const char* szVarName, char*   pVariab
     if( pVariable  == 0 )  ERROR("null pointer given as variable" );
 
     if( szVarName[0] == '*' )
-        szValue = find_string( szFileName, szVarName +1 );
+        szValue = find_string( szFileName, szVarName +1, skip );
     else
-        szValue = find_string( szFileName, szVarName );
+        szValue = find_string( szFileName, szVarName, skip );
 
     if( sscanf( szValue, "%s", pVariable) == 0)
         READ_ERROR("wrong format", szVarName, szFileName,0);
@@ -180,7 +184,6 @@ void read_string( const char* szFileName, const char* szVarName, char*   pVariab
 
 void read_int( const char* szFileName, const char* szVarName, int* pVariable, int skip)
 {
-    printf("skip = %d\n", skip);
     char* szValue = NULL;       /* string containing the read variable value */
 
     if( szVarName  == 0 )  ERROR("null pointer given as varable name" );
@@ -188,9 +191,9 @@ void read_int( const char* szFileName, const char* szVarName, int* pVariable, in
     if( pVariable  == 0 )  ERROR("null pointer given as variable" );
 
     if( szVarName[0] == '*' )
-        szValue = find_string( szFileName, szVarName +1 );
+        szValue = find_string( szFileName, szVarName +1, skip );
     else
-        szValue = find_string( szFileName, szVarName );
+        szValue = find_string( szFileName, szVarName, skip );
 
     if( sscanf( szValue, "%d", pVariable) == 0)
         READ_ERROR("wrong format", szVarName, szFileName, 0);
@@ -201,8 +204,9 @@ void read_int( const char* szFileName, const char* szVarName, int* pVariable, in
                                       *pVariable );
 }
 
-void read_double( const char* szFileName, const char* szVarName, double* pVariable)
+void read_double( const char* szFileName, const char* szVarName, double* pVariable, int skip)
 {
+    printf("read_double skip = %d\n", skip);
     char* szValue = NULL;       /* String mit dem eingelesenen Variablenwert */
 
     if( szVarName  == 0 )  ERROR("null pointer given as varable name" );
@@ -210,9 +214,9 @@ void read_double( const char* szFileName, const char* szVarName, double* pVariab
     if( pVariable  == 0 )  ERROR("null pointer given as variable" );
 
     if( szVarName[0] == '*' )
-        szValue = find_string( szFileName, szVarName +1 );
+        szValue = find_string( szFileName, szVarName +1, skip );
     else
-        szValue = find_string( szFileName, szVarName );
+        szValue = find_string( szFileName, szVarName, skip );
 
     if( sscanf( szValue, "%lf", pVariable) == 0)
         READ_ERROR("wrong format", szVarName, szFileName, 0);

@@ -7,20 +7,17 @@ void p_readWall(char *argv[], t_boundPara *boundPara, int skip){
 	double x_velocity, y_velocity, z_velocity;
 	double rhoRef, rhoIn;
 
-    //TODO:(TKS) Only reads the first value named type. e.g. Only the first
-    //           block of settings is red into the walls.
-
     //TODO: Add a variable to the input saying how many variables of that should be skipped.
     //          * Remember to change both the #define part and the function definition.
     //          * Add if statement in all read functions.
     READ_INT(*argv, type, skip);
 
-	READ_DOUBLE(*argv, x_velocity);
-	READ_DOUBLE(*argv, y_velocity);
-    READ_DOUBLE(*argv, z_velocity);
+	READ_DOUBLE(*argv, x_velocity, skip);
+	READ_DOUBLE(*argv, y_velocity, skip);
+    READ_DOUBLE(*argv, z_velocity, skip);
 
-	READ_DOUBLE(*argv, rhoRef);
-	READ_DOUBLE(*argv, rhoIn);
+	READ_DOUBLE(*argv, rhoRef, skip);
+	READ_DOUBLE(*argv, rhoIn, skip);
 
 	boundPara->type = type;
 	boundPara->wallVelocity[0] = x_velocity;
@@ -58,15 +55,15 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     xlength[2] = z_length;
 
     //PGM-file that describes the scenario (located in /scenarios)
-    READ_STRING(*argv, problem);
+    READ_STRING(*argv, problem, 0);
 
-    //TODO: (TKS) Make sure the boundaries are read in the correct order.
+    //TODO: (TKS) Make sure the boundaries are red in the correct order.
     for(int b=XY_LEFT; b <= XZ_BACK; b++){
     	p_readWall(argv, &boundPara[b], skip);
         skip++;
     }
 
-    READ_DOUBLE(*argv, Re);
+    READ_DOUBLE(*argv, Re, 0);
     READ_INT(*argv, *timesteps, 0);
     READ_INT(*argv, *timestepsPerPlotting, 0);
 
