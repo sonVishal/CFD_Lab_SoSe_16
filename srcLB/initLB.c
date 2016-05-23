@@ -7,6 +7,8 @@ void p_readWall(char *argv[], t_boundPara *boundPara){
 	double x_velocity, y_velocity, z_velocity;
 	double rhoRef, rhoIn;
 
+    //TODO:(TKS) Only reads the first value named type. e.g. Only the first
+    //           block of settings is red into the walls.
 	READ_INT(*argv, type);
 
 	READ_DOUBLE(*argv, x_velocity);

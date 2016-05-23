@@ -7,6 +7,7 @@ z_length	     50
 #Scenario (filename of pgm file in folder /scenarios)
 problem scenarios/Step.pgm
 
+# TODO: (TKS) Should we use a right hand system? (change direction of y)
 # Settings for boundary walls
 
 #                   x+--------------------------------------------------xx
@@ -22,7 +23,7 @@ problem scenarios/Step.pgm
 #               |   x  (Y)/         bottom YZ                   |   xx
 #               |  x                                            | xxx
 #               +xx---------------------------------------------xxx
-                                  (Z) ->
+#                                  (Z) ->
 
 # TODO: we could support to set in type the string and compare to the enum, but this is "extra work"
 # see how it is done: https://stackoverflow.com/questions/9907160/how-to-convert-enum-names-to-string-in-c
