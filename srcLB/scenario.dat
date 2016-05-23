@@ -5,7 +5,7 @@ y_length 	     30
 z_length	     50
 
 #Scenario (filename of pgm file in folder /scenarios)
-problem scenarios/Step.pgm
+problem Step.pgm
 
 # TODO: (TKS) Should we use a right hand system? (change direction of y)
 # Settings for boundary walls

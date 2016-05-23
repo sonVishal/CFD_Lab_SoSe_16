@@ -1,6 +1,7 @@
 #include "initLB.h"
 #include "LBDefinitions.h"
 #include "helper.h"
+#include <stdio.h>
 
 void p_readWall(char *argv[], t_boundPara *boundPara){
 	int type;
@@ -24,7 +25,6 @@ void p_readWall(char *argv[], t_boundPara *boundPara){
 	boundPara->wallVelocity[2] = z_velocity;
 	boundPara->rhoRef = rhoRef;
 	boundPara->rhoIn = rhoIn;
-
 }
 
 int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *timesteps,
@@ -184,7 +184,11 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
      * see issue: https://github.com/sonVishal/CFD_Lab_SoSe_16/issues/5
      *
      */
-    int **pgmMatrix = read_pgm(problem);
+
+    char file[MAX_LINE_LENGTH+10]; //+10 for 'scenarios/'
+    snprintf(file, MAX_LINE_LENGTH+10, "scenarios/%s", problem);
+
+    int **pgmMatrix = read_pgm(file);
 
     //NOTE: only domain (ghost layer were set previously)
     for(z = 1; z <= xlength[2]; ++z){
