@@ -187,7 +187,16 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 			for (x = 1; x <= xlength[0]; ++x) {
 				int xyzoffset = offset2 + x;
 				int type_domain = pgmMatrix[z][xlen2-1-x]; // values are mirrored
-				flagField[xyzoffset] = type_domain;
+
+				if(type_domain == 0){
+					//This is actually not required as long as FLUID=0, but for security...
+					flagField[xyzoffset] = FLUID;
+				}else if(type_domain == 1){
+					flagField[xyzoffset] = OBSTACLE;
+				}else{
+					ERROR("Description of scenario in pgm file should only consist of logical values. \n");
+				}
+
 			}
 		}
     }
