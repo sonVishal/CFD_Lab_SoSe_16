@@ -137,6 +137,11 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
     int type1, type2;
 
+    /* TODO: (DL) How to deal with overlapping cells? There are cells at edges and corners that
+     * are included twice. The final value these cells is determined by the last loop that
+     * contains these cells.
+     */
+
     //Do the domain enclosing boundaries (ghost layers) first and set type accordingly.
     type1 = boundPara[XZ_FRONT].type;
     type2 = boundPara[XZ_BACK].type;
@@ -189,14 +194,13 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 				int type_domain = pgmMatrix[z][xlen2-1-x]; // values are mirrored
 
 				if(type_domain == 0){
-					//This is actually not required as long as FLUID=0, but for security...
+					//This is actually not required as long as FLUID=0
 					flagField[xyzoffset] = FLUID;
 				}else if(type_domain == 1){
 					flagField[xyzoffset] = OBSTACLE;
 				}else{
 					ERROR("Description of scenario in pgm file should only consist of logical values. \n");
 				}
-
 			}
 		}
     }
