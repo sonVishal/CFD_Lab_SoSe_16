@@ -62,7 +62,7 @@ void writeVtkOutput(const double * const collideField,
     double cellDensity;     // cell density
 
     // cell average velocity
-    double cellVelocity[3] = {0.0,0.0,0.0};
+    double cellVelocity[3];
 
     // Open two files and concatenate them at the end
 
@@ -77,12 +77,23 @@ void writeVtkOutput(const double * const collideField,
         for(y = 1; y <= xlength[1]; y++) {
             for(x = 1; x <= xlength[0]; x++) {
                 // Compute the base index for collideField
-                int xyzoffset = z*xlength[2]*xlength[2] + y*xlength[1] + x;
-            	idx = Q*xyzoffset;
+                int xyzoffset = z*(xlength[0]+2)*(xlength[1]+2) + y*(xlength[0]+2) + xlength[0]+1-x;
 
-                computeDensity(&collideField[idx], &cellDensity);
-                computeVelocity(&collideField[idx], &cellDensity, &cellVelocity[0]);
-
+                if (flagField[xyzoffset] == FLUID) {
+                    // If it is a fluid cell then write the actual
+                    // velocity and density
+                    idx = Q*xyzoffset;
+                    computeDensity(&collideField[idx], &cellDensity);
+                    computeVelocity(&collideField[idx], &cellDensity, &cellVelocity[0]);
+                } else {
+                    // Else write values to signify that the cell is
+                    // not a fluid cell.
+                    // TODO: (VS) Decide on the values
+                    cellVelocity[0] = 0.0;
+                    cellVelocity[1] = 0.0;
+                    cellVelocity[2] = 0.0;
+                    cellDensity     = -1.0;
+                }
                 // Write cell average velocities
                 fprintf(fp, "%f %f %f\n", cellVelocity[0],
                 cellVelocity[1], cellVelocity[2]);

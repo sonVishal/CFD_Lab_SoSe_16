@@ -72,7 +72,6 @@ int main(int argc, char *argv[]){
     initialiseFields(collideField, streamField, flagField, xlength, boundPara, problem);
 
     //TODO: (DL) DELETE RETURN VALUE WHEN FINISHED THE INITIALIZATION FOR WS3
-    return 1;
 
     printf("\nINFO: Storing cell data in VTK files.\n      Please use the"
     " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
@@ -80,6 +79,8 @@ int main(int argc, char *argv[]){
     // Write the VTK at t = 0
     printf("INFO: write vtk file at time t = %d \n", t);
     writeVtkOutput(collideField,flagField,fName,t,xlength);
+
+    return 1;
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
