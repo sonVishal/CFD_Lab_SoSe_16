@@ -49,7 +49,6 @@ enum E_BOUND_TYPE{
 	OBSTACLE
 };
 
-
 //This order of boundaries has to correspond to the order in the parameter file (.dat file)!!
 enum E_BOUNDARIES{
 	XY_LEFT,
@@ -67,5 +66,11 @@ typedef struct {
 	double rhoRef;
 	double rhoIn;
 } t_boundPara;
+
+enum SETTING_MODE{
+	SHEAR_FLOW,
+	STEP_FLOW,
+	ARBITRARY 	//a .pgm file has to be provided in this mode (e.g. example tilted plate)
+};
 
 #endif
