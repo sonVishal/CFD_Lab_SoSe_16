@@ -1,6 +1,6 @@
 # depth in y-direction (the scenarios are set and displayed on the x-z plane)
 #TODO: xlength has same name, because it is still named like that in the framework
-x_length             30
+x_length         30
 y_length 	     30
 z_length	     50
 

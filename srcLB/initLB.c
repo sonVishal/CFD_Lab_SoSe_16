@@ -3,21 +3,22 @@
 #include "helper.h"
 #include <stdio.h>
 
-void p_readWall(char *argv[], t_boundPara *boundPara){
+void p_readWall(char *argv[], t_boundPara *boundPara, int skip){
 	int type;
 	double x_velocity, y_velocity, z_velocity;
 	double rhoRef, rhoIn;
 
-    //TODO:(TKS) Only reads the first value named type. e.g. Only the first
-    //           block of settings is red into the walls.
-	READ_INT(*argv, type);
+    //TODO: Add a variable to the input saying how many variables of that should be skipped.
+    //          * Remember to change both the #define part and the function definition.
+    //          * Add if statement in all read functions.
+    READ_INT(*argv, type, skip);
 
-	READ_DOUBLE(*argv, x_velocity);
-	READ_DOUBLE(*argv, y_velocity);
-	READ_DOUBLE(*argv, z_velocity);
+	READ_DOUBLE(*argv, x_velocity, skip);
+	READ_DOUBLE(*argv, y_velocity, skip);
+    READ_DOUBLE(*argv, z_velocity, skip);
 
-	READ_DOUBLE(*argv, rhoRef);
-	READ_DOUBLE(*argv, rhoIn);
+	READ_DOUBLE(*argv, rhoRef, skip);
+	READ_DOUBLE(*argv, rhoIn, skip);
 
 	boundPara->type = type;
 	boundPara->wallVelocity[0] = x_velocity;
@@ -27,6 +28,8 @@ void p_readWall(char *argv[], t_boundPara *boundPara){
 	boundPara->rhoIn = rhoIn;
 }
 
+// TODO: (TKS) The printed statements from the helper function do no longer
+//             make sense after adding skip
 int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *timesteps,
 		int *timestepsPerPlotting, char *problem,
 		int argc, char *argv[]){
@@ -41,26 +44,30 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 
     double Re; //u_wall, machNr;
     int x_length, y_length, z_length; //Temporary for reading
+    int skip = 0; // How many of the same named variable should be skipped when 
+              // calling READ_<TYPE>.
 
     /* Read values from file given in argv */
     //Domain
-    READ_INT(*argv, x_length);
-    READ_INT(*argv, y_length);
-    READ_INT(*argv, z_length);
+    READ_INT(*argv, x_length, 0);
+    READ_INT(*argv, y_length, 0);
+    READ_INT(*argv, z_length, 0);
     xlength[0] = x_length;
     xlength[1] = y_length;
     xlength[2] = z_length;
 
     //PGM-file that describes the scenario (located in /scenarios)
-    READ_STRING(*argv, problem);
+    READ_STRING(*argv, problem, 0);
 
+    //TODO: (TKS) Make sure the boundaries are red in the correct order.
     for(int b=XY_LEFT; b <= XZ_BACK; b++){
-    	p_readWall(argv, &boundPara[b]);
+    	p_readWall(argv, &boundPara[b], skip);
+        skip++;
     }
 
-    READ_DOUBLE(*argv, Re);
-    READ_INT(*argv, *timesteps);
-    READ_INT(*argv, *timestepsPerPlotting);
+    READ_DOUBLE(*argv, Re, 0);
+    READ_INT(*argv, *timesteps, 0);
+    READ_INT(*argv, *timestepsPerPlotting, 0);
 
     /*TODO: (DL) the characteristic velocity, characteristic length, mach number are
      * no longer valid (using values valid for cavity)
