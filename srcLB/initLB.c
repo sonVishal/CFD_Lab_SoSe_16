@@ -50,11 +50,26 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
               // calling READ_<TYPE>.
 
 
-    /* TODO: (DL) Make case distinction for different SETTING_MODE's
-     * some modes have additional parameter (such as STEP_FLOW)
-     */
     READ_INT(*argv, MODE, 0);
-
+    /*TODO: (DL) When templates for different setting modes are finialized, handle the
+     * different cases of reading the parameters.
+     *
+     * It's probably also necessary so save the MODE variable somewhere so that we have it
+     * available later (we may need it again when we initialize the fields).
+     */
+    switch(MODE){
+    case SHEAR_FLOW:
+    	/* TODO */
+    	break;
+    case STEP_FLOW:
+    	/* TODO */
+    	break;
+    case ARBITRARY:
+    	/* TODO */
+    	break;
+    default:
+    	ERROR("Mode is not supported!");
+    }
 
     /* Read values from file given in argv */
     //Domain
