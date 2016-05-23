@@ -193,7 +193,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 			offset2 = offset1 + y*ylen2;
 			for (x = 1; x <= xlength[0]; ++x) {
 				int xyzoffset = offset2 + x;
-				int type_domain = pgmMatrix[z][xlen2-1-x]; // values are mirrored
+				int type_domain = pgmMatrix[z][x];
 
 				if(type_domain == 0){
 					//This is actually not required as long as FLUID=0

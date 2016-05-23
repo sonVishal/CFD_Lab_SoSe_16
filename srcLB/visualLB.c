@@ -77,7 +77,7 @@ void writeVtkOutput(const double * const collideField,
         for(y = 1; y <= xlength[1]; y++) {
             for(x = 1; x <= xlength[0]; x++) {
                 // Compute the base index for collideField
-                int xyzoffset = z*(xlength[0]+2)*(xlength[1]+2) + y*(xlength[0]+2) + xlength[0]+1-x;
+                int xyzoffset = z*(xlength[0]+2)*(xlength[1]+2) + y*(xlength[0]+2) + x;
 
                 if (flagField[xyzoffset] == FLUID) {
                     // If it is a fluid cell then write the actual
