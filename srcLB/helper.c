@@ -206,7 +206,6 @@ void read_int( const char* szFileName, const char* szVarName, int* pVariable, in
 
 void read_double( const char* szFileName, const char* szVarName, double* pVariable, int skip)
 {
-    printf("read_double skip = %d\n", skip);
     char* szValue = NULL;       /* String mit dem eingelesenen Variablenwert */
 
     if( szVarName  == 0 )  ERROR("null pointer given as varable name" );

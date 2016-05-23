@@ -28,6 +28,8 @@ void p_readWall(char *argv[], t_boundPara *boundPara, int skip){
 
 }
 
+// TODO: (TKS) The printed statements from the helper function do no longer
+//             make sense after adding skip
 int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *timesteps,
 		int *timestepsPerPlotting, char *problem,
 		int argc, char *argv[]){
