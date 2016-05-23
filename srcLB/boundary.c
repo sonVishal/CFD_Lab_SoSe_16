@@ -112,6 +112,9 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 						p_handleInPressure();
 						break;
 					case OBSTACLE:
+						/*TODO: (DL) evaluate first if the cell is even 'connected' to a FLUID cell,
+						 * if not: nothing needs to be done.
+						 */
 						p_handleNoSlip(collideField, flagField, currentCellIndex, point, xlength);
 						break;
 					default:
