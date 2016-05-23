@@ -4,6 +4,9 @@
 #include <errno.h>
 #include <stdio.h>
 
+// Added skip variable to the read_<> functions. This variables tells the function
+// to skip over skip times of the inputed variable.
+
 /* ----------------------------------------------------------------------- */
 /*                             auxiliary functions                         */
 /* ----------------------------------------------------------------------- */
@@ -175,8 +178,9 @@ void read_string( const char* szFileName, const char* szVarName, char*   pVariab
                                       pVariable );
 }
 
-void read_int( const char* szFileName, const char* szVarName, int* pVariable)
+void read_int( const char* szFileName, const char* szVarName, int* pVariable, int skip)
 {
+    printf("skip = %d\n", skip);
     char* szValue = NULL;       /* string containing the read variable value */
 
     if( szVarName  == 0 )  ERROR("null pointer given as varable name" );

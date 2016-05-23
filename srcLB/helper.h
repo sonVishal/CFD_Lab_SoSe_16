@@ -74,7 +74,7 @@ void  errhandler( int nLine, const char *szFile, const char *szString );
  * READ_INT( "MyFile.dat", imax );
  * READ_STRING( szFile, szProblem );
  */
-#define READ_INT( szFileName, VarName)    read_int   ( szFileName, #VarName, &(VarName) )
+#define READ_INT( szFileName, VarName, skip)    read_int   ( szFileName, #VarName, &(VarName), skip )
 
 /**
  * Reading from a datafile.
@@ -101,7 +101,7 @@ void  errhandler( int nLine, const char *szFile, const char *szString );
 #define READ_STRING( szFileName, VarName) read_string( szFileName, #VarName,  (VarName) )
 
 void read_string( const char* szFilename, const char* szName, char*  sValue);
-void read_int   ( const char* szFilename, const char* szName, int*    nValue);
+void read_int   ( const char* szFilename, const char* szName, int*    nValue, int skip);
 void read_double( const char* szFilename, const char* szName, double*  Value);
 
 
