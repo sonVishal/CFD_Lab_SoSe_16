@@ -59,7 +59,6 @@ void p_handleFreeSlip(){
 	 */
 }
 
-//TODO: (TKS) Does only need to b set once since no new distributions are streamed in here.
 void p_handleInflow(int x, int y, int z, int *xlength, t_boundPara *boundPara,
                     double *collideField, const int currentCellIndex){
 	/* TODO: See page 12 for description and equation (2.2) */
