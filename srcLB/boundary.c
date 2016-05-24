@@ -5,14 +5,14 @@
 #include "computeCellValues.h"
 
 void p_handleNoSlip(double *collideField, int const * const flagField, const int current_cell_index,
-		int const * const point, int const * const xlength){
+		int const * const point, int const * const xlen2){
 	int n_cell_index;
 
 	for(int i = 0; i < Q; i++){
 		int n_point[3] = {point[0] + LATTICEVELOCITIES[i][0],
 				point[1] + LATTICEVELOCITIES[i][1],
 				point[2] + LATTICEVELOCITIES[i][2]};
-		n_cell_index = Q*(n_point[2]*xlength[2]*xlength[2] + n_point[1]*xlength[1] + n_point[0]);
+		n_cell_index = Q*(n_point[2]*xlen2[0]*xlen2[1] + n_point[1]*xlen2[0] + n_point[0]);
 
 		if(flagField[n_cell_index] == FLUID){ /* TODO: (DL) check also for valid index */
 			collideField[current_cell_index + i] = collideField[n_cell_index + (Q-i-1)];
@@ -21,7 +21,7 @@ void p_handleNoSlip(double *collideField, int const * const flagField, const int
 }
 
 void p_handleMovingWall(double *collideField, const int currentCellIndex,
-		int const * const point, int const * const xlength, double const * const wallVelocity){
+		int const * const point, int const * const xlen2, double const * const wallVelocity){
 
 	int n_cell_index;
 	double density;
@@ -29,7 +29,7 @@ void p_handleMovingWall(double *collideField, const int currentCellIndex,
 	for(int i = 0; i < Q; i++){
 		int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
 		int n_point[3] = {point[0] + c[0], point[1] + c[1], point[2] + c[2]};
-		n_cell_index = Q*(n_point[2]*xlength[2]*xlength[2] + n_point[1]*xlength[1] + n_point[0]);
+		n_cell_index = Q*(n_point[2]*xlen2[1]*xlen2[0] + n_point[1]*xlen2[0] + n_point[0]);
 
 		if(n_cell_index == FLUID){ /* TODO: (DL) check also for valid index */
 			double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
@@ -37,7 +37,7 @@ void p_handleMovingWall(double *collideField, const int currentCellIndex,
 			computeDensity(&collideField[n_cell_index], &density);
 
 			collideField[currentCellIndex + i] = collideField[n_cell_index + (Q-i-1)] +
-					2 * weight * dot_uwall_c / (C_S*C_S);
+					2 * weight * density * dot_uwall_c / (C_S*C_S);
 		}
 	}
 }
@@ -107,14 +107,12 @@ void p_handleInPressure(){
 void treatBoundary(double *collideField, int* flagField, const double * const wallVelocity, int *xlength){
 
 	int xyz_offset, flag ,currentCellIndex;
-	int const xlen2 = xlength[0]+2;
-	int const ylen2 = xlength[1]+2;
-	int const zlen2 = xlength[1]+2;
+	int const xlen2[3] = [xlength[0]+2,xlength[1]+2,xlength[1]+2];
 
 	for(int z = 0; z < zlen2; ++z){
-		int offset1 = z*xlen2*ylen2;
+		int offset1 = z*xlen2[0]*xlen2[1];
 		for(int y = 0; y < ylen2; ++y){
-			int offset2 = offset1 + y*xlen2;
+			int offset2 = offset1 + y*xlen2[0];
 			for(int x = 0; x < xlen2; ++x){
 				xyz_offset = offset2 + x;
 
@@ -125,10 +123,10 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 
 					switch(flag){
 					case NO_SLIP:
-						p_handleNoSlip(collideField, flagField, currentCellIndex, point, xlength);
+						p_handleNoSlip(collideField, flagField, currentCellIndex, point, xlen2);
 						break;
 					case MOVING:
-						p_handleMovingWall(collideField, currentCellIndex, point, xlength, wallVelocity);
+						p_handleMovingWall(collideField, currentCellIndex, point, xlen2, wallVelocity);
 						break;
 					case FREE_SLIP:
 						p_handleFreeSlip();
