@@ -20,7 +20,7 @@ function pgmwrite(pixels, name)
     % Write the PGM image header to the file
     fprintf(fid,'P2\n');
     fprintf(fid,'%d %d\n', width, height);
-    fprintf(fid,'255\n');
+    fprintf(fid,'2\n');
     
     % Write the pixel values from the matrix into
     % the file

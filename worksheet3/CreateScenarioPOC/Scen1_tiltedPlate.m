@@ -7,8 +7,7 @@ close all;
 x_len = 212;
 z_len = 492;
 
-scen = ones(x_len+2, z_len+2); %+2 is ghoast layers
-scen(2:end-1, 2:end-1) = 0; %on all four edges is now boundary
+scen = zeros(x_len, z_len); %+2 is ghoast layers
 
 blocksize = 30;
 assert(mod(blocksize, 2) == 0);
