@@ -36,102 +36,35 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 //            #
 //            #
 
-void valid_sorroundings(int *flagField, int currentCellIndex, int* xlength){
+int valid_sorroundings(int x, int z, const int* const xlength, int **pgmMatrix){
 
-    int xlen2 = xlength[0] + 2;
-    int ylen2 = xlength[1] + 2;
+    int right = pgmMatrix[z+1][x];
+    int left  = pgmMatrix[z-1][x];
+    int up    = pgmMatrix[z][x+1];
+    int down  = pgmMatrix[z][x-1];
+    int is_valid = 1;
 
-
-    //Check if YZ_TOPP edge has a FLUID neighbour.
-    if(flagField[currentCellIndex + 1] == FLUID){
-
-        //Check if XZ_BACK has a FLUID neighbour.
-        if(flagField[currentCellIndex - xlen2] == FLUID){
-            if(flagField[currentCellIndex + 1 - xlen2] == OBSTACLE)
-                ERROR("Invalid geometry");
-        }
-
-        //Check if XZ_FRONT has a FLUID neighbour.
-        if(flagField[currentCellIndex + xlen2] == FLUID){
-            if(flagField[currentCellIndex + 1 + xlen2] == OBSTACLE)
-                ERROR("Invalid geometry");
-        }
-
-        //Check if XY_LEFT has a FLUID neighbour.
-        if(flagField[currentCellIndex - xlen2*ylen2] == FLUID){
-            if(flagField[currentCellIndex + 1 - xlen2*ylen2] == OBSTACLE)
-                ERROR("Invalid geometry");
-        }
-
-        //Check if XY_RIGHT has a FLUID neighbour.
-        if(flagField[currentCellIndex + xlen2*ylen2] == FLUID){
-            if(flagField[currentCellIndex + 1 + xlen2*ylen2] == OBSTACLE)
-                ERROR("Invalid geometry");
-        }
-
+    if( !(right && up)){                    // If right and up are FLUID
+        if(pgmMatrix[x+1][z+1] == OBSTACLE) // If right corner are an OBSTACLE
+            is_valid = 0;
     }
 
-    //Check if YZ_BOTTOM edge has a FLUID neighbour.
-    if(flagField[currentCellIndex - 1] == FLUID){
-
-        //Check if XZ_BACK has a FLUID neighbour.
-        if(flagField[currentCellIndex - xlen2] == FLUID){
-            if(flagField[currentCellIndex - 1 - xlen2] == OBSTACLE)
-                ERROR("Invalid geometry");
-        }
-
-        //Check if XZ_FRONT has a FLUID neighbour.
-        if(flagField[currentCellIndex + xlen2] == FLUID){
-            if(flagField[currentCellIndex - 1 + xlen2] == OBSTACLE)
-                ERROR("Invalid geometry");
-        }
-
-        //Check if XY_LEFT has a FLUID neighbour.
-        if(flagField[currentCellIndex - xlen2*ylen2] == FLUID){
-            if(flagField[currentCellIndex - 1 - xlen2*ylen2] == OBSTACLE)
-                ERROR("Invalid geometry");
-        }
-
-        //Check if XY_RIGHT has a FLUID neighbour.
-        if(flagField[currentCellIndex + xlen2*ylen2] == FLUID){
-            if(flagField[currentCellIndex - 1 + xlen2*ylen2] == OBSTACLE)
-                ERROR("Invalid geometry");
-        }
-
+    if( !(right && down)){                  // If right and down are FLUID
+        if(pgmMatrix[x-1][z+1] == OBSTACLE) // If right corner are an OBSTACLE
+            is_valid = 0;
     }
 
-    //Check if XZ_FRONT has a FLUID neighbour
-    if(flagField[currentCellIndex + xlen2] == FLUID){
-
-        //Check if XY_RIGHT has a FLUID neighbour.
-        if(flagField[currentCellIndex + xlen2*ylen2] == FLUID){
-            if(flagField[currentCellIndex +xlen2 + xlen2*ylen2] == OBSTACLE)
-                ERROR("Invalid geometry");
-        }
-
-        //Check if XY_LEFT has a FLUID neighbour.
-        if(flagField[currentCellIndex + xlen2*ylen2] == FLUID){
-            if(flagField[currentCellIndex +xlen2 - xlen2*ylen2] == OBSTACLE)
-                ERROR("Invalid geometry");
-        }
+    if( !(left && up)){                     // If left and up are FLUID
+        if(pgmMatrix[x+1][z-1] == OBSTACLE) // If right corner are an OBSTACLE
+            is_valid = 0;
     }
 
-    //Check if XZ_BACK has a FLUID neighbour
-    if(flagField[currentCellIndex - xlen2] == FLUID){
-
-        //Check if XY_RIGHT has a FLUID neighbour.
-        if(flagField[currentCellIndex + xlen2*ylen2] == FLUID){
-            if(flagField[currentCellIndex -xlen2 + xlen2*ylen2] == OBSTACLE)
-                ERROR("Invalid geometry");
-        }
-
-        //Check if XY_LEFT has a FLUID neighbour.
-        if(flagField[currentCellIndex + xlen2*ylen2] == FLUID){
-            if(flagField[currentCellIndex -xlen2 - xlen2*ylen2] == OBSTACLE)
-                ERROR("Invalid geometry");
-        }
+    if( !(left && down)){                   // If left and down are FLUID
+        if(pgmMatrix[x-1][z-1] == OBSTACLE) // If right corner are an OBSTACLE
+            is_valid = 0;
     }
 
+    return(is_valid);
 
 }
 
@@ -172,6 +105,22 @@ void read_customPgmMatrix(const int * const xlength, char *filename){
 	 * Also remember that we need to free the matrix, so it's better to
 	 * return an error code..
 	 */
+
+    /*Check for illegal geometries*/
+    for(int z = 1; z <= xlength[2]; ++z){
+        for (int x = 1; x <= xlength[0]; ++x) {
+            if(pgmMatrix[x][z] == OBSTACLE){
+                if(!valid_sorroundings(x, z, xlength, pgmMatrix)){
+		            free_imatrix(pgmMatrix,0,zsizePgm+2,0,xsizePgm+2);
+                    char* error = "";
+                    sprintf(error, "Invalid surroundings at x = %d, z = %d)", x,z);
+                    ERROR(error);
+                    
+                }
+                    
+			}
+		}
+    }
 }
 
 /* TODO: (DL) delete when finializing code, but leave it as long debugging there
@@ -389,21 +338,6 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		}
     }
 
-    /*Check for illegal geometries*/
-    // TODO: (TKS) Could do this in the above loop be checking pgmMatrix
-
-    for(z = 1; z <= xlength[2]; ++z){
-		offset1 = z*xlen2*ylen2;
-    	for (y = 1; y <= xlength[1]; ++y) {
-			offset2 = offset1 + y*ylen2;
-			for (x = 1; x <= xlength[0]; ++x) {
-				int xyzoffset = offset2 + x;
-				if(flagField[xyzoffset] == OBSTACLE){
-                    valid_sorroundings(flagField, xyzoffset, xlength);
-				}
-			}
-		}
-    }
 
     /*Setting initial distributions, LATTICEWEIGHTS and INFLOW conditions */
     //f_i(x,0) = f^eq(1,0,0) = w_i
