@@ -24,8 +24,6 @@ void p_readWall(char *argv[], t_boundPara *boundPara, int skip){
 	boundPara->wallVelocity[0] = x_velocity;
 	boundPara->wallVelocity[1] = y_velocity,
 	boundPara->wallVelocity[2] = z_velocity;
-	boundPara->wallVelocity[3] = x_velocity*x_velocity + y_velocity*y_velocity 
-                                 + z_velocity*z_velocity;
 	boundPara->rhoRef = rhoRef;
 	boundPara->rhoIn = rhoIn;
 }

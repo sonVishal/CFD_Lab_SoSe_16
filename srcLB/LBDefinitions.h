@@ -64,7 +64,7 @@ typedef struct {
 	int type;
 
     // Three first indecies hold the velocities in each direction and the fourth the magnitude
-	double wallVelocity[4]; 	
+	double wallVelocity[3]; 	
     double rhoRef;
 	double rhoIn;
 } t_boundPara;
