@@ -142,15 +142,18 @@ void valid_sorroundings(int *flagField, int currentCellIndex, int* xlength){
 //'initialiseFields' - uses the matrix to set the domain and deallocates the matrix
 static int **pgmMatrix = NULL;
 
+void print_matrix(const int * const xlength);
+
 void init_pgmMatrix(const int * const xlength){
 
-	pgmMatrix = imatrix(0, xlength[2]+2, 0, xlength[0]+2); //XZ-plane where Z is on the "x-axis"
+	pgmMatrix = imatrix(0, xlength[2]+1, 0, xlength[0]+1); //XZ-plane where Z is on the "x-axis"
 
 	// set all values to 1 in the matrix
-	init_imatrix(pgmMatrix, 0, xlength[2]+2, 0, xlength[0]+2, 1);
+	init_imatrix(pgmMatrix, 0, xlength[2]+1, 0, xlength[0]+1, 1);
 
 	// set all domain values to 0 (leaving the boundary to 1)
 	init_imatrix(pgmMatrix, 1, xlength[2], 1, xlength[0], 0);
+
 }
 
 void read_customPgmMatrix(const int * const xlength, char *filename){
