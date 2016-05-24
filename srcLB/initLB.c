@@ -29,7 +29,7 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	boundPara->rhoIn = rhoIn;
 }
 
-//Checks wheter the sorroundings of the current cell is legal.
+//Checks whether the surroundings of the current cell is legal.
 //Examples of geometries not allowed:
 //  ##       #
 //    ##     #
@@ -85,6 +85,7 @@ void init_pgmMatrix(const int * const xlength){
 	init_imatrix(pgmMatrix, 0, xlength[2]+1, 0, xlength[0]+1, 1);
 
 	// set all domain values to 0 (leaving the boundary to 1)
+	//TODO: (DL) when I comment out this line in the, the freeing does not encounter any errors.
 	init_imatrix(pgmMatrix, 1, xlength[2], 1, xlength[0], 0);
 }
 
@@ -98,11 +99,6 @@ void read_customPgmMatrix(const int * const xlength, char *filename){
 		free_imatrix(pgmMatrix,0,zsizePgm+1,0,xsizePgm+1);
 		ERROR("TODO: msg");
 	}
-
-	/* TODO: (DL) DO CHECK FOR VALID GEMOETRY HERE
-	 * Also remember that we need to free the matrix, so it's better to
-	 * return an error code..
-	 */
 
     /*Check for illegal geometries*/
     for(int z = 1; z <= xlength[2]; ++z){
@@ -120,11 +116,11 @@ void read_customPgmMatrix(const int * const xlength, char *filename){
     }
 }
 
-/* TODO: (DL) delete when finializing code, but leave it as long debugging there
-* is possible debugging going on :) */
+/* TODO: (DL) delete when finializing code, but leave it as long there may be debugging
+ * going on :-) */
 void print_matrix(const int * const xlength){
-	 for (int x = 0; x < xlength[0]+2; x++) {
-       for (int z = 0; z < xlength[2]+2; z++) {
+	 for (int x = 0; x <= xlength[0]+1; x++) {
+       for (int z = 0; z <= xlength[2]+1; z++) {
            printf("%d ",pgmMatrix[z][xlength[0]+1-x]);
        }
        printf("\n");
@@ -348,10 +344,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 			offset2 = offset1 + y*xlen2;
             for ( x = 0; x < xlen2; ++x) {
 				int xyzoffset =  offset2 + x;
-				/*TODO: (DL) maybe it's required to set certain boundaries/obstacles
-				 * differently... in the cavity we set also the boundaries, so for now
-				 * there is no check
-				 */
+
 				// Compute the base index
                 idx = Q*xyzoffset;
 
@@ -401,11 +394,17 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 //		 printf("\n");
 //	 }
 
-    //TODO:(DL) somehow I get in the TEMPLATE/CAVITY case an error when freeing the matrix
-    //in scenario.dat it works -- check out.
-    //print_matrix(xlength);
-    //Call at generation
-    //pgmMatrix = imatrix(0, xlength[2]+1, 0, xlength[0]+1);
-    free_imatrix(pgmMatrix,0,xlength[2]+1,0,xlength[0]+1);
+    /* TODO:(DL) somehow I get in the TEMPLATE/CAVITY case an error when freeing the matrix
+     * in scenario.dat it works -- check out.
+     *
+     * If I comment out the line init_imatrix where it is set to 0, the freeing works?!?!?
+     * If I set all the values before freein to 1 it still does not work.
+     * There is no out of bounds in the init_imatrix
+     */
 
+    //Call at allocation
+    //    pgmMatrix = imatrix(0, xlength[2]+1,0,xlength[0]+1);
+    //    init_imatrix(pgmMatrix,0,xlength[2]+1,0,xlength[0]+1,1);
+    //    print_matrix(xlength);
+    free_imatrix(pgmMatrix,0,xlength[2]+1,0,xlength[0]+1);
 }
