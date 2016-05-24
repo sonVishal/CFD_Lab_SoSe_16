@@ -4,10 +4,10 @@
 #include "boundary.h"
 #include <stdio.h>
 
-void p_readWall(char *argv[], t_boundPara *boundPara, int skip){
+void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	int type;
 	double x_velocity, y_velocity, z_velocity;
-	double rhoRef, rhoIn;
+	double rhoRef, rhoIn; /* TODO: (DL) rename rhoIn -> deltaRho, also in templates*/
 
     //TODO: Add a variable to the input saying how many variables of that should be skipped.
     //          * Remember to change both the #define part and the function definition.
@@ -135,6 +135,92 @@ void valid_sorroundings(int *flagField, int currentCellIndex, int* xlength){
 
 }
 
+//Global variable makes it cleaner. A domain is described as in a pgm format
+//even when no pgm file is provided. The two functions 'readParameters' and
+//'initialiseFields' use it:
+//'readParameters' - allocates and checks for validity of the geometry
+//'initialiseFields' - uses the matrix to set the domain and deallocates the matrix
+static int **pgmMatrix = NULL;
+
+void init_pgmMatrix(const int * const xlength){
+
+	pgmMatrix = imatrix(0, xlength[2]+2, 0, xlength[0]+2); //XZ-plane where Z is on the "x-axis"
+
+	// set all values to 1 in the matrix
+	init_imatrix(pgmMatrix, 0, xlength[2]+2, 0, xlength[0]+2, 1);
+
+	// set all domain values to 0 (leaving the boundary to 1)
+	init_imatrix(pgmMatrix, 1, xlength[2], 1, xlength[0], 0);
+}
+
+void read_customPgmMatrix(const int * const xlength, char *filename){
+
+	char file_path[MAX_LINE_LENGTH+10]; //+10 for 'scenarios/'
+	snprintf(file_path, MAX_LINE_LENGTH+10, "scenarios/%s", filename);
+	int zsizePgm, xsizePgm;
+	pgmMatrix = read_pgm(file_path, &zsizePgm, &xsizePgm);
+
+	if(zsizePgm != xlength[2] && xsizePgm != xlength[0]){
+		free_imatrix(pgmMatrix,0,zsizePgm+2,0,xsizePgm+2);
+		ERROR("TODO: msg");
+	}
+
+	/* TODO: (DL) DO CHECK FOR VALID GEMOETRY HERE
+	 * Also remember that we need to free the matrix, so it's better to
+	 * return an error code..
+	 */
+}
+
+/* TODO: (DL) delete when finializing code, but leave it as long debugging there
+* is possible debugging going on :) */
+void print_matrix(const int * const xlength){
+	 for (int x = 0; x < xlength[0]+2; x++) {
+       for (int z = 0; z < xlength[2]+2; z++) {
+           printf("%d ",pgmMatrix[z][xlength[0]+1-x]);
+       }
+       printf("\n");
+   }
+}
+
+void p_generatePgmDomain(char *argv[], const int * const xlength, const int MODE){
+
+	//cannot be allocated in "case" -statement (compiler error)
+	//it's only needed in the arbitrary case
+	char problem[MAX_LINE_LENGTH];
+
+	switch(MODE){
+
+	case SHEAR_FLOW:
+		init_pgmMatrix(xlength);
+		break;
+	case CAVITY:
+		init_pgmMatrix(xlength);
+		break;
+	case STEP_FLOW:
+		init_pgmMatrix(xlength);
+		//insert step:
+		int z_direction, x_direction;
+		READ_INT(*argv, z_direction,0); //size of step
+		READ_INT(*argv, x_direction,0);
+
+		if(z_direction > xlength[2] || x_direction > xlength[0]){
+			//TODO: (DL) make error msg with values..
+			ERROR("The step cannot be bigger than the domain.");
+		}
+
+		init_imatrix(pgmMatrix, 1, z_direction, 1, x_direction, OBSTACLE);
+		break;
+	case ARBITRARY:
+		READ_STRING(*argv, problem, 0);
+		read_customPgmMatrix(xlength, problem);
+		break;
+	default:
+		ERROR("SETTING-MODE is not known!");
+		break;
+	}
+
+}
+
 // TODO: (TKS) The printed statements from the helper function do no longer
 //             make sense after adding skip
 int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *timesteps,
@@ -156,32 +242,22 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     int skip = 0; // How many of the same named variable should be skipped when 
               // calling READ_<TYPE>.
 
-
     READ_INT(*argv, MODE, 0);
-    /*TODO: (DL) When templates for different setting modes are finialized, handle the
-     * different cases of reading the parameters.
-     *
-     * It's probably also necessary so save the MODE variable somewhere so that we have it
-     * available later (we may need it again when we initialize the fields).
-     */
-    switch(MODE){
-    case CAVITY:
-    	/* TODO */
-    case SHEAR_FLOW:
-    	/* TODO */
-    	break;
-    case STEP_FLOW:
-    	/* TODO */
-    	break;
-    case ARBITRARY:
-    	/* TODO */
-    	break;
-    default:
-    	ERROR("Mode is not supported!");
+    if(MODE < 0 || MODE > NUM_MODES ){
+    	char msg[40];
+    	snprintf(msg, 40, "SETTING-MODE=%i is not known! \n", MODE);
+    	ERROR(msg);
     }
 
-    /* Read values from file given in argv */
-    //Domain
+    READ_DOUBLE(*argv, Re, 0);
+    READ_INT(*argv, *timesteps, 0);
+    READ_INT(*argv, *timestepsPerPlotting, 0);
+
+    //pgm-file OR simply the name that describes the scenario
+    //pgm file has to be located in /scenarios
+    READ_STRING(*argv, problem, 0);
+
+    //Domain size
     READ_INT(*argv, x_length, 0);
     READ_INT(*argv, y_length, 0);
     READ_INT(*argv, z_length, 0);
@@ -189,18 +265,13 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     xlength[1] = y_length;
     xlength[2] = z_length;
 
-    //PGM-file that describes the scenario (located in /scenarios)
-    READ_STRING(*argv, problem, 0);
-
     //TODO: (TKS) Make sure the boundaries are red in the correct order.
     for(int b=XY_LEFT; b <= XZ_BACK; b++){
     	p_readWall(argv, &boundPara[b], skip);
         skip++;
     }
 
-    READ_DOUBLE(*argv, Re, 0);
-    READ_INT(*argv, *timesteps, 0);
-    READ_INT(*argv, *timestepsPerPlotting, 0);
+    p_generatePgmDomain(argv, xlength, MODE);
 
     /*TODO: (DL) the characteristic velocity, characteristic length, mach number are
      * no longer valid (using values valid for cavity)
@@ -292,27 +363,6 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     	}
     }
 
-    /* TODO: (DL) For the moment the pgm file is assumed to have the same
-     * size as the values set in the parameter file (.dat).
-     *
-     * see issue: https://github.com/sonVishal/CFD_Lab_SoSe_16/issues/5
-     *
-     */
-
-    char file[MAX_LINE_LENGTH+10]; //+10 for 'scenarios/'
-    snprintf(file, MAX_LINE_LENGTH+10, "scenarios/%s", problem);
-    int **pgmMatrix = read_pgm(file);
-
-
-    /* TODO: (DL) check the obstacles in the the domain if there are any
-     * 'thin boundaries' (or other illegal positioning, if there is).
-     *      * (TKS) Enough to check if not all neighbours are FLUID cells?
-                    No, need more. e.g. the following scenario
-                        ##    
-                      ##
-     */
-
-
     //NOTE: only domain (ghost layer were set previously)// 
     for(z = 1; z <= xlength[2]; ++z){
 		offset1 = z*xlen2*ylen2;
@@ -352,8 +402,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		}
     }
 
-
-    /*Setting initial distributions */
+    /*Setting initial distributions, LATTICEWEIGHTS and INFLOW conditions */
     //f_i(x,0) = f^eq(1,0,0) = w_i
 
     // current cell index
@@ -378,6 +427,16 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
                     collideField[idx+i] = LATTICEWEIGHTS[i];
                     streamField[idx+i]  = LATTICEWEIGHTS[i];
                 }
+
+                /* TODO: (DL) not sure if that was supposed to be like this?
+                 * But can the below if-statement decide which one of the two
+                 * loops to execute. At the moment it seems it first gets set to
+                 * LATTICEWEIGHTS and then to inflow condition (if it's an INFLOW).
+                 */
+
+                /* TODO: (DL) if we do not need p_handleInflow in boundary.c at all,
+                 * we can also think to get it here.
+                 */
 
                 /*Setting inflow condition once and for all*/
                 if(flagField[idx] == INFLOW){
