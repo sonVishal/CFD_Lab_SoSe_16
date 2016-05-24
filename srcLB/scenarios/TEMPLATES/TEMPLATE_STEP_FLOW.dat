@@ -1,106 +1,113 @@
-# 0 = SHEAR_FLOW,  1 = STEP_FLOW,  2 = ARBITRARY
+#--------------------------------------------
+#               CAVITY FLOW
+#--------------------------------------------
+# 0 = SHEAR_FLOW,  1 = STEP_FLOW,  2 = ARBITRARY  3 = CAVITY
+MODE 		      		1
 
-MODE 		      	1
-
-
-# depth in y-direction (the scenarios are set and displayed on the x-z plane)
-#TODO: xlength has same name, because it is still named like that in the framework
-x_length         	30
-y_length 	  	30
-z_length	     	50
-
-#Scenario - name for the simulation and output paraview output files (in pv_files)
-problem 		step_flow
-
-#Size of step (has to smaller than the corresponding length of the domain)
-x_direction 		10
-y_direction		10
-
-
-# TODO: (TKS) Should we use a right hand system? (change direction of y)
-# Settings for boundary walls
-
-#                   x+--------------------------------------------------xx
-#                 xxx|               top YZ                        xxxxx|
-#               xx---|------------------------------------------xxx     |
-#               |    |                                          |       |
-#               |    |                       back XZ            |       |
-#  left XY      |    |                    /                     |       |    right XY
-#            ^  |    |           front XZ                       |       |
-#         (X)|  |    |                                          |       |
-#               |    +------------------------------------------|-------x
-#               |   xx     ^                                    |    xxxx
-#               |   x  (Y)/         bottom YZ                   |   xx
-#               |  x                                            | xxx
-#               +xx---------------------------------------------xxx
-#                                  (Z) ->
-
-# TODO: we could support to set in type the string and compare to the enum, but this is "extra work"
-# see how it is done: https://stackoverflow.com/questions/9907160/how-to-convert-enum-names-to-string-in-c
-
-# USE FOR BOUNDARY CONDITION
-# NO_SLIP = 1
-# MOVING = 2
-# FREE_SLIP = 3
-# INFLOW = 4
-# OUTFLOW = 5
-# PRESSURE_IN = 6
-
-# do not use FLUID = 0 or OBSTACLE = 7
-
-# XY wall left
-type 1
-x_velocity 0.0
-y_velocity 1.0
-z_velocity 0.0
-rhoRef -1.0
-rhoIn -1.0
-
-# XY wall right
-type 1
-x_velocity 0.0
-y_velocity 0.0
-z_velocity 0.0
-rhoRef -1.0
-rhoIn -1.0
-
-# YZ wall - bottom
-type 1
-x_velocity 0.0
-y_velocity 0.0
-z_velocity 0.0
-rhoRef -1.0
-rhoIn -1.0
-
-# YZ wall - top
-type 1
-x_velocity 0.0
-y_velocity 0.0
-z_velocity 0.0
-rhoRef -1.0
-rhoIn -1.0
-
-# XZ wall - front
-type 1
-x_velocity 0.0
-y_velocity 0.0
-z_velocity 0.0
-rhoRef -1.0
-rhoIn -1.0
-
-# XZ wall - back
-type 1
-x_velocity 0.0
-y_velocity 0.0
-z_velocity 0.0
-rhoRef -1.0
-rhoIn -1.0
-
-# Reynolds Number
-Re                    10
+#--------------------------------------------
+#          SIMULATION SETTINGS
+#--------------------------------------------
+# Reynolds Number	
+Re                    		10
 
 # Number of timesteps
-timesteps            2000
+timesteps            		10000
 
 # timesteps between each plot
 timestepsPerPlotting 20
+
+#Scenario - name for the simulation and output paraview output files (in pv_files)
+problem 			step_flow
+
+
+#--------------------------------------------
+#           GEOMETRY SETTINGS
+#--------------------------------------------
+
+#            ^  (X)
+#            |
+#            |
+#            |
+#            |
+#            +-----------------------------+
+#           /|               YZ top       /|
+#          / |                           / |
+#         +-----------------------------+  |
+#         |  |             XY back      |  |
+# XZ left | /|----/        /            |  | XZ right
+#         |/ |   / |      /             |  |
+#         |------XY|front               |  |                    (Z)
+#         |  +--|-----------------------|--+--------------------->
+#         | /   | /                     | /
+#         |/   *|/           YZ bottom  |/
+#         +----*------------------------+
+#        /     *
+#       / (Y)  *********> STEP
+#      v
+
+
+# depth in Y-direction (the scenarios are set and displayed on the XZ plane)
+x_length         		30
+y_length 	  		30
+z_length	     		50
+
+#Size of step (has to smaller than the corresponding length of the domain)
+#The step starts right at the wall "XZleft". The parameter x/y_direction determine the hight and witdh.  
+x_direction 			15
+y_direction			15
+
+
+#--------------------------------------------
+#           BOUNDARY SETTINGS
+#--------------------------------------------
+# USE TYPES FOR BOUNDARY CONDITION
+# NO_SLIP = 1   MOVING = 2   FREE_SLIP = 3   INFLOW = 4  OUTFLOW = 5   PRESSURE_IN = 6
+# do not use FLUID = 0 or OBSTACLE = 7
+
+# XY wall left
+type 				4
+x_velocity 			0.0
+y_velocity 			0.0
+z_velocity 			0.05
+rhoRef 				-1.0
+rhoIn 				-1.0
+
+# XY wall right
+type 				5
+x_velocity 			0.0
+y_velocity 			0.0
+z_velocity 			0.0
+rhoRef 				-1.0
+rhoIn 				-1.0
+
+# YZ wall - bottom
+type 1
+x_velocity 			0.0
+y_velocity 			0.0
+z_velocity 			0.0
+rhoRef 				-1.0
+rhoIn 				-1.0
+
+# YZ wall - top
+type 				1
+x_velocity 			0.0
+y_velocity 			0.0
+z_velocity 			0.0
+rhoRef 				-1.0
+rhoIn 				-1.0
+
+# XZ wall - front
+type				1
+x_velocity			0.0
+y_velocity 			0.0
+z_velocity 			0.0
+rhoRef 				-1.0
+rhoIn 				-1.0
+
+# XZ wall - back
+type 				1
+x_velocity 			0.0
+y_velocity 			0.0
+z_velocity 			0.0
+rhoRef 				-1.0
+rhoIn 				-1.0

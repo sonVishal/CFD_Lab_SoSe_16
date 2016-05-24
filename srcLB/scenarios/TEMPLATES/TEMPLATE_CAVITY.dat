@@ -1,7 +1,7 @@
 #--------------------------------------------
 #              SHEAR FLOW
 #--------------------------------------------
-# 0 = SHEAR_FLOW,  1 = STEP_FLOW,  2 = ARBITRARY  3 = CAVITY
+# 0 = SHEAR_FLOW,  1 = STEP_FLOW,  2 = ARBITRARY  3 = CAVITYY
 MODE 		      		0
 
 
@@ -13,7 +13,7 @@ MODE 		      		0
 Re                    		10
 
 # Number of timesteps
-timesteps            		5000
+timesteps            		2000
 
 # timesteps between each plot
 timestepsPerPlotting 		20
@@ -51,9 +51,9 @@ problem 		shear_flow
 # see how it is done: https://stackoverflow.com/questions/9907160/how-to-convert-enum-names-to-string-in-c
 
 # depth in y-direction (the scenarios are set and displayed on the x-z plane)
-x_length             	8
-y_length 	     	8
-z_length	     	20
+x_length             	30
+y_length 	     	30
+z_length	     	50
 
 #--------------------------------------------
 #           BOUNDARY SETTINGS
@@ -63,23 +63,23 @@ z_length	     	20
 # do not use FLUID = 0 or OBSTACLE = 7
 
 # XY wall left
-type 			6
+type 			1
 x_velocity 		0.0
 y_velocity 		1.0
 z_velocity 		0.0
-rhoRef 			1.0
-rhoIn 			1.005
+rhoRef 			-1.0
+rhoIn 			-1.0
 
 # XY wall right
-type 			5
+type 			1
 x_velocity 		0.0
 y_velocity 		0.0
 z_velocity 		0.0
-rhoRef 			1.0
+rhoRef 			-1.0
 rhoIn 			-1.0
 
 # YZ wall - bottom
-type 			3
+type 1
 x_velocity 		0.0
 y_velocity 		0.0
 z_velocity 		0.0
@@ -87,10 +87,10 @@ rhoRef 			-1.0
 rhoIn 			-1.0
 
 # YZ wall - top
-type 			3
+type 			2
 x_velocity 		0.0
 y_velocity 		0.0
-z_velocity 		0.0
+z_velocity 		0.1
 rhoRef 			-1.0
 rhoIn 			-1.0
 
