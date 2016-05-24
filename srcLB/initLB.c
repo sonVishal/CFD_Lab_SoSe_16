@@ -201,6 +201,9 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     /* TODO: (DL) check the obstacles in the the domain if there are any
      * 'thin boundaries' (or other illegal positioning, if there is).
      *      * (TKS) Enough to check if not all neighbours are FLUID cells?
+                    No, need more. e.g. the following two scenarios
+                        ##    
+                      ##
      */
 
 
