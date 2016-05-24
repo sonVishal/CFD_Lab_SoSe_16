@@ -132,11 +132,6 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 void initialiseFields(double *collideField, double *streamField, int *flagField,
 		int *xlength, t_boundPara *boundPara, char *problem){
 
-    /*Setting initial distributions*/
-    //f_i(x,0) = f^eq(1,0,0) = w_i
-
-    // current cell index
-    int idx;
 
 	// Loop variables
 	int x,y,z;
@@ -146,30 +141,6 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 	int const ylen2		= xlength[1]+2;
 	int const zlen2		= xlength[2]+2;
 	int offset1, offset2;
-
-    /* initialize collideField and streamField */
-    //TODO: Initialize inflow here.
-    for ( z = 0; z < zlen2; ++z) {
-		offset1 = z*xlen2*ylen2;
-        for ( y = 0; y < ylen2; ++y) {
-			offset2 = offset1 + y*xlen2;
-            for ( x = 0; x < xlen2; ++x) {
-				int xyzoffset =  offset2 + x;
-				/*TODO: (DL) maybe it's required to set certain boundaries/obstacles
-				 * differently... in the cavity we set also the boundaries, so for now
-				 * there is no check
-				 */
-				// Compute the base index
-                idx = Q*xyzoffset;
-                for (int i = 0; i < Q; ++i) {
-                    collideField[idx+i] = LATTICEWEIGHTS[i];
-                    streamField[idx+i]  = LATTICEWEIGHTS[i];
-                }
-
-                //TODO: If inflow handle inflow.
-            }
-        }
-    }
 
     int type1, type2;
 
@@ -238,6 +209,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 				int xyzoffset = offset2 + x;
 				int type_domain = pgmMatrix[z][x];
 
+                //TODO: (TKS) Make a switch for all cases and adapt to enum.
 				if(type_domain == 0){
 					//This is actually not required as long as FLUID=0
 					flagField[xyzoffset] = FLUID;
@@ -248,6 +220,44 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 				}
 			}
 		}
+    }
+
+    /*Setting initial distributions and inflow BC if any*/
+    //f_i(x,0) = f^eq(1,0,0) = w_i
+
+    // current cell index
+    int idx;
+
+    /* initialize collideField and streamField */
+    for ( z = 0; z < zlen2; ++z) {
+		offset1 = z*xlen2*ylen2;
+        for ( y = 0; y < ylen2; ++y) {
+			offset2 = offset1 + y*xlen2;
+            for ( x = 0; x < xlen2; ++x) {
+				int xyzoffset =  offset2 + x;
+				/*TODO: (DL) maybe it's required to set certain boundaries/obstacles
+				 * differently... in the cavity we set also the boundaries, so for now
+				 * there is no check
+				 */
+				// Compute the base index
+                idx = Q*xyzoffset;
+
+                //Set initial condition
+                for (int i = 0; i < Q; ++i) {
+                    collideField[idx+i] = LATTICEWEIGHTS[i];
+                    streamField[idx+i]  = LATTICEWEIGHTS[i];
+                }
+
+                /*Setting inflow condition once and for all*/
+                if(flagField[idx] == INFLOW){
+                    for (int i = 0; i < Q; ++i) {
+                        collideField[idx+i] = LATTICEWEIGHTS[i];
+                        streamField[idx+i]  = LATTICEWEIGHTS[i];
+                    }
+                }
+
+            }
+        }
     }
 
 //	 for (x = 0; x < xlen2; x++) {

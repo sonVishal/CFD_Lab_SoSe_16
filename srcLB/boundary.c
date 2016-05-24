@@ -70,15 +70,15 @@ void p_handleInflow(int x, int y, int z, int *xlength, t_boundPara *boundPara,
 
         if(x == 0)
             flag = YZ_BOTTOM;
-        else if(x == xlength[0]+1)
+        else if(x == xlength[0]+2)
             flag = YZ_TOP;
         else if(y == 0)
             flag = XZ_BACK;
-        else if(x == xlength[1]+1)
+        else if(x == xlength[1]+2)
             flag = XZ_FRONT;
         else if(z == 0)
             flag = XY_LEFT;
-        else if(x == xlength[2]+1)
+        else if(x == xlength[2]+2)
             flag = XY_RIGHT;
         else{
             flag = -1;
@@ -135,7 +135,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 					case FREE_SLIP:
 						p_handleFreeSlip();
 						break;
-					case INFLOW:
+					case INFLOW: // Set in initialize fields.
 						//p_handleInflow();
 						break;
 					case OUTFLOW:
