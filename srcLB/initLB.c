@@ -24,6 +24,8 @@ void p_readWall(char *argv[], t_boundPara *boundPara, int skip){
 	boundPara->wallVelocity[0] = x_velocity;
 	boundPara->wallVelocity[1] = y_velocity,
 	boundPara->wallVelocity[2] = z_velocity;
+	boundPara->wallVelocity[3] = x_velocity*x_velocity + y_velocity*y_velocity 
+                                 + z_velocity*z_velocity;
 	boundPara->rhoRef = rhoRef;
 	boundPara->rhoIn = rhoIn;
 }
@@ -148,6 +150,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 	int offset1, offset2;
 
     /* initialize collideField and streamField */
+    //TODO: Initialize inflow here.
     for ( z = 0; z < zlen2; ++z) {
 		offset1 = z*xlen2*ylen2;
         for ( y = 0; y < ylen2; ++y) {
@@ -164,6 +167,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
                     collideField[idx+i] = LATTICEWEIGHTS[i];
                     streamField[idx+i]  = LATTICEWEIGHTS[i];
                 }
+
+                //TODO: If inflow handle inflow.
             }
         }
     }

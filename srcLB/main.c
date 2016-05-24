@@ -18,7 +18,7 @@ int main(int argc, char *argv[]){
     int *flagField          =NULL;
 
     // Simulation parameters
-    int xlength[3];
+    int xlength[3]; 
     double tau;
     double velocityWall[3];
     int t = 0;

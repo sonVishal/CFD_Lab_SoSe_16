@@ -62,8 +62,10 @@ enum E_BOUNDARIES{
 
 typedef struct {
 	int type;
-	double wallVelocity[3];
-	double rhoRef;
+
+    // Three first indecies hold the velocities in each direction and the fourth the magnitude
+	double wallVelocity[4]; 	
+    double rhoRef;
 	double rhoIn;
 } t_boundPara;
 

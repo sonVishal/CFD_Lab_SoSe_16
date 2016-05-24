@@ -59,9 +59,40 @@ void p_handleFreeSlip(){
 	 */
 }
 
-void p_handleInflow(){
+//TODO: (TKS) Does only need to b set once since no new distributions are streamed in here.
+void p_handleInflow(int x, int y, int z, double *collideField, const int currentCellIndex){
 	/* TODO: See page 12 for description and equation (2.2) */
 	ERROR("TODO");
+	for(int i = 0; i < Q; i++){
+        int flag;
+        double feq[19];
+
+        //TODO: (TKS) Make xlength global;
+        if(x == 0)
+            flag = YZ_BOTTOM;
+        else if(x == xlength[0]+1)
+            flag = YZ_TOP;
+        else if(y == 0)
+            flag = XZ_BACK;
+        else if(x == xlength[1]+1)
+            flag = XZ_FRONT;
+        else if(z == 0)
+            flag = XY_LEFT;
+        else if(x == xlength[2]+1)
+            flag = XY_RIGHT;
+        else{
+            flag = -1;
+            ERROR("Inflow not a boundary (Aborting)");
+        }
+
+        //TODO: (TKS) Add case for obstacle inside the domain.
+
+        computeFeq(t_boundPara[flag].rhoRef, t_boundPara[flag].velocity[3] , feq);
+	    for(int i = 0; i < Q; i++){
+            collideField[currentCellIndex + i] = feq[i];
+        }
+    }
+
 }
 
 void p_handleOutflow(){
@@ -105,7 +136,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 						p_handleFreeSlip();
 						break;
 					case INFLOW:
-						p_handleInflow();
+						//p_handleInflow();
 						break;
 					case OUTFLOW:
 						p_handleOutflow();
