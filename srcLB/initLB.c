@@ -200,7 +200,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
      */
 
 
-    //NOTE: only domain (ghost layer were set previously)
+    //NOTE: only domain (ghost layer were set previously)// 
     for(z = 1; z <= xlength[2]; ++z){
 		offset1 = z*xlen2*ylen2;
     	for (y = 1; y <= xlength[1]; ++y) {
@@ -209,7 +209,6 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 				int xyzoffset = offset2 + x;
 				int type_domain = pgmMatrix[z][x];
 
-                //TODO: (TKS) Make a switch for all cases and adapt to enum.
 				if(type_domain == 0){
 					//This is actually not required as long as FLUID=0
 					flagField[xyzoffset] = FLUID;
