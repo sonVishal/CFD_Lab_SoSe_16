@@ -430,12 +430,11 @@ void init_imatrix( int **m, int nrl, int nrh, int ncl, int nch, int a)
 }
 
 
-int **read_pgm(const char *filename)
+int **read_pgm(const char *filename, int *xsize, int *ysize)
 {
     FILE *input = NULL;
     char line[1024];
     int levels;
-    int xsize, ysize;
     int i1, j1;
     int **pic = NULL;
 
@@ -460,22 +459,22 @@ int **read_pgm(const char *filename)
     while(*line=='#');
 
     /* read the width and height */
-    sscanf(line,"%d %d\n",&xsize,&ysize);
+    sscanf(line,"%d %d\n",xsize,ysize);
 
-    printf("Image size: %d x %d\n", xsize,ysize);
+    printf("Image size: %d x %d\n", *xsize,*ysize);
 
     /* read # of gray levels */
     if(fgets(line,sizeof line,input));
     sscanf(line,"%d\n",&levels);
 
     /* allocate memory for image */
-    pic = imatrix(0,xsize+2,0,ysize+2);
+    pic = imatrix(0,*xsize+2,0,*ysize+2);
     printf("Image initialised...\n");
 
     /* read pixel row by row */
-    for(j1=1; j1 < ysize+1; j1++)
+    for(j1=1; j1 < *ysize+1; j1++)
     {
-        for (i1=1; i1 < xsize+1; i1++)
+        for (i1=1; i1 < *xsize+1; i1++)
         {
             int byte;
             if(fscanf(input, "%d", &byte));
@@ -487,23 +486,23 @@ int **read_pgm(const char *filename)
             }
             else
             {
-                pic[i1][ysize+1-j1] = byte;
+                pic[i1][*ysize+1-j1] = byte;
                 // printf("%d,%d: %d\n", i1,ysize+1-j1,byte);
             }
          }
     }
-    for (i1 = 0; i1 < xsize+2; i1++)
+    for (i1 = 0; i1 < *xsize+2; i1++)
     {
         pic[i1][0] = 1;
     }
-    for (i1 = 0; i1 < xsize+2; i1++)
+    for (i1 = 0; i1 < *xsize+2; i1++)
     {
-        pic[i1][ysize+1] = 1;
+        pic[i1][*ysize+1] = 1;
     }
-    for (j1 = 0; j1 < ysize+2; j1++)
+    for (j1 = 0; j1 < *ysize+2; j1++)
     {
         pic[0][j1] = 1;
-        pic[xsize+1][j1] = 1;
+        pic[*xsize+1][j1] = 1;
     }
 
     /* close file */
