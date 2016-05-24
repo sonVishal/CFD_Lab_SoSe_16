@@ -44,6 +44,8 @@ void p_handleMovingWall(double *collideField, const int currentCellIndex,
 
 
 void p_handleFreeSlip(){
+    //TODO: (TKS) Need to check if a boundary cell is already updated by e.g. no-slip
+    //      and then add the contribution from free-slip
 	ERROR("TODO");
 	/*
 	 * The free-slip boundaries are closely related to the no-slip boundary,
