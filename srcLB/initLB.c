@@ -86,11 +86,9 @@ void init_pgmMatrix(const int * const xlength){
 
 	// set all domain values to 0 (leaving the boundary to 1)
 	init_imatrix(pgmMatrix, 1, xlength[2], 1, xlength[0], 0);
-
 }
 
 void read_customPgmMatrix(const int * const xlength, char *filename){
-
 	char file_path[MAX_LINE_LENGTH+10]; //+10 for 'scenarios/'
 	snprintf(file_path, MAX_LINE_LENGTH+10, "scenarios/%s", filename);
 	int zsizePgm, xsizePgm;
@@ -109,13 +107,12 @@ void read_customPgmMatrix(const int * const xlength, char *filename){
     /*Check for illegal geometries*/
     for(int z = 1; z <= xlength[2]; ++z){
         for (int x = 1; x <= xlength[0]; ++x) {
-            if(pgmMatrix[x][z] == 1){
+            if(pgmMatrix[z][x] == 1){
                 if(!valid_sorroundings(x, z, xlength, pgmMatrix)){
 		            free_imatrix(pgmMatrix,0,zsizePgm+1,0,xsizePgm+1);
                     char* error = "";
                     sprintf(error, "Invalid surroundings at x = %d, z = %d)", x,z);
                     ERROR(error);
-                    
                 }
                     
 			}
@@ -338,7 +335,6 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		}
     }
 
-
     /*Setting initial distributions, LATTICEWEIGHTS and INFLOW conditions */
     //f_i(x,0) = f^eq(1,0,0) = w_i
 
@@ -405,5 +401,11 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 //		 printf("\n");
 //	 }
 
-    free_imatrix(pgmMatrix,0,zlen2-1,0,xlen2-1);
+    //TODO:(DL) somehow I get in the TEMPLATE/CAVITY case an error when freeing the matrix
+    //in scenario.dat it works -- check out.
+    //print_matrix(xlength);
+    //Call at generation
+    //pgmMatrix = imatrix(0, xlength[2]+1, 0, xlength[0]+1);
+    free_imatrix(pgmMatrix,0,xlength[2]+1,0,xlength[0]+1);
+
 }
