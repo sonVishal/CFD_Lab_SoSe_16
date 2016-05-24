@@ -4,6 +4,42 @@
 #include "boundary.h"
 #include <stdio.h>
 
+
+/*
+
+TODO: (DL) SUGGESTION FOR INDEXING
+A "standard" scenario is that the pipe goes from left to right. So the inflow should really only happen where there is no boundary starting.
+
+This would be a bad setting (in 2D): I - inflow, F - fluid, B -boundary
+
+I F F
+I F F
+I B B
+
+In the examples the YZ plane is set to no-slip - meaning a propper boundary - so it should cover the entire plane
+By that we can reconstruct our cavity also in the same way we had in the last WS because we need the top all MOVING.
+
+The other question is how we set the overlapping cells of the XZ plane (in the examples often free-slip)
+
+I guess the same argument holds:
+
+S-Free slip
+I F F
+I F F
+I S S
+
+this looks kind of bad and I have the feeling this could cause troubles...
+
+So vote that the XZ plane should get the cells that overlap with the XY plane.
+By that the (normally) inflow cells are only streaming directly towards fluid cells (and not diagonal from an edge)
+
+And I think the more important thing is, that our examples look nice, and not that _every_ possibility
+looks nice ;-)
+
+By these settings the examples make more sense!
+ */
+
+
 void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	int type;
 	double x_velocity, y_velocity, z_velocity;
