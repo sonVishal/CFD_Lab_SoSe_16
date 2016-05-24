@@ -45,22 +45,22 @@ int valid_sorroundings(int x, int z, const int* const xlength, int **pgmMatrix){
     int is_valid = 1;
 
     if( !(right && up)){                    // If right and up are FLUID
-        if(pgmMatrix[x+1][z+1] == OBSTACLE) // If right corner are an OBSTACLE
+        if(pgmMatrix[x+1][z+1] == 1) 		// If right corner are an OBSTACLE
             is_valid = 0;
     }
 
     if( !(right && down)){                  // If right and down are FLUID
-        if(pgmMatrix[x-1][z+1] == OBSTACLE) // If right corner are an OBSTACLE
+        if(pgmMatrix[x-1][z+1] == 1) 		// If right corner are an OBSTACLE
             is_valid = 0;
     }
 
     if( !(left && up)){                     // If left and up are FLUID
-        if(pgmMatrix[x+1][z-1] == OBSTACLE) // If right corner are an OBSTACLE
+        if(pgmMatrix[x+1][z-1] == 1) // If right corner are an OBSTACLE
             is_valid = 0;
     }
 
     if( !(left && down)){                   // If left and down are FLUID
-        if(pgmMatrix[x-1][z-1] == OBSTACLE) // If right corner are an OBSTACLE
+        if(pgmMatrix[x-1][z-1] == 1) // If right corner are an OBSTACLE
             is_valid = 0;
     }
 
@@ -97,7 +97,7 @@ void read_customPgmMatrix(const int * const xlength, char *filename){
 	pgmMatrix = read_pgm(file_path, &zsizePgm, &xsizePgm);
 
 	if(zsizePgm != xlength[2] && xsizePgm != xlength[0]){
-		free_imatrix(pgmMatrix,0,zsizePgm+2,0,xsizePgm+2);
+		free_imatrix(pgmMatrix,0,zsizePgm+1,0,xsizePgm+1);
 		ERROR("TODO: msg");
 	}
 
@@ -109,9 +109,9 @@ void read_customPgmMatrix(const int * const xlength, char *filename){
     /*Check for illegal geometries*/
     for(int z = 1; z <= xlength[2]; ++z){
         for (int x = 1; x <= xlength[0]; ++x) {
-            if(pgmMatrix[x][z] == OBSTACLE){
+            if(pgmMatrix[x][z] == 1){
                 if(!valid_sorroundings(x, z, xlength, pgmMatrix)){
-		            free_imatrix(pgmMatrix,0,zsizePgm+2,0,xsizePgm+2);
+		            free_imatrix(pgmMatrix,0,zsizePgm+1,0,xsizePgm+1);
                     char* error = "";
                     sprintf(error, "Invalid surroundings at x = %d, z = %d)", x,z);
                     ERROR(error);
@@ -160,14 +160,14 @@ void p_generatePgmDomain(char *argv[], const int * const xlength, const int MODE
 			ERROR("The step cannot be bigger than the domain.");
 		}
 
-		init_imatrix(pgmMatrix, 1, z_direction, 1, x_direction, OBSTACLE);
+		init_imatrix(pgmMatrix, 1, z_direction, 1, x_direction, 1);
 		break;
 	case ARBITRARY:
 		READ_STRING(*argv, problem, 0);
 		read_customPgmMatrix(xlength, problem);
 		break;
 	default:
-		ERROR("SETTING-MODE is not known!");
+		ERROR("SETTING-MODE is invalid!!");
 		break;
 	}
 
@@ -405,5 +405,5 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 //		 printf("\n");
 //	 }
 
-    free_imatrix(pgmMatrix,0,zlen2,0,xlen2);
+    free_imatrix(pgmMatrix,0,zlen2-1,0,xlen2-1);
 }
