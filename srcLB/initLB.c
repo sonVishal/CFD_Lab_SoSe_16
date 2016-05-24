@@ -38,9 +38,6 @@ void p_readWall(char *argv[], t_boundPara *boundPara, int skip){
 
 void valid_sorroundings(int *flagField, int currentCellIndex, int* xlength){
 
-    //TODO: (TKS) Could save some computation inputing these, but I find it 
-    //      clearer this way.
-
     int xlen2 = xlength[0] + 2;
     int ylen2 = xlength[1] + 2;
 
