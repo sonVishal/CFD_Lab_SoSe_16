@@ -1,6 +1,7 @@
 #include "initLB.h"
 #include "LBDefinitions.h"
 #include "helper.h"
+#include "boundary.h"
 #include <stdio.h>
 
 void p_readWall(char *argv[], t_boundPara *boundPara, int skip){
@@ -221,13 +222,13 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		}
     }
 
-    /*Setting initial distributions and inflow BC if any*/
+    /*Setting initial distributions */
     //f_i(x,0) = f^eq(1,0,0) = w_i
 
     // current cell index
     int idx;
 
-    /* initialize collideField and streamField */
+    /* initialize collideField and streamField and inflow BC if any*/
     for ( z = 0; z < zlen2; ++z) {
 		offset1 = z*xlen2*ylen2;
         for ( y = 0; y < ylen2; ++y) {
@@ -250,8 +251,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
                 /*Setting inflow condition once and for all*/
                 if(flagField[idx] == INFLOW){
                     for (int i = 0; i < Q; ++i) {
-                        collideField[idx+i] = LATTICEWEIGHTS[i];
-                        streamField[idx+i]  = LATTICEWEIGHTS[i];
+                        p_handleInflow( x,  y,  z,  xlength, boundPara, 
+                                        collideField, idx);
                     }
                 }
 
