@@ -61,7 +61,6 @@ void p_handleFreeSlip(){
 
 void p_handleInflow(int x, int y, int z, int *xlength, t_boundPara *boundPara,
                     double *collideField, const int currentCellIndex){
-	/* TODO: See page 12 for description and equation (2.2) */
 	ERROR("TODO");
 	for(int i = 0; i < Q; i++){
         int flag;
