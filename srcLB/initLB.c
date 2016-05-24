@@ -201,7 +201,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     /* TODO: (DL) check the obstacles in the the domain if there are any
      * 'thin boundaries' (or other illegal positioning, if there is).
      *      * (TKS) Enough to check if not all neighbours are FLUID cells?
-                    No, need more. e.g. the following two scenarios
+                    No, need more. e.g. the following scenario
                         ##    
                       ##
      */
@@ -221,6 +221,10 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 					flagField[xyzoffset] = FLUID;
 				}else if(type_domain == 1){
 					flagField[xyzoffset] = OBSTACLE;
+                    //TODO: (TKS) Suggested check for illegal geometries.
+                    //TODO: Check for fluid cell in all directions.
+                    //TODO: If if fluid cell found in e.g. left and up, check the upper left diagonal for obstacle.
+                    //TODO: Abort if Obstacle is found.
 				}else{
 					ERROR("Description of scenario in pgm file should only consist of logical values. \n");
 				}
