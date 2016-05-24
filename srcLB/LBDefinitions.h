@@ -73,7 +73,8 @@ enum SETTING_MODE{
 	SHEAR_FLOW,
 	STEP_FLOW,
 	ARBITRARY, 	//a .pgm file has to be provided in this mode (e.g. example tilted plate)
-    CAVITY
+    CAVITY,
+	NUM_MODES //used for inbound checks - if inserting a new mode, that just before this one!
 };
 
 #endif
