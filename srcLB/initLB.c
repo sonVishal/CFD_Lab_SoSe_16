@@ -29,6 +29,112 @@ void p_readWall(char *argv[], t_boundPara *boundPara, int skip){
 	boundPara->rhoIn = rhoIn;
 }
 
+//Checks wheter the sorroundings of the current cell is legal.
+//Examples of geometries not allowed:
+//  ##       #
+//    ##     #
+//            #
+//            #
+
+void valid_sorroundings(int *flagField, int currentCellIndex, int* xlength){
+
+    int xlen2 = xlength[0] + 2;
+    int ylen2 = xlength[1] + 2;
+
+
+    //Check if YZ_TOPP edge has a FLUID neighbour.
+    if(flagField[currentCellIndex + 1] == FLUID){
+
+        //Check if XZ_BACK has a FLUID neighbour.
+        if(flagField[currentCellIndex - xlen2] == FLUID){
+            if(flagField[currentCellIndex + 1 - xlen2] == OBSTACLE)
+                ERROR("Invalid geometry");
+        }
+
+        //Check if XZ_FRONT has a FLUID neighbour.
+        if(flagField[currentCellIndex + xlen2] == FLUID){
+            if(flagField[currentCellIndex + 1 + xlen2] == OBSTACLE)
+                ERROR("Invalid geometry");
+        }
+
+        //Check if XY_LEFT has a FLUID neighbour.
+        if(flagField[currentCellIndex - xlen2*ylen2] == FLUID){
+            if(flagField[currentCellIndex + 1 - xlen2*ylen2] == OBSTACLE)
+                ERROR("Invalid geometry");
+        }
+
+        //Check if XY_RIGHT has a FLUID neighbour.
+        if(flagField[currentCellIndex + xlen2*ylen2] == FLUID){
+            if(flagField[currentCellIndex + 1 + xlen2*ylen2] == OBSTACLE)
+                ERROR("Invalid geometry");
+        }
+
+    }
+
+    //Check if YZ_BOTTOM edge has a FLUID neighbour.
+    if(flagField[currentCellIndex - 1] == FLUID){
+
+        //Check if XZ_BACK has a FLUID neighbour.
+        if(flagField[currentCellIndex - xlen2] == FLUID){
+            if(flagField[currentCellIndex - 1 - xlen2] == OBSTACLE)
+                ERROR("Invalid geometry");
+        }
+
+        //Check if XZ_FRONT has a FLUID neighbour.
+        if(flagField[currentCellIndex + xlen2] == FLUID){
+            if(flagField[currentCellIndex - 1 + xlen2] == OBSTACLE)
+                ERROR("Invalid geometry");
+        }
+
+        //Check if XY_LEFT has a FLUID neighbour.
+        if(flagField[currentCellIndex - xlen2*ylen2] == FLUID){
+            if(flagField[currentCellIndex - 1 - xlen2*ylen2] == OBSTACLE)
+                ERROR("Invalid geometry");
+        }
+
+        //Check if XY_RIGHT has a FLUID neighbour.
+        if(flagField[currentCellIndex + xlen2*ylen2] == FLUID){
+            if(flagField[currentCellIndex - 1 + xlen2*ylen2] == OBSTACLE)
+                ERROR("Invalid geometry");
+        }
+
+    }
+
+    //Check if XZ_FRONT has a FLUID neighbour
+    if(flagField[currentCellIndex + xlen2] == FLUID){
+
+        //Check if XY_RIGHT has a FLUID neighbour.
+        if(flagField[currentCellIndex + xlen2*ylen2] == FLUID){
+            if(flagField[currentCellIndex +xlen2 + xlen2*ylen2] == OBSTACLE)
+                ERROR("Invalid geometry");
+        }
+
+        //Check if XY_LEFT has a FLUID neighbour.
+        if(flagField[currentCellIndex + xlen2*ylen2] == FLUID){
+            if(flagField[currentCellIndex +xlen2 - xlen2*ylen2] == OBSTACLE)
+                ERROR("Invalid geometry");
+        }
+    }
+
+    //Check if XZ_BACK has a FLUID neighbour
+    if(flagField[currentCellIndex - xlen2] == FLUID){
+
+        //Check if XY_RIGHT has a FLUID neighbour.
+        if(flagField[currentCellIndex + xlen2*ylen2] == FLUID){
+            if(flagField[currentCellIndex -xlen2 + xlen2*ylen2] == OBSTACLE)
+                ERROR("Invalid geometry");
+        }
+
+        //Check if XY_LEFT has a FLUID neighbour.
+        if(flagField[currentCellIndex + xlen2*ylen2] == FLUID){
+            if(flagField[currentCellIndex -xlen2 - xlen2*ylen2] == OBSTACLE)
+                ERROR("Invalid geometry");
+        }
+    }
+
+
+}
+
 // TODO: (TKS) The printed statements from the helper function do no longer
 //             make sense after adding skip
 int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *timesteps,
@@ -220,6 +326,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 					//This is actually not required as long as FLUID=0
 					flagField[xyzoffset] = FLUID;
 				}else if(type_domain == 1){
+                    //TODO: Improve the checks for illegal geometry by saving these 
 					flagField[xyzoffset] = OBSTACLE;
 
 				}else{
@@ -230,14 +337,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     }
 
     /*Check for illegal geometries*/
-    // TODO: (TKS) Could do this in the above loop be checking pgmMatrix when flagfield
-    //       but adding another for loop is simpler. Consider changing if too ugly.
-
-    //TODO: (TKS) Suggested check for illegal geometries.
-        //TODO: Check for fluid cell in all directions.
-        //TODO: If fluid cell found on two neighbouring sides, 
-        //      check the corresponding diagonal.
-        //TODO: Abort if Obstacle is found.
+    // TODO: (TKS) Could do this in the above loop be checking pgmMatrix
 
     for(z = 1; z <= xlength[2]; ++z){
 		offset1 = z*xlen2*ylen2;
@@ -246,8 +346,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 			for (x = 1; x <= xlength[0]; ++x) {
 				int xyzoffset = offset2 + x;
 				if(flagField[xyzoffset] == OBSTACLE){
-                    //TODO: Do check on sorrounding cells.
-					
+                    valid_sorroundings(flagField, xyzoffset, xlength);
 				}
 			}
 		}
