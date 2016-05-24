@@ -70,6 +70,7 @@ typedef struct {
 } t_boundPara;
 
 enum SETTING_MODE{
+    CAVITY,
 	SHEAR_FLOW,
 	STEP_FLOW,
 	ARBITRARY 	//a .pgm file has to be provided in this mode (e.g. example tilted plate)

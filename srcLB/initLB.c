@@ -59,6 +59,8 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
      * available later (we may need it again when we initialize the fields).
      */
     switch(MODE){
+    case CAVITY:
+    	/* TODO */
     case SHEAR_FLOW:
     	/* TODO */
     	break;
