@@ -221,16 +221,38 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 					flagField[xyzoffset] = FLUID;
 				}else if(type_domain == 1){
 					flagField[xyzoffset] = OBSTACLE;
-                    //TODO: (TKS) Suggested check for illegal geometries.
-                    //TODO: Check for fluid cell in all directions.
-                    //TODO: If if fluid cell found in e.g. left and up, check the upper left diagonal for obstacle.
-                    //TODO: Abort if Obstacle is found.
+
 				}else{
 					ERROR("Description of scenario in pgm file should only consist of logical values. \n");
 				}
 			}
 		}
     }
+
+    /*Check for illegal geometries*/
+    // TODO: (TKS) Could do this in the above loop be checking pgmMatrix when flagfield
+    //       but adding another for loop is simpler. Consider changing if too ugly.
+
+    //TODO: (TKS) Suggested check for illegal geometries.
+        //TODO: Check for fluid cell in all directions.
+        //TODO: If fluid cell found on two neighbouring sides, 
+        //      check the corresponding diagonal.
+        //TODO: Abort if Obstacle is found.
+
+    for(z = 1; z <= xlength[2]; ++z){
+		offset1 = z*xlen2*ylen2;
+    	for (y = 1; y <= xlength[1]; ++y) {
+			offset2 = offset1 + y*ylen2;
+			for (x = 1; x <= xlength[0]; ++x) {
+				int xyzoffset = offset2 + x;
+				if(flagField[xyzoffset] == OBSTACLE){
+                    //TODO: Do check on sorrounding cells.
+					
+				}
+			}
+		}
+    }
+
 
     /*Setting initial distributions */
     //f_i(x,0) = f^eq(1,0,0) = w_i
