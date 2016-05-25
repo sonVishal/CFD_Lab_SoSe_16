@@ -51,9 +51,9 @@ problem 		shear_flow
 # see how it is done: https://stackoverflow.com/questions/9907160/how-to-convert-enum-names-to-string-in-c
 
 # depth in y-direction (the scenarios are set and displayed on the x-z plane)
-x_length             	30
+x_length             	5
 y_length 	     	30
-z_length	     	50
+z_length	     	5
 
 #--------------------------------------------
 #           BOUNDARY SETTINGS
