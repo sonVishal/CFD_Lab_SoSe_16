@@ -525,7 +525,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		}
     }
 
-    print_flagfield_slice(flagField, xlength);
+    //print_flagfield_slice(flagField, xlength);
 
     /*Setting initial distributions, LATTICEWEIGHTS and INFLOW conditions */
     //f_i(x,0) = f^eq(1,0,0) = w_i
