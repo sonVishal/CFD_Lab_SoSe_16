@@ -58,14 +58,13 @@ int main(int argc, char *argv[]){
     int totalsize = (xlength[0]+2)*(xlength[1]+2)*(xlength[2]+2);
 
     collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
-    if (collideField == 0) ERROR("Storage cannot be allocated");
-
     streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
-    if (streamField == 0) ERROR("Storage cannot be allocated");
+    flagField     = (int *)  malloc(totalsize * sizeof( int ));
+    memset(flagField, -1, totalsize); //set default value to -1 (invalid) for security
 
-    /* calloc: only required to set boundary values. Sets every value to zero*/
-    flagField     = (int *)  calloc(totalsize, sizeof( int ));
-    if (flagField == 0) ERROR("Storage cannot be allocated");
+    if(! collideField || !streamField || ! flagField ){
+    	ERROR("Storage cannot be allocated");
+    }
 
     // Initialize all the fields
     initialiseFields(collideField, streamField, flagField, xlength, boundPara, problem);
