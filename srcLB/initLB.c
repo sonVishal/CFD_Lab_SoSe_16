@@ -188,7 +188,7 @@ void read_customPgmMatrix(const int * const xlength, char *filename){
                     sprintf(error, "Invalid surroundings at x = %d, z = %d)", x,z);
                     ERROR(error);
                 }
-                    
+
 			}
 		}
     }
@@ -264,7 +264,7 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 	int MODE;
     double Re; //u_wall, machNr;
     int x_length, y_length, z_length; //Temporary for reading
-    int skip = 0; // How many of the same named variable should be skipped when 
+    int skip = 0; // How many of the same named variable should be skipped when
               // calling READ_<TYPE>.
 
     READ_INT(*argv, MODE, 0);
@@ -389,7 +389,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     	}
     }
 
-    //NOTE: only domain (ghost layer were set previously)// 
+    //NOTE: only domain (ghost layer were set previously)//
     for(z = 1; z <= xlength[2]; ++z){
 		offset1 = z*xlen2*ylen2;
     	for (y = 1; y <= xlength[1]; ++y) {
@@ -402,7 +402,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 					//This is actually not required as long as FLUID=0
 					flagField[xyzoffset] = FLUID;
 				}else if(type_domain == 1){
-                    //TODO: Improve the checks for illegal geometry by saving these 
+                    //TODO: Improve the checks for illegal geometry by saving these
 					flagField[xyzoffset] = OBSTACLE;
 
 				}else{
@@ -439,7 +439,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
                     /*Setting inflow condition once and for all*/
                     // TODO: (TKS) Make sure here that the inflow is only on the inner of the side?
                     for (int i = 0; i < Q; ++i) {
-                        p_handleInflow( x,  y,  z,  xlength, boundPara, 
+                        p_handleInflow( x,  y,  z,  xlength, boundPara,
                                         collideField, xyzoffset);
                     }
                 }

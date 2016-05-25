@@ -326,10 +326,6 @@ t_boundaryFcnPtr p_selectFunction(const int wallType) {
 		case FREE_SLIP:
 			// call free slip wall
 			return &p_freeSlip;
-		case INFLOW:
-			// Inflow wall set initially
-			ERROR("**** INFLOW cell encountered! ****");
-			return NULL;
 		case OUTFLOW:
 			// call outflow wall
 			return &p_outflow;
@@ -337,7 +333,8 @@ t_boundaryFcnPtr p_selectFunction(const int wallType) {
 			// call pressure in wall
 			return &p_pressureIn;
 		default:
-			ERROR("**** FLUID cell encountered! ****");
+			// TODO: remove this comment maybe
+			ERROR("**** FLUID/INFLOW cell encountered! ****");
 			return NULL;
 	}
 }
@@ -363,16 +360,18 @@ void treatBoundary(double *collideField, const int * const flagField,
 	testIndex	= xlen2[0]*(xlen2[1] + 1);
 	wallType	= boundPara[YZ_BOTTOM].type;
 	fcnPtr 		= p_selectFunction(wallType);
-	normal[0]	= 1;
-	normal[1]	= 0;
-	normal[2]	= 0;
-	for (z = 0; z < xlen2[2]; z++) {
-		for (y = 0; y < xlen2[1]; y++) {
-			points[0] = 0;
-			points[1] = y;
-			points[2] = z;
-			(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_BOTTOM],
-				normal, &totalSize);
+	if (fcnPtr != NULL) {
+		normal[0]	= 1;
+		normal[1]	= 0;
+		normal[2]	= 0;
+		for (z = 0; z < xlen2[2]; z++) {
+			for (y = 0; y < xlen2[1]; y++) {
+				points[0] = 0;
+				points[1] = y;
+				points[2] = z;
+				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_BOTTOM],
+					normal, &totalSize);
+			}
 		}
 	}
 
@@ -381,80 +380,89 @@ void treatBoundary(double *collideField, const int * const flagField,
 	testIndex	+= xlength[0] + 1;
 	wallType	= boundPara[YZ_TOP].type;
 	fcnPtr 		= p_selectFunction(wallType);
-	normal[0]	= -1;
-	for (z = 0; z < xlen2[2]; z++) {
-		for (y = 0; y < xlen2[1]; y++) {
-			points[0] = xlength[0]+1;
-			points[1] = y;
-			points[2] = z;
-			(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_TOP],
-				normal, &totalSize);
+	if (fcnPtr != NULL) {
+		normal[0]	= -1;
+		for (z = 0; z < xlen2[2]; z++) {
+			for (y = 0; y < xlen2[1]; y++) {
+				points[0] = xlength[0]+1;
+				points[1] = y;
+				points[2] = z;
+				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_TOP],
+					normal, &totalSize);
+			}
 		}
 	}
-
 	// XZ_BACK (y = 0)
 	// Test index is (1,y,1) so as to exclude shared edges
-	normal[0]	= 0;
-	normal[1]	= 1;
 	testIndex	= xlen2[0]*xlen2[1] + 1;
 	wallType	= boundPara[XZ_BACK].type;
 	fcnPtr 		= p_selectFunction(wallType);
-	for (z = 0; z < xlen2[2]; z++) {
-		for (x = 0; x < xlen2[0]; x++) {
-			points[0] = x;
-			points[1] = 0;
-			points[2] = z;
-			(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XZ_BACK],
-				normal, &totalSize);
+	if (fcnPtr != NULL) {
+		normal[0]	= 0;
+		normal[1]	= 1;
+		for (z = 0; z < xlen2[2]; z++) {
+			for (x = 0; x < xlen2[0]; x++) {
+				points[0] = x;
+				points[1] = 0;
+				points[2] = z;
+				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XZ_BACK],
+					normal, &totalSize);
+			}
 		}
 	}
 
 	// XZ_FRONT (y = xlength[1]+1)
 	// Test index is (1,y,1) so as to exclude shared edges
-	normal[1]	= -1;
 	testIndex	+= (xlength[1]+1)*xlen2[0];
 	wallType	= boundPara[XZ_FRONT].type;
 	fcnPtr 		= p_selectFunction(wallType);
-	for (z = 0; z < xlen2[2]; z++) {
-		for (x = 0; x < xlen2[0]; x++) {
-			points[0] = x;
-			points[1] = xlength[1]+1;
-			points[2] = z;
-			(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XZ_FRONT],
-				normal, &totalSize);
+	if (fcnPtr != NULL) {
+		normal[1]	= -1;
+		for (z = 0; z < xlen2[2]; z++) {
+			for (x = 0; x < xlen2[0]; x++) {
+				points[0] = x;
+				points[1] = xlength[1]+1;
+				points[2] = z;
+				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XZ_FRONT],
+					normal, &totalSize);
+			}
 		}
 	}
 
 	// XY_LEFT (z = 0)
 	// Test index is (1,1,z) so as to exclude shared edges
-	normal[1]	= 0;
-	normal[2]	= 1;
 	testIndex	= xlen2[0] + 1;
 	wallType	= boundPara[XY_LEFT].type;
 	fcnPtr 		= p_selectFunction(wallType);
-	for (y = 0; y < xlen2[1]; y++) {
-		for (x = 0; x < xlen2[0]; x++) {
-			points[0] = x;
-			points[1] = y;
-			points[2] = 0;
-			(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XY_LEFT],
-				normal, &totalSize);
+	if (fcnPtr != NULL) {
+		normal[1]	= 0;
+		normal[2]	= 1;
+		for (y = 0; y < xlen2[1]; y++) {
+			for (x = 0; x < xlen2[0]; x++) {
+				points[0] = x;
+				points[1] = y;
+				points[2] = 0;
+				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XY_LEFT],
+					normal, &totalSize);
+			}
 		}
 	}
 
 	// XY_RIGHT (z = xlength[2]+1)
 	// Test index is (1,1,z) so as to exclude shared edges
-	normal[2]	= -1;
 	testIndex	+= (xlength[2]+1)*xlen2[0]*xlen2[1];
 	wallType	= boundPara[XY_RIGHT].type;
 	fcnPtr 		= p_selectFunction(wallType);
-	for (y = 0; y < xlen2[1]; y++) {
-		for (x = 0; x < xlen2[0]; x++) {
-			points[0] = x;
-			points[1] = y;
-			points[2] = xlength[2]+1;
-			(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XY_RIGHT],
-				normal, &totalSize);
+	if (fcnPtr != NULL) {
+		normal[2]	= -1;
+		for (y = 0; y < xlen2[1]; y++) {
+			for (x = 0; x < xlen2[0]; x++) {
+				points[0] = x;
+				points[1] = y;
+				points[2] = xlength[2]+1;
+				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XY_RIGHT],
+					normal, &totalSize);
+			}
 		}
 	}
 
