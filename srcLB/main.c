@@ -83,7 +83,7 @@ int main(int argc, char *argv[]){
     for(int z = 0; z < xlength[2]+2; ++z){
     	for(int y = 0; y < xlength[1]+2; ++y){
     		for(int x = 0; x < xlength[0]+2; ++x){
-    			int idx = Q*(z*(xlength[0]*xlength[1]) + y*xlength[0] + x);
+    			int idx = Q*(z*((xlength[0]+2)*(xlength[1]+2)) + y*(xlength[0]+2) + x);
     			double density =0;
     			computeDensity(&streamField[idx], &density);
 
