@@ -6,20 +6,6 @@
 
 // TODO: Bound checking for flag fields
 
-inline static void p_computeIndex(const int * const point,
-	const int * const xlength, int *index) {
-	(*index) = point[0]*(xlength[0]+2)*((xlength[1]+2)+point[1]) + point[0];
-}
-
-inline static void p_computeIndexXYZ(const int x, const int y, const int z,
-	const int * const xlength, int *index) {
-	(*index) = z*(xlength[0]+2)*((xlength[1]+2)+y) + x;
-}
-
-inline static void p_computeIndexQ(const int * const point,
-	const int * const xlength, int *index) {
-	(*index) = Q*(point[0]*(xlength[0]+2)*((xlength[1]+2)+point[1]) + point[0]);
-}
 
 void p_noSlip(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,

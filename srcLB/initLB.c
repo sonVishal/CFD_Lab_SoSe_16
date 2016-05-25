@@ -399,6 +399,20 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 
   return 0;
 }
+//TODO: (TKS) REMOVE AFTER TESTING
+void print_flagfield_slice(int* field, const int * const xlength){
+    int idx;
+    int y = xlength[1]/2;
+
+    for (int x = 0; x <= xlength[0]+1; x++) {
+        for (int z = 0; z <= xlength[2]+1; z++) {
+            p_computeIndexXYZ(x,y,z,xlength,&idx);
+            printf("%d ",field[idx]);
+        }
+        printf("\n");
+    }
+
+}
 
 void initialiseFields(double *collideField, double *streamField, int *flagField,
 		int *xlength, t_boundPara *boundPara, char *problem){
@@ -510,6 +524,9 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 			}
 		}
     }
+
+    //TODO: (TKS) remove when finished testing
+    //print_flagfield_slice(flagField, xlength);
 
     /*Setting initial distributions, LATTICEWEIGHTS and INFLOW conditions */
     //f_i(x,0) = f^eq(1,0,0) = w_i
