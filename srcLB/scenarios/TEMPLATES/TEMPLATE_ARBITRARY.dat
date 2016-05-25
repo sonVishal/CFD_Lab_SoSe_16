@@ -9,8 +9,8 @@ MODE 		      	2
 #--------------------------------------------
 
 # Relaxation parameter OR Reynolds number (set the other to -1)
-tau                    	-1
-Re			100
+tau         0.59
+Re			-1
 
 # Number of timesteps
 timesteps            	20000
@@ -62,7 +62,7 @@ problem 		TiltedPlate.pgm
 # If a finer/coarser resolution of the domain is required, change the pgm file first and then adapt the parameter here.   
 
 # Depth in Y-direction (the scenarios in pgm format are set and displayed in the XZ plane)
-x_length             212
+x_length         212
 y_length 	     3
 z_length	     492
 
