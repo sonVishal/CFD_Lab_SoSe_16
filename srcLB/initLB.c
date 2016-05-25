@@ -10,12 +10,6 @@ void p_verifyValidWallSetting(t_boundPara *boundPara){
 	//If there is a MOVING wall present we only support the cavity scenario, i.e. there should
 	//be only one MOVING wall and 5 NO_SLIP walls.
 
-	for(int b=)
-
-
-
-
-
     int num_inflow    = 0;
     int num_free_slip = 0;
 
@@ -508,16 +502,10 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
                 idx = Q*xyzoffset;
 
                 //Set initial condition
-                if(flagField[xyzoffset] != INFLOW){
-                    for (int i = 0; i < Q; ++i) {
-                        collideField[idx+i] = LATTICEWEIGHTS[i];
-                        streamField[idx+i]  = LATTICEWEIGHTS[i];
-                    }
-                }
-                else{
-                    /*Setting inflow condition once and for all*/
-//                    p_handleInflow(x, y, z, xlength, boundPara,
-//                        collideField,xyzoffset);
+
+                for (int i = 0; i < Q; ++i) {
+                    collideField[idx+i] = LATTICEWEIGHTS[i];
+                    streamField[idx+i]  = LATTICEWEIGHTS[i];
                 }
             }
         }

@@ -13,7 +13,7 @@ tau                    	0.59
 Re			-1
 
 # Number of timesteps
-timesteps            	20000
+timesteps            	2000
 
 # timesteps between each plot
 timestepsPerPlotting 	20
