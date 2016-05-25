@@ -327,6 +327,7 @@ void treatBoundary(double *collideField, const int * const flagField,
 
 	// iteration variables
 	int x, y, z;
+	int start, end;
 	int wallType, testIndex;
 	int points[3], normal[3];
 	int const xlen2[3] = {xlength[0]+2,xlength[1]+2,xlength[1]+2};
@@ -342,13 +343,15 @@ void treatBoundary(double *collideField, const int * const flagField,
 	// Test index is (x,1,1) so as to exclude shared edges
 	testIndex	= xlen2[0]*(xlen2[1] + 1);
 	wallType	= boundPara[YZ_BOTTOM].type;
+	start 		= boundPara[YZ_BOTTOM].idxStartEnd[0];
+	end 		= boundPara[YZ_BOTTOM].idxStartEnd[1];
 	fcnPtr 		= p_selectFunction(wallType);
 	if (fcnPtr != NULL) {
 		normal[0]	= 1;
 		normal[1]	= 0;
 		normal[2]	= 0;
-		for (z = 0; z < xlen2[2]; z++) {
-			for (y = 0; y < xlen2[1]; y++) {
+		for (z = start; z <= xlength[2]+end; z++) {
+			for (y = start; y <= xlength[1] + end; y++) {
 				points[0] = 0;
 				points[1] = y;
 				points[2] = z;
@@ -362,11 +365,13 @@ void treatBoundary(double *collideField, const int * const flagField,
 	// Test index is (x,1,1) so as to exclude shared edges
 	testIndex	+= xlength[0] + 1;
 	wallType	= boundPara[YZ_TOP].type;
+	start 		= boundPara[YZ_TOP].idxStartEnd[0];
+	end 		= boundPara[YZ_TOP].idxStartEnd[1];
 	fcnPtr 		= p_selectFunction(wallType);
 	if (fcnPtr != NULL) {
 		normal[0]	= -1;
-		for (z = 0; z < xlen2[2]; z++) {
-			for (y = 0; y < xlen2[1]; y++) {
+		for (z = start; z <= xlength[2]+end; z++) {
+			for (y = start; y <= xlength[1] + end; y++) {
 				points[0] = xlength[0]+1;
 				points[1] = y;
 				points[2] = z;
@@ -379,12 +384,14 @@ void treatBoundary(double *collideField, const int * const flagField,
 	// Test index is (1,y,1) so as to exclude shared edges
 	testIndex	= xlen2[0]*xlen2[1] + 1;
 	wallType	= boundPara[XZ_BACK].type;
+	start 		= boundPara[XZ_BACK].idxStartEnd[0];
+	end 		= boundPara[XZ_BACK].idxStartEnd[1];
 	fcnPtr 		= p_selectFunction(wallType);
 	if (fcnPtr != NULL) {
 		normal[0]	= 0;
 		normal[1]	= 1;
-		for (z = 0; z < xlen2[2]; z++) {
-			for (x = 0; x < xlen2[0]; x++) {
+		for (z = start; z <= xlength[2] + end; z++) {
+			for (x = start; x <= xlength[0] + end; x++) {
 				points[0] = x;
 				points[1] = 0;
 				points[2] = z;
@@ -398,11 +405,13 @@ void treatBoundary(double *collideField, const int * const flagField,
 	// Test index is (1,y,1) so as to exclude shared edges
 	testIndex	+= (xlength[1]+1)*xlen2[0];
 	wallType	= boundPara[XZ_FRONT].type;
+	start 		= boundPara[XZ_FRONT].idxStartEnd[0];
+	end 		= boundPara[XZ_FRONT].idxStartEnd[1];
 	fcnPtr 		= p_selectFunction(wallType);
 	if (fcnPtr != NULL) {
 		normal[1]	= -1;
-		for (z = 0; z < xlen2[2]; z++) {
-			for (x = 0; x < xlen2[0]; x++) {
+		for (z = start; z <= xlength[2]+end; z++) {
+			for (x = start; x <= xlength[0] + end; x++) {
 				points[0] = x;
 				points[1] = xlength[1]+1;
 				points[2] = z;
@@ -416,12 +425,14 @@ void treatBoundary(double *collideField, const int * const flagField,
 	// Test index is (1,1,z) so as to exclude shared edges
 	testIndex	= xlen2[0] + 1;
 	wallType	= boundPara[XY_LEFT].type;
+	start 		= boundPara[XY_LEFT].idxStartEnd[0];
+	end 		= boundPara[XY_LEFT].idxStartEnd[1];
 	fcnPtr 		= p_selectFunction(wallType);
 	if (fcnPtr != NULL) {
 		normal[1]	= 0;
 		normal[2]	= 1;
-		for (y = 0; y < xlen2[1]; y++) {
-			for (x = 0; x < xlen2[0]; x++) {
+		for (y = start; y <= xlength[1] + end; y++) {
+			for (x = start; x <= xlength[0] + end; x++) {
 				points[0] = x;
 				points[1] = y;
 				points[2] = 0;
@@ -435,11 +446,13 @@ void treatBoundary(double *collideField, const int * const flagField,
 	// Test index is (1,1,z) so as to exclude shared edges
 	testIndex	+= (xlength[2]+1)*xlen2[0]*xlen2[1];
 	wallType	= boundPara[XY_RIGHT].type;
+	start 		= boundPara[XY_RIGHT].idxStartEnd[0];
+	end 		= boundPara[XY_RIGHT].idxStartEnd[1];
 	fcnPtr 		= p_selectFunction(wallType);
 	if (fcnPtr != NULL) {
 		normal[2]	= -1;
-		for (y = 0; y < xlen2[1]; y++) {
-			for (x = 0; x < xlen2[0]; x++) {
+		for (y = start; y <= xlength[1] + end; y++) {
+			for (x = start; x <= xlength[0] + end; x++) {
 				points[0] = x;
 				points[1] = y;
 				points[2] = xlength[2]+1;
