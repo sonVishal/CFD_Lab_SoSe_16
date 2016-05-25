@@ -339,6 +339,8 @@ t_boundaryFcnPtr p_selectFunction(const int wallType) {
 	}
 }
 
+// TODO: 3 for loops with switch case inside sounds better
+
 void treatBoundary(double *collideField, const int * const flagField,
 	const t_boundPara * const boundPara, const int * const xlength){
 
