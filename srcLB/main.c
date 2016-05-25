@@ -79,7 +79,6 @@ int main(int argc, char *argv[]){
 
     writeVtkOutput(collideField,flagField,fName,t,xlength);
 
-    ERROR("STOPPER -- remove when proceeding with implementation\n");
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
@@ -91,6 +90,7 @@ int main(int argc, char *argv[]){
 	    streamField = swap;
 
 	    doCollision(collideField,flagField,&tau, xlength);
+        ERROR("STOPPER -- remove when proceeding with implementation\n");
 	    treatBoundary(collideField,flagField,boundPara,xlength);
 
 	    if (t%timestepsPerPlotting == 0){
