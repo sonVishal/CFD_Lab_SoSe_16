@@ -70,6 +70,7 @@ int main(int argc, char *argv[]){
 
     // Initialize all the fields
     initialiseFields(collideField, streamField, flagField, xlength, boundPara, problem);
+    ERROR("STOPPER -- remove when proceeding with implementation\n");
 
     printf("\nINFO: Storing cell data in VTK files.\n      Please use the"
     " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
@@ -90,7 +91,6 @@ int main(int argc, char *argv[]){
 	    streamField = swap;
 
 	    doCollision(collideField,flagField,&tau, xlength);
-        ERROR("STOPPER -- remove when proceeding with implementation\n");
 	    treatBoundary(collideField,flagField,boundPara,xlength);
 
 	    if (t%timestepsPerPlotting == 0){

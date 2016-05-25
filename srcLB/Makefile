@@ -20,6 +20,9 @@ all: clean $(EXECUTABLE) ; @echo "\nINFO:Use make speed for a faster code withou
 speed: CFLAGS+= -DNO_CHECKS -O3
 speed: clean $(EXECUTABLE)
 
+debug: CFLAGS+=-O0 -g -enable-checking -v -da -Q
+debug: clean $(EXECUTABLE)
+
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
 

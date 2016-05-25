@@ -257,8 +257,8 @@ void read_customPgmMatrix(const int * const xlength, char *filename){
             if(pgmMatrix[z][x] == 1){
                 if(!valid_sorroundings(x, z, xlength, pgmMatrix)){
 		            free_imatrix(pgmMatrix,0,zsizePgm+1,0,xsizePgm+1);
-                    char* error = "";
-                    sprintf(error, "Invalid surroundings at x = %d, z = %d)", x,z);
+                    char error[80];
+                    snprintf(error, 80, "Invalid surroundings at x = %d, z = %d)", x,z);
                     ERROR(error);
                 }
 
