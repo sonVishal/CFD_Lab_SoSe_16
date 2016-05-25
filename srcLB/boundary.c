@@ -237,23 +237,6 @@ void p_freeSlip(double* collideField, int const * const flagField,
 	}
 }
 
-void p_inflow(double* collideField, int const * const flagField,
-	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const normal,
-	int const * const totalSize) {
-	// Begin
-	int i;
-	int currentFlagIndex, currentCellIndex;
-	double feq[Q];
-	p_computeIndex(point, xlength, &currentFlagIndex);
-	currentCellIndex = Q*currentFlagIndex;
-	computeFeq(&boundPara->rhoRef,
-		boundPara->wallVelocity, feq);
-	for (i = 0; i < Q; i++) {
-		collideField[Q*currentCellIndex+i] = feq[i];
-	}
-}
-
 void p_outflow(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const normal,

@@ -20,7 +20,6 @@ int main(int argc, char *argv[]){
     // Simulation parameters
     int xlength[3];
     double tau;
-    double velocityWall[3];
     int t = 0;
     int timesteps;
     int timestepsPerPlotting;

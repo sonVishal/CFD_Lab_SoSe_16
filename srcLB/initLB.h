@@ -20,4 +20,8 @@ int readParameters(
 /* initialises the particle distribution functions and the flagfield */
 void initialiseFields(double *collideField, double *streamField,int *flagField,int *xlength,t_boundPara *boundPara,char *problem);
 
+// Function for setting the inflow once and for all
+void p_handleInflow(int x, int y, int z, int *xlength, t_boundPara *boundPara,
+                     double *collideField, const int currentCellIndex);
+
 #endif

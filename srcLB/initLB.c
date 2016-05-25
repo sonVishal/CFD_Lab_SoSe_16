@@ -2,8 +2,39 @@
 #include "LBDefinitions.h"
 #include "helper.h"
 #include "boundary.h"
+#include "computeCellValues.h"
 #include <stdio.h>
 
+// Function for setting the inflow once and for all
+void p_handleInflow(int x, int y, int z, int *xlength, t_boundPara *boundPara,
+                     double *collideField, const int currentCellIndex){
+	int i, flag;
+	double feq[19];
+	if(x == 0)
+		flag = YZ_BOTTOM;
+	else if(x == xlength[0]+1)
+		flag = YZ_TOP;
+	else if(y == 0)
+		flag = XZ_BACK;
+	else if(y == xlength[1]+1)
+		flag = XZ_FRONT;
+	else if(z == 0)
+		flag = XY_LEFT;
+	else if(z == xlength[2]+1)
+		flag = XY_RIGHT;
+	else{
+		flag = -1;
+		ERROR("Inflow not a boundary (Aborting)");
+	}
+	if (flag != -1) {
+		computeFeq(&boundPara[flag].rhoRef, boundPara[flag].wallVelocity,feq);
+		for(i = 0; i < Q; i++){
+			for(int i = 0; i < Q; i++){
+				collideField[currentCellIndex + i] = feq[i];
+			}
+		}
+	}
+ }
 
 /*
 TODO: (DL) SUGGESTION FOR INDEXING
@@ -439,7 +470,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
                     /*Setting inflow condition once and for all*/
                     // TODO: (TKS) Make sure here that the inflow is only on the inner of the side?
                     for (int i = 0; i < Q; ++i) {
-                        p_handleInflow( x,  y,  z,  xlength, boundPara,
+                        p_handleInflow(x, y, z, xlength, boundPara,
                                         collideField, xyzoffset);
                     }
                 }
