@@ -136,6 +136,40 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	boundPara->wallVelocity[2] = z_velocity;
 	boundPara->rhoRef = rhoRef;
 	boundPara->rhoIn = rhoIn;
+
+
+	/* TODO: (DL) after testing this can be much simplified (only in two ifs), but for testing
+	 * this version is a bit more handy...
+	 */
+	switch (boundPara->type) {
+	case NO_SLIP:
+		boundPara->idxStartEnd[0] = 0;
+		boundPara->idxStartEnd[1] = 1;
+		break;
+	case MOVING:
+		boundPara->idxStartEnd[0] = 0;
+		boundPara->idxStartEnd[1] = 1;
+		break;
+	case FREE_SLIP:
+		boundPara->idxStartEnd[0] = 1;
+		boundPara->idxStartEnd[1] = 0;
+		break;
+	case INFLOW:
+		boundPara->idxStartEnd[0] = 1;
+		boundPara->idxStartEnd[1] = 0;
+		break;
+	case OUTFLOW:
+		boundPara->idxStartEnd[0] = 1;
+		boundPara->idxStartEnd[1] = 0;
+		break;
+	case PRESSURE_IN:
+		boundPara->idxStartEnd[0] = 1;
+		boundPara->idxStartEnd[1] = 0;
+		break;
+	default:
+		//TODO: (DL) msg
+		ERROR("TODO: error msg");
+	}
 }
 
 //Checks whether the surroundings of the current cell is legal.
