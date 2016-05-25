@@ -77,10 +77,10 @@ int main(int argc, char *argv[]){
     // Write the VTK at t = 0
     printf("INFO: write vtk file at time t = %d \n", t);
 
-    writeVtkOutput(collideField,flagField,fName,t,xlength);
-    writeVtkDebug(collideField,flagField,fName,xlength);
-    ERROR("STOPPER -- remove when proceeding with implementation\n");
+    // writeVtkOutput(collideField,flagField,fName,t,xlength);
+    // writeVtkDebug(collideField,flagField,fName,xlength);
 
+    // printf("\n\n Tau = %f \n\n",tau);
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
@@ -91,7 +91,10 @@ int main(int argc, char *argv[]){
 	    collideField = streamField;
 	    streamField = swap;
 
+        writeVtkOutput(collideField,flagField,fName,t,xlength);
+
 	    doCollision(collideField,flagField,&tau, xlength);
+        ERROR("STOPPER -- remove when proceeding with implementation\n");
 	    treatBoundary(collideField,flagField,boundPara,xlength);
 
 	    if (t%timestepsPerPlotting == 0){
