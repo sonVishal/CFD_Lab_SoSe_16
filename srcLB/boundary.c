@@ -380,7 +380,7 @@ void treatBoundary(double *collideField, const int * const flagField,
 		for (y = 0; y < xlen2[1]; y++) {
 			for (x = 0; x < xlen2[0]; x++) {
 				p_computeIndexXYZ(x,y,z,xlength,&flagIndex);
-				wallType = wallType;
+				wallType = flagField[flagIndex];
 				if (wallType != FLUID && wallType != -1) {
 					points[0] = x;
 					points[1] = y;
