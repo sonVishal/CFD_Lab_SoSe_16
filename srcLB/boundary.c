@@ -23,6 +23,7 @@ void p_noSlip(double* collideField, int const * const flagField,
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
+        //TODO: (TKS) Need check for valid index in nextFlagIndex
 		if (flagField[nextFlagIndex] == FLUID &&
 			nextCellIndex >= 0 && nextCellIndex < *totalSize) {
 			collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)];
