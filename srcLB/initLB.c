@@ -192,24 +192,28 @@ int valid_sorroundings(int x, int z, const int* const xlength, int **pgmMatrix){
     int down  = pgmMatrix[z][x-1];
     int is_valid = 1;
 
-    if( !(right && up)){                    // If right and up are FLUID
-        if(pgmMatrix[x+1][z+1] == 1) 		// If right corner is an OBSTACLE
+    if( !(right || up)){                    // If right and up are FLUID
+        if(pgmMatrix[z+1][x+1] == 1) { 		// If right corner is an OBSTACLE
             is_valid = 0;
+        }
     }
 
-    if( !(right && down)){                  // If right and down are FLUID
-        if(pgmMatrix[x-1][z+1] == 1) 		// If right corner is an OBSTACLE
+    if( !(right || down)){                  // If right and down are FLUID
+        if(pgmMatrix[z+1][x-1] == 1) { 		// If right corner is an OBSTACLE
             is_valid = 0;
+        }
     }
 
-    if( !(left && up)){                     // If left and up are FLUID
-        if(pgmMatrix[x+1][z-1] == 1)        // If right corner is an OBSTACLE
+    if( !(left || up)){                     // If left and up are FLUID
+        if(pgmMatrix[z-1][x+1] == 1) { 		// If left corner is an OBSTACLE
             is_valid = 0;
+        }
     }
 
-    if( !(left && down)){                   // If left and down are FLUID
-        if(pgmMatrix[x-1][z-1] == 1)        // If right corner is an OBSTACLE
+    if( !(left || down)){                   // If left and down are FLUID
+        if(pgmMatrix[z-1][x-1] == 1) { 		// If left corner is an OBSTACLE
             is_valid = 0;
+        }
     }
 
     return(is_valid);
@@ -458,10 +462,10 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     type = boundPara[XZ_BACK].type;
     start = boundPara[XZ_BACK].idxStartEnd[0];
     end = boundPara[XZ_BACK].idxStartEnd[1];
-    for(z = start; z < zlen2+end; ++z){
+    for(z = start; z <= xlength[2] + end; ++z){
 		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + (xlength[1]+1)*xlen2;
-    	for(x = start; x < xlen2+end; ++x){
+    	for(x = start; x <= xlength[0] + end; ++x){
     		flagField[offset1 + x] = type; // y = 0
     	}
     }
@@ -469,10 +473,10 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     type = boundPara[XZ_FRONT].type;
     start = boundPara[XZ_FRONT].idxStartEnd[0];
     end = boundPara[XZ_FRONT].idxStartEnd[1];
-    for(z = start; z < zlen2+end; ++z){
+    for(z = start; z <= xlength[2]+end; ++z){
 		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + (xlength[1]+1)*xlen2;
-    	for(x = start; x < xlen2+end; ++x){
+    	for(x = start; x <= xlength[0]+end; ++x){
     		flagField[offset2 + x] = type; // y = xlength[1]+1
     	}
     }
@@ -480,10 +484,10 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     type = boundPara[XY_LEFT].type;
     start = boundPara[XY_LEFT].idxStartEnd[0];
     end = boundPara[XY_LEFT].idxStartEnd[1];
-    for(y = start; y < ylen2+end; ++y){
+    for(y = start; y <= xlength[1]+end; ++y){
 		offset1 = y*xlen2;
 		offset2 = offset1 + (xlength[2]+1)*xlen2*ylen2;
-    	for(x = start; x < xlen2+end; ++x){
+    	for(x = start; x <= xlength[0]+end; ++x){
     		flagField[offset1 + x] = type; // z = 0
     	}
     }
@@ -491,10 +495,10 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     type = boundPara[XY_RIGHT].type;
     start = boundPara[XY_RIGHT].idxStartEnd[0];
     end = boundPara[XY_RIGHT].idxStartEnd[1];
-    for(y = start; y < ylen2+end; ++y){
+    for(y = start; y <= xlength[1]+end; ++y){
 		offset1 = y*xlen2;
 		offset2 = offset1 + (xlength[2]+1)*xlen2*ylen2;
-    	for(x = start; x < xlen2+end; ++x){
+    	for(x = start; x <= xlength[0]+end; ++x){
     		flagField[offset2 + x] = type; // z = xlength[2]+1
     	}
     }
@@ -502,10 +506,10 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     type = boundPara[YZ_BOTTOM].type;
     start = boundPara[YZ_BOTTOM].idxStartEnd[0];
     end = boundPara[YZ_BOTTOM].idxStartEnd[1];
-    for(z = start; z < zlen2+end; ++z){
+    for(z = start; z <= xlength[2]+end; ++z){
 		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + xlength[0] + 1;
-    	for(y = start; y < ylen2+end; ++y){
+    	for(y = start; y <= xlength[1]+end; ++y){
 			flagField[offset1 + y*xlen2] = type; // x = 0
     	}
     }
@@ -513,10 +517,10 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     type = boundPara[YZ_TOP].type;
     start = boundPara[YZ_TOP].idxStartEnd[0];
     end = boundPara[YZ_TOP].idxStartEnd[1];
-    for(z = start; z < zlen2+end; ++z){
+    for(z = start; z <= xlength[2]+end; ++z){
 		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + xlength[0] + 1;
-    	for(y = start; y < ylen2+end; ++y){
+    	for(y = start; y <= xlength[1]+end; ++y){
     		flagField[offset2 + y*xlen2] = type; // x = xlength[0]+1
     	}
     }
