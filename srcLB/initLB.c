@@ -76,9 +76,6 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	double x_velocity, y_velocity, z_velocity;
 	double rhoRef, rhoIn; /* TODO: (DL) rename rhoIn -> deltaRho, also in templates*/
 
-    //TODO: Add a variable to the input saying how many variables of that should be skipped.
-    //          * Remember to change both the #define part and the function definition.
-    //          * Add if statement in all read functions.
     READ_INT(*argv, type, skip);
 
 	READ_DOUBLE(*argv, x_velocity, skip);
