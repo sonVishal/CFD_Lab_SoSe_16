@@ -38,17 +38,49 @@ looks nice ;-)
 By these settings the examples make more sense!
  */
 
-int p_verifyValidWallSetting(){
+void p_verifyValidWallSetting(t_boundPara *boundPara){
 
-	/* TODO: if there is INFLOW than there should be OUTFLOW present */
+    int num_inflow    = 0;
+    int num_free_slip = 0;
 
-	/* TODO: probably can combine these: */
-	/* > an INFLOW wall should not be adjacent to another INFLOW */
-	/* > an OUTFLOW wall should not be adjacent to another OUTFLOW */
-	/* > an OUTFLOW wall should not be adjacent to another INFLOW */
-	/* Simply-> only one INFLOW and one OUTFLOW is allowed! */
+    // If an INFLOW is present, there must be an OUTFLOW and it has to be on
+    // the wall oppopsite to the INFLOW.
+    // We hence also only allow for one inflow on the boundary.
 
-	return 0;
+    for (int i = XY_LEFT; i <= XZ_BACK; i=i+2) {
+        if(boundPara[i].type == INFLOW){
+            if(boundPara[i+1].type != OUTFLOW){
+                ERROR("OUTFLOW is not opposite INFLOW");
+            }
+            num_inflow++;
+        }
+
+        if(boundPara[i].type == OUTFLOW){
+            if(boundPara[i+1].type != INFLOW){
+                ERROR("OUTFLOW is not opposite INFLOW");
+            }
+            num_inflow++;
+        }
+
+        if(boundPara[i].type == FREE_SLIP){
+            num_free_slip++;
+            if (num_free_slip == 2 && (boundPara[i+1].type != FREE_SLIP)) {
+                    ERROR("FREE_SLIP walls are not opposites");
+            }
+        }
+        if(boundPara[i+1].type == FREE_SLIP){
+            num_free_slip++;
+            if (num_free_slip == 2 && (boundPara[i].type != FREE_SLIP)) {
+                    ERROR("FREE_SLIP walls are not opposites");
+            }
+        }
+    }
+
+    if (num_inflow > 1)
+        ERROR("Too many inflows");
+
+    if(num_free_slip > 3)
+        ERROR("Too many free-slip walls");
 }
 
 
@@ -58,9 +90,6 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	double x_velocity, y_velocity, z_velocity;
 	double rhoRef, rhoIn; /* TODO: (DL) rename rhoIn -> deltaRho, also in templates*/
 
-    //TODO: Add a variable to the input saying how many variables of that should be skipped.
-    //          * Remember to change both the #define part and the function definition.
-    //          * Add if statement in all read functions.
     READ_INT(*argv, type, skip);
 
 	READ_DOUBLE(*argv, x_velocity, skip);
@@ -94,22 +123,22 @@ int valid_sorroundings(int x, int z, const int* const xlength, int **pgmMatrix){
     int is_valid = 1;
 
     if( !(right && up)){                    // If right and up are FLUID
-        if(pgmMatrix[x+1][z+1] == 1) 		// If right corner are an OBSTACLE
+        if(pgmMatrix[x+1][z+1] == 1) 		// If right corner is an OBSTACLE
             is_valid = 0;
     }
 
     if( !(right && down)){                  // If right and down are FLUID
-        if(pgmMatrix[x-1][z+1] == 1) 		// If right corner are an OBSTACLE
+        if(pgmMatrix[x-1][z+1] == 1) 		// If right corner is an OBSTACLE
             is_valid = 0;
     }
 
     if( !(left && up)){                     // If left and up are FLUID
-        if(pgmMatrix[x+1][z-1] == 1) // If right corner are an OBSTACLE
+        if(pgmMatrix[x+1][z-1] == 1)        // If right corner is an OBSTACLE
             is_valid = 0;
     }
 
     if( !(left && down)){                   // If left and down are FLUID
-        if(pgmMatrix[x-1][z-1] == 1) // If right corner are an OBSTACLE
+        if(pgmMatrix[x-1][z-1] == 1)        // If right corner is an OBSTACLE
             is_valid = 0;
     }
 
@@ -198,8 +227,10 @@ void p_generatePgmDomain(char *argv[], const int * const xlength, const int MODE
 		READ_INT(*argv, x_direction,0);
 
 		if(z_direction > xlength[2] || x_direction > xlength[0]){
-			//TODO: (DL) make error msg with values..
-			ERROR("The step cannot be bigger than the domain.");
+            char* str = "";
+            sprintf(str, "Domain size = (%d,%d), step size = (%d,%d). Step size cannot be bigger than the domain.",
+                          xlength[0], xlength[2],x_direction,z_direction);
+			ERROR(str);
 		}
 
 		init_imatrix(pgmMatrix, 1, z_direction, 1, x_direction, 1);
@@ -264,6 +295,7 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     	p_readWall(argv, &boundPara[b], skip);
         skip++;
     }
+    p_verifyValidWallSetting(boundPara);
 
     p_generatePgmDomain(argv, xlength, MODE);
 
@@ -398,28 +430,25 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
                 idx = Q*xyzoffset;
 
                 //Set initial condition
-                for (int i = 0; i < Q; ++i) {
-                    collideField[idx+i] = LATTICEWEIGHTS[i];
-                    streamField[idx+i]  = LATTICEWEIGHTS[i];
+                if(flagField[xyzoffset] == INFLOW){
+                    for (int i = 0; i < Q; ++i) {
+                        collideField[idx+i] = LATTICEWEIGHTS[i];
+                        streamField[idx+i]  = LATTICEWEIGHTS[i];
+                    }
+
+                    /*Setting inflow condition once and for all*/
+                    // TODO: (TKS) Make sure here that the inflow is only on the inner of the side?
+                    for (int i = 0; i < Q; ++i) {
+                        p_handleInflow( x,  y,  z,  xlength, boundPara, 
+                                        collideField, xyzoffset);
+                    }
                 }
 
-                /* TODO: (DL) not sure if that was supposed to be like this?
-                 * But can the below if-statement decide which one of the two
-                 * loops to execute. At the moment it seems it first gets set to
-                 * LATTICEWEIGHTS and then to inflow condition (if it's an INFLOW).
-                 */
 
                 /* TODO: (DL) if we do not need p_handleInflow in boundary.c at all,
                  * we can also think to get it here.
                  */
 
-                /*Setting inflow condition once and for all*/
-                if(flagField[idx] == INFLOW){
-                    for (int i = 0; i < Q; ++i) {
-                        p_handleInflow( x,  y,  z,  xlength, boundPara, 
-                                        collideField, idx);
-                    }
-                }
 
             }
         }
@@ -443,13 +472,6 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 //		 printf("\n");
 //	 }
 
-    /* TODO:(DL) somehow I get in the TEMPLATE/CAVITY case an error when freeing the matrix
-     * in scenario.dat it works -- check out.
-     *
-     * If I comment out the line init_imatrix where it is set to 0, the freeing works?!?!?
-     * If I set all the values before freein to 1 it still does not work.
-     * There is no out of bounds in the init_imatrix
-     */
 
     //Call at allocation
     //    pgmMatrix = imatrix(0, xlength[2]+1,0,xlength[0]+1);
