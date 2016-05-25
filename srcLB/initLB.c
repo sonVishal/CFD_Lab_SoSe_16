@@ -469,10 +469,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
                     /*Setting inflow condition once and for all*/
                     // TODO: (TKS) Make sure here that the inflow is only on the inner of the side?
-                    for (int i = 0; i < Q; ++i) {
-                        p_handleInflow(x, y, z, xlength, boundPara,
-                                        collideField, xyzoffset);
-                    }
+                    p_handleInflow(x, y, z, xlength, boundPara,
                 }
 
 
