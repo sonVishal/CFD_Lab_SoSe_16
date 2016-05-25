@@ -192,24 +192,28 @@ int valid_sorroundings(int x, int z, const int* const xlength, int **pgmMatrix){
     int down  = pgmMatrix[z][x-1];
     int is_valid = 1;
 
-    if( !(right && up)){                    // If right and up are FLUID
-        if(pgmMatrix[x+1][z+1] == 1) 		// If right corner is an OBSTACLE
+    if( !(right || up)){                    // If right and up are FLUID
+        if(pgmMatrix[z+1][x+1] == 1) { 		// If right corner is an OBSTACLE
             is_valid = 0;
+        }
     }
 
-    if( !(right && down)){                  // If right and down are FLUID
-        if(pgmMatrix[x-1][z+1] == 1) 		// If right corner is an OBSTACLE
+    if( !(right || down)){                  // If right and down are FLUID
+        if(pgmMatrix[z+1][x-1] == 1) { 		// If right corner is an OBSTACLE
             is_valid = 0;
+        }
     }
 
-    if( !(left && up)){                     // If left and up are FLUID
-        if(pgmMatrix[x+1][z-1] == 1)        // If right corner is an OBSTACLE
+    if( !(left || up)){                     // If left and up are FLUID
+        if(pgmMatrix[z-1][x+1] == 1) { 		// If left corner is an OBSTACLE
             is_valid = 0;
+        }
     }
 
-    if( !(left && down)){                   // If left and down are FLUID
-        if(pgmMatrix[x-1][z-1] == 1)        // If right corner is an OBSTACLE
+    if( !(left || down)){                   // If left and down are FLUID
+        if(pgmMatrix[z-1][x-1] == 1) { 		// If left corner is an OBSTACLE
             is_valid = 0;
+        }
     }
 
     return(is_valid);
