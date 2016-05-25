@@ -148,6 +148,55 @@ void writeVtkOutput(const double * const collideField,
     }
 }
 
+void writeVtkDebug(const double * const collideField,
+    const int * const flagField, const char * filename, int *xlength)
+{
+    // Files related variables
+    char pFileName[80];
+    FILE *fp = NULL;
+
+    // Create the file with time information in the name
+    sprintf(pFileName, "%s.vtk", filename);
+    fp  = fopen(pFileName, "w");
+
+    // Check if files were opened or not
+    if(fp == NULL)
+    {
+        char szBuff[80];
+        sprintf(szBuff, "Failed to open %s", pFileName);
+        ERROR(szBuff);
+        return;
+    }
+
+    // Write header for the VTK file
+    writevtkHeader(fp, xlength);
+
+    // Write the point data for the domain
+    writevtkPointCoordinatesDebug(fp, xlength);
+
+    int x, y, z;            // iteration variables
+
+    // Write cell average density to a temporary vtk file
+    fprintf(fp, "SCALARS density integer 1 \n");
+    fprintf(fp, "LOOKUP_TABLE default \n");
+    for(z = 0; z <= xlength[2]+1; z++) {
+        for(y = 0; y <= xlength[1]+1; y++) {
+            for(x = 0; x <= xlength[0]+1; x++) {
+                // Compute the base index for collideField
+                int xyzoffset = z*(xlength[0]+2)*(xlength[1]+2) + y*(xlength[0]+2) + x;
+                fprintf(fp, "%d\n", flagField[xyzoffset]);
+            }
+        }
+    }
+    // Close files
+    if(fclose(fp))
+    {
+        char szBuff[80];
+        sprintf(szBuff, "Failed to close %s", pFileName);
+        ERROR(szBuff);
+    }
+}
+
 // Header for the VTK files
 void writevtkHeader(FILE *fp, int *xlength)
 {
@@ -176,6 +225,19 @@ void writevtkPointCoordinates(FILE *fp, int *xlength) {
     for(z = 0; z <= xlength[2]; z++) {
         for(y = 0; y <= xlength[1]; y++) {
             for(x = 0; x <= xlength[0]; x++) {
+                fprintf(fp, "%d %d %d\n", x, y, z);
+            }
+        }
+    }
+}
+
+void writevtkPointCoordinatesDebug(FILE *fp, int *xlength) {
+    int x, y, z;
+
+    // We have xlength + 1 points for xlength cells in each direction
+    for(z = 0; z <= xlength[2]+2; z++) {
+        for(y = 0; y <= xlength[1]+2; y++) {
+            for(x = 0; x <= xlength[0]+2; x++) {
                 fprintf(fp, "%d %d %d\n", x, y, z);
             }
         }

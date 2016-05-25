@@ -7,8 +7,9 @@ MODE 		      		1
 #--------------------------------------------
 #          SIMULATION SETTINGS
 #--------------------------------------------
-# Reynolds Number	
-Re                    		10
+# Relaxation parameter OR Reynolds number (set the other to -1)
+tau                    	0.6
+Re			-1
 
 # Number of timesteps
 timesteps            		10000

@@ -41,35 +41,37 @@ void doCollision(double *collideField, int *flagField,const double * const tau, 
 				// Get the index of the first distribution
 				// in the current cell
 				idx = Q*(zOffset + yOffset + x);
-				double *currentCell = &collideField[idx];
+				if (flagField[zOffset + yOffset + x] == FLUID) {
+					double *currentCell = &collideField[idx];
 
-				// Allocate memory to local cell parameters
-				double density;
-				double velocity[3];
-				double feq[19];
+					// Allocate memory to local cell parameters
+					double density;
+					double velocity[3];
+					double feq[19];
 
-				// Compute the cell density
-				computeDensity(currentCell, &density);
+					// Compute the cell density
+					computeDensity(currentCell, &density);
 
 #ifndef NO_CHECKS
-				// We check if the density deviation is more than densityTol%
-				// This value can be changed in LBDefinitions.h
-				if(fabs(density-1) > densityTol){
-					char msg[120];
-					sprintf(msg, "A density value (%f) outside the given tolerance of %.2f %% was detected in cell: "
-							"x=%i, y=%i, z=%i", density, (densityTol*100), x, y, z);
-					ERROR(msg);
-				}
+					// We check if the density deviation is more than densityTol%
+					// This value can be changed in LBDefinitions.h
+					if(fabs(density-1) > densityTol){
+						char msg[120];
+						sprintf(msg, "A density value (%f) outside the given tolerance of %.2f %% was detected in cell: "
+								"x=%i, y=%i, z=%i", density, (densityTol*100), x, y, z);
+						ERROR(msg);
+					}
 #endif
 
-				// Compute the cell velocity
-				computeVelocity(currentCell, &density, velocity);
+					// Compute the cell velocity
+					computeVelocity(currentCell, &density, velocity);
 
-				// Compute the equilibrium distributions
-				computeFeq(&density,velocity,feq);
+					// Compute the equilibrium distributions
+					computeFeq(&density,velocity,feq);
 
-				// Compute the post collision distributions
-				computePostCollisionDistributions(currentCell,tau,feq);
+					// Compute the post collision distributions
+					computePostCollisionDistributions(currentCell,tau,feq);
+				}
 			}
 		}
 	}
