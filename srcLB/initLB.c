@@ -440,7 +440,6 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + (xlength[1]+1)*xlen2;
     	for(x = start; x < xlen2+end; ++x){
-    		flagField[offset1 + x] = type; // y = 0
     		flagField[offset2 + x] = type; // y = xlength[1]+1
     	}
     }
@@ -453,7 +452,6 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		offset2 = offset1 + (xlength[2]+1)*xlen2*ylen2;
     	for(x = start; x < xlen2+end; ++x){
     		flagField[offset1 + x] = type; // z = 0
-    		flagField[offset2 + x] = type; // z = xlength[2]+1
     	}
     }
 
@@ -464,7 +462,6 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		offset1 = y*xlen2;
 		offset2 = offset1 + (xlength[2]+1)*xlen2*ylen2;
     	for(x = start; x < xlen2+end; ++x){
-    		flagField[offset1 + x] = type; // z = 0
     		flagField[offset2 + x] = type; // z = xlength[2]+1
     	}
     }
@@ -477,7 +474,6 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		offset2 = offset1 + xlength[0] + 1;
     	for(y = start; y < ylen2+end; ++y){
 			flagField[offset1 + y*xlen2] = type; // x = 0
-    		flagField[offset2 + y*xlen2] = type; // x = xlength[0]+1
     	}
     }
 
@@ -488,12 +484,9 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + xlength[0] + 1;
     	for(y = start; y < ylen2+end; ++y){
-			flagField[offset1 + y*xlen2] = type; // x = 0
     		flagField[offset2 + y*xlen2] = type; // x = xlength[0]+1
     	}
     }
-
-
 
     //NOTE: only domain (ghost layer were set previously)//
     for(z = 1; z <= xlength[2]; ++z){
