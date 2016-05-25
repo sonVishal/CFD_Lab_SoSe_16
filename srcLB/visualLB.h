@@ -17,5 +17,6 @@ void writevtkPointCoordinates(FILE *fp, int *xlength);
 void writevtkPointCoordinatesDebug(FILE *fp, int *xlength);
 
 void writevtkHeader(FILE *fp, int *xlength);
+void writevtkHeaderDebug(FILE *fp, int *xlength);
 
 #endif
