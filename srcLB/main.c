@@ -60,11 +60,13 @@ int main(int argc, char *argv[]){
     collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
     streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
     flagField     = (int *)  malloc(totalsize * sizeof( int ));
-    memset(flagField, -1, totalsize); //set default value to -1 (invalid) for security
 
     if(! collideField || !streamField || ! flagField ){
     	ERROR("Storage cannot be allocated");
     }
+
+    memset(flagField, -1, totalsize* sizeof(int)); //set default value to -1 (invalid) for security
+
 
     // Initialize all the fields
     initialiseFields(collideField, streamField, flagField, xlength, boundPara, problem);
