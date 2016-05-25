@@ -525,6 +525,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		}
     }
 
+    //TODO: (TKS) remove when finished testing
     //print_flagfield_slice(flagField, xlength);
 
     /*Setting initial distributions, LATTICEWEIGHTS and INFLOW conditions */
