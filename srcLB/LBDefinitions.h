@@ -62,7 +62,7 @@ enum E_BOUNDARIES{
 
 typedef struct {
 	int type;
-
+	int idxStartEnd[2];
     // Three first indecies hold the velocities in each direction and the fourth the magnitude
 	double wallVelocity[3];
     double rhoRef;
