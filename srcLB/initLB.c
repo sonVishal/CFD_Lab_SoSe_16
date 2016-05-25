@@ -413,46 +413,87 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 	int const zlen2		= xlength[2]+2;
 	int offset1, offset2;
 
-    int type1, type2;
+    int type;
+    int start, end;
 
-    /* TODO: (DL) How to deal with overlapping cells? There are cells at edges and corners that
-     * are included twice. The final value these cells is determined by the last loop that
-     * contains these cells.
+    /* TODO: (DL) there are 6x2 nested for loops now, to make it nicer
+     * make a function and set the variables in the parameters.
+     *
+     * Problem is the different index computation in each type of wall -> use function pointer?
      */
-
     //Do the domain enclosing boundaries (ghost layers) first and set type accordingly.
-    type1 = boundPara[XZ_FRONT].type;
-    type2 = boundPara[XZ_BACK].type;
-    for(z = 0; z < zlen2; ++z){
+    type = boundPara[XZ_BACK].type;
+    start = boundPara[XZ_BACK].idxStartEnd[0];
+    end = boundPara[XZ_BACK].idxStartEnd[1];
+    for(z = start; z < zlen2+end; ++z){
 		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + (xlength[1]+1)*xlen2;
-    	for(x = 0; x < xlen2; ++x){
-    		flagField[offset1 + x] = type1; // y = 0
-    		flagField[offset2 + x] = type2; // y = xlength[1]+1
+    	for(x = start; x < xlen2+end; ++x){
+    		flagField[offset1 + x] = type; // y = 0
     	}
     }
 
-    type1 = boundPara[XY_LEFT].type;
-    type2 = boundPara[XY_RIGHT].type;
-    for(y = 0; y < ylen2; ++y){
+    type = boundPara[XZ_FRONT].type;
+    start = boundPara[XZ_FRONT].idxStartEnd[0];
+    end = boundPara[XZ_FRONT].idxStartEnd[1];
+    for(z = start; z < zlen2+end; ++z){
+		offset1 = z*xlen2*ylen2;
+		offset2 = offset1 + (xlength[1]+1)*xlen2;
+    	for(x = start; x < xlen2+end; ++x){
+    		flagField[offset1 + x] = type; // y = 0
+    		flagField[offset2 + x] = type; // y = xlength[1]+1
+    	}
+    }
+
+    type = boundPara[XY_LEFT].type;
+    start = boundPara[XY_LEFT].idxStartEnd[0];
+    end = boundPara[XY_LEFT].idxStartEnd[1];
+    for(y = start; y < ylen2+end; ++y){
 		offset1 = y*xlen2;
 		offset2 = offset1 + (xlength[2]+1)*xlen2*ylen2;
-    	for(x = 0; x < xlen2; ++x){
-    		flagField[offset1 + x] = type1; // z = 0
-    		flagField[offset2 + x] = type2; // z = xlength[2]+1
+    	for(x = start; x < xlen2+end; ++x){
+    		flagField[offset1 + x] = type; // z = 0
+    		flagField[offset2 + x] = type; // z = xlength[2]+1
     	}
     }
 
-    type1 = boundPara[YZ_BOTTOM].type;
-    type2 = boundPara[YZ_TOP].type;
-    for(z = 0; z < zlen2; ++z){
-		offset1 = z*xlen2*ylen2;
-		offset2 = offset1 + xlength[0] + 1;
-    	for(y = 0; y < ylen2; ++y){
-			flagField[offset1 + y*xlen2] = type1; // x = 0
-    		flagField[offset2 + y*xlen2] = type2; // x = xlength[0]+1
+    type = boundPara[XY_RIGHT].type;
+    start = boundPara[XY_RIGHT].idxStartEnd[0];
+    end = boundPara[XY_RIGHT].idxStartEnd[1];
+    for(y = start; y < ylen2+end; ++y){
+		offset1 = y*xlen2;
+		offset2 = offset1 + (xlength[2]+1)*xlen2*ylen2;
+    	for(x = start; x < xlen2+end; ++x){
+    		flagField[offset1 + x] = type; // z = 0
+    		flagField[offset2 + x] = type; // z = xlength[2]+1
     	}
     }
+
+    type = boundPara[YZ_BOTTOM].type;
+    start = boundPara[YZ_BOTTOM].idxStartEnd[0];
+    end = boundPara[YZ_BOTTOM].idxStartEnd[1];
+    for(z = start; z < zlen2+end; ++z){
+		offset1 = z*xlen2*ylen2;
+		offset2 = offset1 + xlength[0] + 1;
+    	for(y = start; y < ylen2+end; ++y){
+			flagField[offset1 + y*xlen2] = type; // x = 0
+    		flagField[offset2 + y*xlen2] = type; // x = xlength[0]+1
+    	}
+    }
+
+    type = boundPara[YZ_TOP].type;
+    start = boundPara[YZ_TOP].idxStartEnd[0];
+    end = boundPara[YZ_TOP].idxStartEnd[1];
+    for(z = start; z < zlen2+end; ++z){
+		offset1 = z*xlen2*ylen2;
+		offset2 = offset1 + xlength[0] + 1;
+    	for(y = start; y < ylen2+end; ++y){
+			flagField[offset1 + y*xlen2] = type; // x = 0
+    		flagField[offset2 + y*xlen2] = type; // x = xlength[0]+1
+    	}
+    }
+
+
 
     //NOTE: only domain (ghost layer were set previously)//
     for(z = 1; z <= xlength[2]; ++z){
