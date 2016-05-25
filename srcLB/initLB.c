@@ -446,10 +446,10 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
                  */
 
                 /*Setting inflow condition once and for all*/
-                if(flagField[idx] == INFLOW){
+                if(flagField[xyzoffset] == INFLOW){
                     for (int i = 0; i < Q; ++i) {
                         p_handleInflow( x,  y,  z,  xlength, boundPara, 
-                                        collideField, idx);
+                                        collideField, xyzoffset);
                     }
                 }
 
