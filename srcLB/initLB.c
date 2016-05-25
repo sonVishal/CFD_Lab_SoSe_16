@@ -38,17 +38,18 @@ looks nice ;-)
 By these settings the examples make more sense!
  */
 
-int p_verifyValidWallSetting(t_boundPara *boundPara){
+void p_verifyValidWallSetting(t_boundPara *boundPara){
 
-    int num_inflow  = 0;
+    int num_inflow    = 0;
+    int num_free_slip = 0;
 
     // If an INFLOW is present, there must be an OUTFLOW and it has to be on
     // the wall oppopsite to the INFLOW.
-    // We hance also only allow for one inflow on the boundary.
+    // We hence also only allow for one inflow on the boundary.
 
     for (int i = XY_LEFT; i <= XZ_BACK; i=i+2) {
-        if(boundPara[i+1].type == INFLOW){
-            if(boundPara[i].type != OUTFLOW){
+        if(boundPara[i].type == INFLOW){
+            if(boundPara[i+1].type != OUTFLOW){
                 ERROR("OUTFLOW is not opposite INFLOW");
             }
             num_inflow++;
@@ -60,13 +61,26 @@ int p_verifyValidWallSetting(t_boundPara *boundPara){
             }
             num_inflow++;
         }
+
+        if(boundPara[i].type == FREE_SLIP){
+            num_free_slip++;
+            if (num_free_slip == 2 && (boundPara[i+1].type != FREE_SLIP)) {
+                    ERROR("FREE_SLIP walls is not opposites");
+            }
+        }
+        if(boundPara[i+1].type == FREE_SLIP){
+            num_free_slip++;
+            if (num_free_slip == 2 && (boundPara[i-1].type != FREE_SLIP)) {
+                    ERROR("FREE_SLIP walls is not opposites");
+            }
+        }
     }
 
-    if (num_inflow > 1) {
+    if (num_inflow > 1)
         ERROR("Too many inflows");
-    }
 
-	return 0;
+    if(num_free_slip > 3)
+        ERROR("Too many free-slip walls");
 }
 
 
