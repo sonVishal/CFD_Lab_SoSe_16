@@ -71,34 +71,15 @@ int main(int argc, char *argv[]){
     // Initialize all the fields
     initialiseFields(collideField, streamField, flagField, xlength, boundPara, problem);
 
-    //TODO: (DL) DELETE RETURN VALUE WHEN FINISHED THE INITIALIZATION FOR WS3
-
     printf("\nINFO: Storing cell data in VTK files.\n      Please use the"
     " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
 
     // Write the VTK at t = 0
     printf("INFO: write vtk file at time t = %d \n", t);
 
-    //debugging: print cells that have negative density
-    for(int z = 0; z < xlength[2]+2; ++z){
-    	for(int y = 0; y < xlength[1]+2; ++y){
-    		for(int x = 0; x < xlength[0]+2; ++x){
-    			int idx = Q*(z*((xlength[0]+2)*(xlength[1]+2)) + y*(xlength[0]+2) + x);
-    			double density =0;
-    			computeDensity(&streamField[idx], &density);
-
-    			if(density < 0){
-    				printf("density= %f \n", density);
-    			}
-    		}
-    	}
-    }
-
-
-
     writeVtkOutput(collideField,flagField,fName,t,xlength);
 
-    return 1;
+    ERROR("STOPPER -- remove when proceeding with implementation\n");
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
