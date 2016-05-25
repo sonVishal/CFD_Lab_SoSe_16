@@ -1,8 +1,8 @@
 #--------------------------------------------
 #              SHEAR FLOW
 #--------------------------------------------
-# 0 = SHEAR_FLOW,  1 = STEP_FLOW,  2 = ARBITRARY  3 = CAVITYY
-MODE 		      		0
+# 0 = SHEAR_FLOW,  1 = STEP_FLOW,  2 = ARBITRARY  3 = CAVITY
+MODE 		      		3
 
 
 #--------------------------------------------
@@ -10,8 +10,9 @@ MODE 		      		0
 #--------------------------------------------
 
 # Relaxation parameter OR Reynolds number (set the other to -1)
+# NOTE: here in CAVITY the Reynolds number is used to compute the tau (as in Worksheet 2)  
 tau                    	-1
-Re			100
+Re			100  
 
 # Number of timesteps
 timesteps            		2000

@@ -9,6 +9,26 @@ void p_verifyValidWallSetting(t_boundPara *boundPara){
 
 	//If there is a MOVING wall present we only support the cavity scenario, i.e. there should
 	//be only one MOVING wall and 5 NO_SLIP walls.
+	int foundMovWall = 0;
+	int foundNoSlipWall = 0;
+	for(int b=XY_LEFT; b <= XY_LEFT; ++b){
+		if(boundPara->type == MOVING){
+			foundMovWall++;
+		}
+		if(boundPara->type == NO_SLIP){
+			foundNoSlipWall++;
+		}
+	}
+
+	if(foundMovWall > 1 || (foundMovWall == 1 && foundNoSlipWall != 5)){
+		char msg[150];
+		snprintf(msg, 150, "When a wall is set to MOVING we only support the CAVITY scenario. That is "
+				"one MOVING wall and 5 NO_SLIP walls.");
+		ERROR(msg);
+	}else if(foundMovWall == 1 && foundNoSlipWall == 5){
+		return; //no need for the other checking because only MOVING and NO_SLIP walls present
+	}//else continue with the other checking...
+
 
     int num_inflow    = 0;
     int num_free_slip = 0;
@@ -16,7 +36,7 @@ void p_verifyValidWallSetting(t_boundPara *boundPara){
     // If an INFLOW is present, there must be an OUTFLOW and it has to be on
     // the wall opposite to the INFLOW boundary.
     // We hence also only allow for one inflow in the system.
-    for (int i = XY_LEFT; i <= XZ_BACK; i=i+2) {
+    for(int i = XY_LEFT; i <= XZ_BACK; i=i+2) {
         if(boundPara[i].type == INFLOW){
             if(boundPara[i+1].type != OUTFLOW){
                 ERROR("OUTFLOW is not opposite INFLOW");
@@ -52,8 +72,6 @@ void p_verifyValidWallSetting(t_boundPara *boundPara){
         ERROR("Too many free-slip walls");
 }
 
-
-
 void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	int type;
 	double x_velocity, y_velocity, z_velocity;
@@ -74,7 +92,6 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	boundPara->wallVelocity[2] = z_velocity;
 	boundPara->rhoRef = rhoRef;
 	boundPara->rhoIn = rhoIn;
-
 
 	/* TODO: (DL) after testing this can be much simplified (only in two ifs), but for testing
 	 * this version is a bit more handy...
@@ -283,7 +300,6 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     	snprintf(msg, 40, "SETTING-MODE=%i is invalid! \n", MODE);
     	ERROR(msg);
     }
-
     READ_DOUBLE(*argv, Re, 0);
     READ_DOUBLE(*argv, *tau, 0);
 
@@ -291,9 +307,22 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     	ERROR("Invalid setting: only provide tau OR Re. Set the other (not used) value to -1.");
     }
 
-    if(Re != -1){ //Cavity case
-    	//TODO: (DL) case not yet handled... we need a moving wall and the veloctiy of that wall
-//    	*tau = u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
+    if(Re != -1){
+    	for(int b=XY_LEFT; b <= XY_LEFT; ++b){
+    		if(boundPara->type == MOVING){
+    			double u_wall = sqrt(boundPara->wallVelocity[0]*boundPara->wallVelocity[0]
+					+ boundPara->wallVelocity[1]*boundPara->wallVelocity[1]+
+					boundPara->wallVelocity[2]*boundPara->wallVelocity[2]);
+    			*tau = u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
+    			break; //CAVITY case, in case there are multiple MOVING walls an error is thrown in vality check
+    		}
+    	}
+    }
+
+    if(*tau<=0.5 || *tau>2){
+    	char msg[80];
+    	snprintf(msg, 80, "Tau (value=%f) is out of stability region (0.5,2.0). ! \n", *tau);
+    	ERROR(msg);
     }
 
     READ_INT(*argv, *timesteps, 0);
@@ -341,9 +370,7 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 //    	ERROR("Wall speed is supersonic (aborting)! \n");
 //    }
 //
-//    if(*tau<=0.5 || *tau>2){
-//        ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
-//    }
+
 //
 //    /*We allow user defined mach number tolerance for Ma << 1 (default = 0.1)
 //      To change please look at LBDefinitions.h*/
