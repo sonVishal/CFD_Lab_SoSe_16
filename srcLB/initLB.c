@@ -5,84 +5,23 @@
 #include "computeCellValues.h"
 #include <stdio.h>
 
-// Function for setting the inflow once and for all
-void p_handleInflow(int x, int y, int z, int *xlength, t_boundPara *boundPara,
-                     double *collideField, const int currentCellIndex){
-	int i, flag;
-	double feq[19];
-	if(x == 0)
-		flag = YZ_BOTTOM;
-	else if(x == xlength[0]+1)
-		flag = YZ_TOP;
-	else if(y == 0)
-		flag = XZ_BACK;
-	else if(y == xlength[1]+1)
-		flag = XZ_FRONT;
-	else if(z == 0)
-		flag = XY_LEFT;
-	else if(z == xlength[2]+1)
-		flag = XY_RIGHT;
-	else{
-		flag = -1;
-		ERROR("Inflow not a boundary (Aborting)");
-	}
-	if (flag != -1) {
-		computeFeq(&boundPara[flag].rhoRef, boundPara[flag].wallVelocity,feq);
-		for(i = 0; i < Q; i++){
-			for(int i = 0; i < Q; i++){
-				collideField[currentCellIndex + i] = feq[i];
-			}
-		}
-	}
- }
-
-/*
-TODO: (DL) SUGGESTION FOR INDEXING
-A "standard" scenario is that the pipe goes from left to right. So the inflow should really only happen where there is no boundary starting.
-
-This would be a bad setting (in 2D): I - inflow, F - fluid, B -boundary
-
-I F F
-I F F
-I B B
-
-In the examples the YZ plane is set to no-slip - meaning a propper boundary - so it should cover the entire plane
-By that we can reconstruct our cavity also in the same way we had in the last WS because we need the top all MOVING.
-
-The other question is how we set the overlapping cells of the XZ plane (in the examples often free-slip)
-
-I guess the same argument holds:
-
-S-Free slip
-I F F
-I F F
-I S S
-
-this looks kind of bad and I have the feeling this could cause troubles...
-
-So vote that the XZ plane should get the cells that overlap with the XY plane.
-By that the (normally) inflow cells are only streaming directly towards fluid cells (and not diagonal from an edge)
-
-And I think the more important thing is, that our examples look nice, and not that _every_ possibility
-looks nice ;-)
-
-By these settings the examples make more sense!
- */
-
 void p_verifyValidWallSetting(t_boundPara *boundPara){
+
+	//If there is a MOVING wall present we only support the cavity scenario, i.e. there should
+	//be only one MOVING wall and 5 NO_SLIP walls.
+
+	for(int b=)
+
+
+
+
 
     int num_inflow    = 0;
     int num_free_slip = 0;
 
     // If an INFLOW is present, there must be an OUTFLOW and it has to be on
-    // the wall oppopsite to the INFLOW.
-    // We hence also only allow for one inflow on the boundary.
-
-    /* TODO: (DL) we also need a check for the MOVING wall. I suggest there should
-     * be only one - the rest should be NO_Slip. In that way we support the CAVITY
-     * scenario, but have not too many other combinations to check.
-     */
-
+    // the wall opposite to the INFLOW boundary.
+    // We hence also only allow for one inflow in the system.
     for (int i = XY_LEFT; i <= XZ_BACK; i=i+2) {
         if(boundPara[i].type == INFLOW){
             if(boundPara[i+1].type != OUTFLOW){
@@ -577,8 +516,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
                 }
                 else{
                     /*Setting inflow condition once and for all*/
-                    p_handleInflow(x, y, z, xlength, boundPara,
-                        collideField,xyzoffset);
+//                    p_handleInflow(x, y, z, xlength, boundPara,
+//                        collideField,xyzoffset);
                 }
             }
         }
