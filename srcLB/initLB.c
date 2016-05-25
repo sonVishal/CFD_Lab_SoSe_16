@@ -123,22 +123,22 @@ int valid_sorroundings(int x, int z, const int* const xlength, int **pgmMatrix){
     int is_valid = 1;
 
     if( !(right && up)){                    // If right and up are FLUID
-        if(pgmMatrix[x+1][z+1] == 1) 		// If right corner are an OBSTACLE
+        if(pgmMatrix[x+1][z+1] == 1) 		// If right corner is an OBSTACLE
             is_valid = 0;
     }
 
     if( !(right && down)){                  // If right and down are FLUID
-        if(pgmMatrix[x-1][z+1] == 1) 		// If right corner are an OBSTACLE
+        if(pgmMatrix[x-1][z+1] == 1) 		// If right corner is an OBSTACLE
             is_valid = 0;
     }
 
     if( !(left && up)){                     // If left and up are FLUID
-        if(pgmMatrix[x+1][z-1] == 1) // If right corner are an OBSTACLE
+        if(pgmMatrix[x+1][z-1] == 1)        // If right corner is an OBSTACLE
             is_valid = 0;
     }
 
     if( !(left && down)){                   // If left and down are FLUID
-        if(pgmMatrix[x-1][z-1] == 1) // If right corner are an OBSTACLE
+        if(pgmMatrix[x-1][z-1] == 1)        // If right corner is an OBSTACLE
             is_valid = 0;
     }
 
@@ -227,8 +227,10 @@ void p_generatePgmDomain(char *argv[], const int * const xlength, const int MODE
 		READ_INT(*argv, x_direction,0);
 
 		if(z_direction > xlength[2] || x_direction > xlength[0]){
-			//TODO: (DL) make error msg with values..
-			ERROR("The step cannot be bigger than the domain.");
+            char* str = "";
+            sprintf(str, "Domain size = (%d,%d), step size = (%d,%d). Step size cannot be bigger than the domain.",
+                          xlength[0], xlength[2],x_direction,z_direction);
+			ERROR(str);
 		}
 
 		init_imatrix(pgmMatrix, 1, z_direction, 1, x_direction, 1);
