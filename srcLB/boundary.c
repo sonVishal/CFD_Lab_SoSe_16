@@ -365,7 +365,7 @@ void treatBoundary(double *collideField, const int * const flagField,
 
 	// iteration variables
 	int x, y, z;
-	int flagIndex;
+	int flagIndex, wallType;
 	int points[3];
 	int const xlen2[3] = {xlength[0]+2,xlength[1]+2,xlength[1]+2};
     int const gridSize  = xlen2[2]*xlen2[1]*xlen2[0];
@@ -380,13 +380,14 @@ void treatBoundary(double *collideField, const int * const flagField,
 		for (y = 0; y < xlen2[1]; y++) {
 			for (x = 0; x < xlen2[0]; x++) {
 				p_computeIndexXYZ(x,y,z,xlength,&flagIndex);
-				if (flagField[flagIndex] != FLUID && flagField[flagIndex] != -1) {
+				wallType = wallType;
+				if (wallType != FLUID && wallType != -1) {
 					points[0] = x;
 					points[1] = y;
 					points[2] = z;
-					fcnPtr = p_selectFunction(flagField[flagIndex]);
+					fcnPtr = p_selectFunction(wallType);
 					(*fcnPtr)(collideField, flagField, points, xlength,
-						&boundPara[YZ_BOTTOM], &totalSize, &gridSize);
+						&boundPara[wallType], &totalSize, &gridSize);
 				}
 			}
 		}
