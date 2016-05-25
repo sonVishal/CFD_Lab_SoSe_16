@@ -430,28 +430,25 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
                 idx = Q*xyzoffset;
 
                 //Set initial condition
-                for (int i = 0; i < Q; ++i) {
-                    collideField[idx+i] = LATTICEWEIGHTS[i];
-                    streamField[idx+i]  = LATTICEWEIGHTS[i];
-                }
-
-                /* TODO: (DL) not sure if that was supposed to be like this?
-                 * But can the below if-statement decide which one of the two
-                 * loops to execute. At the moment it seems it first gets set to
-                 * LATTICEWEIGHTS and then to inflow condition (if it's an INFLOW).
-                 */
-
-                /* TODO: (DL) if we do not need p_handleInflow in boundary.c at all,
-                 * we can also think to get it here.
-                 */
-
-                /*Setting inflow condition once and for all*/
                 if(flagField[xyzoffset] == INFLOW){
+                    for (int i = 0; i < Q; ++i) {
+                        collideField[idx+i] = LATTICEWEIGHTS[i];
+                        streamField[idx+i]  = LATTICEWEIGHTS[i];
+                    }
+
+                    /*Setting inflow condition once and for all*/
+                    // TODO: (TKS) Make sure here that the inflow is only on the inner of the side?
                     for (int i = 0; i < Q; ++i) {
                         p_handleInflow( x,  y,  z,  xlength, boundPara, 
                                         collideField, xyzoffset);
                     }
                 }
+
+
+                /* TODO: (DL) if we do not need p_handleInflow in boundary.c at all,
+                 * we can also think to get it here.
+                 */
+
 
             }
         }
