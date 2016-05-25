@@ -392,8 +392,11 @@ void treatBoundary(double *collideField, const int * const flagField,
 				points[0] = xlength[0]+1;
 				points[1] = y;
 				points[2] = z;
-				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_TOP],
-					normal, &totalSize, &gridSize);
+				p_computeIndex(points, xlength, &testIndex);
+				if (flagField[testIndex == wallType]) {
+					(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_TOP],
+						normal, &totalSize, &gridSize);
+				}
 			}
 		}
 	}
@@ -412,8 +415,11 @@ void treatBoundary(double *collideField, const int * const flagField,
 				points[0] = x;
 				points[1] = 0;
 				points[2] = z;
-				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XZ_BACK],
-					normal, &totalSize, &gridSize);
+				p_computeIndex(points, xlength, &testIndex);
+				if (flagField[testIndex == wallType]) {
+					(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_TOP],
+						normal, &totalSize, &gridSize);
+				}
 			}
 		}
 	}
@@ -432,8 +438,11 @@ void treatBoundary(double *collideField, const int * const flagField,
 				points[0] = x;
 				points[1] = xlength[1]+1;
 				points[2] = z;
-				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XZ_FRONT],
-					normal, &totalSize, &gridSize);
+				p_computeIndex(points, xlength, &testIndex);
+				if (flagField[testIndex == wallType]) {
+					(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_TOP],
+						normal, &totalSize, &gridSize);
+				}
 			}
 		}
 	}
@@ -453,8 +462,11 @@ void treatBoundary(double *collideField, const int * const flagField,
 				points[0] = x;
 				points[1] = y;
 				points[2] = 0;
-				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XY_LEFT],
-					normal, &totalSize, &gridSize);
+				p_computeIndex(points, xlength, &testIndex);
+				if (flagField[testIndex == wallType]) {
+					(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_TOP],
+						normal, &totalSize, &gridSize);
+				}
 			}
 		}
 	}
@@ -473,8 +485,11 @@ void treatBoundary(double *collideField, const int * const flagField,
 				points[0] = x;
 				points[1] = y;
 				points[2] = xlength[2]+1;
-				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XY_RIGHT],
-					normal, &totalSize, &gridSize);
+				p_computeIndex(points, xlength, &testIndex);
+				if (flagField[testIndex == wallType]) {
+					(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_TOP],
+						normal, &totalSize, &gridSize);
+				}
 			}
 		}
 	}
