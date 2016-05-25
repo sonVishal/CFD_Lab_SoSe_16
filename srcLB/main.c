@@ -78,6 +78,24 @@ int main(int argc, char *argv[]){
 
     // Write the VTK at t = 0
     printf("INFO: write vtk file at time t = %d \n", t);
+
+    //debugging: print cells that have negative density
+    for(int z = 0; z < xlength[2]+2; ++z){
+    	for(int y = 0; y < xlength[1]+2; ++y){
+    		for(int x = 0; x < xlength[0]+2; ++x){
+    			int idx = Q*(z*(xlength[0]*xlength[1]) + y*xlength[0] + x);
+    			double density =0;
+    			computeDensity(&streamField[idx], &density);
+
+    			if(density < 0){
+    				printf("density= %f \n", density);
+    			}
+    		}
+    	}
+    }
+
+
+
     writeVtkOutput(collideField,flagField,fName,t,xlength);
 
     return 1;
