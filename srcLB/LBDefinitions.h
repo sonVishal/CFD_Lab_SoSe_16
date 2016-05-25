@@ -64,7 +64,7 @@ typedef struct {
 	int type;
 
     // Three first indecies hold the velocities in each direction and the fourth the magnitude
-	double wallVelocity[3]; 	
+	double wallVelocity[3];
     double rhoRef;
 	double rhoIn;
 } t_boundPara;
@@ -76,5 +76,11 @@ enum SETTING_MODE{
     CAVITY,
 	NUM_MODES //used for inbound checks - if inserting a new mode, that just before this one!
 };
+
+// Typedef for the function pointer used in treating boundaries
+typedef void (*t_boundaryFcnPtr)(double*, int const * const, int const * const,
+                int const * const, const t_boundPara * const, int const * const,
+                int const * const);
+
 
 #endif
