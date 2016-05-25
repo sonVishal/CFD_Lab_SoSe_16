@@ -242,12 +242,11 @@ void p_outflow(double* collideField, int const * const flagField,
 	int i;
 	int nextPoint[3];
 	int nextFlagIndex, nextCellIndex, currentFlagIndex, currentCellIndex;
-	double feq[Q];
+	double density, feq[Q], nextPointVel[3];
 
 	p_computeIndex(point, xlength, &currentFlagIndex);
 	currentCellIndex = Q*currentFlagIndex;
 
-	computeFeq(&(boundPara->rhoRef), boundPara->wallVelocity, feq);
 
 	for (i = 0; i < Q; i++) {
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];
@@ -255,6 +254,10 @@ void p_outflow(double* collideField, int const * const flagField,
 		nextPoint[2] = point[2] + LATTICEVELOCITIES[i][2];
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
+
+		computeDensity(&collideField[nextCellIndex], &density);
+		computeVelocity(&collideField[nextCellIndex], &density, nextPointVel);
+		computeFeq(&(boundPara->rhoRef), nextPointVel, feq);
 
         if(nextFlagIndex >=0 && nextFlagIndex < *gridSize &&
            nextCellIndex >= 0 && nextCellIndex < *totalSize) {
