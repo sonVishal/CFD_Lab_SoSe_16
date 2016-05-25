@@ -10,7 +10,7 @@
 void p_noSlip(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const normal,
-	int const * const totalSize){
+	int const * const totalSize, int const * const gridSize){
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -24,6 +24,10 @@ void p_noSlip(double* collideField, int const * const flagField,
 		nextCellIndex = Q*nextFlagIndex;
 
         //TODO: (TKS) Need check for valid index in nextFlagIndex
+        //          * Change totalSize = totalSize/Q;
+        //          * Remove constness on totalsize (Need to multiply in Q)
+        //          * OR input gridSize into the function
+
 		if (flagField[nextFlagIndex] == FLUID &&
 			nextCellIndex >= 0 && nextCellIndex < *totalSize) {
 			collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)];
@@ -34,7 +38,7 @@ void p_noSlip(double* collideField, int const * const flagField,
 void p_movingWall(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const normal,
-	int const * const totalSize) {
+	int const * const totalSize, int const * const gridSize) {
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -199,7 +203,7 @@ void p_assignIndices(const int * const normal, int * index, int * mirrorIndex) {
 void p_freeSlip(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const normal,
-	int const * const totalSize) {
+	int const * const totalSize, int const * const gridSize) {
 	// Begin
 	int i;
 	int nextPoint[3] = {point[0]+normal[0],
@@ -227,7 +231,7 @@ void p_freeSlip(double* collideField, int const * const flagField,
 void p_outflow(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const normal,
-	int const * const totalSize) {
+	int const * const totalSize, int const * const gridSize) {
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -257,7 +261,7 @@ void p_outflow(double* collideField, int const * const flagField,
 void p_pressureIn(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const normal,
-	int const * const totalSize) {
+	int const * const totalSize, int const * const gridSize) {
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -318,7 +322,8 @@ void treatBoundary(double *collideField, const int * const flagField,
 	int wallType, testIndex;
 	int points[3], normal[3];
 	int const xlen2[3] = {xlength[0]+2,xlength[1]+2,xlength[1]+2};
-	int const totalSize = Q*xlen2[2]*xlen2[1]*xlen2[0];
+    int const gridSize  = xlen2[2]*xlen2[1]*xlen2[0];
+	int const totalSize = Q*gridSize;
 
 	t_boundaryFcnPtr fcnPtr = NULL;
 
@@ -343,7 +348,7 @@ void treatBoundary(double *collideField, const int * const flagField,
 				points[1] = y;
 				points[2] = z;
 				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_BOTTOM],
-					normal, &totalSize);
+					normal, &totalSize, &gridSize);
 			}
 		}
 	}
@@ -363,7 +368,7 @@ void treatBoundary(double *collideField, const int * const flagField,
 				points[1] = y;
 				points[2] = z;
 				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_TOP],
-					normal, &totalSize);
+					normal, &totalSize, &gridSize);
 			}
 		}
 	}
@@ -383,7 +388,7 @@ void treatBoundary(double *collideField, const int * const flagField,
 				points[1] = 0;
 				points[2] = z;
 				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XZ_BACK],
-					normal, &totalSize);
+					normal, &totalSize, &gridSize);
 			}
 		}
 	}
@@ -403,7 +408,7 @@ void treatBoundary(double *collideField, const int * const flagField,
 				points[1] = xlength[1]+1;
 				points[2] = z;
 				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XZ_FRONT],
-					normal, &totalSize);
+					normal, &totalSize, &gridSize);
 			}
 		}
 	}
@@ -424,7 +429,7 @@ void treatBoundary(double *collideField, const int * const flagField,
 				points[1] = y;
 				points[2] = 0;
 				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XY_LEFT],
-					normal, &totalSize);
+					normal, &totalSize, &gridSize);
 			}
 		}
 	}
@@ -444,7 +449,7 @@ void treatBoundary(double *collideField, const int * const flagField,
 				points[1] = y;
 				points[2] = xlength[2]+1;
 				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[XY_RIGHT],
-					normal, &totalSize);
+					normal, &totalSize, &gridSize);
 			}
 		}
 	}
@@ -460,7 +465,7 @@ void treatBoundary(double *collideField, const int * const flagField,
 				points[1] = y;
 				points[2] = z;
 				p_noSlip(collideField, flagField, points, xlength, boundPara,
-					normal, &totalSize);
+					normal, &totalSize, &gridSize);
 			}
 		}
 	}
