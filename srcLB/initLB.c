@@ -340,6 +340,17 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     }
 
     READ_DOUBLE(*argv, Re, 0);
+    READ_DOUBLE(*argv, *tau, 0);
+
+    if((Re == -1 && *tau == -1) || (Re != -1 && *tau != -1)){
+    	ERROR("Invalid setting: only provide tau OR Re. Set the other (not used) value to -1.");
+    }
+
+    if(Re != -1){ //Cavity case
+    	//TODO: (DL) case not yet handled... we need a moving wall and the veloctiy of that wall
+//    	*tau = u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
+    }
+
     READ_INT(*argv, *timesteps, 0);
     READ_INT(*argv, *timestepsPerPlotting, 0);
 
