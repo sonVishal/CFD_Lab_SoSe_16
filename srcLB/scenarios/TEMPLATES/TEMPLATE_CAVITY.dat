@@ -67,7 +67,7 @@ z_length	     	40
 # XY wall left
 type 			1
 x_velocity 		0.0
-y_velocity 		1.0
+y_velocity 		0.0
 z_velocity 		0.0
 rhoRef 			-1.0
 rhoIn 			-1.0
