@@ -506,7 +506,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     for(z = 1; z <= xlength[2]; ++z){
 		offset1 = z*xlen2*ylen2;
     	for (y = 1; y <= xlength[1]; ++y) {
-			offset2 = offset1 + y*ylen2;
+			offset2 = offset1 + y*xlen2;
 			for (x = 1; x <= xlength[0]; ++x) {
 				int xyzoffset = offset2 + x;
 				int type_domain = pgmMatrix[z][x];
