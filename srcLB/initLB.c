@@ -273,21 +273,6 @@ void p_generatePgmDomain(char *argv[], const int * const xlength, const int MODE
 
 }
 
-void p_adaptWallIndices(t_boundPara* boundPara) {
-	int i,j;
-	for (i = XY_LEFT; i <= XZ_BACK; i++) {
-		if (boundPara[i].type == MOVING) {
-			for (j = XY_LEFT; j <= XZ_BACK; j++) {
-				if (boundPara[j].type == NO_SLIP) {
-					boundPara[j].idxStartEnd[0] = 1;
-					boundPara[j].idxStartEnd[0] = 0;
-				}
-			}
-			break;
-		}
-	}
-}
-
 // TODO: (TKS) The printed statements from the helper function do no longer
 //             make sense after adding skip
 int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *timesteps,
@@ -342,8 +327,6 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     	p_readWall(argv, &boundPara[b], skip);
         skip++;
     }
-
-	p_adaptWallIndices(boundPara);
 
     p_verifyValidWallSetting(boundPara);
 
