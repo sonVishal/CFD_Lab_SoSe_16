@@ -4,9 +4,6 @@
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 
-// TODO: Bound checking for flag fields
-
-
 void p_noSlip(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const normal,
@@ -70,7 +67,6 @@ void p_movingWall(double* collideField, int const * const flagField,
 	}
 }
 
-// TODO: Maybe find a better way to search for the mirror index
 // It is difficult since the indices are ordered lexicographically
 // thereby destroying any kind of generalization
 
@@ -268,6 +264,22 @@ void p_outflow(double* collideField, int const * const flagField,
 	}
 }
 
+void p_inflow(double* collideField, int const * const flagField,
+	int const * const point, int const * const xlength,
+	const t_boundPara * const boundPara, int const * const normal,
+	int const * const totalSize, int const * const gridSize) {
+	// Begin
+	int i;
+	int currentFlagIndex, currentCellIndex;
+	double feq[Q];
+	p_computeIndex(point, xlength, &currentFlagIndex);
+	currentCellIndex = Q*currentFlagIndex;
+	computeFeq(&boundPara->rhoRef, boundPara->wallVelocity, feq);
+	for (i = 0; i < Q; i++) {
+		collideField[Q*currentCellIndex+i] = feq[i];
+	}
+}
+
 void p_pressureIn(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const normal,
@@ -314,12 +326,15 @@ t_boundaryFcnPtr p_selectFunction(const int wallType) {
 		case OUTFLOW:
 			// call outflow wall
 			return &p_outflow;
+		case INFLOW:
+			// call inflow wall
+			return &p_inflow;
 		case PRESSURE_IN:
 			// call pressure in wall
 			return &p_pressureIn;
 		default:
 			// TODO: remove this comment maybe
-			ERROR("**** FLUID/INFLOW cell encountered! ****");
+			ERROR("**** FLUID cell encountered! ****");
 			return NULL;
 	}
 }
@@ -339,7 +354,6 @@ void treatBoundary(double *collideField, const int * const flagField,
 	t_boundaryFcnPtr fcnPtr = NULL;
 
 	// TODO: (VS) Check if the test index is alright
-	// TODO: (VS) What to do about the common cells?
 	// As of now iterate over everything normally
 
 	// YZ_BOTTOM (x = 0)
