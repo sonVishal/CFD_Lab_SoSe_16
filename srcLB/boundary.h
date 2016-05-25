@@ -4,11 +4,38 @@
 #include "LBDefinitions.h"
 
 /* handles the boundaries in our simulation setup */
-void treatBoundary(double *collideField, int* flagField, const double * const wallVelocity,int *xlength);
+void treatBoundary(double *collideField, const int * const flagField,
+	const t_boundPara * const boundPara, const int * const xlength);
 
-/*sets inflow condition*/
-void p_handleInflow(int x, int y, int z, int *xlength, t_boundPara *boundPara,
-                    double *collideField, const int currentCellIndex);
+void p_noSlip(double* collideField, int const * const flagField,
+	int const * const point, int const * const xlength,
+	const t_boundPara * const boundPara, int const * const normal,
+	int const * const totalSize);
 
+void p_movingWall(double* collideField, int const * const flagField,
+	int const * const point, int const * const xlength,
+	const t_boundPara * const boundPara, int const * const normal,
+	int const * const totalSize);
+
+void p_freeSlip(double* collideField, int const * const flagField,
+	int const * const point, int const * const xlength,
+	const t_boundPara * const boundPara, int const * const normal,
+	int const * const totalSize);
+
+void p_inflow(double* collideField, int const * const flagField,
+	int const * const point, int const * const xlength,
+	const t_boundPara * const boundPara, int const * const normal,
+	int const * const totalSize);
+
+void p_outflow(double* collideField, int const * const flagField,
+	int const * const point, int const * const xlength,
+	const t_boundPara * const boundPara, int const * const normal,
+	int const * const totalSize);
+
+void p_pressureIn(double* collideField, int const * const flagField,
+	int const * const point, int const * const xlength,
+	const t_boundPara * const boundPara, int const * const normal,
+	int const * const totalSize);
+
+void p_assignIndices(const int * const normal, int * index, int * mirrorIndex);
 #endif
-
