@@ -78,6 +78,11 @@ void p_verifyValidWallSetting(t_boundPara *boundPara){
     // the wall oppopsite to the INFLOW.
     // We hence also only allow for one inflow on the boundary.
 
+    /* TODO: (DL) we also need a check for the MOVING wall. I suggest there should
+     * be only one - the rest should be NO_Slip. In that way we support the CAVITY
+     * scenario, but have not too many other combinations to check.
+     */
+
     for (int i = XY_LEFT; i <= XZ_BACK; i=i+2) {
         if(boundPara[i].type == INFLOW){
             if(boundPara[i+1].type != OUTFLOW){
