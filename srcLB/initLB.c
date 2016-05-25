@@ -38,15 +38,33 @@ looks nice ;-)
 By these settings the examples make more sense!
  */
 
-int p_verifyValidWallSetting(){
+int p_verifyValidWallSetting(t_boundPara *boundPara){
 
-	/* TODO: if there is INFLOW than there should be OUTFLOW present */
+    int num_inflow  = 0;
 
-	/* TODO: probably can combine these: */
-	/* > an INFLOW wall should not be adjacent to another INFLOW */
-	/* > an OUTFLOW wall should not be adjacent to another OUTFLOW */
-	/* > an OUTFLOW wall should not be adjacent to another INFLOW */
-	/* Simply-> only one INFLOW and one OUTFLOW is allowed! */
+    // If an INFLOW is present, there must be an OUTFLOW and it has to be on
+    // the wall oppopsite to the INFLOW.
+    // We hance also only allow for one inflow on the boundary.
+
+    for (int i = XY_LEFT; i <= XZ_BACK; i=i+2) {
+        if(boundPara[i+1].type == INFLOW){
+            if(boundPara[i].type != OUTFLOW){
+                ERROR("OUTFLOW is not opposite INFLOW");
+            }
+            num_inflow++;
+        }
+
+        if(boundPara[i].type == OUTFLOW){
+            if(boundPara[i+1].type != INFLOW){
+                ERROR("OUTFLOW is not opposite INFLOW");
+            }
+            num_inflow++;
+        }
+    }
+
+    if (num_inflow > 1) {
+        ERROR("Too many inflows");
+    }
 
 	return 0;
 }
@@ -264,6 +282,7 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     	p_readWall(argv, &boundPara[b], skip);
         skip++;
     }
+    p_verifyValidWallSetting(boundPara);
 
     p_generatePgmDomain(argv, xlength, MODE);
 
