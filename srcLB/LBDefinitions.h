@@ -86,16 +86,16 @@ typedef void (*t_boundaryFcnPtr)(double*, int const * const, int const * const,
 // Functions for calculating indecies
 inline static void p_computeIndex(const int * const point,
 	const int * const xlength, int *index) {
-	(*index) = point[0]*(xlength[0]+2)*((xlength[1]+2)+point[1]) + point[0];
+	(*index) = (xlength[0]+2)*((xlength[1]+2)*point[2]+point[1]) + point[0];
 }
 
 inline static void p_computeIndexXYZ(const int x, const int y, const int z,
 	const int * const xlength, int *index) {
-	(*index) = z*(xlength[0]+2)*((xlength[1]+2)+y) + x;
+	(*index) = (xlength[0]+2)*((xlength[1]+2)*z+y) + x;
 }
 
 inline static void p_computeIndexQ(const int * const point,
 	const int * const xlength, int *index) {
-	(*index) = Q*(point[0]*(xlength[0]+2)*((xlength[1]+2)+point[1]) + point[0]);
+	(*index) = Q*(xlength[0]+2)*((xlength[1]+2)*point[2]+point[1]) + point[0];
 }
 #endif
