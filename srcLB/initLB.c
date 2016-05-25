@@ -475,13 +475,6 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 //		 printf("\n");
 //	 }
 
-    /* TODO:(DL) somehow I get in the TEMPLATE/CAVITY case an error when freeing the matrix
-     * in scenario.dat it works -- check out.
-     *
-     * If I comment out the line init_imatrix where it is set to 0, the freeing works?!?!?
-     * If I set all the values before freein to 1 it still does not work.
-     * There is no out of bounds in the init_imatrix
-     */
 
     //Call at allocation
     //    pgmMatrix = imatrix(0, xlength[2]+1,0,xlength[0]+1);
