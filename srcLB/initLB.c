@@ -6,7 +6,6 @@
 
 
 /*
-
 TODO: (DL) SUGGESTION FOR INDEXING
 A "standard" scenario is that the pipe goes from left to right. So the inflow should really only happen where there is no boundary starting.
 
@@ -38,6 +37,20 @@ looks nice ;-)
 
 By these settings the examples make more sense!
  */
+
+int p_verifyValidWallSetting(){
+
+	/* TODO: if there is INFLOW than there should be OUTFLOW present */
+
+	/* TODO: probably can combine these: */
+	/* > an INFLOW wall should not be adjacent to another INFLOW */
+	/* > an OUTFLOW wall should not be adjacent to another OUTFLOW */
+	/* > an OUTFLOW wall should not be adjacent to another INFLOW */
+	/* Simply-> only one INFLOW and one OUTFLOW is allowed! */
+
+	return 0;
+}
+
 
 
 void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
@@ -224,9 +237,9 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
               // calling READ_<TYPE>.
 
     READ_INT(*argv, MODE, 0);
-    if(MODE < 0 || MODE > NUM_MODES ){
+    if(MODE < 0 || MODE >= NUM_MODES ){
     	char msg[40];
-    	snprintf(msg, 40, "SETTING-MODE=%i is not known! \n", MODE);
+    	snprintf(msg, 40, "SETTING-MODE=%i is invalid! \n", MODE);
     	ERROR(msg);
     }
 
