@@ -45,8 +45,8 @@ enum E_BOUND_TYPE{
 	FREE_SLIP,
 	INFLOW,
 	OUTFLOW,
-	OBSTACLE
 	PRESSURE_IN,
+	OBSTACLE
 };
 
 //This order of boundaries has to correspond to the order in the parameter file (.dat file)!!
