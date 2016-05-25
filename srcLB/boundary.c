@@ -6,8 +6,8 @@
 
 void p_noSlip(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const normal,
-	int const * const totalSize, int const * const gridSize){
+	const t_boundPara * const boundPara, int const * const totalSize,
+	int const * const gridSize){
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -36,8 +36,8 @@ void p_noSlip(double* collideField, int const * const flagField,
 
 void p_movingWall(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const normal,
-	int const * const totalSize, int const * const gridSize) {
+	const t_boundPara * const boundPara, int const * const totalSize,
+	int const * const gridSize) {
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -202,10 +202,27 @@ void p_assignIndices(const int * const normal, int * index, int * mirrorIndex) {
 
 void p_freeSlip(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const normal,
-	int const * const totalSize, int const * const gridSize) {
+	const t_boundPara * const boundPara, int const * const totalSize,
+	int const * const gridSize) {
 	// Begin
 	int i;
+	int normal[3] = {0,0,0};
+	// We know that only one component will be 0 or xlength+1 and the others
+	// will always be > 0 or < xlength+1 due to free slip being allowed only on
+	// inner cells of the boundary
+	if (point[0] == 0) {
+		normal[0] = 1;
+	} else if (point[0] == xlength[0]+1) {
+		normal[0] = -1;
+	} else if (point[1] == 0) {
+		normal[1] = 1;
+	} else if (point[1] == xlength[1]+1) {
+		normal[1] = -1;
+	} else if (point[2] == 0) {
+		normal[2] = 1;
+	} else if (point[2] == xlength[2]+1) {
+		normal[2] = -1;
+	}
 	int nextPoint[3] = {point[0]+normal[0],
 						point[1]+normal[1],
 						point[2]+normal[2]};
@@ -232,8 +249,8 @@ void p_freeSlip(double* collideField, int const * const flagField,
 
 void p_outflow(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const normal,
-	int const * const totalSize, int const * const gridSize) {
+	const t_boundPara * const boundPara, int const * const totalSize,
+	int const * const gridSize) {
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -266,8 +283,8 @@ void p_outflow(double* collideField, int const * const flagField,
 
 void p_inflow(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const normal,
-	int const * const totalSize, int const * const gridSize) {
+	const t_boundPara * const boundPara, int const * const totalSize,
+	int const * const gridSize) {
 	// Begin
 	int i;
 	int currentFlagIndex, currentCellIndex;
@@ -282,8 +299,8 @@ void p_inflow(double* collideField, int const * const flagField,
 
 void p_pressureIn(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const normal,
-	int const * const totalSize, int const * const gridSize) {
+	const t_boundPara * const boundPara, int const * const totalSize,
+	int const * const gridSize) {
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -332,6 +349,8 @@ t_boundaryFcnPtr p_selectFunction(const int wallType) {
 		case PRESSURE_IN:
 			// call pressure in wall
 			return &p_pressureIn;
+		case OBSTACLE:
+			return &p_noSlip;
 		default:
 			// TODO: remove this comment maybe
 			ERROR("**** FLUID cell encountered! ****");
@@ -346,168 +365,29 @@ void treatBoundary(double *collideField, const int * const flagField,
 
 	// iteration variables
 	int x, y, z;
-	int start, end;
-	int wallType, testIndex;
-	int points[3], normal[3];
+	int flagIndex;
+	int points[3];
 	int const xlen2[3] = {xlength[0]+2,xlength[1]+2,xlength[1]+2};
     int const gridSize  = xlen2[2]*xlen2[1]*xlen2[0];
 	int const totalSize = Q*gridSize;
 
 	t_boundaryFcnPtr fcnPtr = NULL;
 
-	// TODO: (VS) Check if the test index is alright
+	// TODO: (VS) Compute obstacle min and max to exclude some cells
 	// As of now iterate over everything normally
 
-	// YZ_BOTTOM (x = 0)
-	// Test index is (x,1,1) so as to exclude shared edges
-	testIndex	= xlen2[0]*(xlen2[1] + 1);
-	wallType	= boundPara[YZ_BOTTOM].type;
-	start 		= boundPara[YZ_BOTTOM].idxStartEnd[0];
-	end 		= boundPara[YZ_BOTTOM].idxStartEnd[1];
-	fcnPtr 		= p_selectFunction(wallType);
-	if (fcnPtr != NULL) {
-		normal[0]	= 1;
-		normal[1]	= 0;
-		normal[2]	= 0;
-		for (z = start; z <= xlength[2]+end; z++) {
-			for (y = start; y <= xlength[1] + end; y++) {
-				points[0] = 0;
-				points[1] = y;
-				points[2] = z;
-				(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_BOTTOM],
-					normal, &totalSize, &gridSize);
-			}
-		}
-	}
-
-	// YZ_TOP (x = xlength[0]+1)
-	// Test index is (x,1,1) so as to exclude shared edges
-	testIndex	+= xlength[0] + 1;
-	wallType	= boundPara[YZ_TOP].type;
-	start 		= boundPara[YZ_TOP].idxStartEnd[0];
-	end 		= boundPara[YZ_TOP].idxStartEnd[1];
-	fcnPtr 		= p_selectFunction(wallType);
-	if (fcnPtr != NULL) {
-		normal[0]	= -1;
-		for (z = start; z <= xlength[2]+end; z++) {
-			for (y = start; y <= xlength[1] + end; y++) {
-				points[0] = xlength[0]+1;
-				points[1] = y;
-				points[2] = z;
-				p_computeIndex(points, xlength, &testIndex);
-				if (flagField[testIndex == wallType]) {
-					(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_TOP],
-						normal, &totalSize, &gridSize);
+	for (z = 0; z < xlen2[2]; z++) {
+		for (y = 0; y < xlen2[1]; y++) {
+			for (x = 0; x < xlen2[0]; x++) {
+				p_computeIndexXYZ(x,y,z,xlength,&flagIndex);
+				if (flagField[flagIndex] != FLUID && flagField[flagIndex] != -1) {
+					points[0] = x;
+					points[1] = y;
+					points[2] = z;
+					fcnPtr = p_selectFunction(flagField[flagIndex]);
+					(*fcnPtr)(collideField, flagField, points, xlength,
+						&boundPara[YZ_BOTTOM], &totalSize, &gridSize);
 				}
-			}
-		}
-	}
-	// XZ_BACK (y = 0)
-	// Test index is (1,y,1) so as to exclude shared edges
-	testIndex	= xlen2[0]*xlen2[1] + 1;
-	wallType	= boundPara[XZ_BACK].type;
-	start 		= boundPara[XZ_BACK].idxStartEnd[0];
-	end 		= boundPara[XZ_BACK].idxStartEnd[1];
-	fcnPtr 		= p_selectFunction(wallType);
-	if (fcnPtr != NULL) {
-		normal[0]	= 0;
-		normal[1]	= 1;
-		for (z = start; z <= xlength[2] + end; z++) {
-			for (x = start; x <= xlength[0] + end; x++) {
-				points[0] = x;
-				points[1] = 0;
-				points[2] = z;
-				p_computeIndex(points, xlength, &testIndex);
-				if (flagField[testIndex == wallType]) {
-					(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_TOP],
-						normal, &totalSize, &gridSize);
-				}
-			}
-		}
-	}
-
-	// XZ_FRONT (y = xlength[1]+1)
-	// Test index is (1,y,1) so as to exclude shared edges
-	testIndex	+= (xlength[1]+1)*xlen2[0];
-	wallType	= boundPara[XZ_FRONT].type;
-	start 		= boundPara[XZ_FRONT].idxStartEnd[0];
-	end 		= boundPara[XZ_FRONT].idxStartEnd[1];
-	fcnPtr 		= p_selectFunction(wallType);
-	if (fcnPtr != NULL) {
-		normal[1]	= -1;
-		for (z = start; z <= xlength[2]+end; z++) {
-			for (x = start; x <= xlength[0] + end; x++) {
-				points[0] = x;
-				points[1] = xlength[1]+1;
-				points[2] = z;
-				p_computeIndex(points, xlength, &testIndex);
-				if (flagField[testIndex == wallType]) {
-					(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_TOP],
-						normal, &totalSize, &gridSize);
-				}
-			}
-		}
-	}
-
-	// XY_LEFT (z = 0)
-	// Test index is (1,1,z) so as to exclude shared edges
-	testIndex	= xlen2[0] + 1;
-	wallType	= boundPara[XY_LEFT].type;
-	start 		= boundPara[XY_LEFT].idxStartEnd[0];
-	end 		= boundPara[XY_LEFT].idxStartEnd[1];
-	fcnPtr 		= p_selectFunction(wallType);
-	if (fcnPtr != NULL) {
-		normal[1]	= 0;
-		normal[2]	= 1;
-		for (y = start; y <= xlength[1] + end; y++) {
-			for (x = start; x <= xlength[0] + end; x++) {
-				points[0] = x;
-				points[1] = y;
-				points[2] = 0;
-				p_computeIndex(points, xlength, &testIndex);
-				if (flagField[testIndex == wallType]) {
-					(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_TOP],
-						normal, &totalSize, &gridSize);
-				}
-			}
-		}
-	}
-
-	// XY_RIGHT (z = xlength[2]+1)
-	// Test index is (1,1,z) so as to exclude shared edges
-	testIndex	+= (xlength[2]+1)*xlen2[0]*xlen2[1];
-	wallType	= boundPara[XY_RIGHT].type;
-	start 		= boundPara[XY_RIGHT].idxStartEnd[0];
-	end 		= boundPara[XY_RIGHT].idxStartEnd[1];
-	fcnPtr 		= p_selectFunction(wallType);
-	if (fcnPtr != NULL) {
-		normal[2]	= -1;
-		for (y = start; y <= xlength[1] + end; y++) {
-			for (x = start; x <= xlength[0] + end; x++) {
-				points[0] = x;
-				points[1] = y;
-				points[2] = xlength[2]+1;
-				p_computeIndex(points, xlength, &testIndex);
-				if (flagField[testIndex == wallType]) {
-					(*fcnPtr)(collideField, flagField, points, xlength, &boundPara[YZ_TOP],
-						normal, &totalSize, &gridSize);
-				}
-			}
-		}
-	}
-
-	// TODO: if(obstacleFlag) { handle obstacle }
-	// Only loop over inner cells
-	// Obstacle supports only noSlip as of now
-	normal[2] = 0;
-	for (z = 1; z <= xlength[2]; z++) {
-		for (y = 1; y <= xlength[1]; y++) {
-			for (x = 1; x <= xlength[0]; x++) {
-				points[0] = x;
-				points[1] = y;
-				points[2] = z;
-				p_noSlip(collideField, flagField, points, xlength, boundPara,
-					normal, &totalSize, &gridSize);
 			}
 		}
 	}

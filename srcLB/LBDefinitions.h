@@ -79,7 +79,7 @@ enum SETTING_MODE{
 
 // Typedef for the function pointer used in treating boundaries
 typedef void (*t_boundaryFcnPtr)(double*, int const * const, int const * const,
-                int const * const, const t_boundPara * const, int const * const,
+                int const * const, const t_boundPara * const,
                 int const * const, int const * const);
 
 
