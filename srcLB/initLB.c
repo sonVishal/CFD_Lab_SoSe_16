@@ -536,18 +536,10 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
                     }
                 }
                 else{
-
                     /*Setting inflow condition once and for all*/
                     p_handleInflow(x, y, z, xlength, boundPara,
                         collideField,xyzoffset);
                 }
-
-
-                /* TODO: (DL) if we do not need p_handleInflow in boundary.c at all,
-                 * we can also think to get it here.
-                 */
-
-
             }
         }
     }
