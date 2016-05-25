@@ -529,14 +529,15 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
                 idx = Q*xyzoffset;
 
                 //Set initial condition
-                if(flagField[xyzoffset] == INFLOW){
+                if(flagField[xyzoffset] != INFLOW){
                     for (int i = 0; i < Q; ++i) {
                         collideField[idx+i] = LATTICEWEIGHTS[i];
                         streamField[idx+i]  = LATTICEWEIGHTS[i];
                     }
+                }
+                else{
 
                     /*Setting inflow condition once and for all*/
-                    // TODO: (TKS) Make sure here that the inflow is only on the inner of the side?
                     p_handleInflow(x, y, z, xlength, boundPara,
                         collideField,xyzoffset);
                 }
