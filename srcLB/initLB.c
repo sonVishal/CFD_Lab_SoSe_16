@@ -70,7 +70,7 @@ void p_verifyValidWallSetting(t_boundPara *boundPara){
         }
         if(boundPara[i+1].type == FREE_SLIP){
             num_free_slip++;
-            if (num_free_slip == 2 && (boundPara[i-1].type != FREE_SLIP)) {
+            if (num_free_slip == 2 && (boundPara[i].type != FREE_SLIP)) {
                     ERROR("FREE_SLIP walls are not opposites");
             }
         }
