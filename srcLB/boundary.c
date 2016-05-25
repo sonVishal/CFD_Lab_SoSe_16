@@ -28,10 +28,12 @@ void p_noSlip(double* collideField, int const * const flagField,
         //          * Remove constness on totalsize (Need to multiply in Q)
         //          * OR input gridSize into the function
 
-		if (flagField[nextFlagIndex] == FLUID &&
-			nextCellIndex >= 0 && nextCellIndex < *totalSize) {
-			collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)];
-		}
+	    if(nextFlagIndex >=0 && nextFlagIndex < *gridSize &&
+           nextCellIndex >= 0 && nextCellIndex < *totalSize) {
+
+		    if (flagField[nextFlagIndex] == FLUID)
+			    collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)];
+        }
 	}
 }
 
@@ -55,14 +57,16 @@ void p_movingWall(double* collideField, int const * const flagField,
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-		if (flagField[nextFlagIndex] == FLUID &&
-			nextCellIndex >= 0 && nextCellIndex < *totalSize) {
-			double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
-			double weight = LATTICEWEIGHTS[i];
-			computeDensity(&collideField[nextCellIndex], &density);
-			collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)] +
-					2 * weight * density * dot_uwall_c / (C_S*C_S);
-		}
+	    if(nextFlagIndex >=0 && nextFlagIndex < *gridSize &&
+           nextCellIndex >= 0 && nextCellIndex < *totalSize) {
+            if (flagField[nextFlagIndex] == FLUID){
+                double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
+                double weight = LATTICEWEIGHTS[i];
+                computeDensity(&collideField[nextCellIndex], &density);
+                collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)] +
+                        2 * weight * density * dot_uwall_c / (C_S*C_S);
+            }
+        }
 	}
 }
 
@@ -220,12 +224,14 @@ void p_freeSlip(double* collideField, int const * const flagField,
 	currentCellIndex	= Q*currentFlagIndex;
 	nextCellIndex 		= Q*nextFlagIndex;
 
-	if (flagField[nextFlagIndex] == FLUID &&
-		nextCellIndex >= 0 && nextCellIndex < *totalSize) {
-		for (i = 0; i < 5; i++) {
-			collideField[currentCellIndex+index[i]] = collideField[nextCellIndex+mirrorIndex[i]];
-		}
-	}
+    if(nextFlagIndex >=0 && nextFlagIndex < *gridSize &&
+       nextCellIndex >= 0 && nextCellIndex < *totalSize) {
+        if (flagField[nextFlagIndex] == FLUID){
+            for (i = 0; i < 5; i++) {
+                collideField[currentCellIndex+index[i]] = collideField[nextCellIndex+mirrorIndex[i]];
+            }
+        }
+    }
 }
 
 void p_outflow(double* collideField, int const * const flagField,
@@ -250,11 +256,12 @@ void p_outflow(double* collideField, int const * const flagField,
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-		if (flagField[nextFlagIndex] == FLUID &&
-			nextCellIndex >= 0 && nextCellIndex < *totalSize) {
-			collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
-											collideField[nextCellIndex+Q-1-i];
-		}
+        if(nextFlagIndex >=0 && nextFlagIndex < *gridSize &&
+           nextCellIndex >= 0 && nextCellIndex < *totalSize) {
+                if (flagField[nextFlagIndex] == FLUID)
+                    collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
+                                                    collideField[nextCellIndex+Q-1-i];
+        }
 	}
 }
 
@@ -281,11 +288,12 @@ void p_pressureIn(double* collideField, int const * const flagField,
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-		if (flagField[nextFlagIndex] == FLUID &&
-			nextCellIndex >= 0 && nextCellIndex < *totalSize) {
-			collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
-											collideField[nextCellIndex+Q-1-i];
-		}
+        if(nextFlagIndex >=0 && nextFlagIndex < *gridSize &&
+           nextCellIndex >= 0 && nextCellIndex < *totalSize) {
+            if (flagField[nextFlagIndex] == FLUID)
+                collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
+                                                collideField[nextCellIndex+Q-1-i];
+        }
 	}
 }
 
