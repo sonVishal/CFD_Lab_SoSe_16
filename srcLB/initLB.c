@@ -24,7 +24,7 @@ void p_verifyValidWallSetting(t_boundPara *boundPara){
 		char msg[150];
 		snprintf(msg, 150, "When a wall is set to MOVING we only support the CAVITY scenario. That is "
 				"one MOVING wall and 5 NO_SLIP walls.");
-		ERROR(msg);
+//		ERROR(msg);
 	}else if(foundMovWall == 1 && foundNoSlipWall == 5){
 		return; //no need for the other checking because only MOVING and NO_SLIP walls present
 	}//else continue with the other checking...
@@ -39,14 +39,14 @@ void p_verifyValidWallSetting(t_boundPara *boundPara){
     for(int i = XY_LEFT; i <= XZ_BACK; i=i+2) {
         if(boundPara[i].type == INFLOW){
             if(boundPara[i+1].type != OUTFLOW){
-                ERROR("OUTFLOW is not opposite INFLOW");
+//                ERROR("OUTFLOW is not opposite INFLOW");
             }
             num_inflow++;
         }
 
         if(boundPara[i].type == OUTFLOW){
             if(boundPara[i+1].type != INFLOW){
-                ERROR("OUTFLOW is not opposite INFLOW");
+//                ERROR("OUTFLOW is not opposite INFLOW");
             }
             num_inflow++;
         }
@@ -54,13 +54,13 @@ void p_verifyValidWallSetting(t_boundPara *boundPara){
         if(boundPara[i].type == FREE_SLIP){
             num_free_slip++;
             if (num_free_slip == 2 && (boundPara[i+1].type != FREE_SLIP)) {
-                    ERROR("FREE_SLIP walls are not opposites");
+//                    ERROR("FREE_SLIP walls are not opposites");
             }
         }
         if(boundPara[i+1].type == FREE_SLIP){
             num_free_slip++;
             if (num_free_slip == 2 && (boundPara[i].type != FREE_SLIP)) {
-                    ERROR("FREE_SLIP walls are not opposites");
+//                    ERROR("FREE_SLIP walls are not opposites");
             }
         }
     }
@@ -307,24 +307,6 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     	ERROR("Invalid setting: only provide tau OR Re. Set the other (not used) value to -1.");
     }
 
-    if(Re != -1){
-    	for(int b=XY_LEFT; b <= XY_LEFT; ++b){
-    		if(boundPara->type == MOVING){
-    			double u_wall = sqrt(boundPara->wallVelocity[0]*boundPara->wallVelocity[0]
-					+ boundPara->wallVelocity[1]*boundPara->wallVelocity[1]+
-					boundPara->wallVelocity[2]*boundPara->wallVelocity[2]);
-    			*tau = u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
-    			break; //CAVITY case, in case there are multiple MOVING walls an error is thrown in vality check
-    		}
-    	}
-    }
-
-    if(*tau<=0.5 || *tau>2){
-    	char msg[80];
-    	snprintf(msg, 80, "Tau (value=%f) is out of stability region (0.5,2.0). ! \n", *tau);
-    	ERROR(msg);
-    }
-
     READ_INT(*argv, *timesteps, 0);
     READ_INT(*argv, *timestepsPerPlotting, 0);
 
@@ -345,7 +327,35 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     	p_readWall(argv, &boundPara[b], skip);
         skip++;
     }
+
     p_verifyValidWallSetting(boundPara);
+
+    if(Re != -1.0){
+    	/* TODO: (DL) maybe reduce this restriction later on, but for characteristic length, etc.
+    	 * this is required for now.
+    	 */
+    	if(xlength[0] != xlength[1] && xlength[0] != xlength[2]){
+    		ERROR("Only quadratic is supported for now. \n");
+    	}
+
+    	for(int b=XY_LEFT; b <= XZ_BACK; ++b){
+    	    if(boundPara[b].type == MOVING){
+    			double u_wall = sqrt(boundPara[b].wallVelocity[0]*boundPara[b].wallVelocity[0]
+					+ boundPara[b].wallVelocity[1]*boundPara[b].wallVelocity[1]+
+					boundPara[b].wallVelocity[2]*boundPara[b].wallVelocity[2]);
+    			*tau = u_wall*(xlength[0])/(C_S*C_S*Re)+0.5;
+    			printf("\nINFO: Calculated tau = %f \n", *tau);
+
+    			break; //CAVITY case, in case there are multiple MOVING walls an error is thrown in vality check
+    		}
+    	}
+    }
+
+    if(*tau<=0.5 || *tau>2){
+    	char msg[80];
+    	snprintf(msg, 80, "Tau (value=%f) is out of stability region (0.5,2.0). ! \n", *tau);
+    	ERROR(msg);
+    }
 
     p_generatePgmDomain(argv, xlength, MODE);
 
@@ -361,7 +371,7 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 //    u_wall  = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity);
 //    *tau    =  u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
 //    machNr  = u_wall/C_S;
-//    printf("\nINFO: Calculated tau = %f \n", *tau);
+//
 //    printf("\nINFO: Wall speed = %f \n", u_wall);
 //    printf("\nINFO: Mach number = %f \n\n", machNr);
 

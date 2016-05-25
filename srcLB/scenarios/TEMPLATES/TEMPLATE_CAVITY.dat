@@ -12,16 +12,16 @@ MODE 		      		3
 # Relaxation parameter OR Reynolds number (set the other to -1)
 # NOTE: here in CAVITY the Reynolds number is used to compute the tau (as in Worksheet 2)  
 tau                    	-1
-Re			100  
+Re			10  
 
 # Number of timesteps
-timesteps            		2000
+timesteps            		200
 
 # timesteps between each plot
-timestepsPerPlotting 		20
+timestepsPerPlotting 		50
 
 #Scenario name for output paraview output files (in pv_files) 
-problem 		shear_flow
+problem 		cavity
 
 #--------------------------------------------
 #           GEOMETRY SETTINGS
@@ -53,9 +53,9 @@ problem 		shear_flow
 # see how it is done: https://stackoverflow.com/questions/9907160/how-to-convert-enum-names-to-string-in-c
 
 # depth in y-direction (the scenarios are set and displayed on the x-z plane)
-x_length             	5
-y_length 	     	30
-z_length	     	5
+x_length             	20
+y_length 	     	20
+z_length	     	20
 
 #--------------------------------------------
 #           BOUNDARY SETTINGS
@@ -81,7 +81,7 @@ rhoRef 			-1.0
 rhoIn 			-1.0
 
 # YZ wall - bottom
-type 1
+type 			1
 x_velocity 		0.0
 y_velocity 		0.0
 z_velocity 		0.0
