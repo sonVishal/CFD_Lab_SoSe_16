@@ -65,6 +65,7 @@ int main(int argc, char *argv[]){
     	ERROR("Storage cannot be allocated");
     }
 
+    // TODO: Assign default values to the type and position fields
     //memset(flagField, -1, totalsize* sizeof(int)); //set default value to -1 (invalid) for security
 
 
