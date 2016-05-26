@@ -11,14 +11,14 @@ MODE 		      		3
 
 # Relaxation parameter OR Reynolds number (set the other to -1)
 # NOTE: here in CAVITY the Reynolds number is used to compute the tau (as in Worksheet 2)
-tau                    	0.8
-Re			-1
+tau                    	-1
+Re			10
 
 # Number of timesteps
-timesteps            		200
+timesteps            		2000
 
 # timesteps between each plot
-timestepsPerPlotting 		50
+timestepsPerPlotting 		20
 
 #Scenario name for output paraview output files (in pv_files)
 problem 		cavity
@@ -54,9 +54,9 @@ problem 		cavity
 
 # depth in y-direction (the scenarios are set and displayed on the x-z plane)
 # NOTE: In the cavity case only a Cube is supported, i.e. all values in all directions have to be the same!
-x_length             	10
-y_length 	     	10
-z_length	     	10
+x_length             	30
+y_length 	     	30
+z_length	     	30
 
 #--------------------------------------------
 #           BOUNDARY SETTINGS

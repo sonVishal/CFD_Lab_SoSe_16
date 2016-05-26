@@ -12,7 +12,7 @@ tau                    	0.6
 Re			-1
 
 # Number of timesteps
-timesteps            		10000
+timesteps            		1000
 
 # timesteps between each plot
 timestepsPerPlotting 20
@@ -53,9 +53,9 @@ y_length 	  		30
 z_length	     		50
 
 #Size of step (has to smaller than the corresponding length of the domain)
-#The step starts right at the wall "XZleft". The parameter x/y_direction determine the hight and witdh.  
+#The step starts right at the wall "XZleft". The parameter z/x_direction determine the hight and witdh.  
 x_direction 			15
-y_direction			15
+z_direction			15
 
 
 #--------------------------------------------
@@ -82,7 +82,7 @@ rhoRef 				-1.0
 rhoIn 				-1.0
 
 # YZ wall - bottom
-type 1
+type 				1
 x_velocity 			0.0
 y_velocity 			0.0
 z_velocity 			0.0
@@ -112,3 +112,5 @@ y_velocity 			0.0
 z_velocity 			0.0
 rhoRef 				-1.0
 rhoIn 				-1.0
+
+
