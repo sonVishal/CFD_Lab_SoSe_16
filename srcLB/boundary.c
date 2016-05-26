@@ -56,8 +56,8 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-	    if(flagField[nextFlagIndex].type == FLUID &&
-           nextCellIndex >= 0 && nextCellIndex < *totalSize) {
+	    if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
+	    		flagField[nextFlagIndex].type == FLUID) {
             double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
             double weight = LATTICEWEIGHTS[i];
             computeDensity(&collideField[nextCellIndex], &density);
@@ -236,8 +236,8 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 	currentCellIndex	= Q*currentFlagIndex;
 	nextCellIndex 		= Q*nextFlagIndex;
 
-    if(flagField[nextFlagIndex].type == FLUID &&
-       nextCellIndex >= 0 && nextCellIndex < *totalSize) {
+    if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
+            flagField[nextFlagIndex].type == FLUID) {
         for (i = 0; i < 5; i++) {
             collideField[currentCellIndex+index[i]] = collideField[nextCellIndex+mirrorIndex[i]];
         }
@@ -268,8 +268,8 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 		computeVelocity(&collideField[nextCellIndex], &density, nextPointVel);
 		computeFeq(&(boundPara->rhoRef), nextPointVel, feq);
 
-        if(flagField[nextFlagIndex].type == FLUID &&
-           nextCellIndex >= 0 && nextCellIndex < *totalSize) {
+        if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
+            flagField[nextFlagIndex].type == FLUID) {
 
 			   collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
                                             collideField[nextCellIndex+Q-1-i];
@@ -314,8 +314,8 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-        if(flagField[nextFlagIndex].type == FLUID &&
-           nextCellIndex >= 0 && nextCellIndex < *totalSize) {
+        if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
+            flagField[nextFlagIndex].type == FLUID) {
 
             collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
                                             collideField[nextCellIndex+Q-1-i];
