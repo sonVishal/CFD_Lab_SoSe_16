@@ -20,11 +20,6 @@ void p_noSlip(double* collideField, int const * const flagField,
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-        //TODO: (TKS) Need check for valid index in nextFlagIndex
-        //          * Change totalSize = totalSize/Q;
-        //          * Remove constness on totalsize (Need to multiply in Q)
-        //          * OR input gridSize into the function
-
 	    if(nextFlagIndex >=0 && nextFlagIndex < *gridSize &&
            nextCellIndex >= 0 && nextCellIndex < *totalSize) {
 
