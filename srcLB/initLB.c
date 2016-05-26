@@ -5,71 +5,75 @@
 #include "computeCellValues.h"
 #include <stdio.h>
 
-void p_verifyValidWallSetting(t_boundPara *boundPara){
+void p_verifyValidWallSetting(t_boundPara *boundPara, const int mode){
 
-	//If there is a MOVING wall present we only support the cavity scenario, i.e. there should
-	//be only one MOVING wall and 5 NO_SLIP walls.
-	int foundMovWall = 0;
-	int foundNoSlipWall = 0;
-	for(int b=XY_LEFT; b <= XY_LEFT; ++b){
-		if(boundPara->type == MOVING){
-			foundMovWall++;
+	if(mode == CAVITY){
+		//If there is a MOVING wall present we only support the cavity scenario, i.e. there should
+		//be only one MOVING wall and 5 NO_SLIP walls.
+		int foundMovWall = 0;
+		int foundNoSlipWall = 0;
+		for(int b=XY_LEFT; b <= XY_LEFT; ++b){
+			if(boundPara->type == MOVING){
+				foundMovWall++;
+			}
+			if(boundPara->type == NO_SLIP){
+				foundNoSlipWall++;
+			}
 		}
-		if(boundPara->type == NO_SLIP){
-			foundNoSlipWall++;
+
+		if(foundMovWall > 1 || (foundMovWall == 1 && foundNoSlipWall != 5)){
+			char msg[150];
+			snprintf(msg, 150, "When a wall is set to MOVING we only support the CAVITY scenario. That is "
+					"one MOVING wall and 5 NO_SLIP walls.");
+			ERROR(msg);
+		}// else if(foundMovWall == 1 && foundNoSlipWall == 5){
+
+	}else{
+		int numInflow    = 0;
+		int numFreeSlip  = 0;
+
+		// If an INFLOW is present, there must be an OUTFLOW and it has to be on
+		// the wall opposite to the INFLOW boundary.
+		// We hence also only allow for one inflow in the system.
+		for(int i = XY_LEFT; i <= XZ_BACK; i=i+2) {
+			if(boundPara[i].type == MOVING || boundPara[i+1].type == MOVING){
+				ERROR("MOVING walls are only supported in mode CAVITY");
+			}
+
+			if(boundPara[i].type == INFLOW){
+				if(boundPara[i+1].type != OUTFLOW){
+					ERROR("OUTFLOW is not opposite INFLOW");
+				}
+				numInflow++;
+			}
+
+			if(boundPara[i].type == OUTFLOW){
+				if(boundPara[i+1].type != INFLOW){
+					ERROR("OUTFLOW is not opposite INFLOW");
+				}
+				numInflow++;
+			}
+
+			if(boundPara[i].type == FREE_SLIP){
+				numFreeSlip++;
+				if (numFreeSlip == 2 && (boundPara[i+1].type != FREE_SLIP)) {
+					ERROR("FREE_SLIP walls are not opposites");
+				}
+			}
+			if(boundPara[i+1].type == FREE_SLIP){
+				numFreeSlip++;
+				if (numFreeSlip == 2 && (boundPara[i].type != FREE_SLIP)) {
+					ERROR("FREE_SLIP walls are not opposites");
+				}
+			}
 		}
+
+		if (numInflow > 1)
+			ERROR("Too many inflows");
+
+		if(numFreeSlip > 3)
+			ERROR("Too many free-slip walls");
 	}
-
-	if(foundMovWall > 1 || (foundMovWall == 1 && foundNoSlipWall != 5)){
-		char msg[150];
-		snprintf(msg, 150, "When a wall is set to MOVING we only support the CAVITY scenario. That is "
-				"one MOVING wall and 5 NO_SLIP walls.");
-//		ERROR(msg);
-	}else if(foundMovWall == 1 && foundNoSlipWall == 5){
-		return; //no need for the other checking because only MOVING and NO_SLIP walls present
-	}//else continue with the other checking...
-
-
-    int num_inflow    = 0;
-    int num_free_slip = 0;
-
-    // If an INFLOW is present, there must be an OUTFLOW and it has to be on
-    // the wall opposite to the INFLOW boundary.
-    // We hence also only allow for one inflow in the system.
-    for(int i = XY_LEFT; i <= XZ_BACK; i=i+2) {
-        if(boundPara[i].type == INFLOW){
-            if(boundPara[i+1].type != OUTFLOW){
-//                ERROR("OUTFLOW is not opposite INFLOW");
-            }
-            num_inflow++;
-        }
-
-        if(boundPara[i].type == OUTFLOW){
-            if(boundPara[i+1].type != INFLOW){
-//                ERROR("OUTFLOW is not opposite INFLOW");
-            }
-            num_inflow++;
-        }
-
-        if(boundPara[i].type == FREE_SLIP){
-            num_free_slip++;
-            if (num_free_slip == 2 && (boundPara[i+1].type != FREE_SLIP)) {
-//                    ERROR("FREE_SLIP walls are not opposites");
-            }
-        }
-        if(boundPara[i+1].type == FREE_SLIP){
-            num_free_slip++;
-            if (num_free_slip == 2 && (boundPara[i].type != FREE_SLIP)) {
-//                    ERROR("FREE_SLIP walls are not opposites");
-            }
-        }
-    }
-
-    if (num_inflow > 1)
-        ERROR("Too many inflows");
-
-    if(num_free_slip > 3)
-        ERROR("Too many free-slip walls");
 }
 
 void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
@@ -93,37 +97,18 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	boundPara->rhoRef = rhoRef;
 	boundPara->rhoIn = rhoIn;
 
-	/* TODO: (DL) after testing this can be much simplified (only in two ifs), but for testing
-	 * this version is a bit more handy...
-	 */
-	switch (boundPara->type) {
-	case NO_SLIP:
+	if(boundPara->type>=NO_SLIP && boundPara->type<=MOVING){ //NO_SLIP OR MOVING
 		boundPara->idxStartEnd[0] = 0;
 		boundPara->idxStartEnd[1] = 1;
-		break;
-	case MOVING:
-		boundPara->idxStartEnd[0] = 0;
-		boundPara->idxStartEnd[1] = 1;
-		break;
-	case FREE_SLIP:
+
+	}else if(boundPara->type>=FREE_SLIP && boundPara->type<=PRESSURE_IN){ //FREE_SLIP, INFLOW, OUTFLOW, PRESSURE_IN
 		boundPara->idxStartEnd[0] = 1;
 		boundPara->idxStartEnd[1] = 0;
-		break;
-	case INFLOW:
-		boundPara->idxStartEnd[0] = 1;
-		boundPara->idxStartEnd[1] = 0;
-		break;
-	case OUTFLOW:
-		boundPara->idxStartEnd[0] = 1;
-		boundPara->idxStartEnd[1] = 0;
-		break;
-	case PRESSURE_IN:
-		boundPara->idxStartEnd[0] = 1;
-		boundPara->idxStartEnd[1] = 0;
-		break;
-	default:
-		//TODO: (DL) msg
-		ERROR("TODO: error msg");
+	}else{
+		char msg[100];
+		snprintf(msg, 100, "Type %i, is not valid. See E_CELL_TYPE in LBDefinitions.h for valid"
+				" types.", type);
+		ERROR(msg);
 	}
 }
 
@@ -187,7 +172,6 @@ void init_pgmMatrix(const int * const xlength){
 	init_imatrix(pgmMatrix, 0, xlength[2]+1, 0, xlength[0]+1, 1);
 
 	// set all domain values to 0 (leaving the boundary to 1)
-	//TODO: (DL) when I comment out this line in the, the freeing does not encounter any errors.
 	init_imatrix(pgmMatrix, 1, xlength[2], 1, xlength[0], 0);
 }
 
@@ -292,19 +276,24 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     double Re; //u_wall, machNr;
     int x_length, y_length, z_length; //Temporary for reading
     int skip = 0; // How many of the same named variable should be skipped when
-              // calling READ_<TYPE>.
+                  // calling READ_<TYPE>.
 
     READ_INT(*argv, MODE, 0);
     if(MODE < 0 || MODE >= NUM_MODES ){
-    	char msg[40];
-    	snprintf(msg, 40, "SETTING-MODE=%i is invalid! \n", MODE);
+    	char msg[150];
+    	snprintf(msg, 150, "SETTING-MODE=%i is invalid! Look at enum SETTING_MODE in LBDefintions.h"
+    			"for valid modes. \n", MODE);
     	ERROR(msg);
     }
-    READ_DOUBLE(*argv, Re, 0);
+
     READ_DOUBLE(*argv, *tau, 0);
 
-    if((Re == -1 && *tau == -1) || (Re != -1 && *tau != -1)){
-    	ERROR("Invalid setting: only provide tau OR Re. Set the other (not used) value to -1.");
+    if(MODE == CAVITY){
+        READ_DOUBLE(*argv, Re, 0);
+    	if((Re == -1 && *tau == -1) || (Re != -1 && *tau != -1)){
+        	ERROR("Invalid setting: only provide tau OR Reynolds number (Re). Set the other "
+        			"(not used) value to -1.");
+        }
     }
 
     READ_INT(*argv, *timesteps, 0);
@@ -328,28 +317,53 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
         skip++;
     }
 
-    p_verifyValidWallSetting(boundPara);
+    p_verifyValidWallSetting(boundPara, MODE);
 
-    if(Re != -1.0){
-    	/* TODO: (DL) maybe reduce this restriction later on, but for characteristic length, etc.
-    	 * this is required for now.
-    	 */
+    /* S T A R T  -- ONLY FOR CAVITY, this part supports the old CAVITY case
+     * this will not be supported /executed. The checks are the same as
+     * in the last worksheet */
+
+    //CAVITY supports to hand either Reynolds number (and compute tau), or handle tau directly
+    if(Re != -1.0 && MODE == CAVITY){
+    	//The restriction of cubic domain is required in CAVITY such that the
+    	//computation of tau is valid.
     	if(xlength[0] != xlength[1] && xlength[0] != xlength[2]){
     		ERROR("Only quadratic is supported for now. \n");
     	}
-
+    	double u_wall;
     	for(int b=XY_LEFT; b <= XZ_BACK; ++b){
     	    if(boundPara[b].type == MOVING){
-    			double u_wall = sqrt(boundPara[b].wallVelocity[0]*boundPara[b].wallVelocity[0]
+    			u_wall = sqrt(boundPara[b].wallVelocity[0]*boundPara[b].wallVelocity[0]
 					+ boundPara[b].wallVelocity[1]*boundPara[b].wallVelocity[1]+
 					boundPara[b].wallVelocity[2]*boundPara[b].wallVelocity[2]);
     			*tau = u_wall*(xlength[0])/(C_S*C_S*Re)+0.5;
     			printf("\nINFO: Calculated tau = %f \n", *tau);
 
-    			break; //CAVITY case, in case there are multiple MOVING walls an error is thrown in vality check
+    			break; //CAVITY case, in case there are multiple MOVING walls an
+    				   //error is thrown in valid surroundings
     		}
     	}
+    	*tau = u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
+    	double machNr  = u_wall/C_S;
+
+    	printf("\nINFO: Wall speed = %f \n", u_wall);
+    	printf("\nINFO: Mach number = %f \n\n", machNr);
+
+    	/* valid settings check*/
+    	if(u_wall >= C_S){
+    		ERROR("Wall speed is supersonic (aborting)! \n");
+    	}
+
+    	/*We allow user defined mach number tolerance for Ma << 1 (default = 0.1)
+    	      To change please look at LBDefinitions.h*/
+    	if(machNr > machNrTol){
+    		char buffer[80];
+    		snprintf(buffer, 80, "Mach number is larger than %f (aborting)! \n",machNrTol);
+    		ERROR(buffer);
+    	}
     }
+    /* E N D  -- CAVITY PART*/
+
 
     if(*tau<=0.5 || *tau>2){
     	char msg[80];
@@ -359,38 +373,7 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 
     p_generatePgmDomain(argv, xlength, MODE);
 
-    /*TODO: (DL) the characteristic velocity, characteristic length, mach number are
-     * no longer valid (using values valid for cavity)
-     *
-     * I suggest we create a new function where we check for valid settings only!
-     * For now all checks are comment out.
-     */
-
-    /*Calculates tau from the Reynolds number*/
-
-//    u_wall  = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity);
-//    *tau    =  u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
-//    machNr  = u_wall/C_S;
-//
-//    printf("\nINFO: Wall speed = %f \n", u_wall);
-//    printf("\nINFO: Mach number = %f \n\n", machNr);
-
-//    /* valid settings check*/
-//    if(u_wall >= C_S){
-//    	ERROR("Wall speed is supersonic (aborting)! \n");
-//    }
-//
-
-//
-//    /*We allow user defined mach number tolerance for Ma << 1 (default = 0.1)
-//      To change please look at LBDefinitions.h*/
-//    if(machNr > machNrTol){
-//        char buffer[80];
-//        snprintf(buffer, 80, "Mach number is larger than %f (aborting)! \n",machNrTol);
-//    	ERROR(buffer);
-//    }
-
-  return 0;
+    return 0;
 }
 //TODO: (TKS) REMOVE AFTER TESTING
 void print_flagfield_slice(int* field, const int * const xlength){
@@ -404,7 +387,6 @@ void print_flagfield_slice(int* field, const int * const xlength){
         }
         printf("\n");
     }
-
 }
 
 void initialiseFields(double *collideField, double *streamField, t_flagField *flagField,
@@ -515,7 +497,6 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 					flagField[xyzoffset].type = FLUID;
 					flagField[xyzoffset].position = FLUID;
 				}else if(type_domain == 1){
-                    //TODO: Improve the checks for illegal geometry by saving these
 					flagField[xyzoffset].type = OBSTACLE;
 					flagField[xyzoffset].position = OBSTACLE;
 				}else{
@@ -546,7 +527,6 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
                 idx = Q*xyzoffset;
 
                 //Set initial condition
-
                 for (int i = 0; i < Q; ++i) {
                     collideField[idx+i] = LATTICEWEIGHTS[i];
                     streamField[idx+i]  = LATTICEWEIGHTS[i];
@@ -554,25 +534,6 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
             }
         }
     }
-
-//	 for (x = 0; x < xlen2; x++) {
-//         for (z = 0; z < zlen2; z++) {
-//             printf("%d ",pgmMatrix[z][xlength[0]+1-x]);
-//         }
-//         printf("\n");
-//     }
-//
-//	 printf("##############################################\n");
-//
-//	 //Compare with one layer in the flagfield:
-//	 for(x = 0; x < xlen2; ++x){
-//		 for(z = 0; z < zlen2; ++z){
-//			 y = 3;
-//			 printf("%d ",flagField[z*xlen2*ylen2 + y*xlen2 + x]);
-//		 }
-//		 printf("\n");
-//	 }
-
 
     //Call at allocation
     //    pgmMatrix = imatrix(0, xlength[2]+1,0,xlength[0]+1);
