@@ -70,7 +70,7 @@ inflowScheme		1
 # XY wall left
 type 			6
 x_velocity 		0.0
-y_velocity 		1.0
+y_velocity 		0.0
 z_velocity 		0.0
 rhoRef 			1.0
 rhoIn 			1.005
@@ -84,7 +84,7 @@ rhoRef 			1.0
 rhoIn 			-1.0
 
 # YZ wall - bottom
-type 			3
+type 			1
 x_velocity 		0.0
 y_velocity 		0.0
 z_velocity 		0.0
@@ -92,7 +92,7 @@ rhoRef 			-1.0
 rhoIn 			-1.0
 
 # YZ wall - top
-type 			3
+type 			1
 x_velocity 		0.0
 y_velocity 		0.0
 z_velocity 		0.0
@@ -100,7 +100,7 @@ rhoRef 			-1.0
 rhoIn 			-1.0
 
 # XZ wall - front
-type			1
+type			3
 x_velocity		0.0
 y_velocity 		0.0
 z_velocity 		0.0
@@ -108,7 +108,7 @@ rhoRef 			-1.0
 rhoIn 			-1.0
 
 # XZ wall - back
-type 			1
+type 			3
 x_velocity 		0.0
 y_velocity 		0.0
 z_velocity 		0.0

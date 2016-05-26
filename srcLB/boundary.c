@@ -357,10 +357,9 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 	int nextPoint[3];
 	int nextFlagIndex, nextCellIndex, currentCellIndex;
 	double feq[Q];
-	const double effectiveDensity = boundPara->rhoRef + boundPara->rhoIn;
 
 	p_computeIndexQ(point, xlength, &currentCellIndex);
-	computeFeq(&effectiveDensity, boundPara->wallVelocity, feq);
+	computeFeq(&boundPara->rhoIn, boundPara->wallVelocity, feq);
 
 	for (i = 0; i < Q; i++) {
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];
