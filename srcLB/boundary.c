@@ -276,16 +276,16 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-		computeDensity(&collideField[nextCellIndex], &density);
-		computeVelocity(&collideField[nextCellIndex], &density, nextPointVel);
-		computeFeq(&(boundPara->rhoRef), nextPointVel, feq);
 
-        if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
-            flagField[nextFlagIndex].type == FLUID) {
+		if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
+			flagField[nextFlagIndex].type == FLUID) {
 
-			   collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
-                                            collideField[nextCellIndex+Q-1-i];
-        }
+			computeDensity(&collideField[nextCellIndex], &density);
+			computeVelocity(&collideField[nextCellIndex], &density, nextPointVel);
+			computeFeq(&(boundPara->rhoRef), nextPointVel, feq);
+			collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
+											collideField[nextCellIndex+Q-1-i];
+		}
 	}
 }
 
