@@ -21,7 +21,7 @@ timestepsPerPlotting 	20
 #Scenario (filename of pgm file in folder "/scenarios")
 #NOTE: A VALID PGM FILE IS NECESSARY HERE TO RUN THE SIMULATION
 
-problem 		TiltedPlate.pgm
+problem 		CustomTiltedPlate.pgm
 
 
 #--------------------------------------------

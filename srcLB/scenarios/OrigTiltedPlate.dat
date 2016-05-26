@@ -13,15 +13,15 @@ tau                    	0.59
 Re			-1
 
 # Number of timesteps
-timesteps            	50
+timesteps            	2000
 
 # timesteps between each plot
-timestepsPerPlotting 	5
+timestepsPerPlotting 	20
 
 #Scenario (filename of pgm file in folder "/scenarios")
 #NOTE: A VALID PGM FILE IS NECESSARY HERE TO RUN THE SIMULATION
 
-problem 		TiltedPlate_small.pgm
+problem 		OrigTiltedPlate.pgm
 
 
 #--------------------------------------------
@@ -62,9 +62,9 @@ problem 		TiltedPlate_small.pgm
 # If a finer/coarser resolution of the domain is required, change the pgm file first and then adapt the parameter here.   
 
 # Depth in Y-direction (the scenarios in pgm format are set and displayed in the XZ plane)
-x_length             10
+x_length             210
 y_length 	     3
-z_length	     20
+z_length	     490
 
 
 #--------------------------------------------
