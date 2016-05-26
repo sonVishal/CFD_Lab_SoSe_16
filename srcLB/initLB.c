@@ -485,7 +485,7 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 		offset2 = offset1 + xlength[0] + 1;
     	for(y = start; y <= xlength[1]+end; ++y){
 			flagField[offset1 + y*xlen2].type = type; // x = 0
-			flagField[offset1 + y*xlen2].position = type;
+			flagField[offset1 + y*xlen2].position = YZ_BOTTOM;
     	}
     }
 
