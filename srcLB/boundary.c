@@ -225,6 +225,16 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 	currentCellIndex	= Q*currentFlagIndex;
 
 	// Assign normals based on the wall we are at
+
+
+	/*TODO: (DL) readability bad... but saves the switch case. Can decide... once it works
+	* I make a "speed difference test": */
+
+//	static int normalIdx[6] = {2, 2, 0, 0 , 1, 1}; //static to compute only once
+//	static int normalVal[6] = {1,-1, 1,-1, -1, 1};
+//	normal[ normalIdx[ flagField[currentFlagIndex].position ] ] =
+//			normalVal[ flagField[currentFlagIndex].position ];
+
 	switch (flagField[currentFlagIndex].position) {
 		case XY_LEFT:
 			normal[2] = 1;
@@ -248,6 +258,9 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 			ERROR("** This should not happen!! **");
 			break;
 	}
+
+	printf("AFTER: normal = %i, %i, %i \n", normal[0], normal[1], normal[2]);
+
 
 	int nextPoint[3] = {point[0]+normal[0],
 						point[1]+normal[1],
