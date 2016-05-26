@@ -407,7 +407,7 @@ void print_flagfield_slice(int* field, const int * const xlength){
 
 }
 
-void initialiseFields(double *collideField, double *streamField, int *flagField,
+void initialiseFields(double *collideField, double *streamField, t_flagField *flagField,
 		int *xlength, t_boundPara *boundPara, char *problem){
 
 
@@ -436,7 +436,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + (xlength[1]+1)*xlen2;
     	for(x = start; x <= xlength[0] + end; ++x){
-    		flagField[offset1 + x] = type; // y = 0
+    		flagField[offset1 + x].type = type; // y = 0
+			flagField[offset1 + x].position = XZ_BACK;
     	}
     }
 
@@ -447,7 +448,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + (xlength[1]+1)*xlen2;
     	for(x = start; x <= xlength[0]+end; ++x){
-    		flagField[offset2 + x] = type; // y = xlength[1]+1
+    		flagField[offset2 + x].type = type; // y = xlength[1]+1
+			flagField[offset2 + x].position = XZ_FRONT;
     	}
     }
 
@@ -458,7 +460,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		offset1 = y*xlen2;
 		offset2 = offset1 + (xlength[2]+1)*xlen2*ylen2;
     	for(x = start; x <= xlength[0]+end; ++x){
-    		flagField[offset1 + x] = type; // z = 0
+    		flagField[offset1 + x].type = type; // z = 0
+			flagField[offset1 + x].position = XY_LEFT;
     	}
     }
 
@@ -469,7 +472,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		offset1 = y*xlen2;
 		offset2 = offset1 + (xlength[2]+1)*xlen2*ylen2;
     	for(x = start; x <= xlength[0]+end; ++x){
-    		flagField[offset2 + x] = type; // z = xlength[2]+1
+    		flagField[offset2 + x].type = type; // z = xlength[2]+1
+			flagField[offset2 + x].position = XY_RIGHT;
     	}
     }
 
@@ -480,7 +484,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + xlength[0] + 1;
     	for(y = start; y <= xlength[1]+end; ++y){
-			flagField[offset1 + y*xlen2] = type; // x = 0
+			flagField[offset1 + y*xlen2].type = type; // x = 0
+			flagField[offset1 + y*xlen2].position = type;
     	}
     }
 
@@ -491,7 +496,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + xlength[0] + 1;
     	for(y = start; y <= xlength[1]+end; ++y){
-    		flagField[offset2 + y*xlen2] = type; // x = xlength[0]+1
+    		flagField[offset2 + y*xlen2].type = type; // x = xlength[0]+1
+			flagField[offset2 + y*xlen2].position = YZ_TOP;
     	}
     }
 
@@ -506,11 +512,12 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
 				if(type_domain == 0){
 					//This is actually not required as long as FLUID=0
-					flagField[xyzoffset] = FLUID;
+					flagField[xyzoffset].type = FLUID;
+					flagField[xyzoffset].position = FLUID;
 				}else if(type_domain == 1){
                     //TODO: Improve the checks for illegal geometry by saving these
-					flagField[xyzoffset] = OBSTACLE;
-
+					flagField[xyzoffset].type = OBSTACLE;
+					flagField[xyzoffset].position = OBSTACLE;
 				}else{
 					ERROR("Description of scenario in pgm file should only consist of logical values. \n");
 				}

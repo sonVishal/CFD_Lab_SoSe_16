@@ -1,33 +1,32 @@
+#include "LBDefinitions.h"
 #ifndef _BOUNDARY_H_
 #define _BOUNDARY_H_
 
-#include "LBDefinitions.h"
-
 /* handles the boundaries in our simulation setup */
-void treatBoundary(double *collideField, const int * const flagField,
+void treatBoundary(double *collideField, const t_flagField * const flagField,
 	const t_boundPara * const boundPara, const int * const xlength);
 
-void p_noSlip(double* collideField, int const * const flagField,
+void p_noSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize);
 
-void p_movingWall(double* collideField, int const * const flagField,
+void p_movingWall(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize);
 
-void p_freeSlip(double* collideField, int const * const flagField,
+void p_freeSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize);
 
-void p_outflow(double* collideField, int const * const flagField,
+void p_outflow(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize);
 
-void p_inflow(double* collideField, int const * const flagField,
+void p_inflow(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize);
 
-void p_pressureIn(double* collideField, int const * const flagField,
+void p_pressureIn(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize);
 

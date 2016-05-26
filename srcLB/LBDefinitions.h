@@ -69,6 +69,11 @@ typedef struct {
 	double rhoIn;
 } t_boundPara;
 
+typedef struct {
+    int type;
+    int position;
+} t_flagField;
+
 enum SETTING_MODE{
 	SHEAR_FLOW,
 	STEP_FLOW,
@@ -78,7 +83,7 @@ enum SETTING_MODE{
 };
 
 // Typedef for the function pointer used in treating boundaries
-typedef void (*t_boundaryFcnPtr)(double*, int const * const, int const * const,
+typedef void (*t_boundaryFcnPtr)(double*, t_flagField const * const, int const * const,
                 int const * const, const t_boundPara * const,
                 int const * const);
 

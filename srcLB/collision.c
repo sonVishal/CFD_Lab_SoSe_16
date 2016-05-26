@@ -1,5 +1,4 @@
 #include "collision.h"
-#include "LBDefinitions.h"
 #include "helper.h"
 
 // Get the post collision cell distribution using BGK update rule
@@ -20,7 +19,7 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 }
 
 // Perform collision for all inner cells
-void doCollision(double *collideField, int *flagField,const double * const tau, int *xlength){
+void doCollision(double *collideField, t_flagField *flagField,const double * const tau, int *xlength){
 
 	// Define iteration indices
 	int idx, x, y, z;
@@ -41,7 +40,7 @@ void doCollision(double *collideField, int *flagField,const double * const tau, 
 				// Get the index of the first distribution
 				// in the current cell
 				idx = Q*(zOffset + yOffset + x);
-				if (flagField[zOffset + yOffset + x] == FLUID) {
+				if (flagField[zOffset + yOffset + x].type == FLUID) {
 					double *currentCell = &collideField[idx];
 
 					// Allocate memory to local cell parameters

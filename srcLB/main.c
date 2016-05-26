@@ -15,7 +15,7 @@ int main(int argc, char *argv[]){
     // Distribution function vectors
     double *collideField    =NULL;
     double *streamField     =NULL;
-    int *flagField          =NULL;
+    t_flagField *flagField  =NULL;
 
     // Simulation parameters
     int xlength[3];
@@ -59,13 +59,13 @@ int main(int argc, char *argv[]){
 
     collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
     streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
-    flagField     = (int *)  malloc(totalsize * sizeof( int ));
+    flagField     = (t_flagField *)  malloc(totalsize * sizeof( t_flagField ));
 
     if(! collideField || !streamField || ! flagField ){
     	ERROR("Storage cannot be allocated");
     }
 
-    memset(flagField, -1, totalsize* sizeof(int)); //set default value to -1 (invalid) for security
+    //memset(flagField, -1, totalsize* sizeof(int)); //set default value to -1 (invalid) for security
 
 
     // Initialize all the fields
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]){
 	    doCollision(collideField,flagField,&tau, xlength);
 	    treatBoundary(collideField,flagField,boundPara,xlength);
         // writeVtkOutput(collideField,flagField,fName,t,xlength);
-        // ERROR("STOPPER -- remove when proceeding with implementation\n");
+        ERROR("STOPPER -- remove when proceeding with implementation\n");
 
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);

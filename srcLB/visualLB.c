@@ -17,7 +17,7 @@
 // xlength      - Number of cells in one direction
 
 void writeVtkOutput(const double * const collideField,
-    const int * const flagField, const char * filename,
+    const t_flagField * const flagField, const char * filename,
     unsigned int t, int *xlength)
 {
     // Files related variables
@@ -79,7 +79,7 @@ void writeVtkOutput(const double * const collideField,
                 // Compute the base index for collideField
                 int xyzoffset = z*(xlength[0]+2)*(xlength[1]+2) + y*(xlength[0]+2) + x;
 
-                if (flagField[xyzoffset] == FLUID) {
+                if (flagField[xyzoffset].type == FLUID) {
                     // If it is a fluid cell then write the actual
                     // velocity and density
                     idx = Q*xyzoffset;
@@ -149,7 +149,7 @@ void writeVtkOutput(const double * const collideField,
 }
 
 void writeVtkDebug(const double * const collideField,
-    const int * const flagField, const char * filename, int *xlength)
+    const t_flagField * const flagField, const char * filename, int *xlength)
 {
     // Files related variables
     char pFileName[80];
@@ -186,7 +186,7 @@ void writeVtkDebug(const double * const collideField,
             for(x = 0; x <= xlength[0]+1; x++) {
                 // Compute the base index for collideField
                 int xyzoffset = z*(xlength[0]+2)*(xlength[1]+2) + y*(xlength[0]+2) + x;
-                fprintf(fp, "%d\n", flagField[xyzoffset]);
+                fprintf(fp, "%d\n", flagField[xyzoffset].type);
             }
         }
     }

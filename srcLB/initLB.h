@@ -18,6 +18,6 @@ int readParameters(
 
 
 /* initialises the particle distribution functions and the flagfield */
-void initialiseFields(double *collideField, double *streamField,int *flagField,int *xlength,t_boundPara *boundPara,char *problem);
+void initialiseFields(double *collideField, double *streamField,t_flagField *flagField,int *xlength,t_boundPara *boundPara,char *problem);
 
 #endif

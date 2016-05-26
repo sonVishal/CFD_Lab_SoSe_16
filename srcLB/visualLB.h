@@ -9,9 +9,9 @@
  *  to a file determined by 'filename' and timestep 't'. You can re-use parts of the code
  *  from visual.c (VTK output for Navier-Stokes solver) and modify it for 3D datasets.
  */
-void writeVtkOutput(const double * const collideField, const int * const flagField, const char * filename, unsigned int t, int *xlength);
+void writeVtkOutput(const double * const collideField, const t_flagField * const flagField, const char * filename, unsigned int t, int *xlength);
 void writeVtkDebug(const double * const collideField,
-    const int * const flagField, const char * filename, int *xlength);
+    const t_flagField * const flagField, const char * filename, int *xlength);
 
 void writevtkPointCoordinates(FILE *fp, int *xlength);
 void writevtkPointCoordinatesDebug(FILE *fp, int *xlength);

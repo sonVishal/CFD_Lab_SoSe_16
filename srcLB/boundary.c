@@ -4,7 +4,14 @@
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 
-void p_noSlip(double* collideField, int const * const flagField,
+void p_printBoundPara(const t_boundPara * const boundPara) {
+	printf("************************************************\n");
+	printf("Type \t %d\n",boundPara->type);
+	printf("Wall Velocity\t(%f,%f,%f)\n",boundPara->wallVelocity[0],boundPara->wallVelocity[1],boundPara->wallVelocity[2]);
+	printf("************************************************\n");
+}
+
+void p_noSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize){
 	// Begin
@@ -19,14 +26,14 @@ void p_noSlip(double* collideField, int const * const flagField,
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-	    if(flagField[nextFlagIndex] == FLUID &&
+	    if(flagField[nextFlagIndex].type == FLUID &&
            nextCellIndex >= 0 && nextCellIndex < *totalSize) {
 		    collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)];
 		}
 	}
 }
 
-void p_movingWall(double* collideField, int const * const flagField,
+void p_movingWall(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
@@ -37,6 +44,10 @@ void p_movingWall(double* collideField, int const * const flagField,
 	const double * const wallVelocity = boundPara->wallVelocity;
 	p_computeIndexQ(point, xlength, &currentCellIndex);
 
+	// if (boundPara->type != MOVING) {
+	// 	p_printBoundPara(boundPara);
+	// }
+
 	for(i = 0; i < Q; i++){
 		int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];
@@ -45,7 +56,7 @@ void p_movingWall(double* collideField, int const * const flagField,
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-	    if(flagField[nextFlagIndex] == FLUID &&
+	    if(flagField[nextFlagIndex].type == FLUID &&
            nextCellIndex >= 0 && nextCellIndex < *totalSize) {
             double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
             double weight = LATTICEWEIGHTS[i];
@@ -189,7 +200,7 @@ void p_assignIndices(const int * const normal, int * index, int * mirrorIndex) {
 	}
 }
 
-void p_freeSlip(double* collideField, int const * const flagField,
+void p_freeSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
@@ -225,7 +236,7 @@ void p_freeSlip(double* collideField, int const * const flagField,
 	currentCellIndex	= Q*currentFlagIndex;
 	nextCellIndex 		= Q*nextFlagIndex;
 
-    if(flagField[nextFlagIndex] == FLUID &&
+    if(flagField[nextFlagIndex].type == FLUID &&
        nextCellIndex >= 0 && nextCellIndex < *totalSize) {
         for (i = 0; i < 5; i++) {
             collideField[currentCellIndex+index[i]] = collideField[nextCellIndex+mirrorIndex[i]];
@@ -233,7 +244,7 @@ void p_freeSlip(double* collideField, int const * const flagField,
     }
 }
 
-void p_outflow(double* collideField, int const * const flagField,
+void p_outflow(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
@@ -257,7 +268,7 @@ void p_outflow(double* collideField, int const * const flagField,
 		computeVelocity(&collideField[nextCellIndex], &density, nextPointVel);
 		computeFeq(&(boundPara->rhoRef), nextPointVel, feq);
 
-        if(flagField[nextFlagIndex] == FLUID &&
+        if(flagField[nextFlagIndex].type == FLUID &&
            nextCellIndex >= 0 && nextCellIndex < *totalSize) {
 
 			   collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
@@ -266,7 +277,7 @@ void p_outflow(double* collideField, int const * const flagField,
 	}
 }
 
-void p_inflow(double* collideField, int const * const flagField,
+void p_inflow(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
@@ -281,7 +292,7 @@ void p_inflow(double* collideField, int const * const flagField,
 	}
 }
 
-void p_pressureIn(double* collideField, int const * const flagField,
+void p_pressureIn(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
@@ -303,7 +314,7 @@ void p_pressureIn(double* collideField, int const * const flagField,
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-        if(flagField[nextFlagIndex] == FLUID &&
+        if(flagField[nextFlagIndex].type == FLUID &&
            nextCellIndex >= 0 && nextCellIndex < *totalSize) {
 
             collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
@@ -343,12 +354,12 @@ t_boundaryFcnPtr p_selectFunction(const int wallType) {
 
 // TODO: 3 for loops with switch case inside sounds better
 
-void treatBoundary(double *collideField, const int * const flagField,
+void treatBoundary(double *collideField, const t_flagField * const flagField,
 	const t_boundPara * const boundPara, const int * const xlength){
 
 	// iteration variables
 	int x, y, z;
-	int flagIndex, wallType;
+	int flagIndex, wallType, wallPos;
 	int points[3];
 	int const xlen2[3] = {xlength[0]+2,xlength[1]+2,xlength[1]+2};
     int const totalSize  = Q*xlen2[2]*xlen2[1]*xlen2[0];
@@ -362,14 +373,15 @@ void treatBoundary(double *collideField, const int * const flagField,
 		for (y = 0; y < xlen2[1]; y++) {
 			for (x = 0; x < xlen2[0]; x++) {
 				p_computeIndexXYZ(x,y,z,xlength,&flagIndex);
-				wallType = flagField[flagIndex];
+				wallType	= flagField[flagIndex].type;
+				wallPos		= flagField[flagIndex].position;
 				if (wallType != FLUID && wallType != -1) {
 					points[0] = x;
 					points[1] = y;
 					points[2] = z;
 					fcnPtr = p_selectFunction(wallType);
 					(*fcnPtr)(collideField, flagField, points, xlength,
-						&boundPara[wallType], &totalSize);
+						&boundPara[wallPos], &totalSize);
 				}
 			}
 		}
