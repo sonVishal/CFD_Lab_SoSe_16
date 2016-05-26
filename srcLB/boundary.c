@@ -290,8 +290,6 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 	p_computeIndex(point, xlength, &currentFlagIndex);
 	currentCellIndex = Q*currentFlagIndex;
 
-	printf("point %i, %i, %i \n", point[0], point[1], point[2]);
-
 	for (i = 0; i < Q; i++) {
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];
 		nextPoint[1] = point[1] + LATTICEVELOCITIES[i][1];
@@ -416,7 +414,7 @@ void treatBoundary(double *collideField, const t_flagField * const flagField,
 	int x, y, z;
 	int flagIndex, wallType, wallPos;
 	int points[3];
-	int const xlen2[3] = {xlength[0]+2,xlength[1]+2,xlength[1]+2};
+	int const xlen2[3] = {xlength[0]+2,xlength[1]+2,xlength[2]+2};
     int const totalSize  = Q*xlen2[2]*xlen2[1]*xlen2[0];
 
 	t_boundaryFcnPtr fcnPtr = NULL;
