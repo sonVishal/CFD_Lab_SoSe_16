@@ -63,10 +63,7 @@ enum E_BOUNDARIES{
 typedef struct {
 	int type;
 	int idxStartEnd[2];
-
-	// memory is allocated to heap here; main.c is responsible to clean memory
-	// (not including error cases)
-	double *velocity;
+	double wallVelocity[3]; //TODO: (TKS) rename
     double rhoRef;
 	double rhoIn;
 } t_boundPara;
