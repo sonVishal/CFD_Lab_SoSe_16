@@ -30,5 +30,5 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize);
 
-void p_assignIndices(const int * const normal, int * index, int * mirrorIndex);
+void p_assignIndices(const short int * const flag, int * index, int * mirrorIndex);
 #endif

@@ -11,6 +11,8 @@ void p_printBoundPara(const t_boundPara * const boundPara) {
 	printf("************************************************\n");
 }
 
+void p_computeParabolicProfile();
+
 void p_noSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize){
@@ -172,31 +174,41 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 // end
 
 // Function to assign the indices
-void p_assignIndices(const int * const normal, int * index, int * mirrorIndex) {
-	if (normal[0] == 1) {
-		// x = 0
-		index[0] = 3; index[1] = 7; index[2] = 10; index[3] = 13; index[4] = 17;
-		mirrorIndex[0] = 1; mirrorIndex[1] = 5; mirrorIndex[2] = 8; mirrorIndex[3] =  11; mirrorIndex[4] = 15;
-	} else if (normal[0] == -1) {
-		// x = xlength[0]+1
-		mirrorIndex[0] = 3; mirrorIndex[1] = 7; mirrorIndex[2] = 10; mirrorIndex[3] = 13; mirrorIndex[4] = 17;
-		index[0] = 1; index[1] = 5; index[2] = 8; index[3] =  11; index[4] = 15;
-	} else if (normal[1] == 1) {
-		// y = 0
-		index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18;
-		mirrorIndex[0] = 0; mirrorIndex[1] = 5; mirrorIndex[2] = 6; mirrorIndex[3] = 7; mirrorIndex[4] = 14;
-	} else if (normal[1] == -1) {
-		// y = xlength[1]+1
-		mirrorIndex[0] = 4; mirrorIndex[1] = 11; mirrorIndex[2] = 12; mirrorIndex[3] = 13; mirrorIndex[4] = 18;
-		index[0] = 0; index[1] = 5; index[2] = 6; index[3] = 7; index[4] = 14;
-	} else if (normal[2] == 1) {
-		// z = 0
-		index[0] = 14; index[1] = 15; index[2] = 16; index[3] = 17; index[4] = 18;
-		mirrorIndex[0] = 0; mirrorIndex[1] = 1; mirrorIndex[2] = 2; mirrorIndex[3] = 3; mirrorIndex[4] = 4;
-	} else if (normal[2] == -1) {
-		// z = xlength[2]+1
-		mirrorIndex[0] = 14; mirrorIndex[1] = 15; mirrorIndex[2] = 16; mirrorIndex[3] = 17; mirrorIndex[4] = 18;
-		index[0] = 0; index[1] = 1; index[2] = 2; index[3] = 3; index[4] = 4;
+void p_assignIndices(const short int * const flag, int * index, int * mirrorIndex) {
+	switch (*flag) {
+		case XY_LEFT:
+			// z = 0
+			index[0] = 14; index[1] = 15; index[2] = 16; index[3] = 17; index[4] = 18;
+			mirrorIndex[0] = 0; mirrorIndex[1] = 1; mirrorIndex[2] = 2; mirrorIndex[3] = 3; mirrorIndex[4] = 4;
+			break;
+		case XY_RIGHT:
+			// z = xlength[2]+1
+			mirrorIndex[0] = 14; mirrorIndex[1] = 15; mirrorIndex[2] = 16; mirrorIndex[3] = 17; mirrorIndex[4] = 18;
+			index[0] = 0; index[1] = 1; index[2] = 2; index[3] = 3; index[4] = 4;
+			break;
+		case YZ_BOTTOM:
+			// x = 0
+			index[0] = 3; index[1] = 7; index[2] = 10; index[3] = 13; index[4] = 17;
+			mirrorIndex[0] = 1; mirrorIndex[1] = 5; mirrorIndex[2] = 8; mirrorIndex[3] =  11; mirrorIndex[4] = 15;
+			break;
+		case YZ_TOP:
+			// x = xlength[0]+1
+			mirrorIndex[0] = 3; mirrorIndex[1] = 7; mirrorIndex[2] = 10; mirrorIndex[3] = 13; mirrorIndex[4] = 17;
+			index[0] = 1; index[1] = 5; index[2] = 8; index[3] =  11; index[4] = 15;
+			break;
+		case XZ_BACK:
+			// y = 0
+			index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18;
+			mirrorIndex[0] = 0; mirrorIndex[1] = 5; mirrorIndex[2] = 6; mirrorIndex[3] = 7; mirrorIndex[4] = 14;
+			break;
+		case XZ_FRONT:
+			// y = xlength[1]+1
+			mirrorIndex[0] = 4; mirrorIndex[1] = 11; mirrorIndex[2] = 12; mirrorIndex[3] = 13; mirrorIndex[4] = 18;
+			index[0] = 0; index[1] = 5; index[2] = 6; index[3] = 7; index[4] = 14;
+			break;
+		default:
+			ERROR("** This should not happen!! **");
+			break;
 	}
 }
 
@@ -246,7 +258,7 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 
 	int index[5] = {0,0,0,0,0}, mirrorIndex[5] = {0,0,0,0,0};
 
-	p_assignIndices(normal,index,mirrorIndex);
+	p_assignIndices(&flagField[currentFlagIndex].position,index,mirrorIndex);
 
     if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
             flagField[nextFlagIndex].type == FLUID) {
@@ -298,6 +310,11 @@ void p_inflow(double* collideField, t_flagField const * const flagField,
 	double feq[Q];
 	p_computeIndexQ(point, xlength, &currentCellIndex);
 	computeFeq(&boundPara->rhoRef, boundPara->wallVelocity, feq);
+
+	// TODO: (VS) Parabolic profile
+	// if (boundPara->rhoIn == -1) { // Uniform velocity
+	// } else {
+	// }
 
 	/* TODO: (DL) see WS sentence after eq. 2.2:
 	 * "You may also try to use the density from the previous time step as pref"
