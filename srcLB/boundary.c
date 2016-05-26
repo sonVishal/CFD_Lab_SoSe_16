@@ -259,9 +259,6 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 			break;
 	}
 
-	printf("AFTER: normal = %i, %i, %i \n", normal[0], normal[1], normal[2]);
-
-
 	int nextPoint[3] = {point[0]+normal[0],
 						point[1]+normal[1],
 						point[2]+normal[2]};
