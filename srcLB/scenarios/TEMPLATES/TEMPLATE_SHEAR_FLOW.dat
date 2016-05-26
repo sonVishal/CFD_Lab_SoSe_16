@@ -9,9 +9,8 @@ MODE 		      		0
 #          SIMULATION SETTINGS
 #--------------------------------------------
 
-# Relaxation parameter OR Reynolds number (set the other to -1)
+# Relaxation parameter tau
 tau                    	1.8
-Re			-1
 
 # Number of timesteps
 timesteps            		5000
