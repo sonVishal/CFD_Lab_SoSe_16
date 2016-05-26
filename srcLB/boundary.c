@@ -294,13 +294,12 @@ void p_inflow(double* collideField, t_flagField const * const flagField,
 	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
 	int i;
-	int currentFlagIndex, currentCellIndex;
+	int currentCellIndex;
 	double feq[Q];
-	p_computeIndex(point, xlength, &currentFlagIndex);
-	currentCellIndex = Q*currentFlagIndex;
+	p_computeIndexQ(point, xlength, &currentCellIndex);
 	computeFeq(&boundPara->rhoRef, boundPara->wallVelocity, feq);
 	for (i = 0; i < Q; i++) {
-		collideField[Q*currentCellIndex+i] = feq[i];
+		collideField[currentCellIndex+i] = feq[i];
 	}
 }
 
