@@ -9,16 +9,16 @@ MODE 		      		1
 #--------------------------------------------
 
 # Relaxation parameter tau
-tau                    	0.6
+tau                    		0.6
 
 # Number of timesteps
-timesteps            		1000
+timesteps            		10000
 
 # timesteps between each plot
-timestepsPerPlotting 20
+timestepsPerPlotting 		  500
 
 #Scenario - name for the simulation and output paraview output files (in pv_files)
-problem 			step_flow
+problem 			stepFlow
 
 
 #--------------------------------------------
@@ -35,7 +35,7 @@ problem 			step_flow
 #          / |                           / |
 #         +-----------------------------+  |
 #         |  |             XY back      |  |
-# XZ left | /|----/        /            |  | XZ right
+# XZ left | /|----/|       /            |  | XZ right
 #         |/ |   / |      /             |  |
 #         |------XY|front               |  |                    (Z)
 #         |  +--|-----------------------|--+--------------------->
@@ -61,6 +61,11 @@ z_direction			15
 #--------------------------------------------
 #           BOUNDARY SETTINGS
 #--------------------------------------------
+
+# Use of inflow scheme set 
+# 0 = Uniform   1 = Parabolic  
+inflowScheme		0
+
 # USE TYPES FOR BOUNDARY CONDITION
 # NO_SLIP = 1   MOVING = 2   FREE_SLIP = 3   INFLOW = 4  OUTFLOW = 5   PRESSURE_IN = 6
 # do not use FLUID = 0 or OBSTACLE = 7
