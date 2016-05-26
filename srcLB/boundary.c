@@ -290,6 +290,7 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 	p_computeIndex(point, xlength, &currentFlagIndex);
 	currentCellIndex = Q*currentFlagIndex;
 
+	printf("point %i, %i, %i \n", point[0], point[1], point[2]);
 
 	for (i = 0; i < Q; i++) {
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];

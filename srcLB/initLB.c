@@ -90,7 +90,7 @@ void p_verifyValidWallSetting(t_boundPara *boundPara, const int mode){
 void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	int type;
 	double x_velocity, y_velocity, z_velocity;
-	double rhoRef, rhoIn; /* TODO: (DL) rename rhoIn -> deltaRho, also in templates*/
+	double rhoRef, rhoIn;
 	int inflowScheme = -1; //-1 is invalid, inflowScheme gets only read when the
 						   //wall is of type INFLOW or PRESSURE_IN
 
