@@ -321,9 +321,7 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 	double feq[Q];
 	const double effectiveDensity = boundPara->rhoRef + boundPara->rhoIn;
 
-	p_computeIndex(point, xlength, &currentFlagIndex);
-	currentCellIndex = Q*currentFlagIndex;
-
+	p_computeIndexQ(point, xlength, &currentFlagIndex);
 	computeFeq(&effectiveDensity, boundPara->wallVelocity, feq);
 
 	for (i = 0; i < Q; i++) {
