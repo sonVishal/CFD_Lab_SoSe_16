@@ -70,8 +70,8 @@ typedef struct {
 } t_boundPara;
 
 typedef struct {
-    int type;
-    int position;
+    short type;
+    short position;
 } t_flagField;
 
 enum SETTING_MODE{

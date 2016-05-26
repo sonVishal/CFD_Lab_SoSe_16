@@ -66,8 +66,7 @@ int main(int argc, char *argv[]){
     }
 
     // TODO: Assign default values to the type and position fields
-    //memset(flagField, -1, totalsize* sizeof(int)); //set default value to -1 (invalid) for security
-
+    memset(flagField, -1, totalsize * sizeof(t_flagField)); //set default value to -1 (invalid) for security
 
     // Initialize all the fields
     initialiseFields(collideField, streamField, flagField, xlength, boundPara, problem);
