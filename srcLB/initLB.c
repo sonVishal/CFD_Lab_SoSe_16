@@ -330,7 +330,7 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     	if(xlength[0] != xlength[1] && xlength[0] != xlength[2]){
     		ERROR("Only quadratic is supported for now. \n");
     	}
-    	double u_wall;
+    	double u_wall = -1;
     	for(int b=XY_LEFT; b <= XZ_BACK; ++b){
     	    if(boundPara[b].type == MOVING){
     			u_wall = sqrt(boundPara[b].wallVelocity[0]*boundPara[b].wallVelocity[0]
@@ -344,6 +344,9 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     		}
     	}
     	*tau = u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
+
+    	if(u_wall == -1) ERROR("Couldn't find a MOVING wall.");
+
     	double machNr  = u_wall/C_S;
 
     	printf("\nINFO: Wall speed = %f \n", u_wall);
