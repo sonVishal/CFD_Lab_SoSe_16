@@ -6,8 +6,7 @@
 
 void p_noSlip(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize,
-	int const * const gridSize){
+	const t_boundPara * const boundPara, int const * const totalSize){
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -20,19 +19,16 @@ void p_noSlip(double* collideField, int const * const flagField,
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-	    if(nextFlagIndex >=0 && nextFlagIndex < *gridSize &&
+	    if(flagField[nextFlagIndex] == FLUID &&
            nextCellIndex >= 0 && nextCellIndex < *totalSize) {
-
-		    if (flagField[nextFlagIndex] == FLUID)
-			    collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)];
-        }
+		    collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)];
+		}
 	}
 }
 
 void p_movingWall(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize,
-	int const * const gridSize) {
+	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -49,15 +45,13 @@ void p_movingWall(double* collideField, int const * const flagField,
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-	    if(nextFlagIndex >=0 && nextFlagIndex < *gridSize &&
+	    if(flagField[nextFlagIndex] == FLUID &&
            nextCellIndex >= 0 && nextCellIndex < *totalSize) {
-            if (flagField[nextFlagIndex] == FLUID){
-                double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
-                double weight = LATTICEWEIGHTS[i];
-                computeDensity(&collideField[nextCellIndex], &density);
-                collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)] +
-                        2 * weight * density * dot_uwall_c / (C_S*C_S);
-            }
+            double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
+            double weight = LATTICEWEIGHTS[i];
+            computeDensity(&collideField[nextCellIndex], &density);
+            collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)] +
+                    2 * weight * density * dot_uwall_c / (C_S*C_S);
         }
 	}
 }
@@ -197,8 +191,7 @@ void p_assignIndices(const int * const normal, int * index, int * mirrorIndex) {
 
 void p_freeSlip(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize,
-	int const * const gridSize) {
+	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
 	int i;
 	int normal[3] = {0,0,0};
@@ -232,20 +225,17 @@ void p_freeSlip(double* collideField, int const * const flagField,
 	currentCellIndex	= Q*currentFlagIndex;
 	nextCellIndex 		= Q*nextFlagIndex;
 
-    if(nextFlagIndex >=0 && nextFlagIndex < *gridSize &&
+    if(flagField[nextFlagIndex] == FLUID &&
        nextCellIndex >= 0 && nextCellIndex < *totalSize) {
-        if (flagField[nextFlagIndex] == FLUID){
-            for (i = 0; i < 5; i++) {
-                collideField[currentCellIndex+index[i]] = collideField[nextCellIndex+mirrorIndex[i]];
-            }
+        for (i = 0; i < 5; i++) {
+            collideField[currentCellIndex+index[i]] = collideField[nextCellIndex+mirrorIndex[i]];
         }
     }
 }
 
 void p_outflow(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize,
-	int const * const gridSize) {
+	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -267,19 +257,18 @@ void p_outflow(double* collideField, int const * const flagField,
 		computeVelocity(&collideField[nextCellIndex], &density, nextPointVel);
 		computeFeq(&(boundPara->rhoRef), nextPointVel, feq);
 
-        if(nextFlagIndex >=0 && nextFlagIndex < *gridSize &&
+        if(flagField[nextFlagIndex] == FLUID &&
            nextCellIndex >= 0 && nextCellIndex < *totalSize) {
-                if (flagField[nextFlagIndex] == FLUID)
-                    collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
-                                                    collideField[nextCellIndex+Q-1-i];
+
+			   collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
+                                            collideField[nextCellIndex+Q-1-i];
         }
 	}
 }
 
 void p_inflow(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize,
-	int const * const gridSize) {
+	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
 	int i;
 	int currentFlagIndex, currentCellIndex;
@@ -294,8 +283,7 @@ void p_inflow(double* collideField, int const * const flagField,
 
 void p_pressureIn(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize,
-	int const * const gridSize) {
+	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -315,11 +303,11 @@ void p_pressureIn(double* collideField, int const * const flagField,
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-        if(nextFlagIndex >=0 && nextFlagIndex < *gridSize &&
+        if(flagField[nextFlagIndex] == FLUID &&
            nextCellIndex >= 0 && nextCellIndex < *totalSize) {
-            if (flagField[nextFlagIndex] == FLUID)
-                collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
-                                                collideField[nextCellIndex+Q-1-i];
+
+            collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
+                                            collideField[nextCellIndex+Q-1-i];
         }
 	}
 }
@@ -363,8 +351,7 @@ void treatBoundary(double *collideField, const int * const flagField,
 	int flagIndex, wallType;
 	int points[3];
 	int const xlen2[3] = {xlength[0]+2,xlength[1]+2,xlength[1]+2};
-    int const gridSize  = xlen2[2]*xlen2[1]*xlen2[0];
-	int const totalSize = Q*gridSize;
+    int const totalSize  = Q*xlen2[2]*xlen2[1]*xlen2[0];
 
 	t_boundaryFcnPtr fcnPtr = NULL;
 
@@ -382,7 +369,7 @@ void treatBoundary(double *collideField, const int * const flagField,
 					points[2] = z;
 					fcnPtr = p_selectFunction(wallType);
 					(*fcnPtr)(collideField, flagField, points, xlength,
-						&boundPara[wallType], &totalSize, &gridSize);
+						&boundPara[wallType], &totalSize);
 				}
 			}
 		}

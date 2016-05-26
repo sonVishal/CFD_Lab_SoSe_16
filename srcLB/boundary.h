@@ -9,33 +9,27 @@ void treatBoundary(double *collideField, const int * const flagField,
 
 void p_noSlip(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize,
-	int const * const gridSize);
+	const t_boundPara * const boundPara, int const * const totalSize);
 
 void p_movingWall(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize,
-	int const * const gridSize);
+	const t_boundPara * const boundPara, int const * const totalSize);
 
 void p_freeSlip(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize,
-	int const * const gridSize);
+	const t_boundPara * const boundPara, int const * const totalSize);
 
 void p_outflow(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize,
-	int const * const gridSize);
+	const t_boundPara * const boundPara, int const * const totalSize);
 
 void p_inflow(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize,
-	int const * const gridSize);
+	const t_boundPara * const boundPara, int const * const totalSize);
 
 void p_pressureIn(double* collideField, int const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize,
-	int const * const gridSize);
+	const t_boundPara * const boundPara, int const * const totalSize);
 
 void p_assignIndices(const int * const normal, int * index, int * mirrorIndex);
 #endif

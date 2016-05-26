@@ -91,11 +91,10 @@ int main(int argc, char *argv[]){
 	    collideField = streamField;
 	    streamField = swap;
 
-        writeVtkOutput(collideField,flagField,fName,t,xlength);
-
 	    doCollision(collideField,flagField,&tau, xlength);
-        ERROR("STOPPER -- remove when proceeding with implementation\n");
 	    treatBoundary(collideField,flagField,boundPara,xlength);
+        // writeVtkOutput(collideField,flagField,fName,t,xlength);
+        // ERROR("STOPPER -- remove when proceeding with implementation\n");
 
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);
