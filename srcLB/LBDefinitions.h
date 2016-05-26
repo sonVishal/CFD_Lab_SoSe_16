@@ -100,6 +100,7 @@ inline static void p_computeIndexXYZ(const int x, const int y, const int z,
 
 inline static void p_computeIndexQ(const int * const point,
 	const int * const xlength, int *index) {
+	// Q * (z * xlen2 * ylen2 + y * xlen2 + x)
 	(*index) = Q*((xlength[0]+2)*((xlength[1]+2)*point[2]+point[1]) + point[0]);
 }
 #endif
