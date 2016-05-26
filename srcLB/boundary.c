@@ -26,8 +26,8 @@ void p_noSlip(double* collideField, t_flagField const * const flagField,
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-	    if(flagField[nextFlagIndex].type == FLUID &&
-           nextCellIndex >= 0 && nextCellIndex < *totalSize) {
+	    if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
+	    		flagField[nextFlagIndex].type == FLUID) {
 		    collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)];
 		}
 	}
