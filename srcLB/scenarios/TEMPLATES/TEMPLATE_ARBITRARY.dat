@@ -61,7 +61,7 @@ problem 		TiltedPlate.pgm
 # If a finer/coarser resolution of the domain is required, change the pgm file first and then adapt the parameter here.   
 
 # Depth in Y-direction (the scenarios in pgm format are set and displayed in the XZ plane)
-x_length         212
+x_length             212
 y_length 	     3
 z_length	     492
 
@@ -69,6 +69,12 @@ z_length	     492
 #--------------------------------------------
 #           BOUNDARY SETTINGS
 #--------------------------------------------
+
+# Use of inflow scheme set 
+# 0 = Uniform   1 = Parabolic  
+inflowScheme		0
+
+
 # USE TYPES FOR BOUNDARY CONDITION
 # NO_SLIP = 1   MOVING = 2   FREE_SLIP = 3   INFLOW = 4  OUTFLOW = 5   PRESSURE_IN = 6
 # do not use FLUID = 0 or OBSTACLE = 7
