@@ -11,7 +11,6 @@ void p_printBoundPara(const t_boundPara * const boundPara) {
 	printf("************************************************\n");
 }
 
-void p_computeParabolicProfile();
 
 void p_noSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
@@ -312,20 +311,30 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 	}
 }
 
+void p_computeParabolicProfile(const int * const point, const int * const xlength,
+ 		double * inflowVelocity) {
+	// TODO: support half parabola as well
+	inflowVelocity[3] = 4*inflowVelocity[3]*point[0]*point[0]/xlength[0]/xlength[0];
+}
+
 void p_inflow(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
 	int i;
-	int currentCellIndex;
+	int currentFlagIndex, currentCellIndex;
 	double feq[Q];
-	p_computeIndexQ(point, xlength, &currentCellIndex);
-	computeFeq(&boundPara->rhoRef, boundPara->wallVelocity, feq);
+	p_computeIndex(point, xlength, &currentFlagIndex);
+	currentCellIndex = Q*currentFlagIndex;
 
 	// TODO: (VS) Parabolic profile
-	// if (boundPara->rhoIn == -1) { // Uniform velocity
-	// } else {
-	// }
+	if (boundPara->inflowScheme == 1) { // Parabolics profile
+		double inflowVelocity;
+		p_computeParabolicProfile(point,xlength,&inflowVelocity);
+		computeFeq(&boundPara->rhoRef, &inflowVelocity, feq);
+	} else {
+		computeFeq(&boundPara->rhoRef, boundPara->wallVelocity, feq);
+	}
 
 	/* TODO: (DL) see WS sentence after eq. 2.2:
 	 * "You may also try to use the density from the previous time step as pref"
