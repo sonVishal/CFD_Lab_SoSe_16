@@ -321,6 +321,7 @@ void p_inflow(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
+    //TODO: (TKS) Handle the corner cases where it streams into no-slip/free-slip.
 	int i;
 	int currentFlagIndex, currentCellIndex;
 	double feq[Q];
