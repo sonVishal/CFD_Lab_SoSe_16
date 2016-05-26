@@ -53,6 +53,7 @@ problem 		cavity
 # see how it is done: https://stackoverflow.com/questions/9907160/how-to-convert-enum-names-to-string-in-c
 
 # depth in y-direction (the scenarios are set and displayed on the x-z plane)
+# NOTE: In the cavity case only a Cube is supported, i.e. all values in all directions have to be the same!
 x_length             	40
 y_length 	     	40
 z_length	     	40
@@ -64,7 +65,9 @@ z_length	     	40
 # NO_SLIP = 1   MOVING = 2   FREE_SLIP = 3   INFLOW = 4  OUTFLOW = 5   PRESSURE_IN = 6
 # do not use FLUID = 0 or OBSTACLE = 7
 
-# XY wall left
+
+# NOTE: in the CAVITY case only the velocity of the "YZ wall" on top can be changed!!
+# XY wall left (FIXED, DO NOT CHANGE)
 type 			1
 x_velocity 		0.0
 y_velocity 		1.0
@@ -72,7 +75,7 @@ z_velocity 		0.0
 rhoRef 			-1.0
 rhoIn 			-1.0
 
-# XY wall right
+# XY wall right (FIXED, DO NOT CHANGE)
 type 			1
 x_velocity 		0.0
 y_velocity 		0.0
@@ -80,7 +83,7 @@ z_velocity 		0.0
 rhoRef 			-1.0
 rhoIn 			-1.0
 
-# YZ wall - bottom
+# YZ wall - bottom (FIXED, DO NOT CHANGE)
 type 			1
 x_velocity 		0.0
 y_velocity 		0.0
@@ -88,7 +91,7 @@ z_velocity 		0.0
 rhoRef 			-1.0
 rhoIn 			-1.0
 
-# YZ wall - top
+# YZ wall - top (SET VELOCITY OF MOVING WALL)
 type 			2
 x_velocity 		0.0
 y_velocity 		0.0
@@ -96,7 +99,7 @@ z_velocity 		0.025
 rhoRef 			-1.0
 rhoIn 			-1.0
 
-# XZ wall - front
+# XZ wall - front (FIXED, DO NOT CHANGE)
 type			1
 x_velocity		0.0
 y_velocity 		0.0
@@ -104,7 +107,7 @@ z_velocity 		0.0
 rhoRef 			-1.0
 rhoIn 			-1.0
 
-# XZ wall - back
+# XZ wall - back (FIXED, DO NOT CHANGE)
 type 			1
 x_velocity 		0.0
 y_velocity 		0.0
