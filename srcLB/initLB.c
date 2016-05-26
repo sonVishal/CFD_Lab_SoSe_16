@@ -29,6 +29,17 @@ void p_verifyValidWallSetting(t_boundPara *boundPara, const int mode){
 		}// else if(foundMovWall == 1 && foundNoSlipWall == 5){
 
 	}else{
+		/* TODO(DL) :
+		 * Check:
+		 * left XY wall is always inflow
+		 * right XY wall is always outflow
+		 *
+		 * Check that in the direction of flow is set normal (that is now always z-direction)
+		 *
+		 * Possibly make "read_wall" and in the parameter file less to read! (not all
+		 * values are needed all the time..)
+		 */
+
 		int numInflow    = 0;
 		int numFreeSlip  = 0;
 
@@ -37,7 +48,7 @@ void p_verifyValidWallSetting(t_boundPara *boundPara, const int mode){
 		// We hence also only allow for one inflow in the system.
 		for(int i = XY_LEFT; i <= XZ_BACK; i=i+2) {
 			if(boundPara[i].type == MOVING || boundPara[i+1].type == MOVING){
-				ERROR("MOVING walls are only supported in mode CAVITY");
+				ERROR("MOVING walls are only supported in mode CAVITY!!");
 			}
 
 			if(boundPara[i].type == INFLOW){
@@ -80,12 +91,20 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	int type;
 	double x_velocity, y_velocity, z_velocity;
 	double rhoRef, rhoIn; /* TODO: (DL) rename rhoIn -> deltaRho, also in templates*/
+	int inflowScheme = -1; //-1 is invalid, inflowScheme gets only read when the
+						   //wall is of type INFLOW or PRESSURE_IN
+
 
     READ_INT(*argv, type, skip);
 
 	READ_DOUBLE(*argv, x_velocity, skip);
 	READ_DOUBLE(*argv, y_velocity, skip);
     READ_DOUBLE(*argv, z_velocity, skip);
+
+	if(type == INFLOW || type == PRESSURE_IN){
+		//if used in CAVITY (which is illegal) this results in buffer overflow
+		READ_INT(*argv, inflowScheme, skip);
+	}
 
 	READ_DOUBLE(*argv, rhoRef, skip);
 	READ_DOUBLE(*argv, rhoIn, skip);
@@ -94,6 +113,7 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	boundPara->wallVelocity[0] = x_velocity;
 	boundPara->wallVelocity[1] = y_velocity,
 	boundPara->wallVelocity[2] = z_velocity;
+	boundPara->inflowScheme = inflowScheme;
 	boundPara->rhoRef = rhoRef;
 	boundPara->rhoIn = rhoIn;
 
@@ -119,9 +139,9 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 //            #
 //            #
 
-int valid_sorroundings(int x, int z, const int* const xlength, int **pgmMatrix){
+int checkForValidSurroundings(int x, int z, const int* const xlength, int **pgmMatrix){
 
-    int right = pgmMatrix[z+1][x];
+	int right = pgmMatrix[z+1][x];
     int left  = pgmMatrix[z-1][x];
     int up    = pgmMatrix[z][x+1];
     int down  = pgmMatrix[z][x-1];
@@ -193,7 +213,7 @@ void read_customPgmMatrix(const int * const xlength, char *filename){
     for(int z = 1; z <= xlength[2]; ++z){
         for (int x = 1; x <= xlength[0]; ++x) {
             if(pgmMatrix[z][x] == 1){
-                if(!valid_sorroundings(x, z, xlength, pgmMatrix)){
+                if(!checkForValidSurroundings(x, z, xlength, pgmMatrix)){
 		            free_imatrix(pgmMatrix,0,zsizePgm+1,0,xsizePgm+1);
                     char error[80];
                     snprintf(error, 80, "Invalid surroundings at x = %d, z = %d)", x,z);
@@ -262,7 +282,6 @@ void p_generatePgmDomain(char *argv[], const int * const xlength, const int MODE
 int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *timesteps,
 		int *timestepsPerPlotting, char *problem,
 		int argc, char *argv[]){
-
 
 	if(argc != 2){
 		char msg[200];
