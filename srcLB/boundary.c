@@ -298,6 +298,14 @@ void p_inflow(double* collideField, t_flagField const * const flagField,
 	double feq[Q];
 	p_computeIndexQ(point, xlength, &currentCellIndex);
 	computeFeq(&boundPara->rhoRef, boundPara->wallVelocity, feq);
+
+	/* TODO: (DL) see WS sentence after eq. 2.2:
+	 * "You may also try to use the density from the previous time step as pref"
+	 *
+	 * We could do this by either: using a static variable for pref or change the
+	 * variable in boundPara (but then we need a non-const boundPara).
+	 */
+
 	for (i = 0; i < Q; i++) {
 		collideField[currentCellIndex+i] = feq[i];
 	}
