@@ -206,35 +206,47 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 	// Begin
 	int i;
 	int normal[3] = {0,0,0};
-	// We know that only one component will be 0 or xlength+1 and the others
-	// will always be > 0 or < xlength+1 due to free slip being allowed only on
-	// inner cells of the boundary
-	if (point[0] == 0) {
-		normal[0] = 1;
-	} else if (point[0] == xlength[0]+1) {
-		normal[0] = -1;
-	} else if (point[1] == 0) {
-		normal[1] = 1;
-	} else if (point[1] == xlength[1]+1) {
-		normal[1] = -1;
-	} else if (point[2] == 0) {
-		normal[2] = 1;
-	} else if (point[2] == xlength[2]+1) {
-		normal[2] = -1;
+	int currentFlagIndex, currentCellIndex, nextFlagIndex, nextCellIndex;
+
+	p_computeIndex(point, xlength, &currentFlagIndex);
+
+	currentCellIndex	= Q*currentFlagIndex;
+
+	// Assign normals based on the wall we are at
+	switch (flagField[currentFlagIndex].position) {
+		case XY_LEFT:
+			normal[2] = 1;
+			break;
+		case XY_RIGHT:
+			normal[2] = -1;
+			break;
+		case YZ_BOTTOM:
+			normal[0] = 1;
+			break;
+		case YZ_TOP:
+			normal[0] = -1;
+			break;
+		case XZ_BACK:
+			normal[1] = 1;
+			break;
+		case XZ_FRONT:
+			normal[1] = -1;
+			break;
+		default:
+			ERROR("** This should not happen!! **");
+			break;
 	}
+
 	int nextPoint[3] = {point[0]+normal[0],
 						point[1]+normal[1],
 						point[2]+normal[2]};
 
+	p_computeIndex(nextPoint, xlength, &nextFlagIndex);
+	nextCellIndex 		= Q*nextFlagIndex;
+
 	int index[5] = {0,0,0,0,0}, mirrorIndex[5] = {0,0,0,0,0};
 
 	p_assignIndices(normal,index,mirrorIndex);
-
-	int currentFlagIndex, currentCellIndex, nextFlagIndex, nextCellIndex;
-	p_computeIndex(point, xlength, &currentFlagIndex);
-	p_computeIndex(nextPoint, xlength, &nextFlagIndex);
-	currentCellIndex	= Q*currentFlagIndex;
-	nextCellIndex 		= Q*nextFlagIndex;
 
     if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
             flagField[nextFlagIndex].type == FLUID) {
