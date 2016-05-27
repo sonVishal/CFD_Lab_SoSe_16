@@ -451,17 +451,28 @@ void print_flagfield_slice(int* field, const int * const xlength){
 void p_setWall(const int * const xlength, const int fixed, const int outerIdx, const int innerIdx, t_flagField *flagField,
 				const int wallType, const int wallPos) {
 	int inner, outer, flagIndex;
+	int index[2];
+	int point[3];
+	if (wallPos == XY_LEFT || wallPos == XY_RIGHT) {
+		index[0] = 0;
+		index[1] = 1;
+		point[2] = fixed;
+	} else if (wallPos == XZ_BACK || wallPos == XZ_FRONT) {
+		index[0] = 0;
+		index[1] = 2;
+		point[1] = fixed;
+	} else if (wallPos == YZ_BOTTOM || wallPos == YZ_TOP) {
+		index[0] = 1;
+		index[1] = 2;
+		point[0] = fixed;
+	} else {
+		ERROR("This should not happen");
+	}
 	for (outer = 0; outer < xlength[outerIdx]+2; outer++) {
 		for (inner = 0; inner < xlength[innerIdx]+2; inner++) {
-			if (wallPos == XY_LEFT || wallPos == XY_RIGHT) {
-				p_computeIndexXYZ(inner,outer,fixed, xlength,&flagIndex);
-			} else if (wallPos == XZ_BACK || wallPos == XZ_FRONT) {
-				p_computeIndexXYZ(inner, fixed, outer, xlength, &flagIndex);
-			} else if (wallPos == YZ_BOTTOM || wallPos == YZ_TOP) {
-				p_computeIndexXYZ(fixed, inner, outer, xlength, &flagIndex);
-			} else {
-				ERROR("This should not happen");
-			}
+			point[index[0]] = inner;
+			point[index[1]] = outer;
+			p_computeIndex(point, xlength,&flagIndex);
 			flagField[flagIndex].type = wallType;
 			flagField[flagIndex].position = wallPos;
 		}
