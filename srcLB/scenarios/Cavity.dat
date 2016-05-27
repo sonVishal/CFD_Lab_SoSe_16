@@ -54,9 +54,9 @@ problem 		cavity
 
 # depth in y-direction (the scenarios are set and displayed on the x-z plane)
 # NOTE: In the cavity case only a Cube is supported, i.e. all values in all directions have to be the same!
-x_length             	30
-y_length 	     	30
-z_length	     	30
+x_length             	40
+y_length 	     	40
+z_length	     	40
 
 #--------------------------------------------
 #           BOUNDARY SETTINGS
@@ -95,7 +95,7 @@ rhoIn 			-1.0
 type 			2
 x_velocity 		0.0
 y_velocity 		0.0
-z_velocity 		0.01
+z_velocity 		0.025
 rhoRef 			-1.0
 rhoIn 			-1.0
 
