@@ -123,7 +123,7 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 			boundPara->bPrio = 2;
 			break;
 		case MOVING:
-			boundPara->bPrio = 2;
+			boundPara->bPrio = 3;
 			break;
 		case FREE_SLIP:
 			boundPara->bPrio = 1;
@@ -516,7 +516,7 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
     int start, end;
 
     //Do the domain enclosing boundaries (ghost layers) first and set type accordingly.
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i <= 3; i++) {
 		for (int j = 0; j < NUM_WALLS; j++) {
 			if (boundPara[j].bPrio == i) {
 				p_setWall(xlength, flagField, boundPara[j].type, j);
