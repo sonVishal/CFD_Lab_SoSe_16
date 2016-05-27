@@ -448,6 +448,26 @@ void print_flagfield_slice(int* field, const int * const xlength){
     }
 }
 
+void p_setWall(const int * const xlength, const int fixed, const int outerIdx, const int innerIdx, t_flagField *flagField,
+				const int wallType, const int wallPos) {
+	int inner, outer, flagIndex;
+	for (outer = 0; outer < xlength[outerIdx]+2; outer++) {
+		for (inner = 0; inner < xlength[innerIdx]+2; inner++) {
+			if (wallPos == XY_LEFT || wallPos == XY_RIGHT) {
+				p_computeIndexXYZ(inner,outer,fixed, xlength,&flagIndex);
+			} else if (wallPos == XZ_BACK || wallPos == XZ_FRONT) {
+				p_computeIndexXYZ(inner, fixed, outer, xlength, &flagIndex);
+			} else if (wallPos == YZ_BOTTOM || wallPos == YZ_TOP) {
+				p_computeIndexXYZ(fixed, inner, outer, xlength, &flagIndex);
+			} else {
+				ERROR("This should not happen");
+			}
+			flagField[flagIndex].type = wallType;
+			flagField[flagIndex].position = wallPos;
+		}
+	}
+}
+
 void initialiseFields(double *collideField, double *streamField, t_flagField *flagField,
 		int *xlength, t_boundPara *boundPara, char *problem){
 
