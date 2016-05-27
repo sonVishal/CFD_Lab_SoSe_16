@@ -5,8 +5,6 @@
 #include "computeCellValues.h"
 #include <stdio.h>
 
-
-
 /*
  * Checks that walls settings are correct. The function is separated into two different cases.
  * The first case checks the correctness of the CAVITY mode, the second case the walls setting
@@ -35,7 +33,7 @@ void p_verifyValidWallSetting(t_boundPara *boundPara, const int mode){
 			snprintf(msg, 150, "When a wall is set to MOVING we only support the CAVITY scenario. That is "
 					"one MOVING wall and 5 NO_SLIP walls.");
 			ERROR(msg);
-		}// else if(foundMovWall == 1 && foundNoSlipWall == 5){
+		}// else if(foundMovWall == 1 && foundNoSlipWall == 5) -> continue
 
 	}else{
 		int numInflow    = 0;
@@ -106,15 +104,15 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	READ_DOUBLE(*argv, rhoIn, skip);
 
 	boundPara->type = type;
-	boundPara->wallVelocity[0] = x_velocity;
-	boundPara->wallVelocity[1] = y_velocity,
-	boundPara->wallVelocity[2] = z_velocity;
+	boundPara->velocity[0] = x_velocity;
+	boundPara->velocity[1] = y_velocity,
+	boundPara->velocity[2] = z_velocity;
 	boundPara->rhoRef = rhoRef;
 	boundPara->rhoIn = rhoIn;
 
-	//Valid setting checking:
+	//Valid setting checking and setting priority of wall (determines order to set)
 	int msgSize = 200;
-	char msg[msgSize]; // only needed in case of errors
+	char msg[msgSize]; // need only in case of errors
 
 	/* TODO: (DL) discuss tolerances that are allowed */
 	/* Set priorities and check valid settings */
@@ -122,12 +120,15 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 		case NO_SLIP:
 			boundPara->bPrio = 2;
 			break;
+
 		case MOVING:
 			boundPara->bPrio = 3;
 			break;
+
 		case FREE_SLIP:
 			boundPara->bPrio = 1;
 			break;
+
 		case INFLOW:
 			boundPara->bPrio = 0;
 
@@ -135,8 +136,8 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 				snprintf(msg, msgSize, "Invalid INFLOW wall with rhoRef=%f \n", rhoRef);
 				ERROR(msg);
 			}
-
 			break;
+
 		case PRESSURE_IN:
 			boundPara->bPrio = 0;
 
@@ -146,6 +147,7 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 			}
 
 			break;
+
 		case OUTFLOW:
 			boundPara->bPrio = 0;
 
@@ -398,9 +400,9 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     	double u_wall = -1;
     	for(int b=XY_LEFT; b <= XZ_BACK; ++b){
     	    if(boundPara[b].type == MOVING){
-    			u_wall = sqrt(boundPara[b].wallVelocity[0]*boundPara[b].wallVelocity[0]
-					+ boundPara[b].wallVelocity[1]*boundPara[b].wallVelocity[1]+
-					boundPara[b].wallVelocity[2]*boundPara[b].wallVelocity[2]);
+    			u_wall = sqrt(boundPara[b].velocity[0]*boundPara[b].velocity[0]
+					+ boundPara[b].velocity[1]*boundPara[b].velocity[1]+
+					boundPara[b].velocity[2]*boundPara[b].velocity[2]);
     			*tau = u_wall*(xlength[0])/(C_S*C_S*Re)+0.5;
     			printf("\nINFO: Calculated tau = %f \n", *tau);
 
@@ -549,9 +551,6 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 			}
 		}
     }
-
-    //TODO: (TKS) remove when finished testing
-    //print_flagfield_slice(flagField, xlength);
 
     /* initialize collideField and streamField*/
     //f_i(x,0) = f^eq(1,0,0) = w_i
