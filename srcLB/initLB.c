@@ -512,9 +512,7 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 	int const zlen2		= xlength[2]+2;
 	int idx;
 
-    int type;
-    int start, end;
-
+    
     //Do the domain enclosing boundaries (ghost layers) first and set type accordingly.
 	for (int i = 0; i <= 3; i++) {
 		for (int j = 0; j < NUM_WALLS; j++) {
