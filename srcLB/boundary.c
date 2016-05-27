@@ -175,6 +175,8 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 
 // Function to assign the indices
 void p_assignIndices(const short int * const flag, int * index, int * mirrorIndex) {
+	assert(*flag >= XY_LEFT && *flag <= XZ_BACK);
+
 	switch (*flag) {
 		case XY_LEFT:
 			// z = 0
@@ -196,15 +198,15 @@ void p_assignIndices(const short int * const flag, int * index, int * mirrorInde
 			mirrorIndex[0] = 3; mirrorIndex[1] = 7; mirrorIndex[2] = 10; mirrorIndex[3] = 13; mirrorIndex[4] = 17;
 			index[0] = 1; index[1] = 5; index[2] = 8; index[3] =  11; index[4] = 15;
 			break;
-		case XZ_BACK:
-			// y = 0
-			index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18;
-			mirrorIndex[0] = 0; mirrorIndex[1] = 5; mirrorIndex[2] = 6; mirrorIndex[3] = 7; mirrorIndex[4] = 14;
-			break;
 		case XZ_FRONT:
 			// y = xlength[1]+1
 			mirrorIndex[0] = 4; mirrorIndex[1] = 11; mirrorIndex[2] = 12; mirrorIndex[3] = 13; mirrorIndex[4] = 18;
 			index[0] = 0; index[1] = 5; index[2] = 6; index[3] = 7; index[4] = 14;
+			break;
+		case XZ_BACK:
+			// y = 0
+			index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18;
+			mirrorIndex[0] = 0; mirrorIndex[1] = 5; mirrorIndex[2] = 6; mirrorIndex[3] = 7; mirrorIndex[4] = 14;
 			break;
 		default:
 			ERROR("** This should not happen!! **");
@@ -234,6 +236,8 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 //	static int normalVal[6] = {1,-1, 1,-1, -1, 1};
 //	normal[ normalIdx[ flagField[currentFlagIndex].position ] ] =
 //			normalVal[ flagField[currentFlagIndex].position ];
+
+	assert(flagField[currentFlagIndex].position >= XY_LEFT && flagField[currentFlagIndex].position <= XZ_BACK);
 
 	switch (flagField[currentFlagIndex].position) {
 		case XY_LEFT:
@@ -365,6 +369,7 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 }
 
 t_boundaryFcnPtr p_selectFunction(const int wallType) {
+	assert(wallType >= NO_SLIP && wallType <=OBSTACLE);
 	t_boundaryFcnPtr tmpPtr;
 	switch (wallType) {
 		case NO_SLIP:
