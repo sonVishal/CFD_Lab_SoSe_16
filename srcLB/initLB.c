@@ -235,7 +235,7 @@ void p_readCustomPgmMatrix(const int * const xlength, char *filename){
 	int zsizePgm, xsizePgm;
 	pgmMatrix = read_pgm(file_path, &zsizePgm, &xsizePgm);
 
-	if(zsizePgm != xlength[2] && xsizePgm != xlength[0]){
+	if(zsizePgm != xlength[2] || xsizePgm != xlength[0]){
 		free_imatrix(pgmMatrix,0,zsizePgm+1,0,xsizePgm+1);
 		char msg[150];
 		snprintf(msg, 150, "The size of the pgm matrix is [z_length=%i x xlength=%i]. The paramter"
