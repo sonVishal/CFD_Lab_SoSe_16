@@ -4,6 +4,7 @@
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 
+// TODO: (VS) Remove when finished debugging
 void p_printBoundPara(const t_boundPara * const boundPara) {
 	printf("************************************************\n");
 	printf("Type \t %d\n",boundPara->type);
