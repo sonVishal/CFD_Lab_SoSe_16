@@ -5,6 +5,15 @@
 #include "computeCellValues.h"
 #include <stdio.h>
 
+
+
+/*
+ * Checks that walls settings are correct. The function is separated into two different cases.
+ * The first case checks the correctness of the CAVITY mode, the second case the walls setting
+ * for more arbitrary scenarios (scenarios from worsheet 3).
+ *
+ * The restrictions on the walls are located at comments at the corresponding position in the code.
+ */
 void p_verifyValidWallSetting(t_boundPara *boundPara, const int mode){
 
 	if(mode == CAVITY){
@@ -76,6 +85,11 @@ void p_verifyValidWallSetting(t_boundPara *boundPara, const int mode){
 	}
 }
 
+
+/*
+ * Reads a single wall from the parameter file that is provided. Additionally, some checks
+ * for correctness of the user-settings are carried out.
+ */
 void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 
 	int type;
@@ -139,14 +153,18 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	}
 }
 
-//Checks whether the surroundings of the current cell is legal.
-//Examples of geometries not allowed:
-//  ##       #
-//    ##     #
-//            #
-//            #
-
-int checkForValidSurroundings(int x, int z, const int* const xlength, int **pgmMatrix){
+/*
+* Checks whether the surroundings of the current cell is legal.
+* Geometry that is not allowed:
+*  ##       #
+*    ##     #   ("thin wall")
+*           #
+*           #
+* Returns an boolean value to indicate whether the surrounding of this position is valid.
+* The function only checks custom scenarios and is thus only called in function
+* p_readCustomPgmMatrix
+*/
+int p_checkValidDomain(int x, int z, const int* const xlength, int **pgmMatrix){
 
 	int right = pgmMatrix[z+1][x];
     int left  = pgmMatrix[z-1][x];
@@ -177,21 +195,24 @@ int checkForValidSurroundings(int x, int z, const int* const xlength, int **pgmM
             is_valid = 0;
         }
     }
-
     return(is_valid);
-
 }
 
-//Global variable makes it cleaner. A domain is described as in a pgm format
-//even when no pgm file is provided. The two functions 'readParameters' and
-//'initialiseFields' use it:
-//'readParameters' - allocates and checks for validity of the geometry
-//'initialiseFields' - uses the matrix to set the domain and deallocates the matrix
+/*Global variable makes it cleaner. A domain is described as in a pgm format
+ * even when no pgm file is provided. The two functions 'readParameters' and
+ * 'initialiseFields' use it:
+ * 'readParameters' - allocates and checks for validity of the geometry
+ * 'initialiseFields' - uses the matrix to set the domain and deallocates the matrix
+*/
 static int **pgmMatrix = NULL;
 
-void print_matrix(const int * const xlength);
-
-void init_pgmMatrix(const int * const xlength){
+/*
+ * Allocation of the pgmMatrix in cases where the domain is created according to parameters provided,
+ * i.e. no extern pgm-file.
+ * The function sets the values for the boundary layer (the outer values are 1) and the domain
+ * values are 0. (Only logical values are used for the pgm matrix)
+ */
+void p_initPgmMatrix(const int * const xlength){
 
 	pgmMatrix = imatrix(0, xlength[2]+1, 0, xlength[0]+1); //XZ-plane where Z is on the "x-axis"
 
@@ -202,7 +223,13 @@ void init_pgmMatrix(const int * const xlength){
 	init_imatrix(pgmMatrix, 1, xlength[2], 1, xlength[0], 0);
 }
 
-void read_customPgmMatrix(const int * const xlength, char *filename){
+/*
+ * Allocation of pgmMatrix for custom scenarios. If the domain sizes (*xlength) of the provided
+ * parameter file and the pgm matrix do not correspond an error message will show up.
+ *
+ * Furthermore, the domain is checked if it is valid (see also function p_checkValidSurrounding)
+ */
+void p_readCustomPgmMatrix(const int * const xlength, char *filename){
 	char file_path[MAX_LINE_LENGTH+10]; //+10 for 'scenarios/'
 	snprintf(file_path, MAX_LINE_LENGTH+10, "scenarios/%s", filename);
 	int zsizePgm, xsizePgm;
@@ -216,17 +243,16 @@ void read_customPgmMatrix(const int * const xlength, char *filename){
 		ERROR(msg);
 	}
 
-    /*Check for illegal geometries*/
+	/*Check for illegal geometries*/
     for(int z = 1; z <= xlength[2]; ++z){
         for (int x = 1; x <= xlength[0]; ++x) {
             if(pgmMatrix[z][x] == 1){
-                if(!checkForValidSurroundings(x, z, xlength, pgmMatrix)){
+                if(!p_checkValidDomain(x, z, xlength, pgmMatrix)){
 		            free_imatrix(pgmMatrix,0,zsizePgm+1,0,xsizePgm+1);
                     char error[80];
                     snprintf(error, 80, "Invalid surroundings at x = %d, z = %d)", x,z);
                     ERROR(error);
                 }
-
 			}
 		}
     }
@@ -243,6 +269,10 @@ void print_matrix(const int * const xlength){
    }
 }
 
+/*
+ * Handles the creation (and allocation) of the pgmMatrix. The domain is created depending
+ * on the current mode.
+ */
 void p_generatePgmDomain(char *argv[], const int * const xlength, const int MODE){
 
 	//cannot be allocated in "case" -statement (compiler error)
@@ -250,15 +280,14 @@ void p_generatePgmDomain(char *argv[], const int * const xlength, const int MODE
 	char problem[MAX_LINE_LENGTH];
 
 	switch(MODE){
-
 	case SHEAR_FLOW:
-		init_pgmMatrix(xlength);
+		p_initPgmMatrix(xlength);
 		break;
 	case CAVITY:
-		init_pgmMatrix(xlength);
+		p_initPgmMatrix(xlength);
 		break;
 	case STEP_FLOW:
-		init_pgmMatrix(xlength);
+		p_initPgmMatrix(xlength);
 		//insert step:
 		int z_direction, x_direction;
 		READ_INT(*argv, z_direction,0); //size of step
@@ -275,14 +304,14 @@ void p_generatePgmDomain(char *argv[], const int * const xlength, const int MODE
 		break;
 	case ARBITRARY:
 		READ_STRING(*argv, problem, 0);
-		read_customPgmMatrix(xlength, problem);
+		p_readCustomPgmMatrix(xlength, problem);
 		break;
 	default:
 		ERROR("SETTING-MODE is invalid!!");
 		break;
 	}
-
 }
+
 
 int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *timesteps,
 		int *timestepsPerPlotting, char *problem,
@@ -348,14 +377,14 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 
     /* S T A R T  -- ONLY FOR CAVITY, this part supports the old CAVITY case
      * this will not be supported /executed. The checks are the same as
-     * in the last worksheet */
+     * in the last worksheet. */
 
     //CAVITY supports to hand either Reynolds number (and compute tau), or handle tau directly
-    if(Re != -1.0 && MODE == CAVITY){
+    if(Re != -1.0 && MODE == CAVITY){ //true, then compute tau according to Re
     	//The restriction of cubic domain is required in CAVITY such that the
     	//computation of tau is valid.
     	if(xlength[0] != xlength[1] && xlength[0] != xlength[2]){
-    		ERROR("Only quadratic is supported for now. \n");
+    		ERROR("Only quadratic domain is supported for the CAVITY mode. \n");
     	}
     	double u_wall = -1;
     	for(int b=XY_LEFT; b <= XZ_BACK; ++b){
@@ -421,7 +450,6 @@ void print_flagfield_slice(int* field, const int * const xlength){
 
 void initialiseFields(double *collideField, double *streamField, t_flagField *flagField,
 		int *xlength, t_boundPara *boundPara, char *problem){
-
 
 	// Loop variables
 	int x,y,z;
@@ -590,9 +618,5 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
         }
     }
 
-    //Call at allocation
-    //    pgmMatrix = imatrix(0, xlength[2]+1,0,xlength[0]+1);
-    //    init_imatrix(pgmMatrix,0,xlength[2]+1,0,xlength[0]+1,1);
-    //    print_matrix(xlength);
     free_imatrix(pgmMatrix,0,xlength[2]+1,0,xlength[0]+1);
 }
