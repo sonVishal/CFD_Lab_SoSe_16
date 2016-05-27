@@ -59,85 +59,67 @@ void doStreaming(double *collideField, double *streamField,t_flagField *flagFiel
 			//distribution j = 0
 
 			nextCellIndex = Q*(i+xylen2+xlen2);
-			if (flagField[i+xylen2+xlen2].type != -1)
-				streamField[currentCellIndex] = collideField[nextCellIndex];
+            streamField[currentCellIndex] = collideField[nextCellIndex];
 
 			//current cell to neighbor cell in direction LATTICEVELOCITIES[17] = {1,0,1}
 			//distribution j = 1
 			nextCellIndex = Q*(i+xylen2+1);
-			if (flagField[i+xylen2+1].type != -1)
-				streamField[currentCellIndex+1] = collideField[nextCellIndex+1];
+            streamField[currentCellIndex+1] = collideField[nextCellIndex+1];
 
 			//current cell to neighbor cell in direction LATTICEVELOCITIES[16] = {0,0,1}
 			//distribution j = 2
 			nextCellIndex = Q*(i+xylen2);
-			if (flagField[i+xylen2].type != -1)
-				streamField[currentCellIndex+2] = collideField[nextCellIndex+2];
+            streamField[currentCellIndex+2] = collideField[nextCellIndex+2];
 
 			//current cell to neighbor cell in direction LATTICEVELOCITIES[Q-j-1]
 			//distribution j = 3
 			nextCellIndex = Q*(i+xylen2-1);
-			if (flagField[i+xylen2-1].type != -1)
-				streamField[currentCellIndex+3] = collideField[nextCellIndex+3];
+            streamField[currentCellIndex+3] = collideField[nextCellIndex+3];
 
 			//etc...
 			nextCellIndex = Q*(i+xylen2-xlen2);
-			if (flagField[i+xylen2-xlen2].type != -1)
-				streamField[currentCellIndex+4] = collideField[nextCellIndex+4];
+            streamField[currentCellIndex+4] = collideField[nextCellIndex+4];
 
 			nextCellIndex = Q*(i+xlen2+1);
-			if (flagField[i+xlen2+1].type != -1)
-				streamField[currentCellIndex+5] = collideField[nextCellIndex+5];
+            streamField[currentCellIndex+5] = collideField[nextCellIndex+5];
 
 			nextCellIndex = Q*(i+xlen2);
-			if (flagField[i+xlen2].type != -1)
-				streamField[currentCellIndex+6] = collideField[nextCellIndex+6];
+            streamField[currentCellIndex+6] = collideField[nextCellIndex+6];
 
 			nextCellIndex = Q*(i+xlen2-1);
-			if (flagField[i+xlen2-1].type != -1)
-				streamField[currentCellIndex+7] = collideField[nextCellIndex+7];
+            streamField[currentCellIndex+7] = collideField[nextCellIndex+7];
 
 			nextCellIndex = Q*(i+1);
-			if (flagField[i+1].type != -1)
-				streamField[currentCellIndex+8] = collideField[nextCellIndex+8];
+            streamField[currentCellIndex+8] = collideField[nextCellIndex+8];
 
 			streamField[currentCellIndex+9] = collideField[currentCellIndex+9];
 
 			nextCellIndex = Q*(i-1);
-			if (flagField[i-1].type != -1)
-				streamField[currentCellIndex+10] = collideField[nextCellIndex+10];
+            streamField[currentCellIndex+10] = collideField[nextCellIndex+10];
 
 			nextCellIndex = Q*(i+1-xlen2);
-			if (flagField[i+1-xlen2].type != -1)
-				streamField[currentCellIndex+11] = collideField[nextCellIndex+11];
+            streamField[currentCellIndex+11] = collideField[nextCellIndex+11];
 
 			nextCellIndex = Q*(i-xlen2);
-			if (flagField[i-xlen2].type != -1)
-				streamField[currentCellIndex+12] = collideField[nextCellIndex+12];
+            streamField[currentCellIndex+12] = collideField[nextCellIndex+12];
 
 			nextCellIndex = Q*(i-1-xlen2);
-			if (flagField[i-1-xlen2].type != -1)
-				streamField[currentCellIndex+13] = collideField[nextCellIndex+13];
+            streamField[currentCellIndex+13] = collideField[nextCellIndex+13];
 
 			nextCellIndex = Q*(i+xlen2-xylen2);
-			if (flagField[i+xlen2-xylen2].type != -1)
-				streamField[currentCellIndex+14] = collideField[nextCellIndex+14];
+            streamField[currentCellIndex+14] = collideField[nextCellIndex+14];
 
 			nextCellIndex = Q*(i+1-xylen2);
-			if (flagField[i+1-xylen2].type != -1)
-				streamField[currentCellIndex+15] = collideField[nextCellIndex+15];
+            streamField[currentCellIndex+15] = collideField[nextCellIndex+15];
 
 			nextCellIndex = Q*(i-xylen2);
-			if (flagField[i-xylen2].type != -1)
-				streamField[currentCellIndex+16] = collideField[nextCellIndex+16];
+            streamField[currentCellIndex+16] = collideField[nextCellIndex+16];
 
 			nextCellIndex = Q*(i-1-xylen2);
-			if (flagField[i-1-xylen2].type != -1)
-				streamField[currentCellIndex+17] = collideField[nextCellIndex+17];
+            streamField[currentCellIndex+17] = collideField[nextCellIndex+17];
 
 			nextCellIndex = Q*(i-xlen2-xylen2);
-			if (flagField[i-xlen2-xylen2].type != -1)
-				streamField[currentCellIndex+18] = collideField[nextCellIndex+18];
+            streamField[currentCellIndex+18] = collideField[nextCellIndex+18];
 		}
 	}
 }

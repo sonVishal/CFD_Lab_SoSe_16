@@ -16,7 +16,7 @@ Re			-1
 timesteps            	20000
 
 # timesteps between each plot
-timestepsPerPlotting 	100
+timestepsPerPlotting 	500
 
 #Scenario (filename of pgm file in folder "/scenarios")
 #NOTE: A VALID PGM FILE IS NECESSARY HERE TO RUN THE SIMULATION
@@ -62,8 +62,8 @@ problem 		OrigTiltedPlate.pgm
 # If a finer/coarser resolution of the domain is required, change the pgm file first and then adapt the parameter here.
 
 # Depth in Y-direction (the scenarios in pgm format are set and displayed in the XZ plane)
-x_length             210
-y_length 	     3
+x_length         210
+y_length 	     1
 z_length	     490
 
 
