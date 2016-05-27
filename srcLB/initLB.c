@@ -457,12 +457,17 @@ void print_flagfield_slice(int* field, const int * const xlength){
     }
 }
 
+
+/* Sets the values for according to 'wallPos'. Because the offsets have to be computed
+ * differently for each 'wallPos' the loop indices are first selected.
+ */
 void p_setWall(const int * const xlength, t_flagField *flagField,
 				const int wallType, const int wallPos) {
 	int inner, outer, flagIndex;
 	int index[2] = {0};
 	int point[3] = {0};
 
+	//select looping indices:
 	if (wallPos == XY_LEFT) {
 		index[0] = 0;
 		index[1] = 1;
@@ -490,6 +495,8 @@ void p_setWall(const int * const xlength, t_flagField *flagField,
 	} else {
 		ERROR("This should not happen");
 	}
+
+	//loop over wall and set accordingly
 	for (outer = 0; outer < xlength[index[1]]+2; outer++) {
 		for (inner = 0; inner < xlength[index[0]]+2; inner++) {
 			point[index[0]] = inner;
@@ -513,8 +520,8 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 	int const zlen2		= xlength[2]+2;
 	int idx;
 
-    
-    //Do the domain enclosing boundaries (ghost layers) first and set type accordingly.
+    //Set boundary cells (ghost layer first)
+    //Set the walls in order of the wall priorities. The priorities are set in p_readWall
 	for (int i = 0; i <= 3; i++) {
 		for (int j = 0; j < NUM_WALLS; j++) {
 			if (boundPara[j].bPrio == i) {
@@ -532,8 +539,8 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 
 				if(type_domain == 0){
 					flagField[idx].type = FLUID;
-					flagField[idx].position = FLUID;
-				}else if(type_domain == 1){
+					flagField[idx].position = FLUID; //the position is needed for boundaries primarily
+				}else if(type_domain == 1){          //therefore here it is just set to corresponding type
 					flagField[idx].type = OBSTACLE;
 					flagField[idx].position = OBSTACLE;
 				}else{
@@ -546,10 +553,8 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
     //TODO: (TKS) remove when finished testing
     //print_flagfield_slice(flagField, xlength);
 
-    /*Setting initial distributions, LATTICEWEIGHTS and INFLOW conditions */
+    /* initialize collideField and streamField*/
     //f_i(x,0) = f^eq(1,0,0) = w_i
-
-    /* initialize collideField and streamField and inflow BC if any*/
     for ( z = 0; z < zlen2; ++z) {
         for ( y = 0; y < ylen2; ++y) {
             for ( x = 0; x < xlen2; ++x) {
