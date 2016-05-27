@@ -53,7 +53,7 @@ y_length 	  		30
 z_length	     		50
 
 #Size of step (has to smaller than the corresponding length of the domain)
-#The step starts right at the wall "XZleft". The parameter z/x_direction determine the hight and witdh.  
+#The step starts right at the wall "XZleft". The parameter z/x_direction determine the hight and witdh.
 x_direction 			15
 z_direction			15
 
@@ -71,7 +71,7 @@ type 				4
 x_velocity 			0.0
 y_velocity 			0.0
 z_velocity 			0.05
-rhoRef 				-1.0
+rhoRef 				1.0
 rhoIn 				-1.0
 
 # XY wall right
@@ -79,7 +79,7 @@ type 				5
 x_velocity 			0.0
 y_velocity 			0.0
 z_velocity 			0.0
-rhoRef 				-1.0
+rhoRef 				1.0
 rhoIn 				-1.0
 
 # YZ wall - bottom
@@ -113,5 +113,3 @@ y_velocity 			0.0
 z_velocity 			0.0
 rhoRef 				-1.0
 rhoIn 				-1.0
-
-
