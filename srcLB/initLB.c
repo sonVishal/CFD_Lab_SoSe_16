@@ -496,6 +496,38 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
     	}
     }
 
+    /* TODO: (DL) only for testing START */
+    for(y = 0; y <= xlength[1]+1; ++y){
+		offset1 = y*xlen2;
+		offset2 = offset1 + (xlength[2]+1)*xlen2*ylen2;
+    	for(x = 0; x <= xlength[0]+1; ++x){
+
+//    		printf("%i ", flagField[offset1 + x].type);
+
+    		if(flagField[offset1 + x].type == -1){ // z = 0
+    			flagField[offset1 + x].type = PRESSURE_IN;
+    			flagField[offset1 + x].position = XY_LEFT;
+    		}
+    	}
+//    	printf(" \n");
+    }
+
+    type = boundPara[XY_RIGHT].type;
+    for(y = 0; y <= xlength[1]+1; ++y){
+		offset1 = y*xlen2;
+		offset2 = offset1 + (xlength[2]+1)*xlen2*ylen2;
+    	for(x = 0; x <= xlength[0]+1; ++x){
+
+    		if(flagField[offset2 + x].type == -1){ // z = 0
+    			flagField[offset2 + x].type = OUTFLOW;
+    			flagField[offset2 + x].position = XY_RIGHT;
+    		}
+    	}
+    }
+    /* TODO: (DL) only for testing END */
+
+
+
     //NOTE: only domain (ghost layer were set previously)//
     for(z = 1; z <= xlength[2]; ++z){
 		offset1 = z*xlen2*ylen2;
