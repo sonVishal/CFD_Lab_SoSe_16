@@ -13,10 +13,4 @@ void writeVtkOutput(const double * const collideField, const t_flagField * const
 void writeVtkDebug(const double * const collideField,
     const t_flagField * const flagField, const char * filename, int *xlength);
 
-void writevtkPointCoordinates(FILE *fp, int *xlength);
-void writevtkPointCoordinatesDebug(FILE *fp, int *xlength);
-
-void writevtkHeader(FILE *fp, int *xlength);
-void writevtkHeaderDebug(FILE *fp, int *xlength);
-
 #endif
