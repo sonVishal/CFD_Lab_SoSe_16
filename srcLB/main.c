@@ -77,7 +77,6 @@ int main(int argc, char *argv[]){
     printf("INFO: write vtk file at time t = %d \n", t);
     writeVtkOutput(collideField,flagField,fName,t,xlength);
     writeVtkDebug(collideField,flagField,fName,xlength);
-    return 0;
 
     // printf("\n\n Tau = %f \n\n",tau);
 
