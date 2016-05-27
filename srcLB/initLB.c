@@ -464,6 +464,8 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
     int start, end;
 
     //Do the domain enclosing boundaries (ghost layers) first and set type accordingly.
+
+	// y = 0
     type = boundPara[XZ_BACK].type;
     start = boundPara[XZ_BACK].idxStartEnd[0];
     end = boundPara[XZ_BACK].idxStartEnd[1];
@@ -471,11 +473,12 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + (xlength[1]+1)*xlen2;
     	for(x = start; x <= xlength[0] + end; ++x){
-    		flagField[offset1 + x].type = type; // y = 0
+    		flagField[offset1 + x].type = type;
 			flagField[offset1 + x].position = XZ_BACK;
     	}
     }
 
+	// y = xlength[1]+1
     type = boundPara[XZ_FRONT].type;
     start = boundPara[XZ_FRONT].idxStartEnd[0];
     end = boundPara[XZ_FRONT].idxStartEnd[1];
@@ -483,11 +486,12 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + (xlength[1]+1)*xlen2;
     	for(x = start; x <= xlength[0]+end; ++x){
-    		flagField[offset2 + x].type = type; // y = xlength[1]+1
+    		flagField[offset2 + x].type = type;
 			flagField[offset2 + x].position = XZ_FRONT;
     	}
     }
 
+	// z = 0
     type = boundPara[XY_LEFT].type;
     start = boundPara[XY_LEFT].idxStartEnd[0];
     end = boundPara[XY_LEFT].idxStartEnd[1];
@@ -495,11 +499,12 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 		offset1 = y*xlen2;
 		offset2 = offset1 + (xlength[2]+1)*xlen2*ylen2;
     	for(x = start; x <= xlength[0]+end; ++x){
-    		flagField[offset1 + x].type = type; // z = 0
+    		flagField[offset1 + x].type = type;
 			flagField[offset1 + x].position = XY_LEFT;
     	}
     }
 
+	// z = xlength[2]+1
     type = boundPara[XY_RIGHT].type;
     start = boundPara[XY_RIGHT].idxStartEnd[0];
     end = boundPara[XY_RIGHT].idxStartEnd[1];
@@ -507,11 +512,12 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 		offset1 = y*xlen2;
 		offset2 = offset1 + (xlength[2]+1)*xlen2*ylen2;
     	for(x = start; x <= xlength[0]+end; ++x){
-    		flagField[offset2 + x].type = type; // z = xlength[2]+1
+    		flagField[offset2 + x].type = type;
 			flagField[offset2 + x].position = XY_RIGHT;
     	}
     }
 
+	// x = 0
     type = boundPara[YZ_BOTTOM].type;
     start = boundPara[YZ_BOTTOM].idxStartEnd[0];
     end = boundPara[YZ_BOTTOM].idxStartEnd[1];
@@ -519,11 +525,12 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + xlength[0] + 1;
     	for(y = start; y <= xlength[1]+end; ++y){
-			flagField[offset1 + y*xlen2].type = type; // x = 0
+			flagField[offset1 + y*xlen2].type = type;
 			flagField[offset1 + y*xlen2].position = YZ_BOTTOM;
     	}
     }
 
+	// x = xlength[0]+1
     type = boundPara[YZ_TOP].type;
     start = boundPara[YZ_TOP].idxStartEnd[0];
     end = boundPara[YZ_TOP].idxStartEnd[1];
@@ -531,7 +538,7 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 		offset1 = z*xlen2*ylen2;
 		offset2 = offset1 + xlength[0] + 1;
     	for(y = start; y <= xlength[1]+end; ++y){
-    		flagField[offset2 + y*xlen2].type = type; // x = xlength[0]+1
+    		flagField[offset2 + y*xlen2].type = type;
 			flagField[offset2 + y*xlen2].position = YZ_TOP;
     	}
     }
@@ -576,7 +583,7 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 				int type_domain = pgmMatrix[z][x];
 
 				if(type_domain == 0){
-					//This is actually not required as long as FLUID=0
+					// TODO: (REMOVE?)This is actually not required as long as FLUID=0
 					flagField[xyzoffset].type = FLUID;
 					flagField[xyzoffset].position = FLUID;
 				}else if(type_domain == 1){
