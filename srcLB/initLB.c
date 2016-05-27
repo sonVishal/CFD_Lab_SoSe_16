@@ -238,7 +238,7 @@ void p_readCustomPgmMatrix(const int * const xlength, char *filename){
 	if(zsizePgm != xlength[2] || xsizePgm != xlength[0]){
 		free_imatrix(pgmMatrix,0,zsizePgm+1,0,xsizePgm+1);
 		char msg[150];
-		snprintf(msg, 150, "The size of the pgm matrix is [z_length=%i x xlength=%i]. The paramter"
+		snprintf(msg, 150, "The size of the pgm matrix is [z_length=%i x xlength=%i]. The parameter"
 				"read in the setting file are: [z_length=%i x xlength=%i] \n", zsizePgm, xsizePgm, xlength[2], xlength[0]);
 		ERROR(msg);
 	}
@@ -375,9 +375,9 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 
     p_verifyValidWallSetting(boundPara, MODE);
 
-    /* S T A R T  -- ONLY FOR CAVITY, this part supports the old CAVITY case
-     * this will not be supported /executed. The checks are the same as
-     * in the last worksheet. */
+    /* S T A R T  -- ONLY FOR CAVITY, this part supports the old CAVITY case from WS2
+     * Also it computes tau from the given Reynolds number
+     */
 
     //CAVITY supports to hand either Reynolds number (and compute tau), or handle tau directly
     if(Re != -1.0 && MODE == CAVITY){ //true, then compute tau according to Re
