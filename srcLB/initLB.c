@@ -112,6 +112,8 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	int msgSize = 200;
 	char msg[msgSize]; // only needed in case of errors
 
+
+	/* TODO: (DL) discuss tolerances that are allowed */
 	switch(type){
 	case INFLOW:
 		if(abs(rhoRef - 1) > 0.3){
