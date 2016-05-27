@@ -15,7 +15,7 @@ void p_printBoundPara(const t_boundPara * const boundPara) {
 
 void p_noSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize){
+	int const * const totalSize){
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -45,10 +45,6 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 	double density;
 	const double * const wallVelocity = boundPara->wallVelocity;
 	p_computeIndexQ(point, xlength, &currentCellIndex);
-
-	// if (boundPara->type != MOVING) {
-	// 	p_printBoundPara(boundPara);
-	// }
 
 	for(i = 0; i < Q; i++){
 		int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
@@ -216,7 +212,7 @@ void p_assignIndices(const short int * const flag, int * index, int * mirrorInde
 
 void p_freeSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize) {
+	int const * const totalSize) {
 	// Begin
 	int i;
 	int normal[3] = {0,0,0};
@@ -317,7 +313,7 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 
 void p_inflow(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize) {
+	const t_boundPara * const boundPara) {
 	// Begin
 	int i;
 	int currentFlagIndex, currentCellIndex;
@@ -367,49 +363,6 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 	}
 }
 
-t_boundaryFcnPtr p_selectFunction(const int wallType) {
-	assert(wallType >= NO_SLIP && wallType <=OBSTACLE);
-	t_boundaryFcnPtr tmpPtr;
-	switch (wallType) {
-		case NO_SLIP:
-			// call no slip wall
-			tmpPtr = &p_noSlip;
-			break;
-		case MOVING:
-			// call moving wall
-			tmpPtr = &p_movingWall;
-			break;
-		case FREE_SLIP:
-			// call free slip wall
-			tmpPtr = &p_freeSlip;
-			break;
-		case OUTFLOW:
-			// call outflow wall
-			tmpPtr = &p_outflow;
-			break;
-		case INFLOW:
-			// call inflow wall
-			tmpPtr = &p_inflow;
-			break;
-		case PRESSURE_IN:
-			// call pressure in wall
-			tmpPtr = &p_pressureIn;
-			break;
-		case OBSTACLE:
-			tmpPtr = &p_noSlip;
-			break;
-		default:
-			// TODO: remove this comment maybe
-			ERROR("**** FLUID cell encountered! ****");
-			tmpPtr = NULL;
-			break;
-	}
-	assert(tmpPtr != NULL);
-	return tmpPtr;
-}
-
-// TODO: 3 for loops with switch case inside sounds better
-
 void treatBoundary(double *collideField, const t_flagField * const flagField,
 	const t_boundPara * const boundPara, const int * const xlength){
 
@@ -420,12 +373,8 @@ void treatBoundary(double *collideField, const t_flagField * const flagField,
 	int const xlen2[3] = {xlength[0]+2,xlength[1]+2,xlength[2]+2};
     int const totalSize  = Q*xlen2[2]*xlen2[1]*xlen2[0];
 
-	t_boundaryFcnPtr fcnPtr = NULL;
-
 	// TODO: (VS) Compute obstacle min and max to exclude some cells
 	// As of now iterate over everything normally
-
-	// TODO: (VS) directly call functions rather than having indirect call
 
 	for (z = 0; z < xlen2[2]; z++) {
 		for (y = 0; y < xlen2[1]; y++) {
@@ -437,9 +386,46 @@ void treatBoundary(double *collideField, const t_flagField * const flagField,
 					points[0] = x;
 					points[1] = y;
 					points[2] = z;
-					fcnPtr = p_selectFunction(wallType);
-					(*fcnPtr)(collideField, flagField, points, xlength,
-						&boundPara[wallPos], &totalSize);
+					switch (wallType) {
+						case NO_SLIP:
+							// call no slip wall
+							p_noSlip(collideField, flagField, points, xlength,
+								&totalSize);
+							break;
+						case MOVING:
+							// call moving wall
+							p_movingWall(collideField, flagField, points, xlength,
+								&boundPara[wallPos], &totalSize);
+							break;
+						case FREE_SLIP:
+							// call free slip wall
+							p_freeSlip(collideField, flagField, points, xlength,
+								&totalSize);
+							break;
+						case OUTFLOW:
+							// call outflow wall
+							p_outflow(collideField, flagField, points, xlength,
+								&boundPara[wallPos], &totalSize);
+							break;
+						case INFLOW:
+							// call inflow wall
+							p_inflow(collideField, flagField,xlength, points,
+								&boundPara[wallPos]);
+							break;
+						case PRESSURE_IN:
+							// call pressure in wall
+							p_pressureIn(collideField, flagField, points, xlength,
+								&boundPara[wallPos], &totalSize);
+							break;
+						case OBSTACLE:
+							p_noSlip(collideField, flagField, points, xlength,
+								&totalSize);
+							break;
+						default:
+							// TODO: (VS) remove this comment maybe
+							ERROR("**** FLUID cell encountered! ****");
+							break;
+					}
 				}
 			}
 		}
