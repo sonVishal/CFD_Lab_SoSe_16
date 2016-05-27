@@ -460,8 +460,9 @@ void print_flagfield_slice(int* field, const int * const xlength){
 void p_setWall(const int * const xlength, t_flagField *flagField,
 				const int wallType, const int wallPos) {
 	int inner, outer, flagIndex;
-	int index[2];
-	int point[3];
+	int index[2] = {0};
+	int point[3] = {0};
+
 	if (wallPos == XY_LEFT) {
 		index[0] = 0;
 		index[1] = 1;

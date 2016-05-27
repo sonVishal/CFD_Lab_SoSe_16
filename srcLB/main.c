@@ -65,7 +65,7 @@ int main(int argc, char *argv[]){
     	ERROR("Storage cannot be allocated");
     }
 
-    memset(flagField, -1, totalsize * sizeof(t_flagField)); //set default value to -1 (invalid) for security
+    memset(flagField, INVALID, totalsize * sizeof(t_flagField)); //set default value to -1 (invalid) for security
 
     // Initialize all the fields
     initialiseFields(collideField, streamField, flagField, xlength, boundPara, problem);
