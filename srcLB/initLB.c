@@ -524,77 +524,77 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 		}
 	}
 
-	// y = 0
-    type = boundPara[XZ_BACK].type;
-    start = boundPara[XZ_BACK].idxStartEnd[0];
-    end = boundPara[XZ_BACK].idxStartEnd[1];
-    for(z = start; z <= xlength[2] + end; ++z){
-    	for(x = start; x <= xlength[0] + end; ++x){
-			p_computeIndexXYZ(x,0,z,xlength,&idx);
-    		flagField[idx].type = type;
-			flagField[idx].position = XZ_BACK;
-    	}
-    }
-
-	// y = xlength[1]+1
-    type = boundPara[XZ_FRONT].type;
-    start = boundPara[XZ_FRONT].idxStartEnd[0];
-    end = boundPara[XZ_FRONT].idxStartEnd[1];
-    for(z = start; z <= xlength[2]+end; ++z){
-    	for(x = start; x <= xlength[0]+end; ++x){
-			p_computeIndexXYZ(x,xlength[1]+1,z,xlength,&idx);
-    		flagField[idx].type = type;
-			flagField[idx].position = XZ_FRONT;
-    	}
-    }
-
-	// z = 0
-    type = boundPara[XY_LEFT].type;
-    start = boundPara[XY_LEFT].idxStartEnd[0];
-    end = boundPara[XY_LEFT].idxStartEnd[1];
-    for(y = start; y <= xlength[1]+end; ++y){
-    	for(x = start; x <= xlength[0]+end; ++x){
-			p_computeIndexXYZ(x,y,0,xlength,&idx);
-    		flagField[idx].type = type;
-			flagField[idx].position = XY_LEFT;
-    	}
-    }
-
-	// z = xlength[2]+1
-    type = boundPara[XY_RIGHT].type;
-    start = boundPara[XY_RIGHT].idxStartEnd[0];
-    end = boundPara[XY_RIGHT].idxStartEnd[1];
-    for(y = start; y <= xlength[1]+end; ++y){
-    	for(x = start; x <= xlength[0]+end; ++x){
-			p_computeIndexXYZ(x,y,xlength[2]+1,xlength,&idx);
-    		flagField[idx].type = type;
-			flagField[idx].position = XY_RIGHT;
-    	}
-    }
-
-	// x = 0
-    type = boundPara[YZ_BOTTOM].type;
-    start = boundPara[YZ_BOTTOM].idxStartEnd[0];
-    end = boundPara[YZ_BOTTOM].idxStartEnd[1];
-    for(z = start; z <= xlength[2]+end; ++z){
-    	for(y = start; y <= xlength[1]+end; ++y){
-			p_computeIndexXYZ(0,y,z,xlength,&idx);
-			flagField[idx].type = type;
-			flagField[idx].position = YZ_BOTTOM;
-    	}
-    }
-
-	// x = xlength[0]+1
-    type = boundPara[YZ_TOP].type;
-    start = boundPara[YZ_TOP].idxStartEnd[0];
-    end = boundPara[YZ_TOP].idxStartEnd[1];
-    for(z = start; z <= xlength[2]+end; ++z){
-    	for(y = start; y <= xlength[1]+end; ++y){
-			p_computeIndexXYZ(xlength[0]+1,y,z,xlength,&idx);
-    		flagField[idx].type = type;
-			flagField[idx].position = YZ_TOP;
-    	}
-    }
+//	// y = 0
+//    type = boundPara[XZ_BACK].type;
+//    start = boundPara[XZ_BACK].idxStartEnd[0];
+//    end = boundPara[XZ_BACK].idxStartEnd[1];
+//    for(z = start; z <= xlength[2] + end; ++z){
+//    	for(x = start; x <= xlength[0] + end; ++x){
+//			p_computeIndexXYZ(x,0,z,xlength,&idx);
+//    		flagField[idx].type = type;
+//			flagField[idx].position = XZ_BACK;
+//    	}
+//    }
+//
+//	// y = xlength[1]+1
+//    type = boundPara[XZ_FRONT].type;
+//    start = boundPara[XZ_FRONT].idxStartEnd[0];
+//    end = boundPara[XZ_FRONT].idxStartEnd[1];
+//    for(z = start; z <= xlength[2]+end; ++z){
+//    	for(x = start; x <= xlength[0]+end; ++x){
+//			p_computeIndexXYZ(x,xlength[1]+1,z,xlength,&idx);
+//    		flagField[idx].type = type;
+//			flagField[idx].position = XZ_FRONT;
+//    	}
+//    }
+//
+//	// z = 0
+//    type = boundPara[XY_LEFT].type;
+//    start = boundPara[XY_LEFT].idxStartEnd[0];
+//    end = boundPara[XY_LEFT].idxStartEnd[1];
+//    for(y = start; y <= xlength[1]+end; ++y){
+//    	for(x = start; x <= xlength[0]+end; ++x){
+//			p_computeIndexXYZ(x,y,0,xlength,&idx);
+//    		flagField[idx].type = type;
+//			flagField[idx].position = XY_LEFT;
+//    	}
+//    }
+//
+//	// z = xlength[2]+1
+//    type = boundPara[XY_RIGHT].type;
+//    start = boundPara[XY_RIGHT].idxStartEnd[0];
+//    end = boundPara[XY_RIGHT].idxStartEnd[1];
+//    for(y = start; y <= xlength[1]+end; ++y){
+//    	for(x = start; x <= xlength[0]+end; ++x){
+//			p_computeIndexXYZ(x,y,xlength[2]+1,xlength,&idx);
+//    		flagField[idx].type = type;
+//			flagField[idx].position = XY_RIGHT;
+//    	}
+//    }
+//
+//	// x = 0
+//    type = boundPara[YZ_BOTTOM].type;
+//    start = boundPara[YZ_BOTTOM].idxStartEnd[0];
+//    end = boundPara[YZ_BOTTOM].idxStartEnd[1];
+//    for(z = start; z <= xlength[2]+end; ++z){
+//    	for(y = start; y <= xlength[1]+end; ++y){
+//			p_computeIndexXYZ(0,y,z,xlength,&idx);
+//			flagField[idx].type = type;
+//			flagField[idx].position = YZ_BOTTOM;
+//    	}
+//    }
+//
+//	// x = xlength[0]+1
+//    type = boundPara[YZ_TOP].type;
+//    start = boundPara[YZ_TOP].idxStartEnd[0];
+//    end = boundPara[YZ_TOP].idxStartEnd[1];
+//    for(z = start; z <= xlength[2]+end; ++z){
+//    	for(y = start; y <= xlength[1]+end; ++y){
+//			p_computeIndexXYZ(xlength[0]+1,y,z,xlength,&idx);
+//    		flagField[idx].type = type;
+//			flagField[idx].position = YZ_TOP;
+//    	}
+//    }
 
     /* TODO: (DL) only for testing START */
 //    for(y = 0; y <= xlength[1]+1; ++y){
