@@ -12,10 +12,10 @@ MODE 		      		1
 tau                    		0.6
 
 # Number of timesteps
-timesteps            		10000
+timesteps            		10
 
 # timesteps between each plot
-timestepsPerPlotting 		  500
+timestepsPerPlotting 		  1
 
 #Scenario - name for the simulation and output paraview output files (in pv_files)
 problem 			stepFlow
@@ -61,10 +61,6 @@ z_direction			15
 #--------------------------------------------
 #           BOUNDARY SETTINGS
 #--------------------------------------------
-
-# Use of inflow scheme set 
-# 0 = Uniform   1 = Parabolic  
-inflowScheme		0
 
 # USE TYPES FOR BOUNDARY CONDITION
 # NO_SLIP = 1   MOVING = 2   FREE_SLIP = 3   INFLOW = 4  OUTFLOW = 5   PRESSURE_IN = 6

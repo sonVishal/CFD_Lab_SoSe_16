@@ -65,7 +65,6 @@ int main(int argc, char *argv[]){
     	ERROR("Storage cannot be allocated");
     }
 
-    // TODO: Assign default values to the type and position fields
     memset(flagField, -1, totalsize * sizeof(t_flagField)); //set default value to -1 (invalid) for security
 
     // Initialize all the fields
@@ -77,8 +76,8 @@ int main(int argc, char *argv[]){
     // Write the VTK at t = 0
     printf("INFO: write vtk file at time t = %d \n", t);
 
-    // writeVtkOutput(collideField,flagField,fName,t,xlength);
-    // writeVtkDebug(collideField,flagField,fName,xlength);
+//    writeVtkOutput(collideField,flagField,fName,t,xlength);
+//    writeVtkDebug(collideField,flagField,fName,xlength);
 
     // printf("\n\n Tau = %f \n\n",tau);
 

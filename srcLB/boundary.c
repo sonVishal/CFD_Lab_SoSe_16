@@ -310,12 +310,6 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 	}
 }
 
-void p_computeParabolicProfile(const int * const point, const int * const xlength,
- 		double * inflowVelocity) {
-	// TODO: support half parabola as well
-	inflowVelocity[3] = 4*inflowVelocity[3]*point[0]*point[0]/xlength[0]/xlength[0];
-}
-
 void p_inflow(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
@@ -327,14 +321,7 @@ void p_inflow(double* collideField, t_flagField const * const flagField,
 	p_computeIndex(point, xlength, &currentFlagIndex);
 	currentCellIndex = Q*currentFlagIndex;
 
-	// TODO: (VS) Parabolic profile
-	if (boundPara->inflowScheme == 1) { // Parabolics profile
-		double inflowVelocity;
-		p_computeParabolicProfile(point,xlength,&inflowVelocity);
-		computeFeq(&boundPara->rhoRef, &inflowVelocity, feq);
-	} else {
-		computeFeq(&boundPara->rhoRef, boundPara->wallVelocity, feq);
-	}
+	computeFeq(&boundPara->rhoRef, boundPara->wallVelocity, feq);
 
 	/* TODO: (DL) see WS sentence after eq. 2.2:
 	 * "You may also try to use the density from the previous time step as pref"

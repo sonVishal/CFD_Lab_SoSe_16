@@ -91,20 +91,12 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	int type;
 	double x_velocity, y_velocity, z_velocity;
 	double rhoRef, rhoIn;
-	int inflowScheme = -1; //-1 is invalid, inflowScheme gets only read when the
-						   //wall is of type INFLOW or PRESSURE_IN
-
 
     READ_INT(*argv, type, skip);
 
 	READ_DOUBLE(*argv, x_velocity, skip);
 	READ_DOUBLE(*argv, y_velocity, skip);
     READ_DOUBLE(*argv, z_velocity, skip);
-
-	if(type == INFLOW || type == PRESSURE_IN){
-		//if used in CAVITY (which is illegal) this results in buffer overflow
-		READ_INT(*argv, inflowScheme, skip);
-	}
 
 	READ_DOUBLE(*argv, rhoRef, skip);
 	READ_DOUBLE(*argv, rhoIn, skip);
@@ -113,7 +105,6 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	boundPara->wallVelocity[0] = x_velocity;
 	boundPara->wallVelocity[1] = y_velocity,
 	boundPara->wallVelocity[2] = z_velocity;
-	boundPara->inflowScheme = inflowScheme;
 	boundPara->rhoRef = rhoRef;
 	boundPara->rhoIn = rhoIn;
 
