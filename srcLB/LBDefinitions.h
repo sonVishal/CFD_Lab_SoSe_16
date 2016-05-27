@@ -35,7 +35,7 @@ static const int INVALID = -1;
 #define C_S ((double)0.57735026918962576) // double cast to guarantee type safety
 
 // Tolerances
-static const double densityTol  = 0.05;
+static const double densityTol  = 0.08;
 static const double machNrTol   = 0.1; //only used for CAVITY scenario
 
 //Note: better not change the order, because at the moment it is defined in the parameter

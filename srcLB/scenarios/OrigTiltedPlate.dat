@@ -16,7 +16,7 @@ Re			-1
 timesteps            	20000
 
 # timesteps between each plot
-timestepsPerPlotting 	500
+timestepsPerPlotting 	50
 
 #Scenario (filename of pgm file in folder "/scenarios")
 #NOTE: A VALID PGM FILE IS NECESSARY HERE TO RUN THE SIMULATION

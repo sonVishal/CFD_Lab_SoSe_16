@@ -12,7 +12,7 @@ MODE 		      		1
 tau                    		0.6
 
 # Number of timesteps
-timesteps            		1000
+timesteps            		1250
 
 # timesteps between each plot
 timestepsPerPlotting 		  10
@@ -49,13 +49,13 @@ problem 			stepFlow
 
 # depth in Y-direction (the scenarios are set and displayed on the XZ plane)
 x_length         		30
-y_length 	  		30
+y_length 	  		    30
 z_length	     		50
 
 #Size of step (has to smaller than the corresponding length of the domain)
 #The step starts right at the wall "XZleft". The parameter z/x_direction determine the hight and witdh.
 x_direction 			15
-z_direction			15
+z_direction			    15
 
 
 #--------------------------------------------

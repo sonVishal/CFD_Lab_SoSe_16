@@ -13,10 +13,10 @@ MODE 		      		0
 tau                    	1.8
 
 # Number of timesteps
-timesteps            		5000
+timesteps            		150
 
 # timesteps between each plot
-timestepsPerPlotting 		50
+timestepsPerPlotting 		1
 
 #Scenario name for output paraview output files (in pv_files) 
 problem 		shear_flow

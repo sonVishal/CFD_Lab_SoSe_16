@@ -15,10 +15,10 @@ tau                    	-1
 Re			10
 
 # Number of timesteps
-timesteps            		2000
+timesteps            		1000
 
 # timesteps between each plot
-timestepsPerPlotting 		20
+timestepsPerPlotting 		10
 
 #Scenario name for output paraview output files (in pv_files)
 problem 		cavity
