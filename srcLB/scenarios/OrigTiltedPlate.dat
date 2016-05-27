@@ -13,10 +13,10 @@ tau                    	0.59
 Re			-1
 
 # Number of timesteps
-timesteps            	20
+timesteps            	20000
 
 # timesteps between each plot
-timestepsPerPlotting 	1
+timestepsPerPlotting 	100
 
 #Scenario (filename of pgm file in folder "/scenarios")
 #NOTE: A VALID PGM FILE IS NECESSARY HERE TO RUN THE SIMULATION
@@ -56,10 +56,10 @@ problem 		OrigTiltedPlate.pgm
 
 #~~~~~~~~~~~~~~N O T E ~~~~~~~~~~~~~~~
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# The parameter x_length and z_length have to correspond to the PGM file provided! 
-# No stretching/shrinking is supported during simulation runtime. This is because this changes the domain 
-# in a possibly unexpected way. 
-# If a finer/coarser resolution of the domain is required, change the pgm file first and then adapt the parameter here.   
+# The parameter x_length and z_length have to correspond to the PGM file provided!
+# No stretching/shrinking is supported during simulation runtime. This is because this changes the domain
+# in a possibly unexpected way.
+# If a finer/coarser resolution of the domain is required, change the pgm file first and then adapt the parameter here.
 
 # Depth in Y-direction (the scenarios in pgm format are set and displayed in the XZ plane)
 x_length             210
