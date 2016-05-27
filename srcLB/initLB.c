@@ -116,40 +116,49 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	int msgSize = 200;
 	char msg[msgSize]; // only needed in case of errors
 
-
 	/* TODO: (DL) discuss tolerances that are allowed */
-	switch(type){
-	case INFLOW:
-		if(fabs(rhoRef - 1) > 0.3){
-			snprintf(msg, msgSize, "Invalid INFLOW wall with rhoRef=%f \n", rhoRef);
-			ERROR(msg);
-		}
-		break;
-	case OUTFLOW:
-		if(fabs(rhoRef - 1) > 0.3){
-			snprintf(msg, msgSize, "Invalid OUTFLOW wall with rhoRef=%f \n", rhoRef);
-			ERROR(msg);
-		}
-		break;
-	case PRESSURE_IN:
-		if(fabs(rhoIn - 1) > 0.2){
-			snprintf(msg, msgSize, "Invalid PRESSURE_IN with rhoIn=%f \n", rhoIn);
-			ERROR(msg);
-		}
-		break;
-	}
+	/* Set priorities and check valid settings */
+	switch (type) {
+		case NO_SLIP:
+			boundPara->bPrio = 2;
+			break;
+		case MOVING:
+			boundPara->bPrio = 2;
+			break;
+		case FREE_SLIP:
+			boundPara->bPrio = 1;
+			break;
+		case INFLOW:
+			boundPara->bPrio = 0;
 
-	if(boundPara->type>=NO_SLIP && boundPara->type<=MOVING){ //NO_SLIP OR MOVING
-		boundPara->idxStartEnd[0] = 0;
-		boundPara->idxStartEnd[1] = 1;
+			if(fabs(rhoRef - 1) > 0.3){
+				snprintf(msg, msgSize, "Invalid INFLOW wall with rhoRef=%f \n", rhoRef);
+				ERROR(msg);
+			}
 
-	}else if(boundPara->type>=FREE_SLIP && boundPara->type<=PRESSURE_IN){ //FREE_SLIP, INFLOW, OUTFLOW, PRESSURE_IN
-		boundPara->idxStartEnd[0] = 1;
-		boundPara->idxStartEnd[1] = 0;
-	}else{
-		snprintf(msg, msgSize, "Type %i, is not valid. See E_CELL_TYPE in LBDefinitions.h for valid"
-				" types.", type);
-		ERROR(msg);
+			break;
+		case PRESSURE_IN:
+			boundPara->bPrio = 0;
+
+			if(fabs(rhoIn - 1) > 0.2){
+				snprintf(msg, msgSize, "Invalid PRESSURE_IN with rhoIn=%f \n", rhoIn);
+				ERROR(msg);
+			}
+
+			break;
+		case OUTFLOW:
+			boundPara->bPrio = 0;
+
+			if(fabs(rhoRef - 1) > 0.3){
+				snprintf(msg, msgSize, "Invalid OUTFLOW wall with rhoRef=%f \n", rhoRef);
+				ERROR(msg);
+			}
+
+			break;
+		default:
+			snprintf(msg, msgSize, "Type %i, is not valid. See E_CELL_TYPE in LBDefinitions.h for valid"
+					" types.", type);
+			ERROR(msg);
 	}
 }
 
