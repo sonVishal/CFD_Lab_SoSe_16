@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "computeCellValues.h"
 
 /** computes the density from the particle distribution functions stored at
