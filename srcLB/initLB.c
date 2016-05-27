@@ -116,19 +116,19 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	/* TODO: (DL) discuss tolerances that are allowed */
 	switch(type){
 	case INFLOW:
-		if(abs(rhoRef - 1) > 0.3){
+		if(fabs(rhoRef - 1) > 0.3){
 			snprintf(msg, msgSize, "Invalid INFLOW wall with rhoRef=%f \n", rhoRef);
 			ERROR(msg);
 		}
 		break;
 	case OUTFLOW:
-		if(abs(rhoRef - 1) > 0.3){
+		if(fabs(rhoRef - 1) > 0.3){
 			snprintf(msg, msgSize, "Invalid OUTFLOW wall with rhoRef=%f \n", rhoRef);
 			ERROR(msg);
 		}
 		break;
 	case PRESSURE_IN:
-		if(abs(rhoRef - 1) > 0.2){
+		if(fabs(rhoIn - 1) > 0.2){
 			snprintf(msg, msgSize, "Invalid PRESSURE_IN with rhoIn=%f \n", rhoIn);
 			ERROR(msg);
 		}
