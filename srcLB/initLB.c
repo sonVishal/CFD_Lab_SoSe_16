@@ -108,6 +108,31 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	boundPara->rhoRef = rhoRef;
 	boundPara->rhoIn = rhoIn;
 
+	//Valid setting checking:
+	int msgSize = 200;
+	char msg[msgSize]; // only needed in case of errors
+
+	switch(type){
+	case INFLOW:
+		if(abs(rhoRef - 1) > 0.3){
+			snprintf(msg, msgSize, "Invalid INFLOW wall with rhoRef=%f \n", rhoRef);
+			ERROR(msg);
+		}
+		break;
+	case OUTFLOW:
+		if(abs(rhoRef - 1) > 0.3){
+			snprintf(msg, msgSize, "Invalid OUTFLOW wall with rhoRef=%f \n", rhoRef);
+			ERROR(msg);
+		}
+		break;
+	case PRESSURE_IN:
+		if(abs(rhoRef - 1) > 0.2){
+			snprintf(msg, msgSize, "Invalid PRESSURE_IN with rhoIn=%f \n", rhoIn);
+			ERROR(msg);
+		}
+		break;
+	}
+
 	if(boundPara->type>=NO_SLIP && boundPara->type<=MOVING){ //NO_SLIP OR MOVING
 		boundPara->idxStartEnd[0] = 0;
 		boundPara->idxStartEnd[1] = 1;
@@ -116,8 +141,7 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 		boundPara->idxStartEnd[0] = 1;
 		boundPara->idxStartEnd[1] = 0;
 	}else{
-		char msg[100];
-		snprintf(msg, 100, "Type %i, is not valid. See E_CELL_TYPE in LBDefinitions.h for valid"
+		snprintf(msg, msgSize, "Type %i, is not valid. See E_CELL_TYPE in LBDefinitions.h for valid"
 				" types.", type);
 		ERROR(msg);
 	}
