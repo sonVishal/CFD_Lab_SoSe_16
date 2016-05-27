@@ -83,6 +83,12 @@ enum SETTING_MODE{
 	NUM_MODES //used for inbound checks - if inserting a new mode, that just before this one!
 };
 
+// Typedef for the function pointer used in treating boundaries
+typedef void (*t_boundaryFcnPtr)(double*, t_flagField const * const, int const * const,
+                int const * const, const t_boundPara * const,
+                int const * const);
+
+
 // Functions for calculating indecies
 inline static void p_computeIndex(const int * const point,
 	const int * const xlength, int *index) {

@@ -12,17 +12,15 @@ void p_printBoundPara(const t_boundPara * const boundPara) {
 	printf("************************************************\n");
 }
 
-// Handle the no slip boundary condition
+
 void p_noSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
-	int const * const totalSize){
+	const t_boundPara * const boundPara, int const * const totalSize){
 	// Begin
 	int i;
 	int nextPoint[3];
 	int currentCellIndex, nextFlagIndex, nextCellIndex;
 	p_computeIndexQ(point, xlength, &currentCellIndex);
-
-	// Assign the distribution according to worksheet2 eq (17)
 	for(i = 0; i < Q; i++){
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];
 		nextPoint[1] = point[1] + LATTICEVELOCITIES[i][1];
@@ -37,7 +35,6 @@ void p_noSlip(double* collideField, t_flagField const * const flagField,
 	}
 }
 
-// Handle the moving wall boundary condition
 void p_movingWall(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
@@ -49,7 +46,10 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 	const double * const wallVelocity = boundPara->wallVelocity;
 	p_computeIndexQ(point, xlength, &currentCellIndex);
 
-	// Assign the distributions according to worksheet2 eq (19)
+	// if (boundPara->type != MOVING) {
+	// 	p_printBoundPara(boundPara);
+	// }
+
 	for(i = 0; i < Q; i++){
 		int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];
@@ -69,7 +69,6 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 	}
 }
 
-// TODO: (REMOVE) This makes partial sense if we have to handle outflow/inflow as well.
 // It is difficult since the indices are ordered lexicographically
 // thereby destroying any kind of generalization
 
@@ -174,7 +173,7 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 // end
 // end
 
-// Function to assign the indices and the mirror indices
+// Function to assign the indices
 void p_assignIndices(const short int * const flag, int * index, int * mirrorIndex) {
 	assert(*flag >= XY_LEFT && *flag <= XZ_BACK);
 
@@ -215,17 +214,20 @@ void p_assignIndices(const short int * const flag, int * index, int * mirrorInde
 	}
 }
 
-// Handle the free slip boundary condition
 void p_freeSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
-	int const * const totalSize) {
+	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
 	int i;
 	int normal[3] = {0,0,0};
 	int currentFlagIndex, currentCellIndex, nextFlagIndex, nextCellIndex;
 
 	p_computeIndex(point, xlength, &currentFlagIndex);
+
 	currentCellIndex	= Q*currentFlagIndex;
+
+	// Assign normals based on the wall we are at
+
 
 	/*TODO: (DL) readability bad... but saves the switch case. Can decide... once it works
 	* I make a "speed difference test": */
@@ -237,7 +239,6 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 
 	assert(flagField[currentFlagIndex].position >= XY_LEFT && flagField[currentFlagIndex].position <= XZ_BACK);
 
-	// Assign normals based on the wall we are at
 	switch (flagField[currentFlagIndex].position) {
 		case XY_LEFT:
 			normal[2] = 1;
@@ -271,11 +272,9 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 
 	int index[5] = {0,0,0,0,0}, mirrorIndex[5] = {0,0,0,0,0};
 
-	// Get the indices for which the distribution is to be assigned
 	p_assignIndices(&flagField[currentFlagIndex].position,index,mirrorIndex);
 
 	//TODO:(DL) leave valid check? it's by construction never out of bound
-	// Assign the 5 distributions (there are 5 distributions per face of the cell)
     if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
             flagField[nextFlagIndex].type == FLUID) {
         for (i = 0; i < 5; i++) {
@@ -284,7 +283,6 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
     }
 }
 
-// Handle the outflow boundary condition
 void p_outflow(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
@@ -293,10 +291,10 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 	int nextPoint[3];
 	int nextFlagIndex, nextCellIndex, currentFlagIndex, currentCellIndex;
 	double density, feq[Q], nextPointVel[3];
+
 	p_computeIndex(point, xlength, &currentFlagIndex);
 	currentCellIndex = Q*currentFlagIndex;
 
-	// Assign the distributions to the boundary cell according to eq (2.1)
 	for (i = 0; i < Q; i++) {
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];
 		nextPoint[1] = point[1] + LATTICEVELOCITIES[i][1];
@@ -304,12 +302,12 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
+
 		if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
 			flagField[nextFlagIndex].type == FLUID) {
-			// Compute the fluid cell density and velocity
+
 			computeDensity(&collideField[nextCellIndex], &density);
 			computeVelocity(&collideField[nextCellIndex], &density, nextPointVel);
-			// Compute the equilibrium distribution using given rhoRef
 			computeFeq(&(boundPara->rhoRef), nextPointVel, feq);
 			collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
 											collideField[nextCellIndex+Q-1-i];
@@ -317,10 +315,9 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 	}
 }
 
-// Handle the inflow boundary condition
 void p_inflow(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara) {
+	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
 	int i;
 	int currentFlagIndex, currentCellIndex;
@@ -328,7 +325,6 @@ void p_inflow(double* collideField, t_flagField const * const flagField,
 	p_computeIndex(point, xlength, &currentFlagIndex);
 	currentCellIndex = Q*currentFlagIndex;
 
-	// Compute the equilibrium distribution using given rhoRef and velocity
 	computeFeq(&boundPara->rhoRef, boundPara->wallVelocity, feq);
 
 	/* TODO: (DL) see WS sentence after eq. 2.2:
@@ -336,15 +332,13 @@ void p_inflow(double* collideField, t_flagField const * const flagField,
 	 *
 	 * We could do this by either: using a static variable for pref or change the
 	 * variable in boundPara (but then we need a non-const boundPara).
-	*/
+	 */
 
-	// Assign the distributions to the boundary cell using eq (2.2)
 	for (i = 0; i < Q; i++) {
 		collideField[currentCellIndex+i] = feq[i];
 	}
 }
 
-// Handle the pressure in boundary condition
 void p_pressureIn(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
@@ -355,11 +349,8 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 	double feq[Q];
 
 	p_computeIndexQ(point, xlength, &currentCellIndex);
-
-	// Compute the equilibrium distribution using given rhoIn and velocity
 	computeFeq(&boundPara->rhoIn, boundPara->wallVelocity, feq);
 
-	// Assign the distributions to the boundary cell according to eq (2.1)
 	for (i = 0; i < Q; i++) {
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];
 		nextPoint[1] = point[1] + LATTICEVELOCITIES[i][1];
@@ -376,26 +367,66 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 	}
 }
 
-// ** Main function calling all the other functions based on the boundary type
+t_boundaryFcnPtr p_selectFunction(const int wallType) {
+	assert(wallType >= NO_SLIP && wallType <=OBSTACLE);
+	t_boundaryFcnPtr tmpPtr;
+	switch (wallType) {
+		case NO_SLIP:
+			// call no slip wall
+			tmpPtr = &p_noSlip;
+			break;
+		case MOVING:
+			// call moving wall
+			tmpPtr = &p_movingWall;
+			break;
+		case FREE_SLIP:
+			// call free slip wall
+			tmpPtr = &p_freeSlip;
+			break;
+		case OUTFLOW:
+			// call outflow wall
+			tmpPtr = &p_outflow;
+			break;
+		case INFLOW:
+			// call inflow wall
+			tmpPtr = &p_inflow;
+			break;
+		case PRESSURE_IN:
+			// call pressure in wall
+			tmpPtr = &p_pressureIn;
+			break;
+		case OBSTACLE:
+			tmpPtr = &p_noSlip;
+			break;
+		default:
+			// TODO: remove this comment maybe
+			ERROR("**** FLUID cell encountered! ****");
+			tmpPtr = NULL;
+			break;
+	}
+	assert(tmpPtr != NULL);
+	return tmpPtr;
+}
+
+// TODO: 3 for loops with switch case inside sounds better
+
 void treatBoundary(double *collideField, const t_flagField * const flagField,
 	const t_boundPara * const boundPara, const int * const xlength){
 
 	// iteration variables
 	int x, y, z;
-	// Index variables
 	int flagIndex, wallType, wallPos;
-	// Current cell (x,y,z) = (point[0],point[1],point[2])
-	int point[3];
-	// Precompute the end indices
+	int points[3];
 	int const xlen2[3] = {xlength[0]+2,xlength[1]+2,xlength[2]+2};
-	// Total number of cells
     int const totalSize  = Q*xlen2[2]*xlen2[1]*xlen2[0];
+
+	t_boundaryFcnPtr fcnPtr = NULL;
 
 	// TODO: (VS) Compute obstacle min and max to exclude some cells
 	// As of now iterate over everything normally
 
-	// Iterate over the entire domain and call boundary treatment functions
-	// based on their type
+	// TODO: (VS) directly call functions rather than having indirect call
+
 	for (z = 0; z < xlen2[2]; z++) {
 		for (y = 0; y < xlen2[1]; y++) {
 			for (x = 0; x < xlen2[0]; x++) {
@@ -403,49 +434,12 @@ void treatBoundary(double *collideField, const t_flagField * const flagField,
 				wallType	= flagField[flagIndex].type;
 				wallPos		= flagField[flagIndex].position;
 				if (wallType != FLUID && wallType != -1) {
-					point[0] = x;
-					point[1] = y;
-					point[2] = z;
-					switch (wallType) {
-						case NO_SLIP:
-							// call no slip wall
-							p_noSlip(collideField, flagField, point, xlength,
-								&totalSize);
-							break;
-						case MOVING:
-							// call moving wall
-							p_movingWall(collideField, flagField, point, xlength,
-								&boundPara[wallPos], &totalSize);
-							break;
-						case FREE_SLIP:
-							// call free slip wall
-							p_freeSlip(collideField, flagField, point, xlength,
-								&totalSize);
-							break;
-						case OUTFLOW:
-							// call outflow wall
-							p_outflow(collideField, flagField, point, xlength,
-								&boundPara[wallPos], &totalSize);
-							break;
-						case INFLOW:
-							// call inflow wall
-							p_inflow(collideField, flagField,xlength, point,
-								&boundPara[wallPos]);
-							break;
-						case PRESSURE_IN:
-							// call pressure in wall
-							p_pressureIn(collideField, flagField, point, xlength,
-								&boundPara[wallPos], &totalSize);
-							break;
-						case OBSTACLE:
-							p_noSlip(collideField, flagField, point, xlength,
-								&totalSize);
-							break;
-						default:
-							// TODO: (VS) remove this comment maybe
-							ERROR("**** FLUID cell encountered! ****");
-							break;
-					}
+					points[0] = x;
+					points[1] = y;
+					points[2] = z;
+					fcnPtr = p_selectFunction(wallType);
+					(*fcnPtr)(collideField, flagField, points, xlength,
+						&boundPara[wallPos], &totalSize);
 				}
 			}
 		}
