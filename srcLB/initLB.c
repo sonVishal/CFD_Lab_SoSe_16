@@ -29,17 +29,6 @@ void p_verifyValidWallSetting(t_boundPara *boundPara, const int mode){
 		}// else if(foundMovWall == 1 && foundNoSlipWall == 5){
 
 	}else{
-		/* TODO(DL) :
-		 * Check:
-		 * left XY wall is always inflow
-		 * right XY wall is always outflow
-		 *
-		 * Check that in the direction of flow is set normal (that is now always z-direction)
-		 *
-		 * Possibly make "read_wall" and in the parameter file less to read! (not all
-		 * values are needed all the time..)
-		 */
-
 		int numInflow    = 0;
 		int numFreeSlip  = 0;
 
@@ -88,6 +77,7 @@ void p_verifyValidWallSetting(t_boundPara *boundPara, const int mode){
 }
 
 void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
+
 	int type;
 	double x_velocity, y_velocity, z_velocity;
 	double rhoRef, rhoIn;
@@ -294,8 +284,6 @@ void p_generatePgmDomain(char *argv[], const int * const xlength, const int MODE
 
 }
 
-// TODO: (TKS) The printed statements from the helper function do no longer
-//             make sense after adding skip
 int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *timesteps,
 		int *timestepsPerPlotting, char *problem,
 		int argc, char *argv[]){
@@ -308,6 +296,7 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 		ERROR(msg);
 	}
 
+	printf("INFO: read simulation parameter: \n");
 	int MODE;
     double Re; //u_wall, machNr;
     int x_length, y_length, z_length; //Temporary for reading
@@ -349,6 +338,8 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 
     //TODO: (TKS) Make sure the boundaries are red in the correct order.
     for(int b=XY_LEFT; b <= XZ_BACK; b++){
+    	printf("\nINFO: reading values for wall type %i \n", b);
+
     	p_readWall(argv, &boundPara[b], skip);
         skip++;
     }
@@ -444,11 +435,6 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
     int type;
     int start, end;
 
-    /* TODO: (DL) there are 6x2 nested for loops now, to make it nicer
-     * make a function and set the variables in the parameters.
-     *
-     * Problem is the different index computation in each type of wall -> use function pointer?
-     */
     //Do the domain enclosing boundaries (ghost layers) first and set type accordingly.
     type = boundPara[XZ_BACK].type;
     start = boundPara[XZ_BACK].idxStartEnd[0];
