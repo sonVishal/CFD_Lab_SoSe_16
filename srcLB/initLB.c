@@ -530,7 +530,6 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 				int type_domain = pgmMatrix[z][x];
 
 				if(type_domain == 0){
-					// TODO: (REMOVE?)This is actually not required as long as FLUID=0
 					flagField[idx].type = FLUID;
 					flagField[idx].position = FLUID;
 				}else if(type_domain == 1){
