@@ -29,6 +29,8 @@ static const double LATTICEWEIGHTS[19] = {
 #undef w2
 #undef w3
 
+static const int INVALID = -1;
+
 // Speed of sound
 #define C_S ((double)0.57735026918962576) // double cast to guarantee type safety
 
