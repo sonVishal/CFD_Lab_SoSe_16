@@ -12,10 +12,10 @@ MODE 		      		1
 tau                    		0.6
 
 # Number of timesteps
-timesteps            		10
+timesteps            		1000
 
 # timesteps between each plot
-timestepsPerPlotting 		  1
+timestepsPerPlotting 		  10
 
 #Scenario - name for the simulation and output paraview output files (in pv_files)
 problem 			stepFlow
