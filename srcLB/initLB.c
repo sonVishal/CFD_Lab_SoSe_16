@@ -458,81 +458,82 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 	int const xlen2		= xlength[0]+2;
 	int const ylen2		= xlength[1]+2;
 	int const zlen2		= xlength[2]+2;
-	int offset1, offset2;
+	int idx;
 
     int type;
     int start, end;
 
     //Do the domain enclosing boundaries (ghost layers) first and set type accordingly.
+
+	// y = 0
     type = boundPara[XZ_BACK].type;
     start = boundPara[XZ_BACK].idxStartEnd[0];
     end = boundPara[XZ_BACK].idxStartEnd[1];
     for(z = start; z <= xlength[2] + end; ++z){
-		offset1 = z*xlen2*ylen2;
-		offset2 = offset1 + (xlength[1]+1)*xlen2;
     	for(x = start; x <= xlength[0] + end; ++x){
-    		flagField[offset1 + x].type = type; // y = 0
-			flagField[offset1 + x].position = XZ_BACK;
+			p_computeIndexXYZ(x,0,z,xlength,&idx);
+    		flagField[idx].type = type;
+			flagField[idx].position = XZ_BACK;
     	}
     }
 
+	// y = xlength[1]+1
     type = boundPara[XZ_FRONT].type;
     start = boundPara[XZ_FRONT].idxStartEnd[0];
     end = boundPara[XZ_FRONT].idxStartEnd[1];
     for(z = start; z <= xlength[2]+end; ++z){
-		offset1 = z*xlen2*ylen2;
-		offset2 = offset1 + (xlength[1]+1)*xlen2;
     	for(x = start; x <= xlength[0]+end; ++x){
-    		flagField[offset2 + x].type = type; // y = xlength[1]+1
-			flagField[offset2 + x].position = XZ_FRONT;
+			p_computeIndexXYZ(x,xlength[1]+1,z,xlength,&idx);
+    		flagField[idx].type = type;
+			flagField[idx].position = XZ_FRONT;
     	}
     }
 
+	// z = 0
     type = boundPara[XY_LEFT].type;
     start = boundPara[XY_LEFT].idxStartEnd[0];
     end = boundPara[XY_LEFT].idxStartEnd[1];
     for(y = start; y <= xlength[1]+end; ++y){
-		offset1 = y*xlen2;
-		offset2 = offset1 + (xlength[2]+1)*xlen2*ylen2;
     	for(x = start; x <= xlength[0]+end; ++x){
-    		flagField[offset1 + x].type = type; // z = 0
-			flagField[offset1 + x].position = XY_LEFT;
+			p_computeIndexXYZ(x,y,0,xlength,&idx);
+    		flagField[idx].type = type;
+			flagField[idx].position = XY_LEFT;
     	}
     }
 
+	// z = xlength[2]+1
     type = boundPara[XY_RIGHT].type;
     start = boundPara[XY_RIGHT].idxStartEnd[0];
     end = boundPara[XY_RIGHT].idxStartEnd[1];
     for(y = start; y <= xlength[1]+end; ++y){
-		offset1 = y*xlen2;
-		offset2 = offset1 + (xlength[2]+1)*xlen2*ylen2;
     	for(x = start; x <= xlength[0]+end; ++x){
-    		flagField[offset2 + x].type = type; // z = xlength[2]+1
-			flagField[offset2 + x].position = XY_RIGHT;
+			p_computeIndexXYZ(x,y,xlength[2]+1,xlength,&idx);
+    		flagField[idx].type = type;
+			flagField[idx].position = XY_RIGHT;
     	}
     }
 
+	// x = 0
     type = boundPara[YZ_BOTTOM].type;
     start = boundPara[YZ_BOTTOM].idxStartEnd[0];
     end = boundPara[YZ_BOTTOM].idxStartEnd[1];
     for(z = start; z <= xlength[2]+end; ++z){
-		offset1 = z*xlen2*ylen2;
-		offset2 = offset1 + xlength[0] + 1;
     	for(y = start; y <= xlength[1]+end; ++y){
-			flagField[offset1 + y*xlen2].type = type; // x = 0
-			flagField[offset1 + y*xlen2].position = YZ_BOTTOM;
+			p_computeIndexXYZ(0,y,z,xlength,&idx);
+			flagField[idx].type = type;
+			flagField[idx].position = YZ_BOTTOM;
     	}
     }
 
+	// x = xlength[0]+1
     type = boundPara[YZ_TOP].type;
     start = boundPara[YZ_TOP].idxStartEnd[0];
     end = boundPara[YZ_TOP].idxStartEnd[1];
     for(z = start; z <= xlength[2]+end; ++z){
-		offset1 = z*xlen2*ylen2;
-		offset2 = offset1 + xlength[0] + 1;
     	for(y = start; y <= xlength[1]+end; ++y){
-    		flagField[offset2 + y*xlen2].type = type; // x = xlength[0]+1
-			flagField[offset2 + y*xlen2].position = YZ_TOP;
+			p_computeIndexXYZ(xlength[0]+1,y,z,xlength,&idx);
+    		flagField[idx].type = type;
+			flagField[idx].position = YZ_TOP;
     	}
     }
 
@@ -568,20 +569,18 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
 
     //NOTE: only domain (ghost layer were set previously)//
     for(z = 1; z <= xlength[2]; ++z){
-		offset1 = z*xlen2*ylen2;
     	for (y = 1; y <= xlength[1]; ++y) {
-			offset2 = offset1 + y*xlen2;
 			for (x = 1; x <= xlength[0]; ++x) {
-				int xyzoffset = offset2 + x;
+				p_computeIndexXYZ(x,y,z,xlength,&idx);
 				int type_domain = pgmMatrix[z][x];
 
 				if(type_domain == 0){
-					//This is actually not required as long as FLUID=0
-					flagField[xyzoffset].type = FLUID;
-					flagField[xyzoffset].position = FLUID;
+					// TODO: (REMOVE?)This is actually not required as long as FLUID=0
+					flagField[idx].type = FLUID;
+					flagField[idx].position = FLUID;
 				}else if(type_domain == 1){
-					flagField[xyzoffset].type = OBSTACLE;
-					flagField[xyzoffset].position = OBSTACLE;
+					flagField[idx].type = OBSTACLE;
+					flagField[idx].position = OBSTACLE;
 				}else{
 					ERROR("Description of scenario in pgm file should only consist of logical values. \n");
 				}
@@ -595,19 +594,13 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
     /*Setting initial distributions, LATTICEWEIGHTS and INFLOW conditions */
     //f_i(x,0) = f^eq(1,0,0) = w_i
 
-    // current cell index
-    int idx;
-
     /* initialize collideField and streamField and inflow BC if any*/
     for ( z = 0; z < zlen2; ++z) {
-		offset1 = z*xlen2*ylen2;
         for ( y = 0; y < ylen2; ++y) {
-			offset2 = offset1 + y*xlen2;
             for ( x = 0; x < xlen2; ++x) {
-				int xyzoffset =  offset2 + x;
-
+				p_computeIndexXYZ(x,y,z,xlength,&idx);
 				// Compute the base index
-                idx = Q*xyzoffset;
+                idx = Q*idx;
 
                 //Set initial condition
                 for (int i = 0; i < Q; ++i) {
