@@ -274,13 +274,13 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 
 	p_assignIndices(&flagField[currentFlagIndex].position,index,mirrorIndex);
 
-	//TODO:(DL) leave valid check? it's by construction never out of bound
-    if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
-            flagField[nextFlagIndex].type == FLUID) {
-        for (i = 0; i < 5; i++) {
-            collideField[currentCellIndex+index[i]] = collideField[nextCellIndex+mirrorIndex[i]];
-        }
-    }
+	//it's by construction always inside the domain, so no check in if statement needed
+	assert(nextCellIndex >= 0 && nextCellIndex < *totalSize);
+
+	//every cell is mirrored (not only FLUID)
+	for (i = 0; i < 5; i++) {
+		collideField[currentCellIndex+index[i]] = collideField[nextCellIndex+mirrorIndex[i]];
+	}
 }
 
 void p_outflow(double* collideField, t_flagField const * const flagField,

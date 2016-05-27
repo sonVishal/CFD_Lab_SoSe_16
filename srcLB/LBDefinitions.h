@@ -65,6 +65,7 @@ enum E_BOUNDARIES{
 typedef struct {
 	int type;
 	int idxStartEnd[2];
+	int bPrio;
 	double wallVelocity[3]; //TODO: (TKS) rename
     double rhoRef;
 	double rhoIn;
