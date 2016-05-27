@@ -179,7 +179,7 @@ void writeVtkDebug(const double * const collideField,
     fprintf(fp,"\nCELL_DATA %d \n", (xlength[0]+2)*(xlength[1]+2)*(xlength[2]+2));
 
     // Write cell average density to a temporary vtk file
-    fprintf(fp, "SCALARS density integer 1 \n");
+    fprintf(fp, "SCALARS boundaryType integer 1 \n");
     fprintf(fp, "LOOKUP_TABLE default \n");
     for(z = 0; z <= xlength[2]+1; z++) {
         for(y = 0; y <= xlength[1]+1; y++) {
