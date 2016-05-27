@@ -8,7 +8,7 @@
 void p_printBoundPara(const t_boundPara * const boundPara) {
 	printf("************************************************\n");
 	printf("Type \t %d\n",boundPara->type);
-	printf("Wall Velocity\t(%f,%f,%f)\n",boundPara->wallVelocity[0],boundPara->wallVelocity[1],boundPara->wallVelocity[2]);
+	printf("Wall Velocity\t(%f,%f,%f)\n",boundPara->velocity[0],boundPara->velocity[1],boundPara->velocity[2]);
 	printf("************************************************\n");
 }
 
@@ -43,7 +43,7 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 	int nextPoint[3];
 	int currentCellIndex, nextFlagIndex, nextCellIndex;
 	double density;
-	const double * const wallVelocity = boundPara->wallVelocity;
+	const double * const wallVelocity = boundPara->velocity;
 	p_computeIndexQ(point, xlength, &currentCellIndex);
 
 	// if (boundPara->type != MOVING) {
@@ -325,7 +325,7 @@ void p_inflow(double* collideField, t_flagField const * const flagField,
 	p_computeIndex(point, xlength, &currentFlagIndex);
 	currentCellIndex = Q*currentFlagIndex;
 
-	computeFeq(&boundPara->rhoRef, boundPara->wallVelocity, feq);
+	computeFeq(&boundPara->rhoRef, boundPara->velocity, feq);
 
 	/* TODO: (DL) see WS sentence after eq. 2.2:
 	 * "You may also try to use the density from the previous time step as pref"
@@ -349,7 +349,7 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 	double feq[Q];
 
 	p_computeIndexQ(point, xlength, &currentCellIndex);
-	computeFeq(&boundPara->rhoIn, boundPara->wallVelocity, feq);
+	computeFeq(&boundPara->rhoIn, boundPara->velocity, feq);
 
 	for (i = 0; i < Q; i++) {
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];
@@ -399,7 +399,6 @@ t_boundaryFcnPtr p_selectFunction(const int wallType) {
 			tmpPtr = &p_noSlip;
 			break;
 		default:
-			// TODO: remove this comment maybe
 			ERROR("**** FLUID cell encountered! ****");
 			tmpPtr = NULL;
 			break;
@@ -408,7 +407,6 @@ t_boundaryFcnPtr p_selectFunction(const int wallType) {
 	return tmpPtr;
 }
 
-// TODO: 3 for loops with switch case inside sounds better
 
 void treatBoundary(double *collideField, const t_flagField * const flagField,
 	const t_boundPara * const boundPara, const int * const xlength){

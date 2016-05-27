@@ -1,7 +1,6 @@
 #include <stdio.h>
 
 #include "streaming.h"
-// TODO: Better looping over the cells
 
 /* Another (obsolete) version where we iterated over FLUID cells with 3 loops (x,y,z) turned out to
  * to be slower than the current version.
@@ -14,9 +13,6 @@ void doStreaming(double *collideField, double *streamField,t_flagField *flagFiel
 	 * Each FLUID cell (this) copies the distribution f_i-values of all neighboring
 	 * cells of this.
 	 */
-
-	/*TODO:(DL) Check if this is correct after finishing with initialization
-	* adapted to xlength[3] */
 
     int xlen2 = xlength[0]+2;
 	int ylen2 = xlength[1]+2;

@@ -66,7 +66,7 @@ typedef struct {
 	int type;
 	int idxStartEnd[2];
 	int bPrio;
-	double wallVelocity[3]; //TODO: (TKS) rename
+	double velocity[3];
     double rhoRef;
 	double rhoIn;
 } t_boundPara;
