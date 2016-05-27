@@ -516,6 +516,13 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
     int start, end;
 
     //Do the domain enclosing boundaries (ghost layers) first and set type accordingly.
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < NUM_WALLS; j++) {
+			if (boundPara[j].bPrio == i) {
+				p_setWall(xlength, flagField, boundPara[j].type, j);
+			}
+		}
+	}
 
 	// y = 0
     type = boundPara[XZ_BACK].type;
