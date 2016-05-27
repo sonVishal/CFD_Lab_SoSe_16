@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "computeCellValues.h"
 
 /** computes the density from the particle distribution functions stored at
@@ -12,11 +13,13 @@ void computeDensity(const double *const currentCell, double *density){
 	for (i = 0; i < Q; i++) {
 		 *density += currentCell[i];
 	}
+    assert(*density > 0.0);
 }
 
 /** computes the velocity within currentCell and stores the result in velocity */
 void computeVelocity(const double * const currentCell, const double * const density, double *velocity){
 
+    assert(*density > 0.0);
     // Velocity is the momentum divided by the density
     // Momentum is the sum of the product of lattice velocity with distribution
 
@@ -70,6 +73,7 @@ void computeVelocity(const double * const currentCell, const double * const dens
  */
 void computeFeq(const double * const density, const double * const velocity, double *feq){
 
+    assert(*density > 0.0);
     // Temporary variables for speed of sound squared and ^4
 	// Since it is called that often and having the most work, we made these static
 	// to only compute these values once!

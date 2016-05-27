@@ -365,32 +365,43 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 }
 
 t_boundaryFcnPtr p_selectFunction(const int wallType) {
+	t_boundaryFcnPtr tmpPtr;
 	switch (wallType) {
 		case NO_SLIP:
 			// call no slip wall
-			return &p_noSlip;
+			tmpPtr = &p_noSlip;
+			break;
 		case MOVING:
 			// call moving wall
-			return &p_movingWall;
+			tmpPtr = &p_movingWall;
+			break;
 		case FREE_SLIP:
 			// call free slip wall
-			return &p_freeSlip;
+			tmpPtr = &p_freeSlip;
+			break;
 		case OUTFLOW:
 			// call outflow wall
-			return &p_outflow;
+			tmpPtr = &p_outflow;
+			break;
 		case INFLOW:
 			// call inflow wall
-			return &p_inflow;
+			tmpPtr = &p_inflow;
+			break;
 		case PRESSURE_IN:
 			// call pressure in wall
-			return &p_pressureIn;
+			tmpPtr = &p_pressureIn;
+			break;
 		case OBSTACLE:
-			return &p_noSlip;
+			tmpPtr = &p_noSlip;
+			break;
 		default:
 			// TODO: remove this comment maybe
 			ERROR("**** FLUID cell encountered! ****");
-			return NULL;
+			tmpPtr = NULL;
+			break;
 	}
+	assert(tmpPtr != NULL);
+	return tmpPtr;
 }
 
 // TODO: 3 for loops with switch case inside sounds better
@@ -409,6 +420,8 @@ void treatBoundary(double *collideField, const t_flagField * const flagField,
 
 	// TODO: (VS) Compute obstacle min and max to exclude some cells
 	// As of now iterate over everything normally
+
+	// TODO: (VS) directly call functions rather than having indirect call
 
 	for (z = 0; z < xlen2[2]; z++) {
 		for (y = 0; y < xlen2[1]; y++) {
