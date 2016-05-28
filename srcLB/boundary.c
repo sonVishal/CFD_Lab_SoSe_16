@@ -7,7 +7,7 @@
 // Function that checks the index is valid and if it is valid then
 // checks whether the cell is FLUID or not
 static inline int p_checkValidFluidIndex(const int totalSize, const int nextCellIndex, const t_flagField * const flagField) {
-	return ((nextCellIndex >= 0 && nextCellIndex < totalSize && flagField[nextCellIndex].type == FLUID) ? 1:0);
+	return ((nextCellIndex >= 0 && nextCellIndex < totalSize && flagField[nextCellIndex/Q].type == FLUID) ? 1:0);
 }
 
 // Handle no slip boundary condition
@@ -213,7 +213,7 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 	p_assignIndices(&flagField[currentFlagIndex].position,index,mirrorIndex);
 
 	// it's by construction always inside the domain, so no check for for-loop needed
-	assert(nextCellIndex >= 0 && nextCellIndex < Q*(*totalSize));
+	assert(nextCellIndex >= 0 && nextCellIndex < (*totalSize));
 
 	// every cell is mirrored (not only FLUID)
 	// Loop over only the 5 distributions
@@ -362,7 +362,7 @@ void treatBoundary(double *collideField, const t_flagField * const flagField,
 	int flagIndex, wallType, wallPos;
 	int points[3];
 	int const xlen2[3] = {xlength[0]+2,xlength[1]+2,xlength[2]+2};
-    int const totalSize  = xlen2[2]*xlen2[1]*xlen2[0];
+    int const totalSize  = Q*xlen2[2]*xlen2[1]*xlen2[0];
 
 	t_boundaryFcnPtr fcnPtr = NULL;
 
