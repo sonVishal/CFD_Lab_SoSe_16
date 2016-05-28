@@ -263,28 +263,19 @@ void p_inflow(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
-	// Counter so that inflow is called only once
-	static int counter = 0;
-	if (counter == 0) {
-		int i;
-		int currentFlagIndex, currentCellIndex;
-		double feq[Q];
-		// Compute the current cell index
-		p_computeIndex(point, xlength, &currentFlagIndex);
-		currentCellIndex = Q*currentFlagIndex;
+	int i;
+	int currentFlagIndex, currentCellIndex;
+	double feq[Q];
+	// Compute the current cell index
+	p_computeIndex(point, xlength, &currentFlagIndex);
+	currentCellIndex = Q*currentFlagIndex;
 
-		// Compute equilibrium distribution
-		computeFeq(&boundPara->rhoRef, boundPara->velocity, feq);
+	// Compute equilibrium distribution
+	computeFeq(&boundPara->rhoRef, boundPara->velocity, feq);
 
-		// Assign the distributions
-		for (i = 0; i < Q; i++) {
-			collideField[currentCellIndex+i] = feq[i];
-		}
-
-		// Change counter to avoid calling this function again
-		counter = 1;
-	} else {
-		return;
+	// Assign the distributions
+	for (i = 0; i < Q; i++) {
+		collideField[currentCellIndex+i] = feq[i];
 	}
 }
 
