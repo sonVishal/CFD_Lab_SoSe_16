@@ -215,7 +215,7 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 	int i;
 	int nextPoint[3];
 	int nextFlagIndex, nextCellIndex, currentFlagIndex, currentCellIndex;
-	double density, feq[Q], nextPointVel[3];
+	double density, feq[Q], nextCellVel[3];
 
 	p_computeIndex(point, xlength, &currentFlagIndex);
 	currentCellIndex = Q*currentFlagIndex;
@@ -230,8 +230,8 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 		if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField[nextFlagIndex].type)) {
 
 			computeDensity(&collideField[nextCellIndex], &density);
-			computeVelocity(&collideField[nextCellIndex], &density, nextPointVel);
-			computeFeq(&(boundPara->rhoRef), nextPointVel, feq);
+			computeVelocity(&collideField[nextCellIndex], &density, nextCellVel);
+			computeFeq(&(boundPara->rhoRef), nextCellVel, feq);
 			collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
 											collideField[nextCellIndex+Q-1-i];
 		}
@@ -249,13 +249,6 @@ void p_inflow(double* collideField, t_flagField const * const flagField,
 	currentCellIndex = Q*currentFlagIndex;
 
 	computeFeq(&boundPara->rhoRef, boundPara->velocity, feq);
-
-	/* TODO: (DL) see WS sentence after eq. 2.2:
-	 * "You may also try to use the density from the previous time step as pref"
-	 *
-	 * We could do this by either: using a static variable for pref or change the
-	 * variable in boundPara (but then we need a non-const boundPara).
-	 */
 
 	for (i = 0; i < Q; i++) {
 		collideField[currentCellIndex+i] = feq[i];
