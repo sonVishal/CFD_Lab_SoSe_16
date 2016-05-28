@@ -558,7 +558,8 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
         for ( y = 0; y < ylen2; ++y) {
             for ( x = 0; x < xlen2; ++x) {
 				// Compute the cell index
-                idx = Q*p_computeIndexXYZ(x,y,z,xlength,&idx);
+                p_computeIndexXYZ(x,y,z,xlength,&idx);
+                idx = Q*idx;
 
                 //Set initial condition
                 for (int i = 0; i < Q; ++i) {

@@ -36,14 +36,11 @@ int main(int argc, char *argv[]){
     readParameters(xlength, &tau, boundPara, &timesteps, &timestepsPerPlotting,
     		problem, argc, &argv[1]);
 
-    /* TODO: (DL) the current name includes also the file ending '.pgm' maybe we
-     * dont want that..
-     */
     // File printing parameters
     char fName[MAX_LINE_LENGTH+9]; // 9 chars for 'pv_files/'
     snprintf(fName, MAX_LINE_LENGTH+9, "pv_files/%s", problem);
 
-#ifdef NO_CHECKS
+#ifdef NDEBUG
     printf("INFO: The compiler directive NO_CHECKS is enabled. Faster execution time is gained, "
     		"at the cost of less correctness checks during runtime!\n");
 #else
