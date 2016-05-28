@@ -4,15 +4,6 @@
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 
-// TODO: (VS) Remove when finished debugging
-void p_printBoundPara(const t_boundPara * const boundPara) {
-	printf("************************************************\n");
-	printf("Type \t %d\n",boundPara->type);
-	printf("Wall Velocity\t(%f,%f,%f)\n",boundPara->velocity[0],boundPara->velocity[1],boundPara->velocity[2]);
-	printf("************************************************\n");
-}
-
-
 void p_noSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize){
