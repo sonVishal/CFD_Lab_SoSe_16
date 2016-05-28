@@ -7,15 +7,7 @@
 // Function that checks the index is valid and if it is valid then
 // checks whether the cell is FLUID or not
 static inline int p_checkValidFluidIndex(const int totalSize, const int nextCellIndex, const t_flagField * const flagField) {
-	if (nextCellIndex >= 0 && nextCellIndex < totalSize) {
-		if (flagField[nextCellIndex].type == FLUID) {
-			return 1;
-		} else {
-			return 0;
-		}
-	} else {
-		return 0;
-	}
+	return ((nextCellIndex >= 0 && nextCellIndex < totalSize) ? (flagField[nextCellIndex].type == FLUID):0);
 }
 
 // Handle no slip boundary condition
@@ -274,7 +266,6 @@ void p_inflow(double* collideField, t_flagField const * const flagField,
 	// Counter so that inflow is called only once
 	static int counter = 0;
 	if (counter == 0) {
-		printf("INFLOW\n");
 		int i;
 		int currentFlagIndex, currentCellIndex;
 		double feq[Q];
