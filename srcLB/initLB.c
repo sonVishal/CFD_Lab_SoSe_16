@@ -168,9 +168,12 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 * Returns an boolean value to indicate whether the surrounding of this position is valid.
 * The function only checks custom scenarios and is thus only called in function
 * p_readCustomPgmMatrix
+*
+* NOTE:
+* We consider "islands" inside a boundary region (disjoint FLUID cells surrounded by OBSTACLE)
+* also as an illegal setting. However, for code clarity we do not check this case (also because
+* there is no 'harm' to the actual simulation).
 */
-
-//TODO: Also include the checking for illegal islands or comment...
 int p_checkValidDomain(int x, int z, const int* const xlength, int **pgmMatrix){
 
 	int right = pgmMatrix[z+1][x];
