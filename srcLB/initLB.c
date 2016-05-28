@@ -15,26 +15,28 @@
 void p_verifyValidWallSetting(t_boundPara *boundPara, const int mode){
 
 	if(mode == CAVITY){
-		//If there is a MOVING wall present we only support the cavity scenario, i.e. there should
-		//be only one MOVING wall and 5 NO_SLIP walls.
-		int foundMovWall = 0;
-		int foundNoSlipWall = 0;
-		for(int b=XY_LEFT; b <= XY_LEFT; ++b){
-			if(boundPara->type == MOVING){
-				foundMovWall++;
-			}
-			if(boundPara->type == NO_SLIP){
-				foundNoSlipWall++;
+		//1) Only the 'YZ_TOP wall' is allowed to be the moving wall!
+		//2) All the other walls have to be NO_SLIP
+		int condBool = 1;
+
+		//1)
+		if(boundPara[YZ_TOP].type != MOVING){
+			condBool = 0;
+		}
+
+		//2)
+		for(int b=XY_LEFT; b <= XZ_BACK && condBool; ++b){
+			if(b != YZ_TOP && boundPara[b].type != NO_SLIP){
+				condBool = 0;
 			}
 		}
 
-		if(foundMovWall > 1 || (foundMovWall == 1 && foundNoSlipWall != 5)){
+		if(! condBool){
 			char msg[150];
-			snprintf(msg, 150, "When a wall is set to MOVING we only support the CAVITY scenario. That is "
-					"one MOVING wall and 5 NO_SLIP walls.");
+			snprintf(msg, 150, "In mode=CAVITY only the YZ_TOP wall is allowed to be a MOVING wall. "
+					"All the other walls have to be NO_SLIP");
 			ERROR(msg);
-		}// else if(foundMovWall == 1 && foundNoSlipWall == 5) -> continue
-
+		}
 	}else{
 		int numInflow    = 0;
 		int numFreeSlip  = 0;
@@ -264,17 +266,6 @@ void p_readCustomPgmMatrix(const int * const xlength, char *filename){
     }
 }
 
-/* TODO: (DL) delete when finializing code, but leave it as long there may be debugging
- * going on :-) */
-void print_matrix(const int * const xlength){
-	 for (int x = 0; x <= xlength[0]+1; x++) {
-       for (int z = 0; z <= xlength[2]+1; z++) {
-           printf("%d ",pgmMatrix[z][xlength[0]+1-x]);
-       }
-       printf("\n");
-   }
-}
-
 /*
  * Handles the creation (and allocation) of the pgmMatrix. The domain is created depending
  * on the current mode.
@@ -391,24 +382,16 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     	if(xlength[0] != xlength[1] && xlength[0] != xlength[2]){
     		ERROR("Only cubic domain is supported for the CAVITY mode. \n");
     	}
-    	double u_wall = INVALID;
-    	//TODO: (DL) remove for loop and assume that wall TOP is the Moving wall
-    	// 			 Also: make this check at the validWall setting!!
-    	for(int b=XY_LEFT; b <= XZ_BACK; ++b){
-    	    if(boundPara[b].type == MOVING){
-    			u_wall = sqrt(boundPara[b].velocity[0]*boundPara[b].velocity[0]
-					+ boundPara[b].velocity[1]*boundPara[b].velocity[1]+
-					boundPara[b].velocity[2]*boundPara[b].velocity[2]);
-    			*tau = u_wall*(xlength[0])/(C_S*C_S*Re)+0.5;
-    			printf("\nINFO: Calculated tau = %f \n", *tau);
 
-    			break; //CAVITY case, in case there are multiple MOVING walls an
-    				   //error is thrown in valid surroundings
-    		}
-    	}
-    	*tau = u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
+    	//From p_verifyValidWallSetting it is only possible that the YZ_TOP wall is MOVING
+    	assert(boundPara[YZ_TOP].type == MOVING);
 
-    	if(u_wall == INVALID) ERROR("Couldn't find a MOVING wall.");
+    	double u_wall = sqrt(boundPara[YZ_TOP].velocity[0]*boundPara[YZ_TOP].velocity[0]
+			+ boundPara[YZ_TOP].velocity[1]*boundPara[YZ_TOP].velocity[1]+
+			boundPara[YZ_TOP].velocity[2]*boundPara[YZ_TOP].velocity[2]);
+
+    	*tau = u_wall*(xlength[0])/(C_S*C_S*Re)+0.5;
+    	printf("\nINFO: Calculated tau = %f \n", *tau);
 
     	double machNr  = u_wall/C_S;
 
@@ -429,7 +412,6 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     	}
     }
     /* E N D  -- CAVITY PART*/
-
 
     if(*tau<=0.5 || *tau>2){
     	char msg[80];
