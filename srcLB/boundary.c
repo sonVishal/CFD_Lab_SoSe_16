@@ -274,6 +274,7 @@ void p_inflow(double* collideField, t_flagField const * const flagField,
 	// Counter so that inflow is called only once
 	static int counter = 0;
 	if (counter == 0) {
+		printf("INFLOW\n");
 		int i;
 		int currentFlagIndex, currentCellIndex;
 		double feq[Q];
@@ -289,8 +290,8 @@ void p_inflow(double* collideField, t_flagField const * const flagField,
 			collideField[currentCellIndex+i] = feq[i];
 		}
 
-		// Increment counter to avoid calling this function again
-		counter++;
+		// Change counter to avoid calling this function again
+		counter = 1;
 	} else {
 		return;
 	}
