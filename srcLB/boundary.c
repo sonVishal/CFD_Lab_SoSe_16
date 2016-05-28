@@ -4,6 +4,11 @@
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 
+static inline int p_checkValidFluidIndex(const int totalSize, const int nextCellIndex,
+	const int cellType) {
+	return (nextCellIndex >= 0 && nextCellIndex < totalSize && cellType == FLUID);
+}
+
 void p_noSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize){
@@ -19,8 +24,7 @@ void p_noSlip(double* collideField, t_flagField const * const flagField,
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-	    if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
-	    		flagField[nextFlagIndex].type == FLUID) {
+	    if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField[nextFlagIndex].type)) {
 		    collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)];
 		}
 	}
@@ -45,8 +49,7 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-	    if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
-	    		flagField[nextFlagIndex].type == FLUID) {
+	    if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField[nextFlagIndex].type)) {
             double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
             double weight = LATTICEWEIGHTS[i];
 
@@ -286,8 +289,7 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-		if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
-			flagField[nextFlagIndex].type == FLUID) {
+		if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField[nextFlagIndex].type)) {
 
 			computeDensity(&collideField[nextCellIndex], &density);
 			computeVelocity(&collideField[nextCellIndex], &density, nextPointVel);
@@ -341,9 +343,7 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-        if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
-            flagField[nextFlagIndex].type == FLUID) {
-
+        if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField[nextFlagIndex].type)) {
             collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
                                             collideField[nextCellIndex+Q-1-i];
         }
