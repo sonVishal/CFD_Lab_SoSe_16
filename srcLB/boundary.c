@@ -7,7 +7,7 @@
 // Function that checks the index is valid and if it is valid then
 // checks whether the cell is FLUID or not
 static inline int p_checkValidFluidIndex(const int totalSize, const int nextCellIndex, const t_flagField * const flagField) {
-	return ((nextCellIndex >= 0 && nextCellIndex < totalSize) ? (flagField[nextCellIndex].type == FLUID):0);
+	return ((nextCellIndex >= 0 && nextCellIndex < totalSize && flagField[nextCellIndex].type == FLUID) ? 1:0);
 }
 
 // Handle no slip boundary condition
