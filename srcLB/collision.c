@@ -8,8 +8,6 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 	for ( int i = 0;  i< Q; ++i ) {
 		currentCell[i] = currentCell[i]  - (currentCell[i]  - feq[i])/(*tau);
 
-		/* TODO: (DL) take the same compiler directive here than for the asserts?*/
-
 #ifndef NDEBUG
 		if(currentCell[i]<0){
 			char msg[100];
