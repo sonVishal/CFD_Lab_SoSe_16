@@ -75,7 +75,7 @@ int main(int argc, char *argv[]){
     // Write the VTK at t = 0
     printf("INFO: write vtk file at time t = %d \n", t);
     writeVtkOutput(collideField,flagField,fName,t,xlength);
-    writeVtkDebug(collideField,flagField,fName,xlength);
+//    writeVtkDebug(collideField,flagField,fName,xlength);
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){

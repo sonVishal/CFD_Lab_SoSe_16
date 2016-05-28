@@ -374,7 +374,6 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 
     /* S T A R T  -- ONLY FOR CAVITY, this part supports the old CAVITY case from WS2
      * Also it computes tau from the given Reynolds number*/
-
     //CAVITY supports to hand either Reynolds number (and compute tau), or handle tau directly
     if(Re != INVALID && MODE == CAVITY){ //true, then compute tau according to Re
     	//The restriction of cubic domain is required in CAVITY such that the
