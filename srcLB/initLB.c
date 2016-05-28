@@ -8,7 +8,7 @@
 /*
  * Checks that walls settings are correct. The function is separated into two different cases.
  * The first case checks the correctness of the CAVITY mode, the second case the walls setting
- * for more arbitrary scenarios (scenarios from worsheet 3).
+ * for more arbitrary scenarios (scenarios from worksheet 3).
  *
  * The restrictions on the walls are located at comments at the corresponding position in the code.
  */
@@ -557,9 +557,8 @@ void initialiseFields(double *collideField, double *streamField, t_flagField *fl
     for ( z = 0; z < zlen2; ++z) {
         for ( y = 0; y < ylen2; ++y) {
             for ( x = 0; x < xlen2; ++x) {
-				p_computeIndexXYZ(x,y,z,xlength,&idx);
-				// Compute the base index
-                idx = Q*idx;
+				// Compute the cell index
+                idx = Q*p_computeIndexXYZ(x,y,z,xlength,&idx);
 
                 //Set initial condition
                 for (int i = 0; i < Q; ++i) {

@@ -33,10 +33,8 @@ void doStreaming(double *collideField, double *streamField,t_flagField *flagFiel
 	// 			nextFlagIndex = i-LATTICEVELOCITIES[j][0]-
 	// 							xlen2*LATTICEVELOCITIES[j][1]-
 	// 							xlen2*ylen2*LATTICEVELOCITIES[j][2];
-	// 			if (flagField[nextFlagIndex] != -1) {
 	// 				nextCellIndex = Q*nextFlagIndex;
 	// 				streamField[currentCellIndex+j] = collideField[nextCellIndex+j];
-	// 			}
 	// 		}
 	// 	}
 	// }
@@ -46,6 +44,7 @@ void doStreaming(double *collideField, double *streamField,t_flagField *flagFiel
 	// Up to 2 seconds with xlength = 30
 
 	for (i = 0; i < totalSize; i++) {
+		assert(flagField[i].type != INVALID);
 
 		if (flagField[i].type == FLUID) {
 			currentCellIndex = Q*i;

@@ -12,7 +12,7 @@
 
 int main(int argc, char *argv[]){
 
-    // Distribution function vectors
+    // Distribution function arrays
     double *collideField    =NULL;
     double *streamField     =NULL;
     t_flagField *flagField  =NULL;
@@ -32,8 +32,7 @@ int main(int argc, char *argv[]){
     clock_t begin_timing, end_timing;
     double time_spent;
 
-    /*Read parameters and check the bounds on tau*/
-    //tau is calculated automatically from the reynoldsnumber
+    /*Read parameters and check for valid settings*/
     readParameters(xlength, &tau, boundPara, &timesteps, &timestepsPerPlotting,
     		problem, argc, &argv[1]);
 
@@ -61,7 +60,7 @@ int main(int argc, char *argv[]){
     streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
     flagField     = (t_flagField *)  malloc(totalsize * sizeof( t_flagField ));
 
-    if(! collideField || !streamField || ! flagField ){
+    if(! collideField || ! streamField || ! flagField ){
     	ERROR("Storage cannot be allocated");
     }
 
@@ -78,8 +77,6 @@ int main(int argc, char *argv[]){
     writeVtkOutput(collideField,flagField,fName,t,xlength);
     writeVtkDebug(collideField,flagField,fName,xlength);
 
-    // printf("\n\n Tau = %f \n\n",tau);
-
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
 	    double *swap = NULL;
@@ -91,8 +88,6 @@ int main(int argc, char *argv[]){
 
 	    doCollision(collideField,flagField,&tau, xlength);
 	    treatBoundary(collideField,flagField,boundPara,xlength);
-        // writeVtkOutput(collideField,flagField,fName,t,xlength);
-        //ERROR("STOPPER -- remove when proceeding with implementation\n");
 
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);

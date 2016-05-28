@@ -46,10 +46,6 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 	const double * const wallVelocity = boundPara->velocity;
 	p_computeIndexQ(point, xlength, &currentCellIndex);
 
-	// if (boundPara->type != MOVING) {
-	// 	p_printBoundPara(boundPara);
-	// }
-
 	for(i = 0; i < Q; i++){
 		int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];
@@ -62,7 +58,9 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 	    		flagField[nextFlagIndex].type == FLUID) {
             double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
             double weight = LATTICEWEIGHTS[i];
+
             computeDensity(&collideField[nextCellIndex], &density);
+
             collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)] +
                     2 * weight * density * dot_uwall_c / (C_S*C_S);
         }
@@ -227,17 +225,12 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 	currentCellIndex	= Q*currentFlagIndex;
 
 	// Assign normals based on the wall we are at
-
-
 	/*TODO: (DL) readability bad... but saves the switch case. Can decide... once it works
 	* I make a "speed difference test": */
-
-//	static int normalIdx[6] = {2, 2, 0, 0 , 1, 1}; //static to compute only once
+//	static int normalIdx[6] = {2, 2, 0, 0 , 1, 1}; //static to allocate only once
 //	static int normalVal[6] = {1,-1, 1,-1, -1, 1};
 //	normal[ normalIdx[ flagField[currentFlagIndex].position ] ] =
 //			normalVal[ flagField[currentFlagIndex].position ];
-
-	assert(flagField[currentFlagIndex].position >= XY_LEFT && flagField[currentFlagIndex].position <= XZ_BACK);
 
 	switch (flagField[currentFlagIndex].position) {
 		case XY_LEFT:
@@ -274,7 +267,7 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 
 	p_assignIndices(&flagField[currentFlagIndex].position,index,mirrorIndex);
 
-	//it's by construction always inside the domain, so no check in if statement needed
+	//it's by construction always inside the domain, so no check for for loop needed
 	assert(nextCellIndex >= 0 && nextCellIndex < *totalSize);
 
 	//every cell is mirrored (not only FLUID)
@@ -301,7 +294,6 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 		nextPoint[2] = point[2] + LATTICEVELOCITIES[i][2];
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
-
 
 		if(nextCellIndex >= 0 && nextCellIndex < *totalSize &&
 			flagField[nextFlagIndex].type == FLUID) {
@@ -368,7 +360,7 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 }
 
 t_boundaryFcnPtr p_selectFunction(const int wallType) {
-	assert(wallType >= NO_SLIP && wallType <=OBSTACLE);
+
 	t_boundaryFcnPtr tmpPtr;
 	switch (wallType) {
 		case NO_SLIP:
@@ -431,7 +423,9 @@ void treatBoundary(double *collideField, const t_flagField * const flagField,
 				p_computeIndexXYZ(x,y,z,xlength,&flagIndex);
 				wallType	= flagField[flagIndex].type;
 				wallPos		= flagField[flagIndex].position;
-				if (wallType != FLUID && wallType != -1) {
+
+				assert(wallType != INVALID);
+				if (wallType != FLUID) {
 					points[0] = x;
 					points[1] = y;
 					points[2] = z;
