@@ -24,28 +24,19 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 void doCollision(double *collideField, t_flagField *flagField,const double * const tau, int *xlength){
 
 	// Define iteration indices
-	int idx, x, y, z;
-
-	// Temporary variables for (xlength+2) * (ylength+2)
-	int const xylen2 = (xlength[0]+2)*(xlength[1]+2);
-
-	// Temporary variables for z and y offsets
-	int zOffset, yOffset;
+	int flagIdx, cellIdx, x, y, z;
 
 	// Perform collision on all "inner" (FLUID) cells
 
-	//TODO: rewrite & use static variables!
 	for (z = 1; z <= xlength[2] ; z++) {
-		zOffset = z*xylen2;
 		for (y = 1; y <= xlength[1]; y++) {
-			yOffset = y*(xlength[0]+2);
 			for (x = 1; x <= xlength[0]; x++) {
-
 				// Get the index of the first distribution
 				// in the current cell
-				idx = Q*(zOffset + yOffset + x);
-				if (flagField[zOffset + yOffset + x].type == FLUID) {
-					double *currentCell = &collideField[idx];
+				p_computeIndexXYZ(x, y, z, xlength, &flagIdx);
+				cellIdx = Q*flagIdx;
+				if (flagField[flagIdx].type == FLUID) {
+					double *currentCell = &collideField[cellIdx];
 
 					// Allocate memory to local cell parameters
 					double density;
