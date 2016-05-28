@@ -9,16 +9,22 @@ z_len = 490;
 
 scen = zeros(x_len, z_len); %+2 is ghoast layers
 
-blocksize = 30;
-assert(mod(blocksize, 2) == 0);
+bottom_w = 200;
+top_w = 30;
 
-midp = [1/2*x_len, 1/3*z_len];
-left_lower = [midp(1)+blocksize/2, midp(2)-blocksize/2];
-right_upper = [midp(1)-blocksize/2, midp(2)+blocksize/2];
+start = 100;
 
-scen = drawRect_center(scen, midp, blocksize,blocksize,1);
-scen = drawRect_center(scen, left_lower, blocksize,blocksize,1);
-scen = drawRect_center(scen, right_upper, blocksize,blocksize,1);
+
+for i = 1:(bottom_w-top_w)/2
+    
+    for j = 1:bottom_w-2*i
+        scen(i, start+i+j) = 1;
+        scen(x_len-i, start+i+j) = 1;
+        
+    end
+    
+end
+
 
 scen = logical(scen);
 
@@ -29,4 +35,4 @@ xlabel('z');
 ylabel('x');
 
 %imwrite(scen, 'test.jpg');
-pgmwrite(scen, 'TiltedPlate');
+pgmwrite(scen, 'Bottleneck');

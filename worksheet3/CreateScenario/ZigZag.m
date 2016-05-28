@@ -9,16 +9,15 @@ z_len = 490;
 
 scen = zeros(x_len, z_len); %+2 is ghoast layers
 
-blocksize = 30;
-assert(mod(blocksize, 2) == 0);
+p1 = [x_len - 70, 120];
+p2 = [71, 250];
+p3 = [x_len - 70, 380];
 
-midp = [1/2*x_len, 1/3*z_len];
-left_lower = [midp(1)+blocksize/2, midp(2)-blocksize/2];
-right_upper = [midp(1)-blocksize/2, midp(2)+blocksize/2];
 
-scen = drawRect_center(scen, midp, blocksize,blocksize,1);
-scen = drawRect_center(scen, left_lower, blocksize,blocksize,1);
-scen = drawRect_center(scen, right_upper, blocksize,blocksize,1);
+scen = drawRect_center(scen, p1, 40, 140, 1);
+scen = drawRect_center(scen, p2, 40, 140, 1);
+scen = drawRect_center(scen, p3, 40, 140, 1);
+%scen = drawRect_center(scen, right_upper, blocksize,blocksize,1);
 
 scen = logical(scen);
 
@@ -29,4 +28,4 @@ xlabel('z');
 ylabel('x');
 
 %imwrite(scen, 'test.jpg');
-pgmwrite(scen, 'TiltedPlate');
+pgmwrite(scen, 'ZigZag');
