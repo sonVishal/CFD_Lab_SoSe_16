@@ -6,14 +6,14 @@
 
 // Function that checks the index is valid and if it is valid then
 // checks whether the cell is FLUID or not
-static inline int p_checkValidFluidIndex(const int totalSize, const int nextCellIndex, const t_flagField * const flagField) {
-	return ((nextCellIndex >= 0 && nextCellIndex < totalSize && flagField[nextCellIndex/Q].type == FLUID) ? 1:0);
+static inline int p_checkValidFluidIndex(const int gridSize, const int nextFlagIndex, const t_flagField * const flagField) {
+	return ((nextFlagIndex >= 0 && nextFlagIndex < gridSize && flagField[nextFlagIndex].type == FLUID) ? 1:0);
 }
 
 // Handle no slip boundary condition
 void p_noSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize){
+	const t_boundPara * const boundPara, int const * const gridSize){
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -30,7 +30,7 @@ void p_noSlip(double* collideField, t_flagField const * const flagField,
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 		// Check if fluid and assign the inverse distribution from next cell
-	    if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField)) {
+	    if(p_checkValidFluidIndex(*gridSize, nextFlagIndex, flagField)) {
 		    collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)];
 		}
 	}
@@ -39,7 +39,7 @@ void p_noSlip(double* collideField, t_flagField const * const flagField,
 // Handle moving wall boundary condition
 void p_movingWall(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize) {
+	const t_boundPara * const boundPara, int const * const gridSize) {
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -62,7 +62,7 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 		nextCellIndex = Q*nextFlagIndex;
 
 		// Check if fluid and assign the wall velocity
-	    if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField)) {
+	    if(p_checkValidFluidIndex(*gridSize, nextFlagIndex, flagField)) {
             double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
             double weight = LATTICEWEIGHTS[i];
 
@@ -150,7 +150,7 @@ void p_assignIndices(const short int * const flag, int * index, int * mirrorInde
 // Handle free slip boundary condition
 void p_freeSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize) {
+	const t_boundPara * const boundPara, int const * const gridSize) {
 	// Begin
 	int i;
 	int normal[3] = {0,0,0};
@@ -213,7 +213,7 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 	p_assignIndices(&flagField[currentFlagIndex].position,index,mirrorIndex);
 
 	// it's by construction always inside the domain, so no check for for-loop needed
-	assert(nextCellIndex >= 0 && nextCellIndex < (*totalSize));
+	assert(nextCellIndex >= 0 && nextCellIndex < Q*(*gridSize));
 
 	// every cell is mirrored (not only FLUID)
 	// Loop over only the 5 distributions
@@ -226,7 +226,7 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 // Handle outflow boundary condition
 void p_outflow(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize) {
+	const t_boundPara * const boundPara, int const * const gridSize) {
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -247,7 +247,7 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 		nextCellIndex = Q*nextFlagIndex;
 
 		// If valid fluid cell then apply the boundary condition
-		if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField)) {
+		if(p_checkValidFluidIndex(*gridSize, nextFlagIndex, flagField)) {
 
 			computeDensity(&collideField[nextCellIndex], &density);
 			computeVelocity(&collideField[nextCellIndex], &density, nextCellVel);
@@ -261,7 +261,7 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 // Handle the inflow boundary condition
 void p_inflow(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize) {
+	const t_boundPara * const boundPara, int const * const gridSize) {
 	// Begin
 	int i;
 	int currentFlagIndex, currentCellIndex;
@@ -282,7 +282,7 @@ void p_inflow(double* collideField, t_flagField const * const flagField,
 // Handle the pressure in boundary condition
 void p_pressureIn(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
-	const t_boundPara * const boundPara, int const * const totalSize) {
+	const t_boundPara * const boundPara, int const * const gridSize) {
 	// Begin
 	int i;
 	int nextPoint[3];
@@ -302,7 +302,7 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 		nextCellIndex = Q*nextFlagIndex;
 
 		// If fluid then apply the boundary condition
-		if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField)) {
+		if(p_checkValidFluidIndex(*gridSize, nextFlagIndex, flagField)) {
 
 			computeDensity(&collideField[nextCellIndex], &density);
 			computeVelocity(&collideField[nextCellIndex], &density, nextCellVel);
@@ -362,7 +362,7 @@ void treatBoundary(double *collideField, const t_flagField * const flagField,
 	int flagIndex, wallType, wallPos;
 	int points[3];
 	int const xlen2[3] = {xlength[0]+2,xlength[1]+2,xlength[2]+2};
-    int const totalSize  = Q*xlen2[2]*xlen2[1]*xlen2[0];
+    int const gridSize  = xlen2[2]*xlen2[1]*xlen2[0];
 
 	t_boundaryFcnPtr fcnPtr = NULL;
 
@@ -380,7 +380,7 @@ void treatBoundary(double *collideField, const t_flagField * const flagField,
 					points[2] = z;
 					fcnPtr = p_selectFunction(wallType);
 					(*fcnPtr)(collideField, flagField, points, xlength,
-						&boundPara[wallPos], &totalSize);
+						&boundPara[wallPos], &gridSize);
 				}
 			}
 		}
