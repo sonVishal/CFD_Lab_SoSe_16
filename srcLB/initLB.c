@@ -42,6 +42,7 @@ void p_verifyValidWallSetting(t_boundPara *boundPara, const int mode){
 		// If an INFLOW is present, there must be an OUTFLOW and it has to be on
 		// the wall opposite to the INFLOW boundary.
 		// We hence also only allow for one inflow in the system.
+		//TODO: (TKS) recheck
 		for(int i = XY_LEFT; i <= XZ_BACK; i=i+2) {
 			if(boundPara[i].type == MOVING || boundPara[i+1].type == MOVING){
 				ERROR("MOVING walls are only supported in mode CAVITY!!");
@@ -61,17 +62,9 @@ void p_verifyValidWallSetting(t_boundPara *boundPara, const int mode){
 				numInflow++;
 			}
 
-			if(boundPara[i].type == FREE_SLIP){
+			if(boundPara[i].type == FREE_SLIP || boundPara[i+1].type == FREE_SLIP){
 				numFreeSlip++;
-				if (numFreeSlip == 2 && (boundPara[i+1].type != FREE_SLIP)) {
-					ERROR("FREE_SLIP walls are not opposites");
-				}
-			}
-			if(boundPara[i+1].type == FREE_SLIP){
-				numFreeSlip++;
-				if (numFreeSlip == 2 && (boundPara[i].type != FREE_SLIP)) {
-					ERROR("FREE_SLIP walls are not opposites");
-				}
+
 			}
 		}
 
@@ -79,7 +72,7 @@ void p_verifyValidWallSetting(t_boundPara *boundPara, const int mode){
 			ERROR("Too many inflows");
 
 		if(numFreeSlip > 3)
-			ERROR("Too many free-slip walls");
+			ERROR("More than 3 free-slip walls");
 	}
 }
 
@@ -114,7 +107,6 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 	int msgSize = 200;
 	char msg[msgSize]; // need only in case of errors
 
-	/* TODO: (DL) discuss tolerances that are allowed */
 	/* Set priorities and check valid settings */
 	switch (type) {
 		case NO_SLIP:
@@ -132,7 +124,7 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 		case INFLOW:
 			boundPara->bPrio = 0;
 
-			if(fabs(rhoRef - 1) > 0.3){
+			if(fabs(rhoRef - 1) > densityTol){
 				snprintf(msg, msgSize, "Invalid INFLOW wall with rhoRef=%f \n", rhoRef);
 				ERROR(msg);
 			}
@@ -141,7 +133,7 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 		case PRESSURE_IN:
 			boundPara->bPrio = 0;
 
-			if(fabs(rhoIn - 1) > 0.2){
+			if(fabs(rhoIn - 1) > densityTol){
 				snprintf(msg, msgSize, "Invalid PRESSURE_IN with rhoIn=%f \n", rhoIn);
 				ERROR(msg);
 			}
@@ -151,7 +143,7 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 		case OUTFLOW:
 			boundPara->bPrio = 0;
 
-			if(fabs(rhoRef - 1) > 0.3){
+			if(fabs(rhoRef - 1) > densityTol){
 				snprintf(msg, msgSize, "Invalid OUTFLOW wall with rhoRef=%f \n", rhoRef);
 				ERROR(msg);
 			}
@@ -175,6 +167,8 @@ void p_readWall(char *argv[], t_boundPara *boundPara, const int skip){
 * The function only checks custom scenarios and is thus only called in function
 * p_readCustomPgmMatrix
 */
+
+//TODO: Also include the checking for illegal islands or comment...
 int p_checkValidDomain(int x, int z, const int* const xlength, int **pgmMatrix){
 
 	int right = pgmMatrix[z+1][x];
@@ -255,6 +249,7 @@ void p_readCustomPgmMatrix(const int * const xlength, char *filename){
 	}
 
 	/*Check for illegal geometries*/
+	//TODO: bring for loop inside checkValidDomain?
     for(int z = 1; z <= xlength[2]; ++z){
         for (int x = 1; x <= xlength[0]; ++x) {
             if(pgmMatrix[z][x] == 1){
@@ -304,9 +299,10 @@ void p_generatePgmDomain(char *argv[], const int * const xlength, const int MODE
 		READ_INT(*argv, z_direction,0); //size of step
 		READ_INT(*argv, x_direction,0);
 
-		if(z_direction > xlength[2] || x_direction > xlength[0]){
+		if(z_direction > xlength[2] || x_direction > xlength[0] ||
+		   z_direction < 0 || x_direction < 0){
             char* str = "";
-            sprintf(str, "Domain size = (%d,%d), step size = (%d,%d). Step size cannot be bigger than the domain.",
+            sprintf(str, "Domain size = (%d,%d), step size = (%d,%d). Step size cannot be bigger than the domain or negative.",
                           xlength[0], xlength[2],x_direction,z_direction);
 			ERROR(str);
 		}
@@ -355,9 +351,9 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 
     if(MODE == CAVITY){
         READ_DOUBLE(*argv, Re, 0);
-    	if((Re == -1 && *tau == -1) || (Re != -1 && *tau != -1)){
+    	if((Re == INVALID && *tau == INVALID) || (Re != INVALID && *tau != INVALID)){
         	ERROR("Invalid setting: only provide tau OR Reynolds number (Re). Set the other "
-        			"(not used) value to -1.");
+        			"(not used) value to -1 (INVALID).");
         }
     }
 
@@ -376,7 +372,6 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     xlength[1] = y_length;
     xlength[2] = z_length;
 
-    //TODO: (TKS) Make sure the boundaries are red in the correct order.
     for(int b=XY_LEFT; b <= XZ_BACK; b++){
     	printf("\nINFO: reading values for wall type %i \n", b);
 
@@ -387,17 +382,18 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     p_verifyValidWallSetting(boundPara, MODE);
 
     /* S T A R T  -- ONLY FOR CAVITY, this part supports the old CAVITY case from WS2
-     * Also it computes tau from the given Reynolds number
-     */
+     * Also it computes tau from the given Reynolds number*/
 
     //CAVITY supports to hand either Reynolds number (and compute tau), or handle tau directly
     if(Re != -1.0 && MODE == CAVITY){ //true, then compute tau according to Re
     	//The restriction of cubic domain is required in CAVITY such that the
     	//computation of tau is valid.
     	if(xlength[0] != xlength[1] && xlength[0] != xlength[2]){
-    		ERROR("Only quadratic domain is supported for the CAVITY mode. \n");
+    		ERROR("Only cubic domain is supported for the CAVITY mode. \n");
     	}
     	double u_wall = -1;
+    	//TODO: (DL) remove for loop and assume that wall TOP is the Moving wall
+    	// 			 Also: make this check at the validWall setting!!
     	for(int b=XY_LEFT; b <= XZ_BACK; ++b){
     	    if(boundPara[b].type == MOVING){
     			u_wall = sqrt(boundPara[b].velocity[0]*boundPara[b].velocity[0]
@@ -445,20 +441,6 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 
     return 0;
 }
-//TODO: (TKS) REMOVE AFTER TESTING
-void print_flagfield_slice(int* field, const int * const xlength){
-    int idx;
-    int y = xlength[1]/2;
-
-    for (int x = 0; x <= xlength[0]+1; x++) {
-        for (int z = 0; z <= xlength[2]+1; z++) {
-            p_computeIndexXYZ(x,y,z,xlength,&idx);
-            printf("%d ",field[idx]);
-        }
-        printf("\n");
-    }
-}
-
 
 /* Sets the values for according to 'wallPos'. Because the offsets have to be computed
  * differently for each 'wallPos' the loop indices are first selected.

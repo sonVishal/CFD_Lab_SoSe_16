@@ -26,13 +26,15 @@ void doCollision(double *collideField, t_flagField *flagField,const double * con
 	// Define iteration indices
 	int idx, x, y, z;
 
-	// Temporary variables for xlength^2
+	// Temporary variables for (xlength+2) * (ylength+2)
 	int const xylen2 = (xlength[0]+2)*(xlength[1]+2);
 
 	// Temporary variables for z and y offsets
 	int zOffset, yOffset;
 
 	// Perform collision on all "inner" (FLUID) cells
+
+	//TODO: rewrite & use static variables!
 	for (z = 1; z <= xlength[2] ; z++) {
 		zOffset = z*xylen2;
 		for (y = 1; y <= xlength[1]; y++) {
