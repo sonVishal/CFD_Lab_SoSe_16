@@ -21,6 +21,7 @@ speed: CFLAGS+= -DNDEBUG -O3
 speed: clean $(EXECUTABLE)
 
 debug: CFLAGS+=-O0 -g -enable-checking -v -da -Q
+debug: LDFLAGS+=-pg
 debug: clean $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)

@@ -4,6 +4,8 @@
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 
+// Function that checks the index is valid and if it is valid then
+// checks whether the cell is FLUID or not
 static inline int p_checkValidFluidIndex(const int totalSize, const int nextCellIndex, const t_flagField * const flagField) {
 	if (nextCellIndex >= 0 && nextCellIndex < totalSize) {
 		if (flagField[nextCellIndex].type == FLUID) {
@@ -16,6 +18,7 @@ static inline int p_checkValidFluidIndex(const int totalSize, const int nextCell
 	}
 }
 
+// Handle no slip boundary condition
 void p_noSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize){
@@ -23,20 +26,25 @@ void p_noSlip(double* collideField, t_flagField const * const flagField,
 	int i;
 	int nextPoint[3];
 	int currentCellIndex, nextFlagIndex, nextCellIndex;
+	// Compute the index of the current cell
 	p_computeIndexQ(point, xlength, &currentCellIndex);
+
+	// Loop over the distributions
 	for(i = 0; i < Q; i++){
+		// Compute the next cell coordinates
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];
 		nextPoint[1] = point[1] + LATTICEVELOCITIES[i][1];
 		nextPoint[2] = point[2] + LATTICEVELOCITIES[i][2];
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
-
+		// Check if fluid and assign the inverse distribution from next cell
 	    if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField)) {
 		    collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)];
 		}
 	}
 }
 
+// Handle moving wall boundary condition
 void p_movingWall(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
@@ -45,17 +53,23 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 	int nextPoint[3];
 	int currentCellIndex, nextFlagIndex, nextCellIndex;
 	double density;
+	// Store the wall velocity
 	const double * const wallVelocity = boundPara->velocity;
+	// Compute the current cell index
 	p_computeIndexQ(point, xlength, &currentCellIndex);
 
+	// Loop over all the distribution
 	for(i = 0; i < Q; i++){
 		int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
+		// Compute next cell coordinates
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];
 		nextPoint[1] = point[1] + LATTICEVELOCITIES[i][1];
 		nextPoint[2] = point[2] + LATTICEVELOCITIES[i][2];
+		// Compute next cell index
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
+		// Check if fluid and assign the wall velocity
 	    if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField)) {
             double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
             double weight = LATTICEWEIGHTS[i];
@@ -103,7 +117,7 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 // end
 // end
 
-// Function to assign the indices
+// Function to assign the indices and mirror indices
 void p_assignIndices(const short int * const flag, int * index, int * mirrorIndex) {
 	assert(*flag >= XY_LEFT && *flag <= XZ_BACK);
 
@@ -138,12 +152,10 @@ void p_assignIndices(const short int * const flag, int * index, int * mirrorInde
 			index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18;
 			mirrorIndex[0] = 0; mirrorIndex[1] = 5; mirrorIndex[2] = 6; mirrorIndex[3] = 7; mirrorIndex[4] = 14;
 			break;
-		default:
-			ERROR("** This should not happen!! **");
-			break;
 	}
 }
 
+// Handle free slip boundary condition
 void p_freeSlip(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
@@ -151,9 +163,8 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 	int i;
 	int normal[3] = {0,0,0};
 	int currentFlagIndex, currentCellIndex, nextFlagIndex, nextCellIndex;
-
+	// Compute current cell index
 	p_computeIndex(point, xlength, &currentFlagIndex);
-
 	currentCellIndex	= Q*currentFlagIndex;
 
 	// Assign normals based on the wall we are at
@@ -199,22 +210,28 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 						point[1]+normal[1],
 						point[2]+normal[2]};
 
+	// Compute next cell index
 	p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 	nextCellIndex 		= Q*nextFlagIndex;
 
+	// Allocate memory
 	int index[5] = {0,0,0,0,0}, mirrorIndex[5] = {0,0,0,0,0};
 
+	// Get the index and mirror index for the distribution
 	p_assignIndices(&flagField[currentFlagIndex].position,index,mirrorIndex);
 
-	//it's by construction always inside the domain, so no check for for loop needed
+	// it's by construction always inside the domain, so no check for for-loop needed
 	assert(nextCellIndex >= 0 && nextCellIndex < Q*(*totalSize));
 
-	//every cell is mirrored (not only FLUID)
+	// every cell is mirrored (not only FLUID)
+	// Loop over only the 5 distributions
+	// We need to do this because there are only 5 distributions per face
 	for (i = 0; i < 5; i++) {
 		collideField[currentCellIndex+index[i]] = collideField[nextCellIndex+mirrorIndex[i]];
 	}
 }
 
+// Handle outflow boundary condition
 void p_outflow(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
@@ -224,16 +241,20 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 	int nextFlagIndex, nextCellIndex, currentFlagIndex, currentCellIndex;
 	double density, feq[Q], nextCellVel[3];
 
+	// Compute current cell index
 	p_computeIndex(point, xlength, &currentFlagIndex);
 	currentCellIndex = Q*currentFlagIndex;
 
+	// Loop over all the distribution
 	for (i = 0; i < Q; i++) {
+		// Compute next cell index
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];
 		nextPoint[1] = point[1] + LATTICEVELOCITIES[i][1];
 		nextPoint[2] = point[2] + LATTICEVELOCITIES[i][2];
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
+		// If valid fluid cell then apply the boundary condition
 		if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField)) {
 
 			computeDensity(&collideField[nextCellIndex], &density);
@@ -245,23 +266,37 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 	}
 }
 
+// Handle the inflow boundary condition
 void p_inflow(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
 	// Begin
-	int i;
-	int currentFlagIndex, currentCellIndex;
-	double feq[Q];
-	p_computeIndex(point, xlength, &currentFlagIndex);
-	currentCellIndex = Q*currentFlagIndex;
+	// Counter so that inflow is called only once
+	static int counter = 0;
+	if (counter == 0) {
+		int i;
+		int currentFlagIndex, currentCellIndex;
+		double feq[Q];
+		// Compute the current cell index
+		p_computeIndex(point, xlength, &currentFlagIndex);
+		currentCellIndex = Q*currentFlagIndex;
 
-	computeFeq(&boundPara->rhoRef, boundPara->velocity, feq);
+		// Compute equilibrium distribution
+		computeFeq(&boundPara->rhoRef, boundPara->velocity, feq);
 
-	for (i = 0; i < Q; i++) {
-		collideField[currentCellIndex+i] = feq[i];
+		// Assign the distributions
+		for (i = 0; i < Q; i++) {
+			collideField[currentCellIndex+i] = feq[i];
+		}
+
+		// Increment counter to avoid calling this function again
+		counter++;
+	} else {
+		return;
 	}
 }
 
+// Handle the pressure in boundary condition
 void p_pressureIn(double* collideField, t_flagField const * const flagField,
 	int const * const point, int const * const xlength,
 	const t_boundPara * const boundPara, int const * const totalSize) {
@@ -270,17 +305,20 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 	int nextPoint[3];
 	int nextFlagIndex, nextCellIndex, currentFlagIndex, currentCellIndex;
 	double density, feq[Q], nextCellVel[3];
-
+	// Compute the current cell index
 	p_computeIndex(point, xlength, &currentFlagIndex);
 	currentCellIndex = Q*currentFlagIndex;
 
+	// Loop over all the distributions
 	for (i = 0; i < Q; i++) {
+		// Compute next cell index
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];
 		nextPoint[1] = point[1] + LATTICEVELOCITIES[i][1];
 		nextPoint[2] = point[2] + LATTICEVELOCITIES[i][2];
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
+		// If fluid then apply the boundary condition
 		if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField)) {
 
 			computeDensity(&collideField[nextCellIndex], &density);
@@ -292,8 +330,8 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 	}
 }
 
+// Choose the function based on the boundary type
 t_boundaryFcnPtr p_selectFunction(const int wallType) {
-
 	t_boundaryFcnPtr tmpPtr;
 	switch (wallType) {
 		case NO_SLIP:
@@ -332,10 +370,10 @@ t_boundaryFcnPtr p_selectFunction(const int wallType) {
 	return tmpPtr;
 }
 
-
+// Treat the boundary
 void treatBoundary(double *collideField, const t_flagField * const flagField,
 	const t_boundPara * const boundPara, const int * const xlength){
-
+	// Begin
 	// iteration variables
 	int x, y, z;
 	int flagIndex, wallType, wallPos;
@@ -352,7 +390,6 @@ void treatBoundary(double *collideField, const t_flagField * const flagField,
 				p_computeIndexXYZ(x,y,z,xlength,&flagIndex);
 				wallType	= flagField[flagIndex].type;
 				wallPos		= flagField[flagIndex].position;
-
 				assert(wallType != INVALID);
 				if (wallType != FLUID) {
 					points[0] = x;
