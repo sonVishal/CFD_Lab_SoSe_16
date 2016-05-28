@@ -66,75 +66,6 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 
 // Assumption: Only walls are allowed to be freeSlip. Obstacles are not allowed.
 
-// Explanation: First we find the cell which is in the direction of the normal
-// of the boundary cell. This depends on the wall to which the cell belongs.
-// For example, for the YZ_BOTTOM or x = 0 wall - the normal is always (1,0,0)
-// that is pointing in the +ve x direction.
-// The variable nonZeroIndex stores the index for which the component of the normal
-// is not zero or in other words is ±1. This is the component which will help us
-// decide the mirrored index.
-// This gives us the nextCell which shares a face with the boundaryCell in the
-// direction of the normal.
-// Once we have the index of the nextCell we check the flagField if it is a
-// fluid cell.
-// If it is a fluid cell then we simply loop over the distributions of the boundary
-// cell using the index "i". For each index "i" we loop over the distributions again
-// to find the index "j" which is the mirror image of "i" in the direction of the
-// normal. This is achieved by checking if the "nonZeroIndex" component of the
-// "i"th and the "j"th lattice velocity are opposites of each other "and" non zero
-// "and" the other 2 components are equal. Once this index "j" is found we break
-// the "j" loop and continue with the next "i". To reduce going over unneccesary "i"
-// we check if the lattice velocity at "i" has a component in the direction of the
-// normal. This is done using the projection and checking if it is +ve.
-
-// void p_freeSlip(double* collideField, int const * const flagField,
-// 	int const * const point, int const * const xlength,
-// 	const t_boundPara * const boundPara, int const * const normal) {
-// 	// Begin
-// 	int i,j;
-// 	int nextPoint[3] = {point[0]+normal[0],
-// 						point[1]+normal[1],
-// 						point[2]+normal[2]};
-// 	int nonZeroIndex;
-// 	if (abs(normal[0]) == 1) {
-// 		nonZeroIndex = 0;
-// 	} else if (abs(normal[1]) == 1) {
-// 		nonZeroIndex = 1;
-// 	} else if (abs(normal[2]) == 1) {
-// 		nonZeroIndex = 2;
-// 	}
-//
-// 	int currentFlagIndex, currentCellIndex, nextFlagIndex, nextCellIndex;
-// 	p_computeIndex(point, xlength, &currentFlagIndex);
-// 	p_computeIndex(nextPoint, xlength, &nextFlagIndex);
-// 	currentCellIndex	= Q*currentFlagIndex;
-// 	nextCellIndex 		= Q*nextFlagIndex;
-// 	if (flagField[nextFlagIndex] == FLUID) {
-// 		for (i = 0; i < Q; i++) {
-// 			int c1[3] = {LATTICEVELOCITIES[i][0],
-// 						 LATTICEVELOCITIES[i][1],
-// 						 LATTICEVELOCITIES[i][2]};
-// 			int projection = LATTICEVELOCITIES[i][0]*normal[0]+
-// 							 LATTICEVELOCITIES[i][1]*normal[1]+
-// 						 	 LATTICEVELOCITIES[i][2]*normal[2];
-// 			if (projection >= 1) {
-// 				for (j = 0; j < Q; j++) {
-// 					int c2[3] = {LATTICEVELOCITIES[j][0],
-// 								 LATTICEVELOCITIES[j][1],
-// 								 LATTICEVELOCITIES[j][2]};
-// 					if (c1[nonZeroIndex] == -c2[nonZeroIndex] &&
-// 						c1[(nonZeroIndex+1)%3] == c2[(nonZeroIndex+1)%3] &&
-// 						c1[(nonZeroIndex+2)%3] == c2[(nonZeroIndex+2)%3] &&
-// 						c1[nonZeroIndex] == normal[nonZeroIndex]) {
-// 						collideField[currentCellIndex+i] = collideField[nextCellIndex+j];
-// 						break;
-// 					}
-// 				}
-// 			}
-// 		}
-// 	}
-// }
-
 // MATLAB code used to generate the mirrored indices
 // function generateMirrorIndices(idx,dir)
 // % idx = 1 => x normal
@@ -219,37 +150,44 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 	currentCellIndex	= Q*currentFlagIndex;
 
 	// Assign normals based on the wall we are at
-	/*TODO: (DL) readability bad... but saves the switch case. Can decide... once it works
-	* I make a "speed difference test": */
-//	static int normalIdx[6] = {2, 2, 0, 0 , 1, 1}; //static to allocate only once
-//	static int normalVal[6] = {1,-1, 1,-1, -1, 1};
-//	normal[ normalIdx[ flagField[currentFlagIndex].position ] ] =
-//			normalVal[ flagField[currentFlagIndex].position ];
+	// switch (flagField[currentFlagIndex].position) {
+	// 	case XY_LEFT:
+	// 		normal[2] = 1;
+	// 		break;
+	// 	case XY_RIGHT:
+	// 		normal[2] = -1;
+	// 		break;
+	// 	case YZ_BOTTOM:
+	// 		normal[0] = 1;
+	// 		break;
+	// 	case YZ_TOP:
+	// 		normal[0] = -1;
+	// 		break;
+	// 	case XZ_BACK:
+	// 		normal[1] = 1;
+	// 		break;
+	// 	case XZ_FRONT:
+	// 		normal[1] = -1;
+	// 		break;
+	// 	default:
+	// 		ERROR("** This should not happen!! **");
+	// 		break;
+	// }
 
-	switch (flagField[currentFlagIndex].position) {
-		case XY_LEFT:
-			normal[2] = 1;
-			break;
-		case XY_RIGHT:
-			normal[2] = -1;
-			break;
-		case YZ_BOTTOM:
-			normal[0] = 1;
-			break;
-		case YZ_TOP:
-			normal[0] = -1;
-			break;
-		case XZ_BACK:
-			normal[1] = 1;
-			break;
-		case XZ_FRONT:
-			normal[1] = -1;
-			break;
-		default:
-			ERROR("** This should not happen!! **");
-			break;
-	}
+	// Assert that the position is a wall
+	assert(flagField[currentFlagIndex].position >= XY_LEFT &&
+			flagField[currentFlagIndex].position >= XZ_BACK);
 
+	// The index for the direction of the normal
+	// static to allocate only once
+	static int normalIdx[6] = {2, 2, 0, 0 , 1, 1};
+	// The direction of the normal
+	static int normalVal[6] = {1,-1, 1,-1, -1, 1};
+	// Assign the respective normal
+	normal[normalIdx[flagField[currentFlagIndex].position]] =
+			normalVal[flagField[currentFlagIndex].position];
+
+	// Compute the next point
 	int nextPoint[3] = {point[0]+normal[0],
 						point[1]+normal[1],
 						point[2]+normal[2]};
