@@ -63,7 +63,7 @@ problem 		SmallTiltedPlate.pgm
 
 # Depth in Y-direction (the scenarios in pgm format are set and displayed in the XZ plane)
 x_length             10
-y_length 	     3
+y_length 	     1
 z_length	     20
 
 

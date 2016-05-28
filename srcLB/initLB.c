@@ -333,8 +333,8 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
 	}
 
 	printf("INFO: read simulation parameter: \n");
-	int MODE;
-    double Re; //u_wall, machNr;
+	int MODE = INVALID;
+    double Re = INVALID; //u_wall, machNr;
     int x_length, y_length, z_length; //Temporary for reading
     int skip = 0; // How many of the same named variable should be skipped when
                   // calling READ_<TYPE>.
@@ -385,13 +385,13 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
      * Also it computes tau from the given Reynolds number*/
 
     //CAVITY supports to hand either Reynolds number (and compute tau), or handle tau directly
-    if(Re != -1.0 && MODE == CAVITY){ //true, then compute tau according to Re
+    if(Re != INVALID && MODE == CAVITY){ //true, then compute tau according to Re
     	//The restriction of cubic domain is required in CAVITY such that the
     	//computation of tau is valid.
     	if(xlength[0] != xlength[1] && xlength[0] != xlength[2]){
     		ERROR("Only cubic domain is supported for the CAVITY mode. \n");
     	}
-    	double u_wall = -1;
+    	double u_wall = INVALID;
     	//TODO: (DL) remove for loop and assume that wall TOP is the Moving wall
     	// 			 Also: make this check at the validWall setting!!
     	for(int b=XY_LEFT; b <= XZ_BACK; ++b){
@@ -408,7 +408,7 @@ int readParameters(int *xlength, double *tau, t_boundPara *boundPara, int *times
     	}
     	*tau = u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
 
-    	if(u_wall == -1) ERROR("Couldn't find a MOVING wall.");
+    	if(u_wall == INVALID) ERROR("Couldn't find a MOVING wall.");
 
     	double machNr  = u_wall/C_S;
 

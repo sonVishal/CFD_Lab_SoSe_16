@@ -4,9 +4,16 @@
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 
-static inline int p_checkValidFluidIndex(const int totalSize, const int nextCellIndex,
-	const int cellType) {
-	return (nextCellIndex >= 0 && nextCellIndex < totalSize && cellType == FLUID);
+static inline int p_checkValidFluidIndex(const int totalSize, const int nextCellIndex, const t_flagField * const flagField) {
+	if (nextCellIndex >= 0 && nextCellIndex < totalSize) {
+		if (flagField[nextCellIndex].type == FLUID) {
+			return 1;
+		} else {
+			return 0;
+		}
+	} else {
+		return 0;
+	}
 }
 
 void p_noSlip(double* collideField, t_flagField const * const flagField,
@@ -24,7 +31,7 @@ void p_noSlip(double* collideField, t_flagField const * const flagField,
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-	    if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField[nextFlagIndex].type)) {
+	    if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField)) {
 		    collideField[currentCellIndex + i] = collideField[nextCellIndex + (Q-i-1)];
 		}
 	}
@@ -49,7 +56,7 @@ void p_movingWall(double* collideField, t_flagField const * const flagField,
 		p_computeIndex(nextPoint,  xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-	    if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField[nextFlagIndex].type)) {
+	    if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField)) {
             double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
             double weight = LATTICEWEIGHTS[i];
 
@@ -176,7 +183,7 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 
 	// Assert that the position is a wall
 	assert(flagField[currentFlagIndex].position >= XY_LEFT &&
-			flagField[currentFlagIndex].position >= XZ_BACK);
+			flagField[currentFlagIndex].position <= XZ_BACK);
 
 	// The index for the direction of the normal
 	// static to allocate only once
@@ -200,7 +207,7 @@ void p_freeSlip(double* collideField, t_flagField const * const flagField,
 	p_assignIndices(&flagField[currentFlagIndex].position,index,mirrorIndex);
 
 	//it's by construction always inside the domain, so no check for for loop needed
-	assert(nextCellIndex >= 0 && nextCellIndex < *totalSize);
+	assert(nextCellIndex >= 0 && nextCellIndex < Q*(*totalSize));
 
 	//every cell is mirrored (not only FLUID)
 	for (i = 0; i < 5; i++) {
@@ -227,7 +234,7 @@ void p_outflow(double* collideField, t_flagField const * const flagField,
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-		if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField[nextFlagIndex].type)) {
+		if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField)) {
 
 			computeDensity(&collideField[nextCellIndex], &density);
 			computeVelocity(&collideField[nextCellIndex], &density, nextCellVel);
@@ -274,7 +281,7 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-		if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField[nextFlagIndex].type)) {
+		if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField)) {
 
 			computeDensity(&collideField[nextCellIndex], &density);
 			computeVelocity(&collideField[nextCellIndex], &density, nextCellVel);
@@ -334,7 +341,7 @@ void treatBoundary(double *collideField, const t_flagField * const flagField,
 	int flagIndex, wallType, wallPos;
 	int points[3];
 	int const xlen2[3] = {xlength[0]+2,xlength[1]+2,xlength[2]+2};
-    int const totalSize  = Q*xlen2[2]*xlen2[1]*xlen2[0];
+    int const totalSize  = xlen2[2]*xlen2[1]*xlen2[0];
 
 	t_boundaryFcnPtr fcnPtr = NULL;
 
