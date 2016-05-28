@@ -151,7 +151,6 @@ void writeVtkOutput(const double * const collideField,
                 } else {
                     // Else write values to signify that the cell is
                     // not a fluid cell.
-                    // TODO: (VS) Decide on the values
                     cellVelocity[0] = 0.0;
                     cellVelocity[1] = 0.0;
                     cellVelocity[2] = 0.0;
