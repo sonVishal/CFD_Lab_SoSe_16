@@ -1,0 +1,124 @@
+#--------------------------------------------
+#           ARBITRARY GEOMETRY
+#--------------------------------------------
+# 0 = SHEAR_FLOW,  1 = STEP_FLOW,  2 = ARBITRARY  3 = CAVITY
+MODE 		      	2
+
+#--------------------------------------------
+#          SIMULATION SETTINGS
+#--------------------------------------------
+
+# Relaxation parameter OR Reynolds number (set the other to -1)
+tau                    	0.59
+Re			-1
+
+# Number of timesteps
+timesteps            	20000
+
+# timesteps between each plot
+timestepsPerPlotting 	50
+
+#Scenario (filename of pgm file in folder "/scenarios")
+#NOTE: A VALID PGM FILE IS NECESSARY HERE TO RUN THE SIMULATION
+
+problem 		Bottleneck.pgm
+
+
+#--------------------------------------------
+#           GEOMETRY SETTINGS
+#--------------------------------------------
+
+
+#            ^  (X)
+#            |
+#            |
+#            |
+#            |
+#            +-----------------------------+
+#           /|               YZ top       /|
+#          / |                           / |
+#         +-----------------------------+  |
+#         |  |             XY back      |  |
+# XZ left |  |            /             |  | XZ right
+#         |  |           /              |  |
+#         |  |   XY front               |  |                    (Z)
+#         |  +--------------------------|--+--------------------->
+#         | /                           | /
+#         |/                 YZ bottom  |/
+#         +-----------------------------+
+#        /
+#       / (Y)
+#      v
+
+
+# TODO: we could support to set in type the string and compare to the enum, but this is "extra work"
+# see how it is done: https://stackoverflow.com/questions/9907160/how-to-convert-enum-names-to-string-in-
+
+#~~~~~~~~~~~~~~N O T E ~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# The parameter x_length and z_length have to correspond to the PGM file provided!
+# No stretching/shrinking is supported during simulation runtime. This is because this changes the domain
+# in a possibly unexpected way.
+# If a finer/coarser resolution of the domain is required, change the pgm file first and then adapt the parameter here.
+
+# Depth in Y-direction (the scenarios in pgm format are set and displayed in the XZ plane)
+x_length         	210
+y_length 	     	1
+z_length	     	490
+
+
+#--------------------------------------------
+#           BOUNDARY SETTINGS
+#--------------------------------------------
+
+# USE TYPES FOR BOUNDARY CONDITION
+# NO_SLIP = 1   MOVING = 2   FREE_SLIP = 3   INFLOW = 4  OUTFLOW = 5   PRESSURE_IN = 6
+# do not use FLUID = 0 or OBSTACLE = 7
+
+# XY wall left
+type 			4
+x_velocity 		0.0
+y_velocity 		0.0
+z_velocity 		0.035
+rhoRef 			1.0
+rhoIn 			-1.0
+
+# XY wall right
+type 			5
+x_velocity 		0.0
+y_velocity 		0.0
+z_velocity 		0.0
+rhoRef 			1.0
+rhoIn 			-1.0
+
+# YZ wall - bottom
+type 1
+x_velocity 		0.0
+y_velocity 		0.0
+z_velocity 		0.0
+rhoRef 			-1.0
+rhoIn 			-1.0
+
+# YZ wall - top
+type 			1
+x_velocity 		0.0
+y_velocity 		0.0
+z_velocity 		0.0
+rhoRef 			-1.0
+rhoIn 			-1.0
+
+# XZ wall - front
+type			3
+x_velocity		0.0
+y_velocity 		0.0
+z_velocity 		0.0
+rhoRef 			-1.0
+rhoIn 			-1.0
+
+# XZ wall - back
+type 			3
+x_velocity 		0.0
+y_velocity 		0.0
+z_velocity 		0.0
+rhoRef 			-1.0
+rhoIn 			-1.0
