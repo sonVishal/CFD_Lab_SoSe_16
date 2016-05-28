@@ -261,11 +261,11 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 	// Begin
 	int i;
 	int nextPoint[3];
-	int nextFlagIndex, nextCellIndex, currentCellIndex;
-	double feq[Q];
+	int nextFlagIndex, nextCellIndex, currentFlagIndex, currentCellIndex;
+	double density, feq[Q], nextCellVel[3];
 
-	p_computeIndexQ(point, xlength, &currentCellIndex);
-	computeFeq(&boundPara->rhoIn, boundPara->velocity, feq);
+	p_computeIndex(point, xlength, &currentFlagIndex);
+	currentCellIndex = Q*currentFlagIndex;
 
 	for (i = 0; i < Q; i++) {
 		nextPoint[0] = point[0] + LATTICEVELOCITIES[i][0];
@@ -274,10 +274,14 @@ void p_pressureIn(double* collideField, t_flagField const * const flagField,
 		p_computeIndex(nextPoint, xlength, &nextFlagIndex);
 		nextCellIndex = Q*nextFlagIndex;
 
-        if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField[nextFlagIndex].type)) {
-            collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
-                                            collideField[nextCellIndex+Q-1-i];
-        }
+		if(p_checkValidFluidIndex(*totalSize, nextCellIndex, flagField[nextFlagIndex].type)) {
+
+			computeDensity(&collideField[nextCellIndex], &density);
+			computeVelocity(&collideField[nextCellIndex], &density, nextCellVel);
+			computeFeq(&(boundPara->rhoIn), nextCellVel, feq);
+			collideField[currentCellIndex+i] = feq[Q-1-i] + feq[i] -
+											collideField[nextCellIndex+Q-1-i];
+		}
 	}
 }
 
@@ -334,11 +338,7 @@ void treatBoundary(double *collideField, const t_flagField * const flagField,
 
 	t_boundaryFcnPtr fcnPtr = NULL;
 
-	// TODO: (VS) Compute obstacle min and max to exclude some cells
-	// As of now iterate over everything normally
-
-	// TODO: (VS) directly call functions rather than having indirect call
-
+	// Iterate over everything
 	for (z = 0; z < xlen2[2]; z++) {
 		for (y = 0; y < xlen2[1]; y++) {
 			for (x = 0; x < xlen2[0]; x++) {

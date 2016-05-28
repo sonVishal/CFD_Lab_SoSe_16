@@ -13,12 +13,12 @@ MODE 		      		0
 tau                    	1.8
 
 # Number of timesteps
-timesteps            		150
+timesteps            		500
 
 # timesteps between each plot
 timestepsPerPlotting 		1
 
-#Scenario name for output paraview output files (in pv_files) 
+#Scenario name for output paraview output files (in pv_files)
 problem 		shear_flow
 
 #--------------------------------------------
@@ -51,9 +51,9 @@ problem 		shear_flow
 # see how it is done: https://stackoverflow.com/questions/9907160/how-to-convert-enum-names-to-string-in-c
 
 # depth in y-direction (the scenarios are set and displayed on the x-z plane)
-x_length             	8
-y_length 	     	8
-z_length	     	20
+x_length             	24
+y_length 	     	24
+z_length	     	60
 
 #--------------------------------------------
 #           BOUNDARY SETTINGS
