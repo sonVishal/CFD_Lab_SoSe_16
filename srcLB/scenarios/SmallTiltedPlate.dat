@@ -50,16 +50,12 @@ problem 		SmallTiltedPlate.pgm
 #       / (Y)
 #      v
 
-
-# TODO: we could support to set in type the string and compare to the enum, but this is "extra work"
-# see how it is done: https://stackoverflow.com/questions/9907160/how-to-convert-enum-names-to-string-in-
-
 #~~~~~~~~~~~~~~N O T E ~~~~~~~~~~~~~~~
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# The parameter x_length and z_length have to correspond to the PGM file provided! 
-# No stretching/shrinking is supported during simulation runtime. This is because this changes the domain 
-# in a possibly unexpected way. 
-# If a finer/coarser resolution of the domain is required, change the pgm file first and then adapt the parameter here.   
+# The parameter x_length and z_length have to correspond to the PGM file provided!
+# No stretching/shrinking is supported during simulation runtime. This is because this changes the domain
+# in a possibly unexpected way.
+# If a finer/coarser resolution of the domain is required, change the pgm file first and then adapt the parameter here.
 
 # Depth in Y-direction (the scenarios in pgm format are set and displayed in the XZ plane)
 x_length             10

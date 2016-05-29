@@ -49,9 +49,6 @@ problem 		cavity
 #       / (Y)
 #      v
 
-# TODO: we could support to set in type the string and compare to the enum, but this is "extra work"
-# see how it is done: https://stackoverflow.com/questions/9907160/how-to-convert-enum-names-to-string-in-c
-
 # depth in y-direction (the scenarios are set and displayed on the x-z plane)
 # NOTE: In the cavity case only a Cube is supported, i.e. all values in all directions have to be the same!
 x_length             	40

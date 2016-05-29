@@ -50,10 +50,6 @@ problem 		Bottleneck.pgm
 #       / (Y)
 #      v
 
-
-# TODO: we could support to set in type the string and compare to the enum, but this is "extra work"
-# see how it is done: https://stackoverflow.com/questions/9907160/how-to-convert-enum-names-to-string-in-
-
 #~~~~~~~~~~~~~~N O T E ~~~~~~~~~~~~~~~
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # The parameter x_length and z_length have to correspond to the PGM file provided!
