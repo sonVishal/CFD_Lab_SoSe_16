@@ -258,7 +258,6 @@ void p_readCustomPgmMatrix(const int * const xlength, char *filename){
 	}
 
 	/*Check for illegal geometries*/
-	//TODO: bring for loop inside checkValidDomain?
     for(int z = 1; z <= xlength[2]; ++z){
         for (int x = 1; x <= xlength[0]; ++x) {
             if(pgmMatrix[z][x] == 1){
