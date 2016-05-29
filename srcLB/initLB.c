@@ -281,6 +281,7 @@ void p_generatePgmDomain(char *argv[], const int * const xlength, const int MODE
 	//cannot be allocated in "case" -statement (compiler error)
 	//it's only needed in the arbitrary case
 	char problem[MAX_LINE_LENGTH];
+	char errMsg[200]; //only needed in case of error message
 
 	switch(MODE){
 	case SHEAR_FLOW:
@@ -298,10 +299,9 @@ void p_generatePgmDomain(char *argv[], const int * const xlength, const int MODE
 
 		if(z_direction > xlength[2] || x_direction > xlength[0] ||
 		   z_direction < 0 || x_direction < 0){
-            char* str = "";
-            sprintf(str, "Domain size = (%d,%d), step size = (%d,%d). Step size cannot be bigger than the domain or negative.",
+            snprintf(errMsg, 200, "Domain size = (%d,%d), step size = (%d,%d). Step size cannot be bigger than the domain or negative.",
                           xlength[0], xlength[2],x_direction,z_direction);
-			ERROR(str);
+			ERROR(errMsg);
 		}
 
 		init_imatrix(pgmMatrix, 1, z_direction, 1, x_direction, 1);
