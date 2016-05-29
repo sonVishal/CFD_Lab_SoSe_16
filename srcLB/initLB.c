@@ -44,34 +44,38 @@ void p_verifyValidWallSetting(t_boundPara *boundPara, const int mode){
 		// If an INFLOW is present, there must be an OUTFLOW and it has to be on
 		// the wall opposite to the INFLOW boundary.
 		// We hence also only allow for one inflow in the system.
-		//TODO: (TKS) recheck
-		for(int i = XY_LEFT; i <= XZ_BACK; i=i+2) {
-			if(boundPara[i].type == MOVING || boundPara[i+1].type == MOVING){
+		for(int i = XY_LEFT; i <= XZ_BACK; i++) {
+			if(boundPara[i].type == MOVING){
 				ERROR("MOVING walls are only supported in mode CAVITY!!");
 			}
 
+            // Check if current wall is INFLOW.
 			if(boundPara[i].type == INFLOW){
-				if(boundPara[i+1].type != OUTFLOW){
+				if( (i%2 == 0) && boundPara[i+1].type != OUTFLOW)
 					ERROR("OUTFLOW is not opposite INFLOW");
-				}
+                else if (i%2 != 0 && boundPara[i-1].type != OUTFLOW)
+					ERROR("OUTFLOW is not opposite INFLOW");
 				numInflow++;
 			}
 
 			if(boundPara[i].type == OUTFLOW){
-				if(boundPara[i+1].type != INFLOW){
-					ERROR("OUTFLOW is not opposite INFLOW");
-				}
+				if( (i%2 == 0) && 
+                        (boundPara[i+1].type != INFLOW) && boundPara[i+1].type != PRESSURE_IN)
+					ERROR("OUTFLOW is not opposite INFLOW or PRESSURE_IN");
+                else if (i%2 != 0 &&
+                            (boundPara[i-1].type != INFLOW) && boundPara[i-1].type != PRESSURE_IN)
+					ERROR("OUTFLOW is not opposite INFLOW or PRESSURE_IN");
 				numInflow++;
 			}
 
-			if(boundPara[i].type == FREE_SLIP || boundPara[i+1].type == FREE_SLIP){
+			if(boundPara[i].type == FREE_SLIP){
 				numFreeSlip++;
 
 			}
 		}
 
-		if (numInflow > 1)
-			ERROR("Too many inflows");
+		if (numInflow > 2)
+			ERROR("More than one inflow-outflow pair");
 
 		if(numFreeSlip > 3)
 			ERROR("More than 3 free-slip walls");
