@@ -11,8 +11,6 @@
 
 int main(int argc, char *argv[]){
 
-	// TODO: Check for only one input to the code
-
     // Distribution function vectors
     double *collideField    =NULL;
     double *streamField     =NULL;

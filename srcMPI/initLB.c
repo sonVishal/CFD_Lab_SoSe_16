@@ -5,6 +5,12 @@
 
 int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
 
+    if (argc != 1) {
+        char buffer[80];
+        snprintf(buffer, 80, "%d argument(s) supplied when only 1 argument was expected.",argc);
+        ERROR(buffer);
+    }
+
     double xvelocity, yvelocity, zvelocity;
     double Re, u_wall, machNr;
 
@@ -48,7 +54,7 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
         snprintf(buffer, 80, "Mach number is larger than %f (aborting)! \n",machNrTol);
     	ERROR(buffer);
     }
-    
+
   return 0;
 }
 
