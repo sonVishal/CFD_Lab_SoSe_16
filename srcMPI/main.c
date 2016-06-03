@@ -91,11 +91,13 @@ int main(int argc, char *argv[]){
     printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
     		(totalsize/(1000000*time_spent))*timesteps);
 
-    /* TODO: (DL) implement a in such a way, that the solution of parallelized
-     * version is put together and compared with the reference solution.
+    /* TODO: (DL) when checking with MPI implementation, the values of collideField
+     * have to get collected from the different processes and then checked with
+     * the 'reference' solution.
      */
-    char filen[] = {"debug/collideField"};
-    writeCollideFieldDebug(collideField, filen, Q*totalsize);
+    char fileRef[] = {"debug/collideField"};
+//    writeCollideFieldDebug(fileRef, collideField, Q*totalsize);
+    checkCollideFieldDebug(fileRef, collideField, Q*totalsize);
 
     free(streamField);
     free(collideField);

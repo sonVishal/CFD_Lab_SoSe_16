@@ -89,26 +89,34 @@ void writevtkPointCoordinatesDebug(FILE *fp, int xlength) {
 }
 
 
-void writeCollideFieldDebug(double* collideField, char *filename, int size){
+void writeCollideFieldDebug(char *filename, double* collideField, int size){
 
     FILE *fp = NULL;
-    sprintf(filename, "%s.array", filename);
 
-    fp  = fopen(filename, "w");
+    char filenameExt[100];
+    snprintf(filenameExt, 100, "%s.array", filename);
+
+    fp  = fopen(filenameExt, "w");
 
     if(fp == NULL)
     {
         char szBuff[80];
-        sprintf(szBuff, "Failed to open %s", filename);
+        sprintf(szBuff, "Failed to open %s", filenameExt);
         ERROR(szBuff);
         return;
     }
 
     int linebreak = Q;
+    int counter = 0;
+    int keepWriting = 1;
 
-    for(int i=0; i<size; ++i){
-    	for(int l = 0; l < linebreak; ++l){
-    		fprintf(fp," %f ", collideField[i]);
+    while(keepWriting){
+    	for(int l = 0; l < linebreak && keepWriting; ++l){
+    		fprintf(fp," %.16lf ", collideField[counter]);
+    		counter++;
+
+    		if(counter >= size-1)
+    			keepWriting = 0;
     	}
     	fprintf(fp, "\n");
     }
@@ -116,8 +124,60 @@ void writeCollideFieldDebug(double* collideField, char *filename, int size){
     if(fclose(fp))
     {
         char szBuff[80];
-        sprintf(szBuff, "Failed to close %s", filename);
+        sprintf(szBuff, "Failed to close %s", filenameExt);
         ERROR(szBuff);
     }
 }
+
+
+void checkCollideFieldDebug(char *referenceFile, double *currentCollideField, int size){
+	FILE *fp = NULL;
+
+    char filenameExt[100];
+    snprintf(filenameExt, 100, "%s.array", referenceFile);
+
+    fp  = fopen(filenameExt, "r");
+    if(fp == NULL)
+    {
+        char szBuff[200];
+        sprintf(szBuff, "Failed to open %s. \nMaybe you have to run "
+        		"'writeCollideFieldDebug' with the debug reference scenario first.", filenameExt);
+        ERROR(szBuff);
+        return;
+    }
+
+    int counter = 0;
+    const double TOL = 1e-10;
+
+    while(1){
+        double refVal, curVal; //have to correspond!
+        int ret = fscanf(fp, "%lf", &refVal);
+
+        if(ret == EOF || counter > size){
+//        	printf("ret=%i, counter=%i, size=%i", ret, counter, size);
+        	if(counter == size-1 && ret == EOF) 	break; //no error
+        	else  								ERROR("TODO");
+        }
+
+        curVal = currentCollideField[counter];
+//        printf("TOL=%f, counter=%i refVal: %.16f, curVal: %.16f", TOL, counter, refVal, curVal);
+        if(fabs(refVal - curVal) > TOL){
+        	char msg[200];
+        	snprintf(msg, 200, "TOL=%f, counter=%i refVal: %.16f, curVal: %.16f", TOL, counter, refVal, curVal);
+        	ERROR(msg);
+        }
+        counter++;
+    }
+
+    if(fclose(fp))
+    {
+        char szBuff[80];
+        sprintf(szBuff, "Failed to close %s", filenameExt);
+        ERROR(szBuff);
+    }
+
+    printf("INFO: CHECK SUCCESSFUL \n");
+}
+
+
 
