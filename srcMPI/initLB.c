@@ -5,11 +5,13 @@
 
 int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
 
-    if (argc != 1) {
-        char buffer[80];
-        snprintf(buffer, 80, "%d argument(s) supplied when only 1 argument was expected.",argc);
-        ERROR(buffer);
-    }
+	if(argc != 2){
+		char msg[200];
+		snprintf(msg, 200, "There are %i arguments provided to the simulation. Only 1 argument "
+				"providing \nthe path+filename (of relative to working directory) of the scenario "
+				"is accepted!", argc-1);
+		ERROR(msg);
+	}
 
     double xvelocity, yvelocity, zvelocity;
     double Re, u_wall, machNr;
