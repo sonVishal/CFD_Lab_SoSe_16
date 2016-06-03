@@ -5,11 +5,11 @@ SOURCES=initLB.c visualLB.c boundary.c collision.c streaming.c computeCellValues
 # --------
 CC=gcc
 
-CFLAGS=-Werror -pedantic -Wall -std=c99 #-O0 -g -pg -enable-checking -v -da -Q
+CFLAGS=-Werror -pedantic -Wall -std=c99
 
 # Linker flags
 # ------------
-LDFLAGS= -lm #-pg
+LDFLAGS= -lm
 
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=lbsim
@@ -19,6 +19,10 @@ all: clean $(EXECUTABLE) ; @echo "\nINFO:Use make speed for a faster code withou
 
 speed: CFLAGS+= -DNO_CHECKS -O3
 speed: clean $(EXECUTABLE)
+
+debug: CFLAGS+=-O0 -g -enable-checking -v -da -Q
+debug: LDFLAGS+=-pg
+debug: clean $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
