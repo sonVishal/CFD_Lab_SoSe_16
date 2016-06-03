@@ -1,3 +1,5 @@
+# array files (used for debugging)
+*.array
 
 # vim created files
 *.swp

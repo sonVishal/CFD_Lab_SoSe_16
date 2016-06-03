@@ -1,4 +1,7 @@
-#include <"debug.h">
+#include "debug.h"
+#include "helper.h"
+#include <stdio.h>
+#include "LBDefinitions.h"
 
 void writeVtkDebug(const double * const collideField,
     const int * const flagField, const char * filename, int xlength)
@@ -29,7 +32,7 @@ void writeVtkDebug(const double * const collideField,
     // iteration variables
     int x, y, z;
 
-    fprintf(fp,"\nCELL_DATA %d \n", (xlength[0]+2)*(xlength[1]+2)*(xlength[2]+2));
+    fprintf(fp,"\nCELL_DATA %d \n", (xlength+2)*(xlength+2)*(xlength+2));
 
     // Write cell average density to a temporary vtk file
     fprintf(fp, "SCALARS boundaryType integer 1 \n");
@@ -84,3 +87,37 @@ void writevtkPointCoordinatesDebug(FILE *fp, int xlength) {
         }
     }
 }
+
+
+void writeCollideFieldDebug(double* collideField, char *filename, int size){
+
+    FILE *fp = NULL;
+    sprintf(filename, "%s.array", filename);
+
+    fp  = fopen(filename, "w");
+
+    if(fp == NULL)
+    {
+        char szBuff[80];
+        sprintf(szBuff, "Failed to open %s", filename);
+        ERROR(szBuff);
+        return;
+    }
+
+    int linebreak = Q;
+
+    for(int i=0; i<size; ++i){
+    	for(int l = 0; l < linebreak; ++l){
+    		fprintf(fp," %f ", collideField[i]);
+    	}
+    	fprintf(fp, "\n");
+    }
+
+    if(fclose(fp))
+    {
+        char szBuff[80];
+        sprintf(szBuff, "Failed to close %s", filename);
+        ERROR(szBuff);
+    }
+}
+

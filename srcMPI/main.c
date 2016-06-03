@@ -8,10 +8,11 @@
 #include "visualLB.h"
 #include "LBDefinitions.h"
 #include <time.h>
+#include "debug.h"
 
 int main(int argc, char *argv[]){
 
-    // Distribution function vectors
+	// Distribution function vectors
     double *collideField    =NULL;
     double *streamField     =NULL;
     int *flagField          =NULL;
@@ -89,6 +90,12 @@ int main(int argc, char *argv[]){
     printf("#cells (including boundary): \t\t %i cells \n", totalsize);
     printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
     		(totalsize/(1000000*time_spent))*timesteps);
+
+    /* TODO: (DL) implement a in such a way, that the solution of parallelized
+     * version is put together and compared with the reference solution.
+     */
+    char filen[] = {"debug/collideField"};
+    writeCollideFieldDebug(collideField, filen, Q*totalsize);
 
     free(streamField);
     free(collideField);
