@@ -36,4 +36,21 @@ static const double LATTICEWEIGHTS[19] = {
 static const double densityTol  = 0.03;
 static const double machNrTol   = 0.1;
 
+// Enum for send and read buffer directions
+enum {
+    LEFT,
+    RIGHT,
+    TOP,
+    BOTTOM,
+    FRONT,
+    BACK
+};
+
+// Enum for cell type
+enum {
+    FLUID,
+    GHOST_BOUNDARY,
+    PARALLEL_BOUNDARY
+};
+
 #endif

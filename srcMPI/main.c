@@ -25,9 +25,22 @@ int main(int argc, char *argv[]){
     int timesteps;
     int timestepsPerPlotting;
 
+    // MPI parameters
+    int rank;
+    int number_of_ranks;
+    int iProc, jProc, kProc;
+
+    // Send and read buffers for all possible directions:
+    // Look at enum for index and direction correlation
+    double *sendBuffer[6];
+    double *readBuffer[6];
+
     // File printing parameters
     char fName[80];
-    snprintf(fName, 80, "pv_files/worksheet2");
+    snprintf(fName, 80, "pv_files/worksheet4");
+
+    // TODO
+    initialiseMPI(&rank,&number_of_ranks,argc,argv);
 
     //Timing variables:
     clock_t begin_timing, end_timing;
@@ -35,7 +48,7 @@ int main(int argc, char *argv[]){
 
     /*Read parameters and check the bounds on tau*/
     //tau is calculated automatically from the reynoldsnumber
-    readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
+    readParameters(&xlength, &tau, velocityWall, &iProc, &jProc, &kProc, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
 
 #ifdef NO_CHECKS
     printf("INFO: The compiler directive NO_CHECKS is enabled. Faster execution time is gained, "
@@ -47,26 +60,39 @@ int main(int argc, char *argv[]){
 #endif
 
     /*Allocate memory to pointers*/
+    // TODO: Allocate memory based on domain decomposition
     int totalsize = (xlength+2)*(xlength+2)*(xlength+2);
     collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
     streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
+    // TODO: allocate based on rank
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
-    // Initialize all the fields
-    initialiseFields(collideField, streamField, flagField, xlength);
+    // TODO: Initialize all the fields based on the rank
+    initialiseFields(collideField, streamField, flagField,
+        xlength, rank, number_of_ranks);
+
+    // TODO:
+    initialiseBuffers(sendBuffer, readBuffer, xlength);
 
     printf("\nINFO: Storing cell data in VTK files.\n      Please use the"
     " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
 
     // Write the VTK at t = 0
     printf("INFO: write vtk file at time t = %d \n", t);
-    writeVtkOutput(collideField,flagField,fName,t,xlength);
+    writeVtkOutput(collideField,flagField,fName,t,xlength,rank,number_of_ranks);
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
 	    double *swap = NULL;
+        /* TODO:
+         do extraction , swap , injection for x (left to right)
+         do extraction , swap , injection for x (right to left)
+         do extraction , swap , injection for y (forth and back; back and forth)
+         do extraction , swap , injection for z (down and up ; up and down)
+        */
+
 	    doStreaming(collideField,streamField,flagField,xlength);
 
 	    swap = collideField;
@@ -78,9 +104,15 @@ int main(int argc, char *argv[]){
 
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);
-	        writeVtkOutput(collideField,flagField,fName,t,xlength);
+            // TODO: (VS) Change the coordinates based on rank
+            // TODO: (VS) Check if the time-rank strategy is okay for paraview
+	        writeVtkOutput(collideField,flagField,fName,t,xlength,rank,number_of_ranks);
 	    }
     }
+    // TODO: As of now this is in initLB - I have no idea where to put this function definition
+    finaliseMPI();
+
+    // TODO: The times from all the processes need to be added at the end
     end_timing = clock();
     time_spent = (double)(end_timing - begin_timing) / CLOCKS_PER_SEC;
 

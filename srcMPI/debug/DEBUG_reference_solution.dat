@@ -6,10 +6,10 @@ xlength              10
 #tau                  1
 
 # Reynolds Number
-Re                    10
+Re                    1
 
 # Velocity of moving wall
-xvelocity         0.025
+xvelocity         0.01
 yvelocity         0
 zvelocity         0
 

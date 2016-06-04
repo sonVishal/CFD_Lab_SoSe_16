@@ -3,7 +3,7 @@ SOURCES=initLB.c visualLB.c boundary.c collision.c streaming.c computeCellValues
 
 # Compiler
 # --------
-CC=gcc
+CC=mpicc
 
 CFLAGS=-Werror -pedantic -Wall -std=c99
 

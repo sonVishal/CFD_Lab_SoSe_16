@@ -1,9 +1,12 @@
 #include <math.h>
+#include <mpi.h>
 #include "initLB.h"
 #include "LBDefinitions.h"
 #include "helper.h"
 
-int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
+int readParameters(int *xlength, double *tau, double *velocityWall, int *iProc,
+	int *jProc, int *kProc, int *timesteps, int *timestepsPerPlotting,
+	int argc, char *argv[]){
 
 	if(argc != 2){
 		char msg[200];
@@ -31,6 +34,10 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     READ_INT(*argv, *timesteps);
     READ_INT(*argv, *timestepsPerPlotting);
 
+	READ_INT(*argv, *iProc);
+	READ_INT(*argv, *jProc);
+	READ_INT(*argv, *kProc);
+
     /*Calculates tau from the Reynolds number*/
     u_wall  = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity);
     *tau    =  u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
@@ -57,10 +64,19 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     	ERROR(buffer);
     }
 
+	// Check if iProc, jProc and kProc are less than the domain size and nonzero
+	if (*iProc <= 0 || *iProc > *xlength || *jProc <= 0 || *jProc > *xlength ||
+		*kProc <= 0 || *kProc > *xlength) {
+		char buffer[80];
+        snprintf(buffer, 80, "Please make sure that iProc, jProc and kProc are greater than 0 and less than xlength = %d (aborting)! \n",*xlength);
+    	ERROR(buffer);
+	}
+
   return 0;
 }
 
-void initialiseFields(double *collideField, double *streamField, int *flagField, int xlength){
+void initialiseFields(double *collideField, double *streamField, int *flagField,
+	int xlength, int rank, int number_of_ranks){
 
     /*Setting initial distributions*/
     //f_i(x,0) = f^eq(1,0,0) = w_i
@@ -150,4 +166,16 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
             flagField[x+idx] = 2;
         }
     }
+}
+
+void initialiseMPI(int *rank, int *number_of_ranks, int argc, char *argv[]) {
+    ERROR("TODO");
+}
+
+void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int xlength) {
+	ERROR("TODO");
+}
+
+void finaliseMPI() {
+	ERROR("TODO");
 }

@@ -18,7 +18,7 @@
 
 void writeVtkOutput(const double * const collideField,
     const int * const flagField, const char * filename,
-    unsigned int t, int xlength)
+    unsigned int t, int xlength, int rank, int number_of_ranks)
 {
     // Files related variables
     char pFileName[80];
@@ -30,8 +30,8 @@ void writeVtkOutput(const double * const collideField,
     char ch;
 
     // Create the file with time information in the name
-    sprintf(pFileName, "%s.%i.vtk", filename, t);
-    sprintf(pTempFile, "temp.vtk");
+    sprintf(pFileName, "%s.%i.%i.vtk", filename, t, rank);
+    sprintf(pTempFile, "temp.%i.vtk", rank);
     fp  = fopen(pFileName, "w");
     tmp = fopen(pTempFile, "w");
 
