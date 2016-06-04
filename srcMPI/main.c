@@ -96,7 +96,7 @@ int main(int argc, char *argv[]){
      * the 'reference' solution.
      */
     char fileRef[] = {"debug/collideField"};
-//    writeCollideFieldDebug(fileRef, collideField, Q*totalsize);
+    // writeCollideFieldDebug(fileRef, collideField, Q*totalsize);
     checkCollideFieldDebug(fileRef, collideField, Q*totalsize);
 
     free(streamField);

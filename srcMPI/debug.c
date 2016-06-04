@@ -112,7 +112,7 @@ void writeCollideFieldDebug(char *filename, double* collideField, int size){
 
     while(keepWriting){
     	for(int l = 0; l < linebreak && keepWriting; ++l){
-    		fprintf(fp," %.16lf ", collideField[counter]);
+    		fprintf(fp,"%.16lf ", collideField[counter]);
     		counter++;
 
     		if(counter >= size-1)
@@ -161,7 +161,9 @@ void checkCollideFieldDebug(char *referenceFile, double *currentCollideField, in
 
         curVal = currentCollideField[counter];
 //        printf("TOL=%f, counter=%i refVal: %.16f, curVal: %.16f", TOL, counter, refVal, curVal);
-        if(fabs(refVal - curVal) > TOL){
+        // Check for relative error to get number of correct digits
+        // rather than absolute error
+        if(fabs((refVal - curVal)/refVal) > TOL){
         	char msg[200];
         	snprintf(msg, 200, "TOL=%f, counter=%i refVal: %.16f, curVal: %.16f", TOL, counter, refVal, curVal);
         	ERROR(msg);
@@ -178,6 +180,3 @@ void checkCollideFieldDebug(char *referenceFile, double *currentCollideField, in
 
     printf("INFO: CHECK SUCCESSFUL \n");
 }
-
-
-
