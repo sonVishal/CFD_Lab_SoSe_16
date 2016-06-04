@@ -127,9 +127,26 @@ int main(int argc, char *argv[]){
      * have to get collected from the different processes and then checked with
      * the 'reference' solution.
      */
-    char fileRef[] = {"debug/collideField"};
+
+    /* GO BACK TO COMMIT:
+     * git checkout eb4328f2de8d945a6f1a3b4aebc8bc79a5659353
+     * (minor changes)
+     * to run the serialized code for a reference solution (produces the required.array file)
+     *
+#USE THESE SETTINGS (copy into debug/DEBUG_reference_solution.dat)
+
+xlength              10
+Re                    1
+xvelocity         0.01
+yvelocity         0
+zvelocity         0
+timesteps            100
+timestepsPerPlotting 100
+     */
+
+    //char fileRef[] = {"debug/collideField"};
     // writeCollideFieldDebug(fileRef, collideField, Q*totalsize);
-    checkCollideFieldDebug(fileRef, collideField, Q*totalsize);
+    // checkCollideFieldDebug(fileRef, collideField, Q*totalsize);
 
     free(streamField);
     free(collideField);
