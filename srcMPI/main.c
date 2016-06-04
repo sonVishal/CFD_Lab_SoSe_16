@@ -128,7 +128,7 @@ int main(int argc, char *argv[]){
      * the 'reference' solution.
      */
 
-    /* To generate the current reference solution go to switch to branch:
+    /* To generate the current reference solution switch to branch:
      * git checkout generate_reference_solution
      */
 
