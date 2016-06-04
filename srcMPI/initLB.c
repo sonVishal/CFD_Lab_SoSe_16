@@ -1,5 +1,5 @@
 #include <math.h>
-#include <mpi.h>
+#include <mpi/mpi.h>
 #include "initLB.h"
 #include "LBDefinitions.h"
 #include "helper.h"
