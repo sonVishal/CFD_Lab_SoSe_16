@@ -13,9 +13,9 @@
 int main(int argc, char *argv[]){
 
 	// Distribution function vectors
-    double *collideField    =NULL;
-    double *streamField     =NULL;
-    int *flagField          =NULL;
+    double *collideField    = NULL;
+    double *streamField     = NULL;
+    int *flagField          = NULL;
 
     // Simulation parameters
     int xlength;
@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
     // MPI parameters
     int rank;
     int number_of_ranks;
-    int iProc, jProc, kProc;
+    int procsPerAxis[3];
 
     // Send and read buffers for all possible directions:
     // Look at enum for index and direction correlation
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]){
 
     /*Read parameters and check the bounds on tau*/
     //tau is calculated automatically from the reynoldsnumber
-    readParameters(&xlength, &tau, velocityWall, &iProc, &jProc, &kProc, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
+    readParameters(&xlength, &tau, velocityWall, procsPerAxis, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
 
     if(rank == 0)
 #ifdef NO_CHECKS

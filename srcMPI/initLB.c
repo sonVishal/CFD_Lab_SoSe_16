@@ -4,9 +4,8 @@
 #include "LBDefinitions.h"
 #include "helper.h"
 
-int readParameters(int *xlength, double *tau, double *velocityWall, int *iProc,
-	int *jProc, int *kProc, int *timesteps, int *timestepsPerPlotting,
-	int argc, char *argv[]){
+int readParameters(int *xlength, double *tau, double *velocityWall, int *procsPerAxis,
+	int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
 
 	if(argc != 2){
 		char msg[200];
@@ -17,6 +16,7 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *iProc,
 	}
 
     double xvelocity, yvelocity, zvelocity;
+	int iProc, jProc, kProc;
     double Re, u_wall, machNr;
 
     /* Read values from file given in argv */
@@ -34,9 +34,13 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *iProc,
     READ_INT(*argv, *timesteps);
     READ_INT(*argv, *timestepsPerPlotting);
 
-	READ_INT(*argv, *iProc);
-	READ_INT(*argv, *jProc);
-	READ_INT(*argv, *kProc);
+	READ_INT(*argv, iProc);
+	READ_INT(*argv, jProc);
+	READ_INT(*argv, kProc);
+
+	procsPerAxis[0] = iProc;
+	procsPerAxis[1] = jProc;
+	procsPerAxis[2] = kProc;
 
     /*Calculates tau from the Reynolds number*/
     u_wall  = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity);
@@ -65,8 +69,8 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *iProc,
     }
 
 	// Check if iProc, jProc and kProc are less than the domain size and nonzero
-	if (*iProc <= 0 || *iProc > *xlength || *jProc <= 0 || *jProc > *xlength ||
-		*kProc <= 0 || *kProc > *xlength) {
+	if (iProc <= 0 || iProc > *xlength || jProc <= 0 || jProc > *xlength ||
+		kProc <= 0 || kProc > *xlength) {
 		char buffer[80];
         snprintf(buffer, 80, "Please make sure that iProc, jProc and kProc are greater than 0 and less than xlength = %d (aborting)! \n",*xlength);
     	ERROR(buffer);

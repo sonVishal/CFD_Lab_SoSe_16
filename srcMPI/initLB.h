@@ -8,9 +8,7 @@ int readParameters(
     int *xlength,                       /* reads domain size. Parameter name: "xlength" */
     double *tau,                        /* relaxation parameter tau. Parameter name: "tau" */
     double *velocityWall,               /* velocity of the lid. Parameter name: "characteristicvelocity" */
-    int *iProc,                         /* Number of sub divisions in x direction*/
-    int *jProc,                         /* Number of sub divisions in y direction*/
-    int *kProc,                         /* Number of sub divisions in z direction*/
+    int *procsPerAxis,                  /* Number of sub divisions in x,y,z directions*/
     int *timesteps,                     /* number of timesteps. Parameter name: "timesteps" */
     int *timestepsPerPlotting,          /* timesteps between subsequent VTK plots. Parameter name: "vtkoutput" */
     int argc,                           /* number of arguments. Should equal 2 (program + name of config file */
