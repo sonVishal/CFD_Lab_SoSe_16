@@ -49,8 +49,17 @@ enum {
 // Enum for cell type
 enum {
     FLUID,
-    GHOST_BOUNDARY,
+    NO_SLIP,
+    MOVING_WALL,
     PARALLEL_BOUNDARY
 };
+
+// Local struct for each process
+typedef struct {
+    int rank;
+    int xLength[3];
+    int neighbours[6];
+    int wallVelocity[3];
+} t_procData;
 
 #endif
