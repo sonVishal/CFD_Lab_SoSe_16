@@ -28,7 +28,7 @@ void p_setBounceBack(double *collideField, const double * const wallVelocity,
 
 		/* equation 19 */
 		collideField[current_cell_index + i] = collideField[n_cell_index + (Q-i-1)] +
-				2 * weight * dot_uwall_c / (C_S*C_S);
+				2 * weight * density * dot_uwall_c / (C_S*C_S);
 
 	}else{ 		//Wrong input parameter
 		ERROR("A FLUID cell appeared when setting boundaries. This should not happen!!\n");
