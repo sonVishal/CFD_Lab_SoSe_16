@@ -187,7 +187,7 @@ void p_treatSingleWall(double *collideField, const int * const flagField, const 
 void treatBoundary(double * collideField, int const * const flagField, const t_procData procData){
 
 	for(int wall=LEFT; wall<=BACK; ++wall){ //see LBDefinitions for order of walls
-		if(procData.neighbours[wall] != MPI_PROC_NULL){
+		if(procData.neighbours[wall] == MPI_PROC_NULL){
 			p_treatSingleWall(collideField, flagField, procData, wall);
 		}
 	}
