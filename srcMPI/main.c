@@ -18,16 +18,18 @@ int main(int argc, char *argv[]){
     int *flagField          = NULL;
 
     // Simulation parameters
-    int xlength;
+    int xlength; //TODO: (DL) deprecated, is contained in procData
     double tau;
-    double velocityWall[3];
+    double velocityWall[3]; //TODO: (DL) deprecated, is contained in procData
+    t_procData procData;
+
     int t = 0;
     int timesteps;
     int timestepsPerPlotting;
 
     // MPI parameters
-    int rank;
-    int number_of_ranks;
+    int rank; //TODO: (DL) deprecated, is contained in procData
+    int number_of_ranks; //TODO: (DL) deprecated, is contained in procData
     int procsPerAxis[3];
 
     // Send and read buffers for all possible directions:
@@ -107,7 +109,7 @@ int main(int argc, char *argv[]){
 	     * Each process has a subdomain that may or may not include a ghost layer boundary.
 	     * Only the boundary that falls into a subdomain has to be handled then.
 	     */
-	    treatBoundary(collideField,flagField,velocityWall,xlength);
+	    treatBoundary(collideField,flagField, procData);
 
 	    if (t%timestepsPerPlotting == 0){
             printf("R %i, INFO: write vtk file at time t = %d \n", rank, t);
