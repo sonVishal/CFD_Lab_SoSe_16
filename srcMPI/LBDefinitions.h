@@ -58,8 +58,8 @@ enum {
 typedef struct {
     int rank;
     int xLength[3];
-    int neighbours[6];
-    int wallVelocity[3];
+    int neighbours[6]; //same order as enum
+    double wallVelocity[3];
 } t_procData;
 
 #endif
