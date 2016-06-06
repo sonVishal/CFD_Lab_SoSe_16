@@ -3,9 +3,7 @@
 #include "helper.h"
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
-
-/* Enum that gives a distinction of the walls with respective to the fixed value of (x,y,z) */
-enum WALLS{E_XFIXED, E_YFIXED, E_ZFIXED};
+#include <mpi/mpi.h>
 
 /* Helper function that carries out the moving wall or bounce back condition, depending on flag 'type'.
  * The value in flagField corresponding to the current cell (current_cell_index) has to indicate a boundary
@@ -39,17 +37,24 @@ void p_setBounceBack(double *collideField, const double * const wallVelocity,
  * that is not fixed; 'outer' to the second value. By this ordering a better cache efficiency is obtained.
  * WallIdx has to be a valid index from the enum WALLS.
  */
-int p_computeCellOffset(const int outer, const int inner, const int fixedValue, const int xlength, const int wallIdx){
-	switch (wallIdx) {
-		case E_XFIXED:
-			//outer = Z, inner = Y
-			return (xlength+2) * (outer*(xlength+2) + inner) + fixedValue;
-		case E_YFIXED:
+int p_computeCellOffset(const int outer, const int inner, const int fixedValue, int const * const xlength, const int wallIdx){
+
+	//Computes index: z * (xlen*ylen) + y * (xlen) + x
+
+	//wallIdx has valid integer values from 0 to 5
+	switch (wallIdx/2) { //integer division to get the type of face (see enum in LBDefinitions.h)
+		case 0: // LEFT, RIGHT -> Y fixed
 			//outer = Z, inner = X
-			return (xlength+2) * (outer*(xlength+2) + fixedValue) + inner;
-		case E_ZFIXED:
+			return (xlength[0]+2) * (outer * (xlength[1]+2) + fixedValue) + inner;
+
+		case 1: // TOP, BOTTOM -> Z fixed
 			//outer = Y, inner = X
-			return (xlength+2) * (fixedValue*(xlength+2) + outer) + inner;
+			return (xlength[0]+2) * (fixedValue * (xlength[1]+2) + outer) + inner;
+
+		case 2: // FRONT, BACK -> X fixed
+			//outer = Z, inner = Y
+			return (xlength[0]+2) * (outer * (xlength[1]+2) + inner) + fixedValue;
+
 		default:
 			ERROR("Invalid wall index occured. This should not happen !!!");
 			return -1;
@@ -62,23 +67,26 @@ int p_computeCellOffset(const int outer, const int inner, const int fixedValue, 
  * For example, when the current cell is on the boundary and 'c_vec' points away from the inner value.
  */
 int p_computeNeighborCellOffset(int outer, int inner, int fixedValue,
-		const int * const c_vec, const int xlength, const int wallIdx){
-	switch (wallIdx) {
-		case E_XFIXED:
-			outer 		+= c_vec[2];	//= Z
-			inner 		+= c_vec[1];	//= Y
-			fixedValue 	+= c_vec[0];	//= X
-			return (xlength+2) * (outer*(xlength+2) + inner) + fixedValue;
-		case E_YFIXED:
+		const int * const c_vec, int const * const xlength, const int wallIdx){
+
+	switch (wallIdx/2) {
+		case 0: // LEFT, RIGHT -> Y fixed
 			outer 		+= c_vec[2];	//= Z
 			inner 		+= c_vec[0];	//= X
 			fixedValue 	+= c_vec[1];	//= Y
-			return (xlength+2) * (outer*(xlength+2) + fixedValue) + inner;
-		case E_ZFIXED:
+			return (xlength[0]+2) * (outer * (xlength[1]+2) + fixedValue) + inner;
+
+		case 1: // TOP, BOTTOM -> Z fixed
 			outer 		+= c_vec[1];	//= Y
 			inner 		+= c_vec[0];	//= X
 			fixedValue 	+= c_vec[2];	//= Z
-			return (xlength+2) * (fixedValue*(xlength+2) + outer) + inner;
+			return (xlength[0]+2) * (fixedValue * (xlength[1]+2) + outer) + inner;
+
+		case 2: // FRONT, BACK -> X fixed
+			outer 		+= c_vec[2];	//= Z
+			inner 		+= c_vec[1];	//= Y
+			fixedValue 	+= c_vec[0];	//= X
+			return (xlength[0]+2) * (outer * (xlength[1]+2) + inner) + fixedValue;
 
 		default:
 			ERROR("Invalid wall index occured. This should not happen !!!");
@@ -86,20 +94,74 @@ int p_computeNeighborCellOffset(int outer, int inner, int fixedValue,
 	}
 }
 
+
+void p_setIterationParameters(int *endOuter, int *endInner, int *fixedValue, const t_procData procData, const int wallIdx){
+
+	switch(wallIdx){
+
+	//---------------------------------------------
+	//outer = Z, inner = X, Y fixed
+	case LEFT:
+		*endOuter = procData.xLength[2]+1;
+		*endInner = procData.xLength[0]+1;
+		*fixedValue = 0;
+		break;
+	case RIGHT:
+		*endOuter = procData.xLength[2]+1;
+		*endInner = procData.xLength[0]+1;
+		*fixedValue = procData.xLength[1]+1;
+		break;
+	//---------------------------------------------
+	//outer = Y, inner = X, Z fixed
+	case TOP:
+		*endOuter = procData.xLength[1]+1;
+		*endInner = procData.xLength[0]+1;
+		*fixedValue = procData.xLength[2]+1;
+		break;
+	case BOTTOM:
+		*endOuter = procData.xLength[1]+1;
+		*endInner = procData.xLength[0]+1;
+		*fixedValue = 0;
+		break;
+
+	//---------------------------------------------
+	//outer = Z, inner = Y, X fixed
+	case FRONT:
+		*endOuter = procData.xLength[2]+1;
+		*endInner = procData.xLength[1]+1;
+		*fixedValue = procData.xLength[0]+1;
+		break;
+	case BACK:
+		*endOuter = procData.xLength[2]+1;
+		*endInner = procData.xLength[1]+1;
+		*fixedValue = 0;
+		break;
+
+	default:
+		ERROR("Invalid wallIdx occurred. This should never happen!");
+	}
+
+}
+
+
 /* Helper function that treats a single boundary wall. The wall itself is described with wallIdx
  * (from enum WALLS) and the 'fixedValue' (generally 0 or xlength+1).
  */
 
-void p_treatSingleWall(double *collideField, const int * const flagField,
-		const int fixedValue, const double * const wallVelocity, const int xlength, const int wallIdx){
+void p_treatSingleWall(double *collideField, const int * const flagField, const t_procData procData, const int wallIdx){
+
+	int endOuter, endInner, fixedValue;
+	p_setIterationParameters(&endOuter, &endInner, &fixedValue, procData, wallIdx);
+
+	int xlength[3] = {procData.xLength[0], procData.xLength[1], procData.xLength[2]};
 
 	//variable needed at check whether it is an in-domain (FLUID) cell
-	int maxValidIndex = Q*(xlength+2)*(xlength+2)*(xlength+2);
+	int maxValidIndex = Q*(xlength[0]+2)*(xlength[1]+2)*(xlength[2]+2);
 
 	//k - corresponds to the 'outer' value when computing the offset
-	for(int k = 0; k <= xlength+1; ++k){
+	for(int k = 0; k <= endOuter; ++k){
 		//j - corresponds to the 'inner' value
-		for(int j = 0; j <= xlength+1; ++j){
+		for(int j = 0; j <= endInner; ++j){
 
 			//flagField[xyz_offset] should only be a boundary cell (checked in p_setBounceBack)
 			int xyz_offset = p_computeCellOffset(k, j, fixedValue, xlength, wallIdx);
@@ -115,28 +177,18 @@ void p_treatSingleWall(double *collideField, const int * const flagField,
 				if(n_cell_index >= 0 && n_cell_index < maxValidIndex &&
 						flagField[n_xyzoffset] == 0
 				){
-					p_setBounceBack(collideField, wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
+					p_setBounceBack(collideField, procData.wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
 				}
 			}
 		}
 	}
 }
 
-/* Helper function that does both boundary walls for the fixed value provided in the enum WALLS.
- * The fixed value is set to 0 and xlength+1.
- */
-void p_setWallBoundaries(double *collideField, const int * const flagField,
-		const double * const wallVelocity, const int xlength, const int wallIdx){
+void treatBoundary(double * collideField, int const * const flagField, const t_procData procData){
 
-	//Fixed value of 0
-	p_treatSingleWall(collideField, flagField, 0,         wallVelocity, xlength, wallIdx);
-
-	//Fixed value of xlength+1
-	p_treatSingleWall(collideField, flagField, xlength+1, wallVelocity, xlength, wallIdx);
-}
-
-void treatBoundary(double *collideField, int* flagField, const double * const wallVelocity, int xlength){
-	p_setWallBoundaries(collideField, flagField, wallVelocity, xlength, E_XFIXED);
-	p_setWallBoundaries(collideField, flagField, wallVelocity, xlength, E_YFIXED);
-	p_setWallBoundaries(collideField, flagField, wallVelocity, xlength, E_ZFIXED);
+	for(int wall=LEFT; wall<=BACK; ++wall){ //see LBDefinitions for order of walls
+		if(procData.neighbours[wall] != MPI_PROC_NULL){
+			p_treatSingleWall(collideField, flagField, procData, wall);
+		}
+	}
 }
