@@ -87,7 +87,6 @@ int main(int argc, char *argv[]){
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
-    // TODO: Initialize all the fields based on the rank
     initialiseFields(collideField, streamField, flagField, procData);
 
     // TODO:
