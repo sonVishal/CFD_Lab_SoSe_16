@@ -181,7 +181,7 @@ void p_treatSingleWall(double *collideField, const int * const flagField, const 
 				if(n_cell_index >= 0 && n_cell_index < maxValidIndex &&
 						flagField[n_xyzoffset] == FLUID && boundaryType != PARALLEL_BOUNDARY
 				){
-					p_setBounceBack(collideField, procData.wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
+					p_setBounceBack(collideField, procData.wallVelocity, boundaryType, i, current_cell_index, n_cell_index, c);
 				}
 			}
 		}

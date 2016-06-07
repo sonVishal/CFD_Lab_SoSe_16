@@ -48,7 +48,8 @@ int main(int argc, char *argv[]){
     snprintf(fName, 80, "pv_files/WS4_rank");
 
     //Timing variables:
-    double begin_timing, end_timing;
+    double beginProcTime, endProcTime, beginSimTime, endSimTime;
+
 
     /* Read parameters and check the bounds on tau
      * Only performed by the root and broadcasted*/
@@ -126,10 +127,10 @@ int main(int argc, char *argv[]){
         p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
     }
 
-    finaliseMPI();
-    ERROR("STOPPER, remove later");
+//    finaliseMPI();
+//    ERROR("STOPPER, remove later");
 
-    begin_timing = MPI_Wtime();
+    beginProcTime = MPI_Wtime();
 
     for(t = 1; t <= timesteps; t++){
 	    double *swap = NULL;
@@ -155,13 +156,13 @@ int main(int argc, char *argv[]){
 	        writeVtkOutput(collideField,flagField,fName,t,procData,procsPerAxis);
 	    }
     }
-    end_timing = MPI_Wtime();
+    endProcTime = MPI_Wtime();
 
-    MPI_Reduce(&begin_timing, &begin_timing, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
-    MPI_Reduce(&end_timing, &end_timing, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&beginProcTime, &beginSimTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&endProcTime, &endSimTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
     if(procData.rank == 0){
-    	double elapsedTime = end_timing - begin_timing;
+    	double elapsedTime = endSimTime - beginSimTime;
     	int domTotalsize = (xlength+2)*(xlength+2)*(xlength+2);
     	printf("\n===============================================================\n");
 		printf("\nINFO TIMING:\n");
@@ -194,7 +195,7 @@ int main(int argc, char *argv[]){
         free(readBuffer[i]);
     }
 
-    finaliseMPI();
+    finaliseMPI(&procData);
     return 0;
 }
 
