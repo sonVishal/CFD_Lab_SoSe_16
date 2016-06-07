@@ -223,24 +223,25 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
 
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength) {
 
-	int nrCells			= (xlength[0]+2)*(xlength[2]+2);
-	sendBuffer[LEFT] 	= (double *) calloc(nrCells, sizeof(double));
-	sendBuffer[RIGHT] 	= (double *) calloc(nrCells, sizeof(double));
-	readBuffer[LEFT] 	= (double *) calloc(nrCells, sizeof(double));
-	readBuffer[RIGHT] 	= (double *) calloc(nrCells, sizeof(double));
+    //TODO: (TKS) Consider allocating only the amount of elements needed.
+	int bufferSize			= 5*( (xlength[0]+2)*(xlength[2]+2));
+	sendBuffer[LEFT] 	= (double *) calloc(bufferSize, sizeof(double));
+	sendBuffer[RIGHT] 	= (double *) calloc(bufferSize, sizeof(double));
+	readBuffer[LEFT] 	= (double *) calloc(bufferSize, sizeof(double));
+	readBuffer[RIGHT] 	= (double *) calloc(bufferSize, sizeof(double));
 
 
-	nrCells 			= (xlength[0]+2)*(xlength[1]+2);
-	sendBuffer[TOP] 	= (double *) calloc(nrCells, sizeof(double));
-	sendBuffer[BOTTOM] 	= (double *) calloc(nrCells, sizeof(double));
-	readBuffer[TOP] 	= (double *) calloc(nrCells, sizeof(double));
-	readBuffer[BOTTOM] 	= (double *) calloc(nrCells, sizeof(double));
+	bufferSize 			= 5*((xlength[0]+2)*(xlength[1]+2));
+	sendBuffer[TOP] 	= (double *) calloc(bufferSize, sizeof(double));
+	sendBuffer[BOTTOM] 	= (double *) calloc(bufferSize, sizeof(double));
+	readBuffer[TOP] 	= (double *) calloc(bufferSize, sizeof(double));
+	readBuffer[BOTTOM] 	= (double *) calloc(bufferSize, sizeof(double));
 
-	nrCells 			= (xlength[1]+2)*(xlength[2]+2);
-	sendBuffer[FRONT] 	= (double *) calloc(nrCells, sizeof(double));
-	sendBuffer[BACK] 	= (double *) calloc(nrCells, sizeof(double));
-	readBuffer[FRONT] 	= (double *) calloc(nrCells, sizeof(double));
-	readBuffer[BACK] 	= (double *) calloc(nrCells, sizeof(double));
+	bufferSize 			= 5*((xlength[1]+2)*(xlength[2]+2));
+	sendBuffer[FRONT] 	= (double *) calloc(bufferSize, sizeof(double));
+	sendBuffer[BACK] 	= (double *) calloc(bufferSize, sizeof(double));
+	readBuffer[FRONT] 	= (double *) calloc(bufferSize, sizeof(double));
+	readBuffer[BACK] 	= (double *) calloc(bufferSize, sizeof(double));
 }
 
 /* TODO: (DL) This should go somewhere else!! */
