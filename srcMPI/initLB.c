@@ -195,13 +195,13 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
     if (procPos[2] == 0) {
         procData->neighbours[BOTTOM] = MPI_PROC_NULL;
     } else {
-        procData->neighbours[BOTTOM] = procData->rank+procsPerAxis[1]*procsPerAxis[0];
+        procData->neighbours[BOTTOM] = procData->rank-procsPerAxis[1]*procsPerAxis[0];
     }
     // Top
     if (procPos[2] == procsPerAxis[2]-1) {
         procData->neighbours[TOP] = MPI_PROC_NULL;
     } else {
-        procData->neighbours[TOP] = procData->rank-procsPerAxis[1]*procsPerAxis[0];
+        procData->neighbours[TOP] = procData->rank+procsPerAxis[1]*procsPerAxis[0];
     }
 	printProcData(*procData);
 }
