@@ -15,7 +15,7 @@ int readParameters(
 
 
 /* initialises the particle distribution functions and the flagfield */
-void initialiseFields(double *collideField, double *streamField,int *flagField, int *xlength, int rank, int numRanks);
+void initialiseFields(double *collideField, double *streamField,int *flagField, t_procData thisProcData);
 
 // Domain decomposition and setting of neighbours
 void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, const int * const procsPerAxis);
