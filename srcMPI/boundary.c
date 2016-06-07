@@ -170,16 +170,16 @@ void p_treatSingleWall(double *collideField, const int * const flagField, const 
 			int current_cell_index = Q*xyz_offset;
 			int boundaryType = flagField[xyz_offset];
 
-			for(int i = 0; i < Q; ++i){
+			//PARALLEL boundaries are not treated when they occur (e.g. at shared edges)
+			for(int i = 0; i < Q && boundaryType != PARALLEL_BOUNDARY; ++i){
 				int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
 				int n_xyzoffset = p_computeNeighborCellOffset(k, j, fixedValue, c, xlength, wallIdx);
 				int n_cell_index = Q*n_xyzoffset;
 
 				//check (1) valid index: in case the direction of vector 'c' points to a non-existing cell
 				//check (2) that the neighboring cell is a FLUID cell in the domain (and not another boundary cell)
-				//check (3) PARALLEL boundaries are not treated when they occur (e.g. on shared edges)
 				if(n_cell_index >= 0 && n_cell_index < maxValidIndex &&
-						flagField[n_xyzoffset] == FLUID && boundaryType != PARALLEL_BOUNDARY
+						flagField[n_xyzoffset] == FLUID
 				){
 					p_setBounceBack(collideField, procData.wallVelocity, boundaryType, i, current_cell_index, n_cell_index, c);
 				}
@@ -189,7 +189,6 @@ void p_treatSingleWall(double *collideField, const int * const flagField, const 
 }
 
 void treatBoundary(double * collideField, int const * const flagField, const t_procData procData){
-
 	for(int wall=LEFT; wall<=BACK; ++wall){ //see LBDefinitions for order of walls
 		if(procData.neighbours[wall] == MPI_PROC_NULL){
 			p_treatSingleWall(collideField, flagField, procData, wall);
