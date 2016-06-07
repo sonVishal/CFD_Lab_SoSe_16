@@ -60,6 +60,7 @@ typedef struct {
     int numRanks;
     int xLength[3];
     int neighbours[6]; //same order as enum
+    int bufferSize[6]; //same order as enum
     double wallVelocity[3];
 } t_procData;
 

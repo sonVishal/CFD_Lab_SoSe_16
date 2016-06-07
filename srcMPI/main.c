@@ -8,6 +8,7 @@
 #include "LBDefinitions.h"
 #include "debug.h"
 #include "helper.h"
+#include "helperMPI.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi/mpi.h>
@@ -112,7 +113,7 @@ int main(int argc, char *argv[]){
     initialiseFields(collideField, streamField, flagField, procData);
     // printf("Finished Initializing Proc %d\n",procData.rank);
 
-    initialiseBuffers(sendBuffer, readBuffer, procData.xLength);
+    initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.bufferSize);
     // printf("Finished Initializing Buffers Proc %d\n",procData.rank);
 
     if(procData.rank == 0)
@@ -140,6 +141,8 @@ int main(int argc, char *argv[]){
          do extraction , swap , injection for y (forth and back; back and forth)
          do extraction , swap , injection for z (down and up ; up and down)
         */
+
+        communicate(sendBuffer, readBuffer, collideField, procData.xLength, procData.bufferSize);
 
 	    doStreaming(collideField,streamField,flagField,procData.xLength);
 

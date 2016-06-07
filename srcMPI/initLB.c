@@ -196,10 +196,12 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
 	// printProcDataPos(*procData,procPos);
 }
 
-void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength) {
+void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength, int* s_bufferSize) {
 
 	// XZ inner domain (no edges included)
 	int bufferSize		= 5*(xlength[0]*xlength[2])*sizeof(double);
+    s_bufferSize[0]     = bufferSize;
+    s_bufferSize[1]     = bufferSize;
 	sendBuffer[LEFT] 	= (double *) malloc(bufferSize);
 	sendBuffer[RIGHT] 	= (double *) malloc(bufferSize);
 	readBuffer[LEFT] 	= (double *) malloc(bufferSize);
@@ -207,6 +209,8 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 
 	// XY plane including edges at the boundary to left/right
 	bufferSize 			= 5*(xlength[0]*(xlength[1]+2))*sizeof(double);
+    s_bufferSize[2]     = bufferSize;
+    s_bufferSize[3]     = bufferSize;
 	sendBuffer[TOP] 	= (double *) malloc(bufferSize);
 	sendBuffer[BOTTOM] 	= (double *) malloc(bufferSize);
 	readBuffer[TOP] 	= (double *) malloc(bufferSize);
@@ -214,6 +218,8 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 
 	// YZ plane including all edges
 	bufferSize 			= 5*((xlength[1]+2)*(xlength[2]+2))*sizeof(double);
+    s_bufferSize[4]     = bufferSize;
+    s_bufferSize[5]     = bufferSize;
 	sendBuffer[FRONT] 	= (double *) malloc(bufferSize);
 	sendBuffer[BACK] 	= (double *) malloc(bufferSize);
 	readBuffer[FRONT] 	= (double *) malloc(bufferSize);

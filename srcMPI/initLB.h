@@ -24,7 +24,7 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
 void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]);
 
 // Initialise the buffers
-void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength);
+void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength, int* s_bufferSize);
 
 // Finalise all the processes and join
 void finaliseMPI();
