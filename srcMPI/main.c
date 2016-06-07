@@ -102,6 +102,7 @@ int main(int argc, char *argv[]){
 #endif
     }
     // Domain decomposition & Set up neighbors
+    // sleep(procData.rank);
     p_domainDecompositionAndNeighbors(&procData, xlength, procsPerAxis);
     // printf("Finished domain decomposition Proc %d\n",procData.rank);
 
@@ -125,23 +126,23 @@ int main(int argc, char *argv[]){
 
     // Write the VTK at t = 0
     printf("R %i INFO: write vtk file at time t = %d \n", procData.rank, t);
-    writeVtkOutput(collideField,flagField,fName,t,procData.xLength,procData.rank,procData.numRanks);
+    writeVtkOutput(collideField,flagField,fName,t,procData,procsPerAxis);
 
     // Only for testing
-    // free(streamField);
-    // free(collideField);
-    // free(flagField);
-    //
-    // for (int i = 0; i < 6; i++) {
-    //     free(sendBuffer[i]);
-    //     free(readBuffer[i]);
-    // }
-    //
-    // fflush(stdout);
-    // fflush(stderr);
-    // MPI_Barrier(MPI_COMM_WORLD);
-    // MPI_Finalize();
-    // return 0;
+    free(streamField);
+    free(collideField);
+    free(flagField);
+
+    for (int i = 0; i < 6; i++) {
+        free(sendBuffer[i]);
+        free(readBuffer[i]);
+    }
+
+    fflush(stdout);
+    fflush(stderr);
+    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Finalize();
+    return 0;
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
@@ -171,7 +172,7 @@ int main(int argc, char *argv[]){
             printf("R %i, INFO: write vtk file at time t = %d \n", procData.rank, t);
             // TODO: (VS) Change the coordinates based on rank
             // TODO: (VS) Check if the time-rank strategy is okay for paraview
-	        writeVtkOutput(collideField,flagField,fName,t,procData.xLength,procData.rank,procData.numRanks);
+	        writeVtkOutput(collideField,flagField,fName,t,procData,procsPerAxis);
 	    }
     }
 

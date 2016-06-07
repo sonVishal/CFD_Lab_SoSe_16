@@ -204,6 +204,7 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
     } else {
         procData->neighbours[TOP] = procData->rank+procsPerAxis[1]*procsPerAxis[0];
     }
+	printf("Proc %d \t Position (%d,%d,%d)\n",procData->rank,procPos[0],procPos[1],procPos[2]);
 	// printProcDataPos(*procData,procPos);
 }
 

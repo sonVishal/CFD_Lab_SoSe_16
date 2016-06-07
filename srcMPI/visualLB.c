@@ -1,5 +1,6 @@
 #include "visualLB.h"
 #include "computeCellValues.h"
+#include "LBDefinitions.h"
 #include "helper.h"
 #include <stdlib.h>
 
@@ -18,7 +19,7 @@
 
 void writeVtkOutput(const double * const collideField,
     const int * const flagField, const char * filename,
-    unsigned int t, int *xlength, int rank, int numRanks)
+    unsigned int t, t_procData procData, int *procsPerAxis)
 {
     // Files related variables
     char pFileName[80];
@@ -30,10 +31,14 @@ void writeVtkOutput(const double * const collideField,
     char ch;
 
     // Create the file with time information in the name
-    sprintf(pFileName, "%s.%i.%i.vtk", filename, t, rank);
-    sprintf(pTempFile, "temp.%i.vtk", rank);
+    sprintf(pFileName, "%s.%i.%i.vtk", filename,t,procData.rank);
+    sprintf(pTempFile, "temp.%i.vtk", procData.rank);
     fp  = fopen(pFileName, "w");
     tmp = fopen(pTempFile, "w");
+
+    int myPos[3] = {0,0,0};
+    // printf("Rank %d\n",procData.rank);
+    p_indexToPos(procsPerAxis, procData.rank, myPos);
 
     // Check if files were opened or not
     if(fp == NULL)
@@ -52,10 +57,10 @@ void writeVtkOutput(const double * const collideField,
     }
 
     // Write header for the VTK file
-    writevtkHeader(fp,xlength);
+    writevtkHeader(fp,procData.xLength);
 
     // Write the point data for the domain
-    writevtkPointCoordinates(fp,xlength);
+    writevtkPointCoordinates(fp,procData.xLength,myPos);
 
     int x, y, z;            // iteration variables
     int idx;                // cell index
@@ -65,7 +70,7 @@ void writeVtkOutput(const double * const collideField,
     double cellVelocity[3] = {0.0,0.0,0.0};
 
     // Temporary variables for (xlength+2)^2
-    int const xylen = (xlength[0]+2)*(xlength[1]+2);
+    int const xylen = (procData.xLength[0]+2)*(procData.xLength[1]+2);
 
     // Temporary variables for z and y offsets
     int zOffset, yzOffset;
@@ -73,17 +78,17 @@ void writeVtkOutput(const double * const collideField,
     // Open two files and concatenate them at the end
 
     // Write cell velocity to the vtk file
-    fprintf(fp,"\nCELL_DATA %d \n", xlength[0]*xlength[1]*xlength[2]);
+    fprintf(fp,"\nCELL_DATA %d \n", procData.xLength[0]*procData.xLength[1]*procData.xLength[2]);
     fprintf(fp, "\nVECTORS velocity float\n");
 
     // Write cell average density to a temporary vtk file
     fprintf(tmp, "SCALARS density float 1 \n");
     fprintf(tmp, "LOOKUP_TABLE default \n");
-    for(z = 1; z <= xlength[2]; z++) {
+    for(z = 1; z <= procData.xLength[2]; z++) {
         zOffset = z*xylen;
-        for(y = 1; y <= xlength[1]; y++) {
-            yzOffset = zOffset + y*(xlength[0]+2);
-            for(x = 1; x <= xlength[0]; x++) {
+        for(y = 1; y <= procData.xLength[1]; y++) {
+            yzOffset = zOffset + y*(procData.xLength[0]+2);
+            for(x = 1; x <= procData.xLength[0]; x++) {
                 // Compute the base index for collideField
                 idx = Q*(yzOffset + x);
 
@@ -165,13 +170,16 @@ void writevtkHeader(FILE *fp, int *xlength)
     fprintf(fp,"\n");
 }
 
-void writevtkPointCoordinates(FILE *fp, int *xlength) {
+void writevtkPointCoordinates(FILE *fp, int *xlength, int *myPos) {
     int x, y, z;
-
+    // printf("Position = (%d,%d,%d)\n",myPos[0],myPos[1],myPos[2]);
+    int xOffset = myPos[0]*(xlength[0]);
+    int yOffset = myPos[1]*(xlength[1]);
+    int zOffset = myPos[2]*(xlength[2]);
     // We have xlength + 1 points for xlength cells in each direction
-    for(z = 0; z <= xlength[2]; z++) {
-        for(y = 0; y <= xlength[1]; y++) {
-            for(x = 0; x <= xlength[0]; x++) {
+    for(z = zOffset; z <= zOffset+xlength[2]; z++) {
+        for(y = yOffset; y <= yOffset+xlength[1]; y++) {
+            for(x = xOffset; x <= xOffset+xlength[0]; x++) {
                 fprintf(fp, "%d %d %d\n", x, y, z);
             }
         }
