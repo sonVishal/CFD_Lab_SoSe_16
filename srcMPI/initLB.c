@@ -142,6 +142,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 					flagField[idx] = MOVING_WALL;
 				}
 			}
+			// Break because only 1 moving wall
+			break;
 		}
 	}
 
