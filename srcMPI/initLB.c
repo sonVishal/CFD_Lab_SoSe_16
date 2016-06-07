@@ -1,5 +1,6 @@
 #include "helper.h"
 #include "initLB.h"
+#include "boundary.h"
 #include <mpi/mpi.h>
 #include <math.h>
 
@@ -117,6 +118,12 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
     /*Looping over boundary of flagFields*/
     //All points set to zero at memory allocation (using calloc)
+
+	for (x = LEFT; x <= BACK; x++) {
+		if (thisProcData.neighbours[x] == MPI_PROC_NULL) {
+
+		}
+	}
 
     //These are the no-slip walls
     //fixed: z = 0
