@@ -37,7 +37,6 @@ int main(int argc, char *argv[]){
     double *sendBuffer[6];
     double *readBuffer[6];
 
-    // TODO
     initialiseMPI(&procData.rank,&procData.numRanks,argc,argv);
 
     // TODO: (VS)
