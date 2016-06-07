@@ -18,7 +18,7 @@
 
 void writeVtkOutput(const double * const collideField,
     const int * const flagField, const char * filename,
-    unsigned int t, int xlength, int rank, int number_of_ranks)
+    unsigned int t, int *xlength, int rank, int number_of_ranks)
 {
     // Files related variables
     char pFileName[80];
@@ -65,7 +65,7 @@ void writeVtkOutput(const double * const collideField,
     double cellVelocity[3] = {0.0,0.0,0.0};
 
     // Temporary variables for (xlength+2)^2
-    int const xlen2 = (xlength+2)*(xlength+2);
+    int const xylen = (xlength[0]+2)*(xlength[1]+2);
 
     // Temporary variables for z and y offsets
     int zOffset, yzOffset;
@@ -73,17 +73,17 @@ void writeVtkOutput(const double * const collideField,
     // Open two files and concatenate them at the end
 
     // Write cell velocity to the vtk file
-    fprintf(fp,"\nCELL_DATA %d \n", xlength*xlength*xlength);
+    fprintf(fp,"\nCELL_DATA %d \n", xlength[0]*xlength[1]*xlength[2]);
     fprintf(fp, "\nVECTORS velocity float\n");
 
     // Write cell average density to a temporary vtk file
     fprintf(tmp, "SCALARS density float 1 \n");
     fprintf(tmp, "LOOKUP_TABLE default \n");
-    for(z = 1; z <= xlength; z++) {
-        zOffset = z*xlen2;
-        for(y = 1; y <= xlength; y++) {
-            yzOffset = zOffset + y*(xlength+2);
-            for(x = 1; x <= xlength; x++) {
+    for(z = 1; z <= xlength[2]; z++) {
+        zOffset = z*xylen;
+        for(y = 1; y <= xlength[1]; y++) {
+            yzOffset = zOffset + y*(xlength[0]+2);
+            for(x = 1; x <= xlength[0]; x++) {
                 // Compute the base index for collideField
                 idx = Q*(yzOffset + x);
 
@@ -145,7 +145,7 @@ void writeVtkOutput(const double * const collideField,
 }
 
 // Header for the VTK files
-void writevtkHeader(FILE *fp, int xlength)
+void writevtkHeader(FILE *fp, int *xlength)
 {
     if(fp == NULL)
     {
@@ -160,18 +160,18 @@ void writevtkHeader(FILE *fp, int xlength)
     fprintf(fp,"ASCII\n");
     fprintf(fp,"\n");
     fprintf(fp,"DATASET STRUCTURED_GRID\n");
-    fprintf(fp,"DIMENSIONS  %i %i %i \n", xlength+1, xlength+1, xlength+1);
-    fprintf(fp,"POINTS %i integer\n", (xlength+1)*(xlength+1)*(xlength+1));
+    fprintf(fp,"DIMENSIONS  %i %i %i \n", xlength[0]+1, xlength[1]+1, xlength[2]+1);
+    fprintf(fp,"POINTS %i integer\n", (xlength[0]+1)*(xlength[1]+1)*(xlength[2]+1));
     fprintf(fp,"\n");
 }
 
-void writevtkPointCoordinates(FILE *fp, int xlength) {
+void writevtkPointCoordinates(FILE *fp, int *xlength) {
     int x, y, z;
 
     // We have xlength + 1 points for xlength cells in each direction
-    for(z = 0; z <= xlength; z++) {
-        for(y = 0; y <= xlength; y++) {
-            for(x = 0; x <= xlength; x++) {
+    for(z = 0; z <= xlength[2]; z++) {
+        for(y = 0; y <= xlength[1]; y++) {
+            for(x = 0; x <= xlength[0]; x++) {
                 fprintf(fp, "%d %d %d\n", x, y, z);
             }
         }
