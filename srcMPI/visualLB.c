@@ -42,7 +42,7 @@ void writeVtkOutput(const double * const collideField,
         return;
     }
 
-    fprintf(fp,"<VTKFile type=\"StructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
+    fprintf(fp,"<VTKFile type=\"StructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt32\">\n");
 
     // Write the point data for the domain
     writevtkPointCoordinates(fp,procData.xLength,myPos);
@@ -124,7 +124,7 @@ void writevtkPointCoordinates(FILE *fp, int *xlength, int *myPos) {
     fprintf(fp,"<StructuredGrid WholeExtent=\"%d %d %d %d %d %d\">\n",x1,x2,y1,y2,z1,z2);
     fprintf(fp,"<Piece Extent=\"%d %d %d %d %d %d\">\n",x1,x2,y1,y2,z1,z2);
     fprintf(fp,"<Points>\n");
-    fprintf(fp,"<DataArray type=\"UInt64\" Name=\"Points\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+    fprintf(fp,"<DataArray type=\"UInt32\" Name=\"Points\" NumberOfComponents=\"3\" format=\"ascii\">\n");
     // We have xlength + 1 points for xlength cells in each direction
     for(z = z1; z <= z2; z++) {
         for(y = y1; y <= y2; y++) {
@@ -158,7 +158,7 @@ void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlength,
     fprintf(fp, "<VTKFile type=\"PStructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\">\n");
     fprintf(fp, "<PStructuredGrid WholeExtent=\"0 %d 0 %d 0 %d\" GhostLevel=\"1\">\n",xlength,xlength,xlength);
     fprintf(fp, "<PPoints>\n");
-    fprintf(fp, "%s\n","<PDataArray NumberOfComponents=\"3\" type=\"UInt64\" />");
+    fprintf(fp, "%s\n","<PDataArray NumberOfComponents=\"3\" type=\"UInt32\" />");
     fprintf(fp, "</PPoints>\n");
     fprintf(fp, "<PCellData>\n");
     fprintf(fp, "<PDataArray type=\"Float64\" NumberOfComponents=\"3\" Name=\"Velocity\"/>\n");
