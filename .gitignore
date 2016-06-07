@@ -58,6 +58,7 @@ lbsim
 
 # Visualization files
 *.vtk
+*.vts
 
 # GDB files
 *.expand

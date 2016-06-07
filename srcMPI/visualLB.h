@@ -13,6 +13,5 @@ void writeVtkOutput(const double * const collideField, const int * const flagFie
 
 void writevtkPointCoordinates(FILE *fp, int *xlength, int *myPos);
 
-void writevtkHeader(FILE *fp, int *xlength);
-
+void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlength, int *procsPerAxis);
 #endif

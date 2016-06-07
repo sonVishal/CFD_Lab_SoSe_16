@@ -7,6 +7,7 @@
 #include "visualLB.h"
 #include "LBDefinitions.h"
 #include "debug.h"
+#include "helper.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
