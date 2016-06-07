@@ -88,13 +88,11 @@ int main(int argc, char *argv[]){
     procData.xLength[2] += (procPos[2] == procsPerAxis[2]-1)?xlength%procsPerAxis[2]:0;
 
     /*Allocate memory to pointers*/
-    // TODO: Allocate memory based on domain decomposition
     int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
     collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
     streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
-    // TODO: allocate based on rank
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     // TODO: Initialize all the fields based on the rank

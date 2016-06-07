@@ -181,7 +181,6 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 	MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD,numRanks);
     MPI_Comm_rank(MPI_COMM_WORLD,rank);
-    ERROR("TODO");
 }
 
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength) {
