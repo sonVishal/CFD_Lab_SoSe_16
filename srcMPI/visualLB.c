@@ -18,7 +18,7 @@
 
 void writeVtkOutput(const double * const collideField,
     const int * const flagField, const char * filename,
-    unsigned int t, int *xlength, int rank, int number_of_ranks)
+    unsigned int t, int *xlength, int rank, int numRanks)
 {
     // Files related variables
     char pFileName[80];

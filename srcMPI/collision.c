@@ -1,4 +1,5 @@
 #include "collision.h"
+#include "computeCellValues.h"
 #include "LBDefinitions.h"
 #include "helper.h"
 
@@ -20,23 +21,23 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 }
 
 // Perform collision for all inner cells
-void doCollision(double *collideField, int *flagField,const double * const tau, int xlength){
+void doCollision(double *collideField, int *flagField,const double * const tau, int *xlength){
 
 	// Define iteration indices
 	int idx, x, y, z;
 
 	// Temporary variables for xlength^2
-	int const xlen2 = (xlength+2)*(xlength+2);
+	int const xylen = (xlength[0]+2)*(xlength[1]+2);
 
 	// Temporary variables for z and y offsets
 	int zOffset, yOffset;
 
 	// Perform collision on all "inner" (FLUID) cells
-	for (z = 1; z <= xlength ; z++) {
-		zOffset = z*xlen2;
-		for (y = 1; y <= xlength; y++) {
-			yOffset = y*(xlength+2);
-			for (x = 1; x <= xlength; x++) {
+	for (z = 1; z <= xlength[2] ; z++) {
+		zOffset = z*xylen;
+		for (y = 1; y <= xlength[1]; y++) {
+			yOffset = y*(xlength[0]+2);
+			for (x = 1; x <= xlength[0]; x++) {
 
 				// Get the index of the first distribution
 				// in the current cell

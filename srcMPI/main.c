@@ -1,6 +1,5 @@
 #ifndef _MAIN_C_
 #define _MAIN_C_
-
 #include "boundary.h"
 #include "collision.h"
 #include "initLB.h"
@@ -8,6 +7,8 @@
 #include "visualLB.h"
 #include "LBDefinitions.h"
 #include "debug.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <mpi/mpi.h>
 
@@ -20,6 +21,7 @@ int main(int argc, char *argv[]){
 
     // Simulation parameters
     double tau;
+    int xlength;
     t_procData procData;
 
     int t = 0;
@@ -28,7 +30,7 @@ int main(int argc, char *argv[]){
 
     // MPI parameters
     // MPI_Status status;
-    int procsPerAxis[3];
+    int procsPerAxis[3], procPos[3];
 
     // Send and read buffers for all possible directions:
     // Look at enum for index and direction correlation
@@ -54,8 +56,8 @@ int main(int argc, char *argv[]){
      * Only performed by the root and broadcasted*/
     //tau is calculated automatically from the reynoldsnumber
     if (procData.rank == 0) {
-        readParameters(procData.xLength, &tau, procData.wallVelocity, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
-        MPI_Bcast(procData.xLength, 3, MPI_INT, 0, MPI_COMM_WORLD);
+        readParameters(&xlength, &tau, procData.wallVelocity, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
+        MPI_Bcast(&xlength, 1, MPI_INT, 0, MPI_COMM_WORLD);
         MPI_Bcast(&tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         MPI_Bcast(procData.wallVelocity, 3, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         MPI_Bcast(&timesteps, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -75,7 +77,15 @@ int main(int argc, char *argv[]){
 				"      Use \"make speed\" for a faster execution time.\n");
 #endif
 
-    // TODO: (VS) Domain decomposition
+    // Domain decomposition
+    procData.xLength[0] = xlength/procsPerAxis[0];
+    procData.xLength[1] = xlength/procsPerAxis[1];
+    procData.xLength[2] = xlength/procsPerAxis[2];
+    p_indexToPos(procsPerAxis,procData.rank,procPos);
+    // If the proc is at the end of some axis then assign the remaining length
+    procData.xLength[0] += (procPos[0] == procsPerAxis[0]-1)?xlength%procsPerAxis[0]:0;
+    procData.xLength[1] += (procPos[1] == procsPerAxis[1]-1)?xlength%procsPerAxis[1]:0;
+    procData.xLength[2] += (procPos[2] == procsPerAxis[2]-1)?xlength%procsPerAxis[2]:0;
 
     /*Allocate memory to pointers*/
     // TODO: Allocate memory based on domain decomposition

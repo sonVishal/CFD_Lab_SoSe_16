@@ -63,4 +63,20 @@ typedef struct {
     double wallVelocity[3];
 } t_procData;
 
+// Function for reverse index search for procs
+static inline void p_indexToPos(const int *const len, const int myIndex, int *myPos) {
+    int i,j,k;
+    for (k = 0; k < len[2]; k++) {
+        for (j = 0; j < len[1]; j++) {
+            for (i = 0; i < len[0]; i++) {
+                if (i+j*len[0]+k*len[0]*len[1] == myIndex) {
+                    myPos[0] = i;
+                    myPos[1] = j;
+                    myPos[2] = k;
+                    return;
+                }
+            }
+        }
+    }
+}
 #endif

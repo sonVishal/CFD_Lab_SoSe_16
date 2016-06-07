@@ -1,10 +1,10 @@
-#include <math.h>
-#include <mpi/mpi.h>
+#include "helper.h"
 #include "initLB.h"
 #include "LBDefinitions.h"
-#include "helper.h"
+#include <mpi/mpi.h>
+#include <math.h>
 
-int readParameters(int *xlengthPerProc, double *tau, double *velocityWall, int *procsPerAxis,
+int readParameters(int *xlength, double *tau, double *velocityWall, int *procsPerAxis,
 	int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
 
 	if(argc != 2){
@@ -16,14 +16,11 @@ int readParameters(int *xlengthPerProc, double *tau, double *velocityWall, int *
 	}
 
     double xvelocity, yvelocity, zvelocity;
-	int iProc, jProc, kProc, xlength;
+	int iProc, jProc, kProc;
     double Re, u_wall, machNr;
 
     /* Read values from file given in argv */
-    READ_INT(*argv, xlength);
-	xlengthPerProc[0] = xlength;
-	xlengthPerProc[1] = xlength;
-	xlengthPerProc[2] = xlength;
+    READ_INT(*argv, *xlength);
     READ_DOUBLE(*argv, Re);
 
     READ_DOUBLE(*argv, xvelocity);
@@ -47,7 +44,7 @@ int readParameters(int *xlengthPerProc, double *tau, double *velocityWall, int *
 
     /*Calculates tau from the Reynolds number*/
     u_wall  = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity);
-    *tau    =  u_wall*(xlength)/(C_S*C_S*Re)+0.5;
+    *tau    =  u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
     machNr  = u_wall/C_S;
 
     printf("\nINFO: Calculated tau = %f \n", *tau);
@@ -72,14 +69,14 @@ int readParameters(int *xlengthPerProc, double *tau, double *velocityWall, int *
     }
 
 	// Check if iProc, jProc and kProc are less than the domain size and nonzero
-	if (iProc <= 0 || iProc > xlength || jProc <= 0 || jProc > xlength ||
-		kProc <= 0 || kProc > xlength) {
+	if (iProc <= 0 || iProc > *xlength || jProc <= 0 || jProc > *xlength ||
+		kProc <= 0 || kProc > *xlength) {
 		char buffer[80];
-        snprintf(buffer, 80, "Please make sure that iProc, jProc and kProc are greater than 0 and less than xlength = %d (aborting)! \n",xlength);
+        snprintf(buffer, 80, "Please make sure that iProc, jProc and kProc are greater than 0 and less than xlength = %d (aborting)! \n",*xlength);
     	ERROR(buffer);
 	}
 
-	if (xlength%iProc != 0 || xlength%jProc != 0 || xlength%kProc != 0) {
+	if (*xlength%iProc != 0 || *xlength%jProc != 0 || *xlength%kProc != 0) {
 		char buffer[160];
         snprintf(buffer, 160, "WARNING: The domain decomposition is not uniform. This might create load unbalances between processes.\n");
 	}
@@ -88,7 +85,7 @@ int readParameters(int *xlengthPerProc, double *tau, double *velocityWall, int *
 }
 
 void initialiseFields(double *collideField, double *streamField, int *flagField,
-	int *xlength, int rank, int number_of_ranks){
+	int *xlength, int rank, int numRanks){
 
     /*Setting initial distributions*/
     //f_i(x,0) = f^eq(1,0,0) = w_i
