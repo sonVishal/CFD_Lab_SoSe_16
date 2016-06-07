@@ -65,7 +65,8 @@ int main(int argc, char *argv[]){
     // Abort if the number of processes given by user do not match with the dat file
     if (procData.numRanks != procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2]) {
         if (procData.rank == 0) {
-            printf("ERROR: The number of processes assigned in the dat file do not match the number of processes given as input while running the code\n");
+            printf("ERROR: The number of processes assigned in the dat file, %d, "
+            "do not match the number of processes given as input, %d, while running the code\n",procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2],procData.numRanks);
         }
         // TODO: Call finaliseMPI() here
         fflush(stdout);
