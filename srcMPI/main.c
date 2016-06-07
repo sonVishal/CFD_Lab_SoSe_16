@@ -159,12 +159,13 @@ int main(int argc, char *argv[]){
     MPI_Reduce(&time_spent, &maxTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
     if(procData.rank == 0){
+    	int domTotalsize = (xlength+2)*(xlength+2)*(xlength+2);
     	printf("\n===============================================================\n");
 		printf("\nINFO TIMING:\n");
 		printf("Execution time (main loop): \t\t %.3f seconds \n", maxTime);
-		printf("#cells (including boundary): \t\t %i cells \n", (xlength+2)*(xlength+2)*(xlength+2));
+		printf("#cells (including boundary): \t\t %i cells \n", domTotalsize);
 		printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
-				(totalsize/(1000000*time_spent))*timesteps);
+				(domTotalsize/(1000000*maxTime))*timesteps);
     }
 
     /* TODO: (DL) when checking with MPI implementation, the values of collideField
