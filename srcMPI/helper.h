@@ -9,7 +9,7 @@
 #include <string.h>
 #include <float.h>
 #include <time.h>
-
+#include "LBDefinitions.h"
 #ifdef PI
 #undef PI
 #endif
@@ -263,6 +263,8 @@ void free_imatrix( int **m, int nrl, int nrh, int ncl, int nch );
  *    free_matrix( U,  0, imax+1, 0, jmax+1 );
  */
 void init_imatrix( int **m, int nrl, int nrh, int ncl, int nch, int a);
+
+void printProcData(t_procData procData);
 
 
 /**
@@ -604,4 +606,3 @@ int **read_pgm(const char *filename);
         }
 
 #endif
-

@@ -39,10 +39,6 @@ int main(int argc, char *argv[]){
 
     initialiseMPI(&procData.rank,&procData.numRanks,argc,argv);
 
-    // TODO: (VS)
-    // If number of ranks do not match the total number of processes supplied
-    // in the dat file then exit.
-
     // File printing parameters
     char fName[80];
     snprintf(fName, 80, "pv_files/WS4_rank%i", procData.rank);
@@ -65,6 +61,19 @@ int main(int argc, char *argv[]){
 
     // TODO: (VS) Remove later. For safety.
     MPI_Barrier(MPI_COMM_WORLD);
+
+    // Abort if the number of processes given by user do not match with the dat file
+    if (procData.numRanks != procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2]) {
+        if (procData.rank == 0) {
+            printf("ERROR: The number of processes assigned in the dat file do not match the number of processes given as input while running the code\n");
+        }
+        // TODO: Call finaliseMPI() here
+        fflush(stdout);
+        fflush(stderr);
+        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Finalize();
+        return 0;
+    }
 
     if(procData.rank == 0)
 #ifdef NO_CHECKS
@@ -98,6 +107,22 @@ int main(int argc, char *argv[]){
     // Write the VTK at t = 0
     printf("R %i INFO: write vtk file at time t = %d \n", procData.rank, t);
     writeVtkOutput(collideField,flagField,fName,t,procData.xLength,procData.rank,procData.numRanks);
+
+    // Only for testing
+    free(streamField);
+    free(collideField);
+    free(flagField);
+
+    for (int i = 0; i < 6; i++) {
+        free(sendBuffer[i]);
+        free(readBuffer[i]);
+    }
+
+    fflush(stdout);
+    fflush(stderr);
+    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Finalize();
+    return 0;
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
