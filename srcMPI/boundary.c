@@ -150,8 +150,9 @@ void p_setIterationParameters(int *endOuter, int *endInner, int *fixedValue, con
 
 void p_treatSingleWall(double *collideField, const int * const flagField, const t_procData procData, const int wallIdx){
 
-	int endOuter, endInner, fixedValue;
+	int endOuter = -1, endInner = -1, fixedValue = -1;
 	p_setIterationParameters(&endOuter, &endInner, &fixedValue, procData, wallIdx);
+	assert(endOuter != -1 && endInner != -1 && fixedValue != -1);
 
 	int xlength[3] = {procData.xLength[0], procData.xLength[1], procData.xLength[2]};
 
