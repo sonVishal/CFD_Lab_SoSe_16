@@ -28,7 +28,8 @@ void p_setBounceBack(double *collideField, const double * const wallVelocity,
 		collideField[current_cell_index + i] = collideField[n_cell_index + (Q-i-1)] +
 				2 * weight * density * dot_uwall_c / (C_S*C_S);
 
-	}else{ 		//Wrong input parameter
+	}else{ //Wrong input parameter
+		printf("TYPE BOUNDARY: %i\n" , type);
 		ERROR("A FLUID cell appeared when setting boundaries. This should not happen!!\n");
 	}
 }
@@ -172,11 +173,13 @@ void p_treatSingleWall(double *collideField, const int * const flagField, const 
 				int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
 				int n_xyzoffset = p_computeNeighborCellOffset(k, j, fixedValue, c, xlength, wallIdx);
 				int n_cell_index = Q*n_xyzoffset;
+				int boundaryType = flagField[xyz_offset];
 
 				//check (1) valid index: in case the direction of vector 'c' points to a non-existing cell
 				//check (2) that the neighboring cell is a FLUID cell in the domain (and not another boundary cell)
+				//check (3) PARALLEL boundaries are not treated when they occur (e.g. on shared edges)
 				if(n_cell_index >= 0 && n_cell_index < maxValidIndex &&
-						flagField[n_xyzoffset] == 0
+						flagField[n_xyzoffset] == FLUID && boundaryType != PARALLEL
 				){
 					p_setBounceBack(collideField, procData.wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
 				}
