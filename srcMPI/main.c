@@ -74,7 +74,6 @@ int main(int argc, char *argv[]){
     procData.wallVelocity[1] = wallVelocity[1];
     procData.wallVelocity[2] = wallVelocity[2];
 
-
     // Abort if the number of processes given by user do not match with the dat file
     if (procData.numRanks != procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2]) {
         if (procData.rank == 0) {
@@ -82,12 +81,8 @@ int main(int argc, char *argv[]){
             "do not match the number of processes given as input, %d, while running the code\n",procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2],procData.numRanks);
         }
         // printf("Proc %d Inside exit loop\n",procData.rank);
-        // TODO: Call finaliseMPI() here
-        fflush(stdout);
-        fflush(stderr);
-        MPI_Barrier(MPI_COMM_WORLD);
-        MPI_Finalize();
-        return 0;
+        finaliseMPI();
+        return -1;
     }
 
     if(procData.rank == 0)
@@ -128,21 +123,8 @@ int main(int argc, char *argv[]){
     printf("R %i INFO: write vtk file at time t = %d \n", procData.rank, t);
     writeVtkOutput(collideField,flagField,fName,t,procData,procsPerAxis);
 
-    // Only for testing
-    free(streamField);
-    free(collideField);
-    free(flagField);
-
-    for (int i = 0; i < 6; i++) {
-        free(sendBuffer[i]);
-        free(readBuffer[i]);
-    }
-
-    fflush(stdout);
-    fflush(stderr);
-    MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Finalize();
-    return 0;
+    finaliseMPI();
+    ERROR("STOPPER, remove later");
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
@@ -182,7 +164,6 @@ int main(int argc, char *argv[]){
     end_timing = clock();
     time_spent = (double)(end_timing - begin_timing) / CLOCKS_PER_SEC;
 
-
     if(procData.rank == 0){
 		printf("\n===============================================================\n");
 		printf("\nINFO TIMING:\n");
@@ -213,17 +194,7 @@ int main(int argc, char *argv[]){
         free(readBuffer[i]);
     }
 
-    /* TODO: As of now this is in initLB - I have no idea where to put this function definition
-     * (DL) I don't know what we have to do all in the end to finalize MPI, but
-     * maybe we just do it without an extra function first - if it gets too much we can re-think
-     * where to put the implementation.
-     * We could also generally think about if we want a file (.c) just for MPI related stuff.
-     *
-     * Finalizing:
-     * flush all buffers and call MPI_finalize()
-     */
     finaliseMPI();
-
     return 0;
 }
 

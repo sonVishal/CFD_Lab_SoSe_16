@@ -64,7 +64,7 @@ typedef struct {
 } t_procData;
 
 // Function for reverse index search for procs
-static inline void p_indexToPos(const int *const len, const int myIndex, int *myPos) {
+static inline void p_rankToPos(const int *const len, const int myIndex, int *myPos) {
     int i,j,k;
     for (k = 0; k < len[2]; k++) {
         for (j = 0; j < len[1]; j++) {
