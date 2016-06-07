@@ -118,69 +118,37 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
     /*Looping over boundary of flagFields*/
     //All points set to zero at memory allocation (using calloc)
-
+	int endOuter, endInner, fixedValue, boundaryType;
+	// First set up the ghost boundary layer
 	for (x = LEFT; x <= BACK; x++) {
 		if (thisProcData.neighbours[x] == MPI_PROC_NULL) {
-
+			p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, x);
+			if (x == TOP) {
+				boundaryType = MOVING_WALL;
+			} else {
+				boundaryType = NO_SLIP;
+			}
+			for (z = 0; z <= endOuter; z++) {
+				for (y = 0; y <= endInner; y++) {
+					idx = p_computeCellOffset(z,y,fixedValue,thisProcData.xLength,x);
+					flagField[idx] = boundaryType;
+				}
+			}
 		}
 	}
 
-    //These are the no-slip walls
-    //fixed: z = 0
-
-    for (y = 0; y <= thisProcData.xLength[1]+1; y++) {
-        idx = y*(thisProcData.xLength[0]+2);
-        for (x = 0; x <= thisProcData.xLength[1]+1; x++) {
-            flagField[x+idx] = 1;
-        }
-    }
-
-    //fixed: x = 0
-    //We start at 1 to not include previous cells again from z = 0
-    for (z = 1; z <= thisProcData.xLength[2]; z++) {
-        zOffset = z*xylen;
-        for (y = 0; y <= thisProcData.xLength[1]+1; y++) {
-            flagField[zOffset+y*(thisProcData.xLength[0]+2)] = 1;
-        }
-    }
-
-    //fixed: x = thisProcData.xLength+1
-    //We start at 1 to not include previous cells again from z = 0
-    for (z = 1; z <= thisProcData.xLength[2]; z++) {
-        zOffset = z*xylen + thisProcData.xLength[0] + 1;
-        for (y = 0; y <= thisProcData.xLength[1]+1; y++) {
-            flagField[zOffset+y*(thisProcData.xLength[0]+2)] = 1;
-        }
-    }
-
-    //fixed: y = 0
-    //from 1:thisProcData.xLength only, to not include cells at upper, lower, left and right edges
-    //The edge cells are set in the other loops.
-    for (z = 1; z <= thisProcData.xLength[2]; z++) {
-        zOffset = z*xylen;
-        for (x = 1; x <= thisProcData.xLength[0]; x++) {
-            flagField[zOffset+x] = 1;
-        }
-    }
-
-    //fixed: y = thisProcData.xLength+1
-    //same reasoning for index range as in fixed y=0
-    for (z = 1; z <= thisProcData.xLength[2]; z++) {
-        zOffset = z*xylen + (thisProcData.xLength[1]+1)*(thisProcData.xLength[0]+2);
-        for (x = 1; x <= thisProcData.xLength[0]; x++) {
-            flagField[zOffset+x] = 1;
-        }
-    }
-
-    // This is the moving wall. All cells at z=thisProcData.xLength+1 are included (also the edge cells).
-    // fixed: z = thisProcData.xLength+1
-    zOffset = (thisProcData.xLength[2]+1)*xylen;
-    for (y = 0; y <= thisProcData.xLength[1]+1; y++) {
-        idx = zOffset + y*(thisProcData.xLength[0]+2);
-        for (x = 0; x <= thisProcData.xLength[0]+1; x++) {
-            flagField[x+idx] = 2;
-        }
-    }
+	// Now set up the parallel boundary layer
+	for (x = LEFT; x <= BACK; x++) {
+		if (thisProcData.neighbours[x] != MPI_PROC_NULL) {
+			p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, x);
+			for (z = 0; z <= endOuter; z++) {
+				for (y = 0; y <= endInner; y++) {
+					idx = p_computeCellOffset(z,y,fixedValue,thisProcData.xLength,x);
+					flagField[idx] = PARALLEL_BOUNDARY;
+				}
+			}
+		}
+	}
 }
 
 void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
