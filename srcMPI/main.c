@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
 
     // MPI parameters
     // MPI_Status status;
-    int procsPerAxis[3], procPos[3];
+    int procsPerAxis[3];
 
     // Send and read buffers for all possible directions:
     // Look at enum for index and direction correlation
@@ -77,15 +77,8 @@ int main(int argc, char *argv[]){
 				"      Use \"make speed\" for a faster execution time.\n");
 #endif
 
-    // Domain decomposition
-    procData.xLength[0] = xlength/procsPerAxis[0];
-    procData.xLength[1] = xlength/procsPerAxis[1];
-    procData.xLength[2] = xlength/procsPerAxis[2];
-    p_indexToPos(procsPerAxis,procData.rank,procPos);
-    // If the proc is at the end of some axis then assign the remaining length
-    procData.xLength[0] += (procPos[0] == procsPerAxis[0]-1)?xlength%procsPerAxis[0]:0;
-    procData.xLength[1] += (procPos[1] == procsPerAxis[1]-1)?xlength%procsPerAxis[1]:0;
-    procData.xLength[2] += (procPos[2] == procsPerAxis[2]-1)?xlength%procsPerAxis[2]:0;
+    // Domain decomposition & Set up neighbors
+    p_domainDecompositionAndNeighbors(&procData, xlength, procsPerAxis);
 
     /*Allocate memory to pointers*/
     int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);

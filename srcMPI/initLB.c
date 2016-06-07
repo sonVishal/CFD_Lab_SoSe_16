@@ -1,6 +1,5 @@
 #include "helper.h"
 #include "initLB.h"
-#include "LBDefinitions.h"
 #include <mpi/mpi.h>
 #include <math.h>
 
@@ -181,6 +180,54 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 	MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD,numRanks);
     MPI_Comm_rank(MPI_COMM_WORLD,rank);
+}
+
+void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, const int * const procsPerAxis) {
+	int procPos[3];
+	procData->xLength[0] = xlength/procsPerAxis[0];
+    procData->xLength[1] = xlength/procsPerAxis[1];
+    procData->xLength[2] = xlength/procsPerAxis[2];
+    p_indexToPos(procsPerAxis,procData->rank,procPos);
+    // If the proc is at the end of some axis then add the remaining length
+    procData->xLength[0] += (procPos[0] == procsPerAxis[0]-1)?xlength%procsPerAxis[0]:0;
+    procData->xLength[1] += (procPos[1] == procsPerAxis[1]-1)?xlength%procsPerAxis[1]:0;
+    procData->xLength[2] += (procPos[2] == procsPerAxis[2]-1)?xlength%procsPerAxis[2]:0;
+	// Back
+    if (procPos[0] == 0) {
+        procData->neighbours[BACK] = MPI_PROC_NULL;
+    } else {
+        procData->neighbours[BACK] = procData->rank-1;
+    }
+    // Front
+    if (procPos[0] == procsPerAxis[0]-1) {
+        procData->neighbours[FRONT] = MPI_PROC_NULL;
+    } else {
+        procData->neighbours[FRONT] = procData->rank+1;
+    }
+    // Left
+    if (procPos[1] == 0) {
+        procData->neighbours[LEFT] = MPI_PROC_NULL;
+    } else {
+        procData->neighbours[LEFT] = procData->rank-procsPerAxis[0];
+    }
+    // Right
+    if (procPos[1] == procsPerAxis[1]-1) {
+        procData->neighbours[RIGHT] = MPI_PROC_NULL;
+    } else {
+        procData->neighbours[RIGHT] = procData->rank+procsPerAxis[0];
+    }
+    // Bottom
+    if (procPos[2] == 0) {
+        procData->neighbours[BOTTOM] = MPI_PROC_NULL;
+    } else {
+        procData->neighbours[BOTTOM] = procData->rank+procsPerAxis[1]*procsPerAxis[0];
+    }
+    // Top
+    if (procPos[2] == procsPerAxis[2]-1) {
+        procData->neighbours[TOP] = MPI_PROC_NULL;
+    } else {
+        procData->neighbours[TOP] = procData->rank-procsPerAxis[1]*procsPerAxis[0];
+    }
 }
 
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength) {
