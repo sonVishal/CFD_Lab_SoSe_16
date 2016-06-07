@@ -265,6 +265,7 @@ void free_imatrix( int **m, int nrl, int nrh, int ncl, int nch );
 void init_imatrix( int **m, int nrl, int nrh, int ncl, int nch, int a);
 
 void printProcData(t_procData procData);
+void printProcDataPos(t_procData procData, int *pos);
 
 
 /**

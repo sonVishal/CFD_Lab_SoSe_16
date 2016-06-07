@@ -158,6 +158,7 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 }
 
 void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, const int * const procsPerAxis) {
+	// printf("Calling domain decomposition from %d\n",procData->rank);
 	int procPos[3] = {0,0,0};
 	procData->xLength[0] = xlength/procsPerAxis[0];
     procData->xLength[1] = xlength/procsPerAxis[1];
@@ -203,7 +204,7 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
     } else {
         procData->neighbours[TOP] = procData->rank+procsPerAxis[1]*procsPerAxis[0];
     }
-	printProcData(*procData);
+	// printProcDataPos(*procData,procPos);
 }
 
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength) {
@@ -215,6 +216,15 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 
 	sendBuffer[FRONT] = (double *) calloc((xlength[1]+2)*(xlength[2]+2), sizeof(double));
 	sendBuffer[BACK] = (double *) calloc((xlength[1]+2)*(xlength[2]+2), sizeof(double));
+
+	readBuffer[LEFT] = (double *) calloc((xlength[0]+2)*(xlength[2]+2), sizeof(double));
+	readBuffer[RIGHT] = (double *) calloc((xlength[0]+2)*(xlength[2]+2), sizeof(double));
+
+	readBuffer[TOP] = (double *) calloc((xlength[0]+2)*(xlength[1]+2), sizeof(double));
+	readBuffer[BOTTOM] = (double *) calloc((xlength[0]+2)*(xlength[1]+2), sizeof(double));
+
+	readBuffer[FRONT] = (double *) calloc((xlength[1]+2)*(xlength[2]+2), sizeof(double));
+	readBuffer[BACK] = (double *) calloc((xlength[1]+2)*(xlength[2]+2), sizeof(double));
 }
 
 void finaliseMPI() {
