@@ -170,8 +170,6 @@ int main(int argc, char *argv[]){
 
 	    if (t%timestepsPerPlotting == 0){
             printf("R %i, INFO: write vtk file at time t = %d \n", procData.rank, t);
-            // TODO: (VS) Change the coordinates based on rank
-            // TODO: (VS) Check if the time-rank strategy is okay for paraview
 	        writeVtkOutput(collideField,flagField,fName,t,procData,procsPerAxis);
 	    }
     }
