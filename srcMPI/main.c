@@ -49,7 +49,6 @@ int main(int argc, char *argv[]){
 
     //Timing variables:
     double begin_timing, end_timing;
-    double time_spent, maxTime = -1;
 
     /* Read parameters and check the bounds on tau
      * Only performed by the root and broadcasted*/
@@ -156,20 +155,20 @@ int main(int argc, char *argv[]){
 	        writeVtkOutput(collideField,flagField,fName,t,procData,procsPerAxis);
 	    }
     }
-
     end_timing = MPI_Wtime();
-    time_spent = end_timing - begin_timing;
 
-    MPI_Reduce(&time_spent, &maxTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&begin_timing, &begin_timing, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&end_timing, &end_timing, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
     if(procData.rank == 0){
+    	double elapsedTime = end_timing - begin_timing;
     	int domTotalsize = (xlength+2)*(xlength+2)*(xlength+2);
     	printf("\n===============================================================\n");
 		printf("\nINFO TIMING:\n");
-		printf("Execution time (main loop): \t\t %.3f seconds \n", maxTime);
+		printf("Execution time (main loop): \t\t %.3f seconds \n", elapsedTime);
 		printf("#cells (including boundary): \t\t %i cells \n", domTotalsize);
 		printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
-				(domTotalsize/(1000000*maxTime))*timesteps);
+				(domTotalsize/(1000000*elapsedTime))*timesteps);
     }
 
     // TODO: (VS) Combine the VTS files for each time
