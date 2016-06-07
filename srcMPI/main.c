@@ -7,8 +7,9 @@
 #include "streaming.h"
 #include "visualLB.h"
 #include "LBDefinitions.h"
-#include <time.h>
 #include "debug.h"
+#include <time.h>
+#include <mpi/mpi.h>
 
 int main(int argc, char *argv[]){
 
@@ -18,9 +19,7 @@ int main(int argc, char *argv[]){
     int *flagField          = NULL;
 
     // Simulation parameters
-    int xlength; //TODO: (DL) deprecated, is contained in procData
     double tau;
-    double velocityWall[3]; //TODO: (DL) deprecated, is contained in procData
     t_procData procData;
 
     int t = 0;
@@ -28,8 +27,7 @@ int main(int argc, char *argv[]){
     int timestepsPerPlotting;
 
     // MPI parameters
-    int rank; //TODO: (DL) deprecated, is contained in procData
-    int number_of_ranks; //TODO: (DL) deprecated, is contained in procData
+    // MPI_Status status;
     int procsPerAxis[3];
 
     // Send and read buffers for all possible directions:
@@ -38,7 +36,7 @@ int main(int argc, char *argv[]){
     double *readBuffer[6];
 
     // TODO
-    initialiseMPI(&rank,&number_of_ranks,argc,argv);
+    initialiseMPI(&procData.rank,&procData.numRanks,argc,argv);
 
     // TODO: (VS)
     // If number of ranks do not match the total number of processes supplied
@@ -46,17 +44,28 @@ int main(int argc, char *argv[]){
 
     // File printing parameters
     char fName[80];
-    snprintf(fName, 80, "pv_files/WS4_rank%i", rank);
+    snprintf(fName, 80, "pv_files/WS4_rank%i", procData.rank);
 
     //Timing variables:
     clock_t begin_timing, end_timing;
     double time_spent;
 
-    /*Read parameters and check the bounds on tau*/
+    /* Read parameters and check the bounds on tau
+     * Only performed by the root and broadcasted*/
     //tau is calculated automatically from the reynoldsnumber
-    readParameters(&xlength, &tau, velocityWall, procsPerAxis, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
+    if (procData.rank == 0) {
+        readParameters(procData.xLength, &tau, procData.wallVelocity, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
+        MPI_Bcast(procData.xLength, 3, MPI_INT, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(procData.wallVelocity, 3, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&timesteps, 1, MPI_INT, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    }
 
-    if(rank == 0)
+    // TODO: (VS) Remove later. For safety.
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    if(procData.rank == 0)
 #ifdef NO_CHECKS
     	printf("INFO: The compiler directive NO_CHECKS is enabled. Faster execution time is gained, "
     			"at the cost of less correctness checks during runtime!\n");
@@ -66,9 +75,11 @@ int main(int argc, char *argv[]){
 				"      Use \"make speed\" for a faster execution time.\n");
 #endif
 
+    // TODO: (VS) Domain decomposition
+
     /*Allocate memory to pointers*/
     // TODO: Allocate memory based on domain decomposition
-    int totalsize = (xlength+2)*(xlength+2)*(xlength+2);
+    int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
     collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
     streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
 
@@ -78,18 +89,18 @@ int main(int argc, char *argv[]){
 
     // TODO: Initialize all the fields based on the rank
     initialiseFields(collideField, streamField, flagField,
-        xlength, rank, number_of_ranks);
+        procData.xLength, procData.rank, procData.numRanks);
 
     // TODO:
-    initialiseBuffers(sendBuffer, readBuffer, xlength);
+    initialiseBuffers(sendBuffer, readBuffer, procData.xLength);
 
-    if(rank == 0)
+    if(procData.rank == 0)
         printf("\nINFO: Storing cell data in VTK files.\n      Please use the"
         " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
 
     // Write the VTK at t = 0
-    printf("R %i INFO: write vtk file at time t = %d \n", rank, t);
-    writeVtkOutput(collideField,flagField,fName,t,xlength,rank,number_of_ranks);
+    printf("R %i INFO: write vtk file at time t = %d \n", procData.rank, t);
+    writeVtkOutput(collideField,flagField,fName,t,procData.xLength,procData.rank,procData.numRanks);
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
@@ -101,25 +112,25 @@ int main(int argc, char *argv[]){
          do extraction , swap , injection for z (down and up ; up and down)
         */
 
-	    doStreaming(collideField,streamField,flagField,xlength);
+	    doStreaming(collideField,streamField,flagField,procData.xLength);
 
 	    swap = collideField;
 	    collideField = streamField;
 	    streamField = swap;
 
-	    doCollision(collideField,flagField,&tau,xlength);
+	    doCollision(collideField,flagField,&tau,procData.xLength);
 
 	    /* TODO: (DL) we need to rewrite treatBoundary.
 	     * Each process has a subdomain that may or may not include a ghost layer boundary.
 	     * Only the boundary that falls into a subdomain has to be handled then.
 	     */
-	    treatBoundary(collideField,flagField, procData);
+	    treatBoundary(collideField,flagField,procData);
 
 	    if (t%timestepsPerPlotting == 0){
-            printf("R %i, INFO: write vtk file at time t = %d \n", rank, t);
+            printf("R %i, INFO: write vtk file at time t = %d \n", procData.rank, t);
             // TODO: (VS) Change the coordinates based on rank
             // TODO: (VS) Check if the time-rank strategy is okay for paraview
-	        writeVtkOutput(collideField,flagField,fName,t,xlength,rank,number_of_ranks);
+	        writeVtkOutput(collideField,flagField,fName,t,procData.xLength,procData.rank,procData.numRanks);
 	    }
     }
 
@@ -136,7 +147,7 @@ int main(int argc, char *argv[]){
     time_spent = (double)(end_timing - begin_timing) / CLOCKS_PER_SEC;
 
 
-    if(rank == 0){
+    if(procData.rank == 0){
 		printf("\n===============================================================\n");
 		printf("\nINFO TIMING:\n");
 		printf("Execution time (main loop): \t\t %.3f seconds \n", time_spent);

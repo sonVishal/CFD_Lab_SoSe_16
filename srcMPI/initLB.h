@@ -17,13 +17,13 @@ int readParameters(
 
 
 /* initialises the particle distribution functions and the flagfield */
-void initialiseFields(double *collideField, double *streamField,int *flagField, int xlength, int rank, int number_of_ranks);
+void initialiseFields(double *collideField, double *streamField,int *flagField, int *xlength, int rank, int number_of_ranks);
 
 // Initialise the message passing interface
 void initialiseMPI(int *rank, int *number_of_ranks, int argc, char *argv[]);
 
 // Initialise the buffers
-void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int xlength);
+void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength);
 
 // Finalise all the processes and join
 void finaliseMPI();

@@ -57,6 +57,7 @@ enum {
 // Local struct for each process
 typedef struct {
     int rank;
+    int numRanks;
     int xLength[3];
     int neighbours[6]; //same order as enum
     double wallVelocity[3];
