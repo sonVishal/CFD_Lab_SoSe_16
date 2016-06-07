@@ -168,12 +168,12 @@ void p_treatSingleWall(double *collideField, const int * const flagField, const 
 			//flagField[xyz_offset] should only be a boundary cell (checked in p_setBounceBack)
 			int xyz_offset = p_computeCellOffset(k, j, fixedValue, xlength, wallIdx);
 			int current_cell_index = Q*xyz_offset;
+			int boundaryType = flagField[xyz_offset];
 
 			for(int i = 0; i < Q; ++i){
 				int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
 				int n_xyzoffset = p_computeNeighborCellOffset(k, j, fixedValue, c, xlength, wallIdx);
 				int n_cell_index = Q*n_xyzoffset;
-				int boundaryType = flagField[xyz_offset];
 
 				//check (1) valid index: in case the direction of vector 'c' points to a non-existing cell
 				//check (2) that the neighboring cell is a FLUID cell in the domain (and not another boundary cell)
