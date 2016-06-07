@@ -179,7 +179,7 @@ void p_treatSingleWall(double *collideField, const int * const flagField, const 
 				//check (2) that the neighboring cell is a FLUID cell in the domain (and not another boundary cell)
 				//check (3) PARALLEL boundaries are not treated when they occur (e.g. on shared edges)
 				if(n_cell_index >= 0 && n_cell_index < maxValidIndex &&
-						flagField[n_xyzoffset] == FLUID && boundaryType != PARALLEL
+						flagField[n_xyzoffset] == FLUID && boundaryType != PARALLEL_BOUNDARY
 				){
 					p_setBounceBack(collideField, procData.wallVelocity, flagField[xyz_offset], i, current_cell_index, n_cell_index, c);
 				}
