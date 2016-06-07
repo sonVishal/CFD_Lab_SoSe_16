@@ -56,12 +56,12 @@ int main(int argc, char *argv[]){
     //tau is calculated automatically from the reynoldsnumber
     if (procData.rank == 0) {
         readParameters(&xlength, &tau, procData.wallVelocity, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
-        MPI_Bcast(&xlength, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        MPI_Bcast(&tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        MPI_Bcast(procData.wallVelocity, 3, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        MPI_Bcast(&timesteps, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        MPI_Bcast(&timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
     }
+    MPI_Bcast(&xlength, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(procData.wallVelocity, 3, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&timesteps, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
     // TODO: (VS) Remove later. For safety.
     MPI_Barrier(MPI_COMM_WORLD);
