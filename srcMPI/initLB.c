@@ -83,8 +83,7 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *procsPe
   return 0;
 }
 
-void initialiseFields(double *collideField, double *streamField, int *flagField,
-	int *xlength, int rank, int numRanks){
+void initialiseFields(double *collideField, double *streamField, int *flagField, t_procData thisProcData){
 
     /*Setting initial distributions*/
     //f_i(x,0) = f^eq(1,0,0) = w_i
@@ -93,18 +92,18 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     int idx;
 
     // Temporary variables for xlength^2
-    int const xylen = (xlength[0]+2)*(xlength[1]+2);
+    int const xylen = (thisProcData.xLength[0]+2)*(thisProcData.xLength[1]+2);
 
     // Temporary variables for z and y offsets
     int zOffset, yzOffset;
 
     /* initialize collideField and streamField */
     int x,y,z;
-    for ( z = 0; z <= xlength[2]+1; ++z) {
+    for ( z = 0; z <= thisProcData.xLength[2]+1; ++z) {
         zOffset = z*xylen;
-        for ( y = 0; y <= xlength[1]+1; ++y) {
-            yzOffset = y*(xlength[0]+2) + zOffset;
-            for ( x = 0; x <= xlength[0]+1; ++x) {
+        for ( y = 0; y <= thisProcData.xLength[1]+1; ++y) {
+            yzOffset = y*(thisProcData.xLength[0]+2) + zOffset;
+            for ( x = 0; x <= thisProcData.xLength[0]+1; ++x) {
                 // Compute the base index
                 idx = Q*(yzOffset + x);
                 for (int i = 0; i < Q; ++i) {
@@ -121,56 +120,57 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
     //These are the no-slip walls
     //fixed: z = 0
-    for (y = 0; y <= xlength[1]+1; y++) {
-        idx = y*(xlength[0]+2);
-        for (x = 0; x <= xlength[1]+1; x++) {
+	
+    for (y = 0; y <= thisProcData.xLength[1]+1; y++) {
+        idx = y*(thisProcData.xLength[0]+2);
+        for (x = 0; x <= thisProcData.xLength[1]+1; x++) {
             flagField[x+idx] = 1;
         }
     }
 
     //fixed: x = 0
     //We start at 1 to not include previous cells again from z = 0
-    for (z = 1; z <= xlength[2]; z++) {
+    for (z = 1; z <= thisProcData.xLength[2]; z++) {
         zOffset = z*xylen;
-        for (y = 0; y <= xlength[1]+1; y++) {
-            flagField[zOffset+y*(xlength[0]+2)] = 1;
+        for (y = 0; y <= thisProcData.xLength[1]+1; y++) {
+            flagField[zOffset+y*(thisProcData.xLength[0]+2)] = 1;
         }
     }
 
-    //fixed: x = xlength+1
+    //fixed: x = thisProcData.xLength+1
     //We start at 1 to not include previous cells again from z = 0
-    for (z = 1; z <= xlength[2]; z++) {
-        zOffset = z*xylen + xlength[0] + 1;
-        for (y = 0; y <= xlength[1]+1; y++) {
-            flagField[zOffset+y*(xlength[0]+2)] = 1;
+    for (z = 1; z <= thisProcData.xLength[2]; z++) {
+        zOffset = z*xylen + thisProcData.xLength[0] + 1;
+        for (y = 0; y <= thisProcData.xLength[1]+1; y++) {
+            flagField[zOffset+y*(thisProcData.xLength[0]+2)] = 1;
         }
     }
 
     //fixed: y = 0
-    //from 1:xlength only, to not include cells at upper, lower, left and right edges
+    //from 1:thisProcData.xLength only, to not include cells at upper, lower, left and right edges
     //The edge cells are set in the other loops.
-    for (z = 1; z <= xlength[2]; z++) {
+    for (z = 1; z <= thisProcData.xLength[2]; z++) {
         zOffset = z*xylen;
-        for (x = 1; x <= xlength[0]; x++) {
+        for (x = 1; x <= thisProcData.xLength[0]; x++) {
             flagField[zOffset+x] = 1;
         }
     }
 
-    //fixed: y = xlength+1
+    //fixed: y = thisProcData.xLength+1
     //same reasoning for index range as in fixed y=0
-    for (z = 1; z <= xlength[2]; z++) {
-        zOffset = z*xylen + (xlength[1]+1)*(xlength[0]+2);
-        for (x = 1; x <= xlength[0]; x++) {
+    for (z = 1; z <= thisProcData.xLength[2]; z++) {
+        zOffset = z*xylen + (thisProcData.xLength[1]+1)*(thisProcData.xLength[0]+2);
+        for (x = 1; x <= thisProcData.xLength[0]; x++) {
             flagField[zOffset+x] = 1;
         }
     }
 
-    // This is the moving wall. All cells at z=xlength+1 are included (also the edge cells).
-    // fixed: z = xlength+1
-    zOffset = (xlength[2]+1)*xylen;
-    for (y = 0; y <= xlength[1]+1; y++) {
-        idx = zOffset + y*(xlength[0]+2);
-        for (x = 0; x <= xlength[0]+1; x++) {
+    // This is the moving wall. All cells at z=thisProcData.xLength+1 are included (also the edge cells).
+    // fixed: z = thisProcData.xLength+1
+    zOffset = (thisProcData.xLength[2]+1)*xylen;
+    for (y = 0; y <= thisProcData.xLength[1]+1; y++) {
+        idx = zOffset + y*(thisProcData.xLength[0]+2);
+        for (x = 0; x <= thisProcData.xLength[0]+1; x++) {
             flagField[x+idx] = 2;
         }
     }

@@ -89,8 +89,7 @@ int main(int argc, char *argv[]){
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     // TODO: Initialize all the fields based on the rank
-    initialiseFields(collideField, streamField, flagField,
-        procData.xLength, procData.rank, procData.numRanks);
+    initialiseFields(collideField, streamField, flagField, procData);
 
     // TODO:
     initialiseBuffers(sendBuffer, readBuffer, procData.xLength);
