@@ -182,61 +182,27 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
     procData->neighbours[BOTTOM] = (procPos[2] == 0) 				  ? MPI_PROC_NULL : procData->rank-procsPerAxis[1]*procsPerAxis[0];
     procData->neighbours[TOP]    = (procPos[2] == procsPerAxis[2]-1)  ? MPI_PROC_NULL : procData->rank+procsPerAxis[1]*procsPerAxis[0];
 
-//    if (procPos[0] == 0) {
-//        procData->neighbours[BACK] = MPI_PROC_NULL;
-//    } else {
-//        procData->neighbours[BACK] = procData->rank-1;
-//    }
-//    // Front
-//    if (procPos[0] == procsPerAxis[0]-1) {
-//        procData->neighbours[FRONT] = MPI_PROC_NULL;
-//    } else {
-//        procData->neighbours[FRONT] = procData->rank+1;
-//    }
-//    // Left
-//    if (procPos[1] == 0) {
-//        procData->neighbours[LEFT] = MPI_PROC_NULL;
-//    } else {
-//        procData->neighbours[LEFT] = procData->rank-procsPerAxis[0];
-//    }
-//    // Right
-//    if (procPos[1] == procsPerAxis[1]-1) {
-//        procData->neighbours[RIGHT] = MPI_PROC_NULL;
-//    } else {
-//        procData->neighbours[RIGHT] = procData->rank+procsPerAxis[0];
-//    }
-//    // Bottom
-//    if (procPos[2] == 0) {
-//        procData->neighbours[BOTTOM] = MPI_PROC_NULL;
-//    } else {
-//        procData->neighbours[BOTTOM] = procData->rank-procsPerAxis[1]*procsPerAxis[0];
-//    }
-//    // Top
-//    if (procPos[2] == procsPerAxis[2]-1) {
-//        procData->neighbours[TOP] = MPI_PROC_NULL;
-//    } else {
-//        procData->neighbours[TOP] = procData->rank+procsPerAxis[1]*procsPerAxis[0];
-//    }
 	// printf("Proc %d \t Position (%d,%d,%d)\n",procData->rank,procPos[0],procPos[1],procPos[2]);
 	// printProcDataPos(*procData,procPos);
 }
 
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength) {
 
-    //TODO: (TKS) Consider allocating only the amount of elements needed.
+	// XZ inner domain (no edges included)
 	int bufferSize		= 5*(xlength[0]*xlength[2])*sizeof(double);
 	sendBuffer[LEFT] 	= (double *) malloc(bufferSize);
 	sendBuffer[RIGHT] 	= (double *) malloc(bufferSize);
 	readBuffer[LEFT] 	= (double *) malloc(bufferSize);
 	readBuffer[RIGHT] 	= (double *) malloc(bufferSize);
 
-
-	bufferSize 			= 5*((xlength[0]+2)*xlength[1])*sizeof(double);
+	// XY plane including edges at the boundary to left/right
+	bufferSize 			= 5*(xlength[0]*(xlength[1]+2))*sizeof(double);
 	sendBuffer[TOP] 	= (double *) malloc(bufferSize);
 	sendBuffer[BOTTOM] 	= (double *) malloc(bufferSize);
 	readBuffer[TOP] 	= (double *) malloc(bufferSize);
 	readBuffer[BOTTOM] 	= (double *) malloc(bufferSize);
 
+	// YZ plane including all edges
 	bufferSize 			= 5*((xlength[1]+2)*(xlength[2]+2))*sizeof(double);
 	sendBuffer[FRONT] 	= (double *) malloc(bufferSize);
 	sendBuffer[BACK] 	= (double *) malloc(bufferSize);
