@@ -40,6 +40,10 @@ int main(int argc, char *argv[]){
     // TODO
     initialiseMPI(&rank,&number_of_ranks,argc,argv);
 
+    // TODO: (VS)
+    // If number of ranks do not match the total number of processes supplied
+    // in the dat file then exit.
+
     // File printing parameters
     char fName[80];
     snprintf(fName, 80, "pv_files/WS4_rank%i", rank);
