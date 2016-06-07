@@ -10,7 +10,6 @@
 #include "helper.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <mpi/mpi.h>
 
 int main(int argc, char *argv[]){
@@ -49,8 +48,8 @@ int main(int argc, char *argv[]){
     snprintf(fName, 80, "pv_files/WS4_rank");
 
     //Timing variables:
-    clock_t begin_timing, end_timing;
-    double time_spent;
+    double begin_timing, end_timing;
+    double time_spent, maxTime = -1;
 
     /* Read parameters and check the bounds on tau
      * Only performed by the root and broadcasted*/
@@ -127,7 +126,8 @@ int main(int argc, char *argv[]){
     finaliseMPI();
     ERROR("STOPPER, remove later");
 
-    begin_timing = clock();
+    begin_timing = MPI_Wtime();
+
     for(t = 1; t <= timesteps; t++){
 	    double *swap = NULL;
         /* TODO:
@@ -153,25 +153,19 @@ int main(int argc, char *argv[]){
 	    }
     }
 
-    /* TODO: The times from all the processes need to be added at the end
-     * (DL) Why added? We hopefully do a good bunch in parallel.
-     * There is also:
-     * MPI_WTICK "Time in seconds of resolution of MPI_Wtime."
-     * MPI_Wtime "Time in seconds since an arbitrary time in the past."
-     *
-     * So we could for example let all processors communicate their time required and then
-     * look for the max value.
-     */
-    end_timing = clock();
-    time_spent = (double)(end_timing - begin_timing) / CLOCKS_PER_SEC;
+    end_timing = MPI_Wtime();
+    time_spent = end_timing - begin_timing;
+
+    MPI_Reduce(&time_spent, &maxTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
     if(procData.rank == 0){
-		printf("\n===============================================================\n");
+    	int domTotalsize = (xlength+2)*(xlength+2)*(xlength+2);
+    	printf("\n===============================================================\n");
 		printf("\nINFO TIMING:\n");
-		printf("Execution time (main loop): \t\t %.3f seconds \n", time_spent);
-		printf("#cells (including boundary): \t\t %i cells \n", totalsize);
+		printf("Execution time (main loop): \t\t %.3f seconds \n", maxTime);
+		printf("#cells (including boundary): \t\t %i cells \n", domTotalsize);
 		printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
-				(totalsize/(1000000*time_spent))*timesteps);
+				(domTotalsize/(1000000*maxTime))*timesteps);
     }
 
     /* TODO: (DL) when checking with MPI implementation, the values of collideField
@@ -190,7 +184,7 @@ int main(int argc, char *argv[]){
     free(collideField);
     free(flagField);
 
-    for (int i = 0; i < 6; i++) {
+    for (int i = LEFT; i <= BACK; i++) {
         free(sendBuffer[i]);
         free(readBuffer[i]);
     }
