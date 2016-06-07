@@ -42,13 +42,13 @@ void writeVtkOutput(const double * const collideField,
         return;
     }
 
-    fprintf(fp,"<VTKFile type=\"StructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt32\">\n");
+    fprintf(fp,"<VTKFile type=\"StructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" header_type=\"UInt32\">\n");
 
     // Write the point data for the domain
     writevtkPointCoordinates(fp,procData.xLength,myPos);
 
     fprintf(fp,"<CellData>\n");
-    fprintf(fp,"<DataArray type=\"Float64\" NumberOfComponents=\"3\" Name=\"Velocity\">\n");
+    fprintf(fp,"<DataArray type=\"Float32\" NumberOfComponents=\"3\" Name=\"Velocity\">\n");
 
     int x, y, z;            // iteration variables
     int idx;                // cell index
@@ -82,7 +82,7 @@ void writeVtkOutput(const double * const collideField,
         }
     }
     fprintf(fp,"</DataArray>\n");
-    fprintf(fp,"<DataArray type=\"Float64\" NumberOfComponents=\"1\" Name=\"Density\">\n");
+    fprintf(fp,"<DataArray type=\"Float32\" NumberOfComponents=\"1\" Name=\"Density\">\n");
     // Write cell average denisties the file
     for(z = 1; z <= procData.xLength[2]; z++) {
         zOffset = z*xylen;
@@ -155,14 +155,14 @@ void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlength,
         return;
     }
 
-    fprintf(fp, "<VTKFile type=\"PStructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\">\n");
+    fprintf(fp, "<VTKFile type=\"PStructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n");
     fprintf(fp, "<PStructuredGrid WholeExtent=\"0 %d 0 %d 0 %d\" GhostLevel=\"1\">\n",xlength,xlength,xlength);
     fprintf(fp, "<PPoints>\n");
     fprintf(fp, "%s\n","<PDataArray NumberOfComponents=\"3\" type=\"UInt32\" />");
     fprintf(fp, "</PPoints>\n");
     fprintf(fp, "<PCellData>\n");
-    fprintf(fp, "<PDataArray type=\"Float64\" NumberOfComponents=\"3\" Name=\"Velocity\"/>\n");
-    fprintf(fp, "<PDataArray type=\"Float64\" NumberOfComponents=\"1\" Name=\"Density\"/>\n");
+    fprintf(fp, "<PDataArray type=\"Float32\" NumberOfComponents=\"3\" Name=\"Velocity\"/>\n");
+    fprintf(fp, "<PDataArray type=\"Float32\" NumberOfComponents=\"1\" Name=\"Density\"/>\n");
     fprintf(fp, "</PCellData>\n");
 
     // Perform domain decomposition again
