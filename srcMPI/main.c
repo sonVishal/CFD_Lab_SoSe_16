@@ -81,7 +81,7 @@ int main(int argc, char *argv[]){
             "do not match the number of processes given as input, %d, while running the code\n",procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2],procData.numRanks);
         }
         // printf("Proc %d Inside exit loop\n",procData.rank);
-        finaliseMPI();
+        finaliseMPI(&procData);
         return -1;
     }
 
