@@ -162,10 +162,6 @@ int main(int argc, char *argv[]){
 
 	    doCollision(collideField,flagField,&tau,procData.xLength);
 
-	    /* TODO: (DL) we need to rewrite treatBoundary.
-	     * Each process has a subdomain that may or may not include a ghost layer boundary.
-	     * Only the boundary that falls into a subdomain has to be handled then.
-	     */
 	    treatBoundary(collideField,flagField,procData);
 
 	    if (t%timestepsPerPlotting == 0){
