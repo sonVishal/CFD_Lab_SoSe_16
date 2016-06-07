@@ -31,7 +31,7 @@ void writeVtkOutput(const double * const collideField,
     char ch;
 
     // Create the file with time information in the name
-    sprintf(pFileName, "%s.%i.%i.vtk", filename,t,procData.rank);
+    sprintf(pFileName, "%s.%i.%i.vtk", filename,procData.rank,t);
     sprintf(pTempFile, "temp.%i.vtk", procData.rank);
     fp  = fopen(pFileName, "w");
     tmp = fopen(pTempFile, "w");
