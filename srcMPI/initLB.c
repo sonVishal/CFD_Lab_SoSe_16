@@ -120,7 +120,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
     //These are the no-slip walls
     //fixed: z = 0
-	
+
     for (y = 0; y <= thisProcData.xLength[1]+1; y++) {
         idx = y*(thisProcData.xLength[0]+2);
         for (x = 0; x <= thisProcData.xLength[1]+1; x++) {
@@ -183,7 +183,7 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 }
 
 void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, const int * const procsPerAxis) {
-	int procPos[3];
+	int procPos[3] = {0,0,0};
 	procData->xLength[0] = xlength/procsPerAxis[0];
     procData->xLength[1] = xlength/procsPerAxis[1];
     procData->xLength[2] = xlength/procsPerAxis[2];
