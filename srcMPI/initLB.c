@@ -206,7 +206,14 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
 }
 
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength) {
-	ERROR("TODO");
+	sendBuffer[LEFT] = (double *) calloc((xlength[0]+2)*(xlength[2]+2), sizeof(double));
+	sendBuffer[RIGHT] = (double *) calloc((xlength[0]+2)*(xlength[2]+2), sizeof(double));
+
+	sendBuffer[TOP] = (double *) calloc((xlength[0]+2)*(xlength[1]+2), sizeof(double));
+	sendBuffer[BOTTOM] = (double *) calloc((xlength[0]+2)*(xlength[1]+2), sizeof(double));
+
+	sendBuffer[FRONT] = (double *) calloc((xlength[1]+2)*(xlength[2]+2), sizeof(double));
+	sendBuffer[BACK] = (double *) calloc((xlength[1]+2)*(xlength[2]+2), sizeof(double));
 }
 
 void finaliseMPI() {

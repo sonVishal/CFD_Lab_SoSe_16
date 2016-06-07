@@ -89,7 +89,6 @@ int main(int argc, char *argv[]){
 
     initialiseFields(collideField, streamField, flagField, procData);
 
-    // TODO:
     initialiseBuffers(sendBuffer, readBuffer, procData.xLength);
 
     if(procData.rank == 0)
@@ -169,6 +168,11 @@ int main(int argc, char *argv[]){
     free(streamField);
     free(collideField);
     free(flagField);
+
+    for (int i = 0; i < 6; i++) {
+        free(sendBuffer[i]);
+        free(readBuffer[i]);
+    }
 
     /* TODO: As of now this is in initLB - I have no idea where to put this function definition
      * (DL) I don't know what we have to do all in the end to finalize MPI, but
