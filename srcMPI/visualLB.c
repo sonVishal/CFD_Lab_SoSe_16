@@ -143,7 +143,7 @@ void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlength,
     FILE *fp = NULL;
 
     // Create the file with time information in the name
-    sprintf(pFileName, "%s.%i.vts", filename,t);
+    sprintf(pFileName, "%s.%i.pvts", filename,t);
     fp  = fopen(pFileName, "w");
 
     // Check if files were opened or not
