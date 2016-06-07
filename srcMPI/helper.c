@@ -4,23 +4,6 @@
 #include <errno.h>
 #include <stdio.h>
 
-void printProcData(t_procData procData) {
-    printf("------------- Proc %d -------------\n",procData.rank);
-    printf("My length = (%d,%d,%d)\n",procData.xLength[0],procData.xLength[1],procData.xLength[2]);
-    printf("My neighbors are\n");
-    printf("LEFT = %d, RIGHT = %d,\nTOP = %d, BOTTOM = %d,\nFRONT = %d, BACK = %d\n",procData.neighbours[LEFT],procData.neighbours[RIGHT],procData.neighbours[TOP],procData.neighbours[BOTTOM],procData.neighbours[FRONT],procData.neighbours[BACK]);
-    printf("-----------------------------------\n");
-}
-
-void printProcDataPos(t_procData procData, int *pos) {
-    printf("------------- Proc %d -------------\n",procData.rank);
-    printf("My position = (%d,%d,%d)\n",pos[0],pos[1],pos[2]);
-    printf("My length = (%d,%d,%d)\n",procData.xLength[0],procData.xLength[1],procData.xLength[2]);
-    printf("My neighbors are\n");
-    printf("LEFT\t= %d,\tRIGHT\t= %d,\nTOP\t= %d,\tBOTTOM\t= %d,\nFRONT\t= %d,\tBACK\t= %d\n",procData.neighbours[LEFT],procData.neighbours[RIGHT],procData.neighbours[TOP],procData.neighbours[BOTTOM],procData.neighbours[FRONT],procData.neighbours[BACK]);
-    printf("-----------------------------------\n");
-}
-
 /* ----------------------------------------------------------------------- */
 /*                             auxiliary functions                         */
 /* ----------------------------------------------------------------------- */

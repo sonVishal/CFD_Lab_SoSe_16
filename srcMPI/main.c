@@ -168,6 +168,8 @@ int main(int argc, char *argv[]){
 				(domTotalsize/(1000000*maxTime))*timesteps);
     }
 
+    // TODO: (VS) Combine the VTS files for each time
+
     /* TODO: (DL) when checking with MPI implementation, the values of collideField
      * have to get collected from the different processes and then checked with
      * the 'reference' solution.

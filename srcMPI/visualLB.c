@@ -165,15 +165,35 @@ void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlength,
     fprintf(fp, "<PDataArray type=\"Float64\" NumberOfComponents=\"1\" Name=\"Density\"/>\n");
     fprintf(fp, "</PCellData>\n");
 
+    // Perform domain decomposition again
+    int procXlength[3] = {0,0,0};
+    procXlength[0] = xlength/procsPerAxis[0];
+    procXlength[1] = xlength/procsPerAxis[1];
+    procXlength[2] = xlength/procsPerAxis[2];
+    int x1,x2,y1,y2,z1,z2;
+
     for (int k = 0; k < procsPerAxis[2]; k++) {
         for (int j = 0; j < procsPerAxis[1]; j++) {
             for (int i = 0; i < procsPerAxis[0]; i++) {
-                // TODO: (VS)
+                procXlength[0] += ((procsPerAxis[0]-1)==i)?xlength%procsPerAxis[0]:0;
+                procXlength[1] += ((procsPerAxis[1]-1)==j)?xlength%procsPerAxis[1]:0;
+                procXlength[2] += ((procsPerAxis[2]-1)==k)?xlength%procsPerAxis[2]:0;
+                x1 = i*procXlength[0]; x2 = x1 + procXlength[0];
+                y1 = j*procXlength[1]; y2 = y1 + procXlength[1];
+                z1 = k*procXlength[2]; z2 = z1 + procXlength[2];
+                snprintf(pFileName, 80, "%s.%i.%i.vts",filename,i+(j+k*procsPerAxis[1])*procsPerAxis[0],t);
+                fprintf(fp, "<Piece Extent=\"%d %d %d %d %d %d\" Source=\"%s\"/>\n",x1,x2,y1,y2,z1,z2,pFileName);
             }
         }
     }
     fprintf(fp, "</PStructuredGrid>\n");
     fprintf(fp, "</VTKFile>\n");
 
-    fclose(fp);
+    // Close file
+    if(fclose(fp))
+    {
+        char szBuff[80];
+        sprintf(szBuff, "Failed to close %s", pFileName);
+        ERROR(szBuff);
+    }
 }
