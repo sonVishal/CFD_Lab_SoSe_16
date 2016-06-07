@@ -224,24 +224,24 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength) {
 
     //TODO: (TKS) Consider allocating only the amount of elements needed.
-	int bufferSize			= 5*( (xlength[0]+2)*(xlength[2]+2));
-	sendBuffer[LEFT] 	= (double *) calloc(bufferSize, sizeof(double));
-	sendBuffer[RIGHT] 	= (double *) calloc(bufferSize, sizeof(double));
-	readBuffer[LEFT] 	= (double *) calloc(bufferSize, sizeof(double));
-	readBuffer[RIGHT] 	= (double *) calloc(bufferSize, sizeof(double));
+	int bufferSize			= 5*( (xlength[0]+2)*(xlength[2]+2))*sizeof(double);
+	sendBuffer[LEFT] 	= (double *) malloc(bufferSize);
+	sendBuffer[RIGHT] 	= (double *) malloc(bufferSize);
+	readBuffer[LEFT] 	= (double *) malloc(bufferSize);
+	readBuffer[RIGHT] 	= (double *) malloc(bufferSize);
 
 
-	bufferSize 			= 5*((xlength[0]+2)*(xlength[1]+2));
-	sendBuffer[TOP] 	= (double *) calloc(bufferSize, sizeof(double));
-	sendBuffer[BOTTOM] 	= (double *) calloc(bufferSize, sizeof(double));
-	readBuffer[TOP] 	= (double *) calloc(bufferSize, sizeof(double));
-	readBuffer[BOTTOM] 	= (double *) calloc(bufferSize, sizeof(double));
+	bufferSize 			= 5*((xlength[0]+2)*(xlength[1]+2))*sizeof(double);
+	sendBuffer[TOP] 	= (double *) malloc(bufferSize);
+	sendBuffer[BOTTOM] 	= (double *) malloc(bufferSize);
+	readBuffer[TOP] 	= (double *) malloc(bufferSize);
+	readBuffer[BOTTOM] 	= (double *) malloc(bufferSize);
 
-	bufferSize 			= 5*((xlength[1]+2)*(xlength[2]+2));
-	sendBuffer[FRONT] 	= (double *) calloc(bufferSize, sizeof(double));
-	sendBuffer[BACK] 	= (double *) calloc(bufferSize, sizeof(double));
-	readBuffer[FRONT] 	= (double *) calloc(bufferSize, sizeof(double));
-	readBuffer[BACK] 	= (double *) calloc(bufferSize, sizeof(double));
+	bufferSize 			= 5*((xlength[1]+2)*(xlength[2]+2))*sizeof(double);
+	sendBuffer[FRONT] 	= (double *) malloc(bufferSize);
+	sendBuffer[BACK] 	= (double *) malloc(bufferSize);
+	readBuffer[FRONT] 	= (double *) malloc(bufferSize);
+	readBuffer[BACK] 	= (double *) malloc(bufferSize);
 }
 
 /* TODO: (DL) This should go somewhere else!! */
