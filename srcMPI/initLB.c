@@ -224,14 +224,14 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength) {
 
     //TODO: (TKS) Consider allocating only the amount of elements needed.
-	int bufferSize			= 5*( (xlength[0]+2)*(xlength[2]+2))*sizeof(double);
+	int bufferSize		= 5*(xlength[0]*xlength[2])*sizeof(double);
 	sendBuffer[LEFT] 	= (double *) malloc(bufferSize);
 	sendBuffer[RIGHT] 	= (double *) malloc(bufferSize);
 	readBuffer[LEFT] 	= (double *) malloc(bufferSize);
 	readBuffer[RIGHT] 	= (double *) malloc(bufferSize);
 
 
-	bufferSize 			= 5*((xlength[0]+2)*(xlength[1]+2))*sizeof(double);
+	bufferSize 			= 5*((xlength[0]+2)*xlength[1])*sizeof(double);
 	sendBuffer[TOP] 	= (double *) malloc(bufferSize);
 	sendBuffer[BOTTOM] 	= (double *) malloc(bufferSize);
 	readBuffer[TOP] 	= (double *) malloc(bufferSize);
