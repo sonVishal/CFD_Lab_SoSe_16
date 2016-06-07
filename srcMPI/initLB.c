@@ -118,20 +118,28 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
     /*Looping over boundary of flagFields*/
     //All points set to zero at memory allocation (using calloc)
-	int endOuter, endInner, fixedValue, boundaryType, wallIdx;
-	// First set up the ghost boundary layer
+	int endOuter, endInner, fixedValue, wallIdx;
+	// First set up the ghost boundary layer with no slip
 	for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
-		if (thisProcData.neighbours[wallIdx] == MPI_PROC_NULL) {
+		if (thisProcData.neighbours[wallIdx] == MPI_PROC_NULL && wallIdx != TOP) {
 			p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, wallIdx);
-			if (wallIdx == TOP) {
-				boundaryType = MOVING_WALL;
-			} else {
-				boundaryType = NO_SLIP;
-			}
 			for (z = 0; z <= endOuter; z++) {
 				for (y = 0; y <= endInner; y++) {
 					idx = p_computeCellOffset(z,y,fixedValue,thisProcData.xLength,wallIdx);
-					flagField[idx] = boundaryType;
+					flagField[idx] = NO_SLIP;
+				}
+			}
+		}
+	}
+
+	// Now set up the ghost boundary layer with moving wall
+	for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
+		if (thisProcData.neighbours[wallIdx] == MPI_PROC_NULL && wallIdx == TOP) {
+			p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, wallIdx);
+			for (z = 0; z <= endOuter; z++) {
+				for (y = 0; y <= endInner; y++) {
+					idx = p_computeCellOffset(z,y,fixedValue,thisProcData.xLength,wallIdx);
+					flagField[idx] = MOVING_WALL;
 				}
 			}
 		}
