@@ -1,11 +1,13 @@
 
 #include "helperMPI.h"
 #include "boundary.h"
+#include "helper.h"
 
 //TODO: (TKS) 
 //Reduce bufferSize[6]--> bufferSize[3]?
 //          * Can do two iterations of the loop at the same time.
 //          * Or complete loop unroll
+//          * REMOVE it if not used
 //
 //At what level to iterate plane?
 //          * inside each function
@@ -26,22 +28,20 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         //TODO: (TKS) iterate over all planes and do the following:
         //          * Using inner/outer formulation.
         //          * Functions operate on single cells.
-        //          * Need different ranges for k,j when looking at different directions.
-        //                  - Make three for loops.
-        //                  - Add fixing switch in outer loop.
+        //              - Need functions to take the whole extraction etc?
 
-        p_setIterationParameters(&endOuter, &endInner, &fixedValue, *procData, direction);
+        p_setCommIterationParameters(&startOuter, &endOuter,&startInner, &endInner, &fixedValue, *procData, direction);
         p_assignIndices(&direction, index);
 
+        //TODO:(TKS) Should move for loops into the functions. Want to do whole extraction before doing swap etc.
 	    //k - corresponds to the 'outer' value when computing the offset
-        for(int k = 0; k <= endOuter; ++k){
+        for(int k = startOuter; k <= endOuter; ++k){
             //j - corresponds to the 'inner' value
-            for(int j = 0; j <= endInner; ++j){
+            for(int j = startInner; j <= endInner; ++j){
 
-                int currentCell = Q*p_computeCellOffset(k, j, fixedValue, (*procData).xLength, direction);
+                int currentCellIndex = Q*p_computeCellOffset(k, j, fixedValue, (*procData).xLength, direction);
 
-                //TODO: (TKS) Decide whether to take in proData of introduce temp variables, xlength, bufferSize.
-
+                //TODO: (TKS) Decide whether to take in procData of introduce temp variables, xlength, bufferSize.
                 extract(sendBuffer, collideField, procData, direction);
                 swap(sendBuffer, readBuffer, procData, direction);
                 inject(readBuffer, collideField, procData, direction);
@@ -62,6 +62,70 @@ void swap(double** sendBuffer, double**readBuffer, const t_procData *procData, i
 
 //Copy read buffer to ghost layer
 void inject(double** readBuffer, double* collideField, const t_procData *procData, int direction){
+}
+
+//Function to assign iteration parameters for communication.
+
+void p_setCommIterationParameters(int *startOuter, int *endOuter, int *startInner, int *endInner, 
+                                  int *fixedValue, const t_procData procData, const int direction){
+
+    //TODO: (TKS) Confirm that indecies are correct.
+	switch(direction){
+
+	//---------------------------------------------
+	//outer = Z, inner = X, Y fixed
+    //only iterate over inner domain of plane (FLUID cells)
+	case LEFT:
+        *startOuter = 1;
+		*endOuter   = procData.xLength[2];
+        *startInner = 1;
+		*endInner   = procData.xLength[0];
+		*fixedValue = 1;
+		break;
+	case RIGHT:
+        *startOuter = 1;
+		*endOuter   = procData.xLength[2];
+        *startInner = 1;
+		*endInner   = procData.xLength[0];
+		*fixedValue = procData.xLength[1];
+		break;
+	//---------------------------------------------
+	//outer = Y, inner = X, Z fixed
+	case TOP:
+        *startOuter = 0;
+		*endOuter   = procData.xLength[1]+1;
+        *startInner = 1;
+		*endInner   = procData.xLength[0];
+		*fixedValue = procData.xLength[2];
+		break;
+	case BOTTOM:
+        *startOuter = 0;
+		*endOuter   = procData.xLength[1]+1;
+        *startInner = 1;
+		*endInner   = procData.xLength[0];
+		*fixedValue = 1;
+		break;
+
+	//---------------------------------------------
+	//outer = Z, inner = Y, X fixed
+	case FRONT:
+        *startOuter = 0;
+		*endOuter   = procData.xLength[2]+1;
+        *startInner = 0;
+		*endInner   = procData.xLength[1]+1;
+		*fixedValue = procData.xLength[0];
+		break;
+	case BACK:
+        *startOuter = 0;
+		*endOuter = procData.xLength[2]+1;
+        *startInner = 0;
+		*endInner = procData.xLength[1]+1;
+		*fixedValue = 1;
+		break;
+
+	default:
+		ERROR("Invalid wallIdx occurred. This should never happen!");
+	}
 }
 
 //Function to find indecies being extracted/injected

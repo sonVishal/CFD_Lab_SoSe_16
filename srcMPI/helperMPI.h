@@ -10,6 +10,8 @@ void extract( double** sendBuffer, double* collideField, const t_procData *procD
 void swap(double** sendBuffer, double**readBuffer, const t_procData *procData, int direction);
 void inject(double** readBuffer, double* collideField, const t_procData *procData, int direction);
 
+void p_setCommIterationParameters(int *startOuter, int *endOuter, int *startInner, int *endInner, 
+                                  int *fixedValue, const t_procData procData, const int direction);
 void p_assignIndices(int *direction, int *index);
 
 #endif
