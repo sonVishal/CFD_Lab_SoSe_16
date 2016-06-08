@@ -28,7 +28,7 @@ void writeVtkOutputDebug(const double * const collideField,
     FILE *fp = NULL;
 
     // Create the file with time information in the name
-    sprintf(pFileName, "%s.%i.%i.vts", "pv_files/Debug",procData.rank,t);
+    sprintf(pFileName, "%s.%i.%i.vts", "debug/Debug",procData.rank,t);
     fp  = fopen(pFileName, "w");
 
     int myPos[3] = {0,0,0};
@@ -119,7 +119,7 @@ void p_writeCombinedPVTSFileDebug(const char * filename, unsigned int t, int xle
     FILE *fp = NULL;
 
     // Create the file with time information in the name
-    sprintf(pFileName, "%s.%i.pvts", "pv_files/Debug",t);
+    sprintf(pFileName, "%s.%i.pvts", "debug/Debug",t);
     fp  = fopen(pFileName, "w");
 
     // Check if files were opened or not
@@ -142,23 +142,23 @@ void p_writeCombinedPVTSFileDebug(const char * filename, unsigned int t, int xle
 
     // Perform domain decomposition again
     int procXlength[3] = {0,0,0};
-    procXlength[0] = xlength/procsPerAxis[0];
-    procXlength[1] = xlength/procsPerAxis[1];
-    procXlength[2] = xlength/procsPerAxis[2];
+    procXlength[0] = (xlength+4)/procsPerAxis[0];
+    procXlength[1] = (xlength+4)/procsPerAxis[1];
+    procXlength[2] = (xlength+4)/procsPerAxis[2];
     int x1,x2,y1,y2,z1,z2;
 
     for (int k = 0; k < procsPerAxis[2]; k++) {
         for (int j = 0; j < procsPerAxis[1]; j++) {
             for (int i = 0; i < procsPerAxis[0]; i++) {
-                procXlength[0] += ((procsPerAxis[0]-1)==i)?(xlength+2)%procsPerAxis[0]:0;
-                procXlength[1] += ((procsPerAxis[1]-1)==j)?(xlength+2)%procsPerAxis[1]:0;
-                procXlength[2] += ((procsPerAxis[2]-1)==k)?(xlength+2)%procsPerAxis[2]:0;
-                x1 = i*procXlength[0]; x2 = x1 + procXlength[0] + 2;
-                y1 = j*procXlength[1]; y2 = y1 + procXlength[1] + 2;
-                z1 = k*procXlength[2]; z2 = z1 + procXlength[2] + 2;
+                procXlength[0] += ((procsPerAxis[0]-1)==i)?(xlength+4)%procsPerAxis[0]:0;
+                procXlength[1] += ((procsPerAxis[1]-1)==j)?(xlength+4)%procsPerAxis[1]:0;
+                procXlength[2] += ((procsPerAxis[2]-1)==k)?(xlength+4)%procsPerAxis[2]:0;
+                x1 = i*procXlength[0]; x2 = x1 + procXlength[0];
+                y1 = j*procXlength[1]; y2 = y1 + procXlength[1];
+                z1 = k*procXlength[2]; z2 = z1 + procXlength[2];
                 snprintf(pFileName, 80, "%s.%i.%i.vts",filename,i+(j+k*procsPerAxis[1])*procsPerAxis[0],t);
                 // This is stupid "../<fileName>" but what the heck
-                fprintf(fp, "<Piece Extent=\"%d %d %d %d %d %d\" Source=\"%s.%i.%i\"/>\n",x1,x2,y1,y2,z1,z2,"Debug",i+j*procsPerAxis[0]+k*procsPerAxis[0]*procsPerAxis[1],t);
+                fprintf(fp, "<Piece Extent=\"%d %d %d %d %d %d\" Source=\"%s.%i.%i.vts\"/>\n",x1,x2,y1,y2,z1,z2,"Debug",i+j*procsPerAxis[0]+k*procsPerAxis[0]*procsPerAxis[1],t);
             }
         }
     }
