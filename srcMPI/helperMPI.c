@@ -45,6 +45,8 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
 
     int currentIndexField;
     int currentIndexBuff;
+
+    //For error checking. may remove later.
     int fieldSize = Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2);
     //printf("fieldSize = %d\n", fieldSize);
 
