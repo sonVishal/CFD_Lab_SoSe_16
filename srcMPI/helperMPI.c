@@ -34,17 +34,16 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         p_setCommIterationParameters(&iterPara, procData, direction);
         p_assignIndices(&direction, index);
 
-        //TODO: (TKS) Decide whether to take in procData of introduce temp variables, xlength, bufferSize.
-        extract(sendBuffer, collideField, &iterPara, procData, direction);
-        swap(sendBuffer, readBuffer, procData, direction);
-        inject(readBuffer, collideField, &iterPara, procData, direction);
+        extract(sendBuffer, collideField, &iterPara, procData, &direction, index);
+        swap(sendBuffer, readBuffer, procData, &direction);
+        inject(readBuffer, collideField, &iterPara, procData, &direction, index);
     }
 
 }
 
 //Copy distributions needed to sendbuffer.
 void extract( double** sendBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData,
-              int direction){
+              int *direction, int* index){
 
     //k - corresponds to the 'outer' value when computing the offset
     for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
@@ -57,13 +56,13 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
 }
 
 //Send distributions and wait to receive.
-void swap(double** sendBuffer, double**readBuffer, const t_procData *procData, int direction){
+void swap(double** sendBuffer, double**readBuffer, const t_procData *procData, int *direction){
 
 }
 
 //Copy read buffer to ghost layer
 void inject(double** readBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData, 
-            int direction){
+            int *direction, int *index){
 
     //k - corresponds to the 'outer' value when computing the offset
     for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
