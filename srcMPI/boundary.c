@@ -167,7 +167,7 @@ void p_treatSingleWall(double *collideField, const int * const flagField, const 
 			int current_cell_index = Q*xyz_offset;
 			int boundaryType = flagField[xyz_offset];
 
-			assert(boundaryType == NO_SLIP || boundaryType == PARALLEL_BOUNDARY);
+			assert(boundaryType == NO_SLIP || boundaryType == PARALLEL_BOUNDARY || boundaryType == MOVING_WALL);
 
 			//PARALLEL boundaries are not treated when they occur (e.g. at shared edges)
 			for(int i = 0; i < Q && boundaryType != PARALLEL_BOUNDARY; ++i){
