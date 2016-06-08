@@ -135,7 +135,7 @@ int main(int argc, char *argv[]){
 
     beginProcTime = MPI_Wtime();
 
-    for(t = 1; t <= 0; t++){
+    for(t = 1; t <= timesteps; t++){
 	    double *swap = NULL;
         /* TODO:
          do extraction , swap , injection for x (left to right)

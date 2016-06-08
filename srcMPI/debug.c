@@ -132,7 +132,7 @@ void p_writeCombinedPVTSFileDebug(const char * filename, unsigned int t, int xle
     }
 
     fprintf(fp, "<VTKFile type=\"PStructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n");
-    fprintf(fp, "<PStructuredGrid WholeExtent=\"0 %d 0 %d 0 %d\" GhostLevel=\"1\">\n",xlength+2,xlength+2,xlength+2);
+    fprintf(fp, "<PStructuredGrid WholeExtent=\"0 %d 0 %d 0 %d\" GhostLevel=\"1\">\n",xlength+4,xlength+4,xlength+4);
     fprintf(fp, "<PPoints>\n");
     fprintf(fp, "%s\n","<PDataArray NumberOfComponents=\"3\" type=\"UInt32\" />");
     fprintf(fp, "</PPoints>\n");
@@ -150,9 +150,9 @@ void p_writeCombinedPVTSFileDebug(const char * filename, unsigned int t, int xle
     for (int k = 0; k < procsPerAxis[2]; k++) {
         for (int j = 0; j < procsPerAxis[1]; j++) {
             for (int i = 0; i < procsPerAxis[0]; i++) {
-                procXlength[0] += ((procsPerAxis[0]-1)==i)?xlength%procsPerAxis[0]:0;
-                procXlength[1] += ((procsPerAxis[1]-1)==j)?xlength%procsPerAxis[1]:0;
-                procXlength[2] += ((procsPerAxis[2]-1)==k)?xlength%procsPerAxis[2]:0;
+                procXlength[0] += ((procsPerAxis[0]-1)==i)?(xlength+2)%procsPerAxis[0]:0;
+                procXlength[1] += ((procsPerAxis[1]-1)==j)?(xlength+2)%procsPerAxis[1]:0;
+                procXlength[2] += ((procsPerAxis[2]-1)==k)?(xlength+2)%procsPerAxis[2]:0;
                 x1 = i*procXlength[0]; x2 = x1 + procXlength[0] + 2;
                 y1 = j*procXlength[1]; y2 = y1 + procXlength[1] + 2;
                 z1 = k*procXlength[2]; z2 = z1 + procXlength[2] + 2;
