@@ -18,23 +18,30 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
     //Run extract, swap, inject for all sides and cells.
     //
     int index[5];
-    int endInner;
-    int endOuter;
+    int startInner, endInner;
+    int startOuter, endOuter;
     int fixedValue;
 
     for (int direction = LEFT; direction < BACK; ++direction) {
         //TODO: (TKS) iterate over all planes and do the following:
         //          * Using inner/outer formulation.
         //          * Functions operate on single cells.
+        //          * Need different ranges for k,j when looking at different directions.
+        //                  - Make three for loops.
+        //                  - Add fixing switch in outer loop.
+
+        p_setIterationParameters(&endOuter, &endInner, &fixedValue, *procData, direction);
+        p_assignIndices(&direction, index);
 
 	    //k - corresponds to the 'outer' value when computing the offset
         for(int k = 0; k <= endOuter; ++k){
             //j - corresponds to the 'inner' value
             for(int j = 0; j <= endInner; ++j){
 
-            
-                p_setIterationParameters(&endOuter, &endInner, &fixedValue, *procData, direction);
-                p_assignIndices(&direction, index);
+                int currentCell = Q*p_computeCellOffset(k, j, fixedValue, (*procData).xLength, direction);
+
+                //TODO: (TKS) Decide whether to take in proData of introduce temp variables, xlength, bufferSize.
+
                 extract(sendBuffer, collideField, procData, direction);
                 swap(sendBuffer, readBuffer, procData, direction);
                 inject(readBuffer, collideField, procData, direction);
