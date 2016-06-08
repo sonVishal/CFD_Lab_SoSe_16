@@ -26,18 +26,15 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
     t_iterPara iterPara;
 
 
-    for (int direction = LEFT; direction < BACK; ++direction) {
-        //TODO: (TKS) iterate over all planes and do the following:
-        //          * Using inner/outer formulation.
-        //          * Functions operate on single cells.
-        //              - Need functions to take the whole extraction etc?
-
+    for (int direction = LEFT; direction <= BACK; direction+=2) {
         p_setCommIterationParameters(&iterPara, procData, direction);
         p_assignIndices(&direction, index);
 
         extract(sendBuffer, collideField, &iterPara, procData, direction, index);
+        extract(sendBuffer, collideField, &iterPara, procData, direction+1, index);
         swap(sendBuffer, readBuffer, procData, &direction);
-        inject(readBuffer, collideField, &iterPara, procData, &direction, index);
+        inject(readBuffer, collideField, &iterPara, procData, direction, index);
+        inject(readBuffer, collideField, &iterPara, procData, direction+1, index);
     }
 
 }
@@ -57,10 +54,8 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
             //currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
 
             currentIndexBuff  =  5*p_computeBuffCellOffset(k, j, procData->bufferLength, direction);
-            printf("currentIndexBuff %d\n", currentIndexBuff);
-            printf("bufferSize %d\n", procData->bufferSize[direction/2]);
-            assert(currentIndexBuff < procData->bufferSize[direction/2]);
-            assert(currentIndexBuff >= 0);
+            printf("currentIndexBuff %d \t direction %d\n", currentIndexBuff, direction);
+            assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
 
             for (int i = 0; i < 5; i++) {
                 //TODO: (TKS) Not correct indexing
@@ -78,7 +73,7 @@ void swap(double** sendBuffer, double**readBuffer, const t_procData *procData, i
 
 //Copy read buffer to ghost layer
 void inject(double** readBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData, 
-            int *direction, int *index){
+            int direction, int *index){
 
     //k - corresponds to the 'outer' value when computing the offset
     for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
@@ -192,7 +187,6 @@ int p_computeBuffCellOffset(const int outer, const int inner,
 	switch (direction/2) { //integer division to get the type of face (see enum in LBDefinitions.h)
 		case 0: // LEFT, RIGHT -> Y fixed
 			//outer = Z, inner = X
-            //TODO: Subtract one from inner/outer?
 			return bufferLength[direction][0]*(outer-1) + (inner-1);
 
 		case 1: // TOP, BOTTOM -> Z fixed
