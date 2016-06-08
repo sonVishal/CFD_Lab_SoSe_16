@@ -55,8 +55,10 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
         for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
 
             currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
+
+            // Buffer two dimensional, hence fixedValue = 0;
             currentIndexBuff  =  
-            5*p_computeCellOffset(k-1, j-1, iterPara->fixedValue, procData->xLength, direction);
+            5*p_computeCellOffset(k-1, j-1, 0, procData->bufferLength[direction], direction);
 
             for (int i = 0; i < 5; i++) {
                 //TODO: (TKS) Not correct indexing
