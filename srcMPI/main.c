@@ -142,7 +142,7 @@ int main(int argc, char *argv[]){
          do extraction , swap , injection for z (down and up ; up and down)
         */
 
-        communicate(sendBuffer, readBuffer, collideField, procData.xLength, procData.bufferSize);
+        communicate(sendBuffer, readBuffer, collideField, &procData);
 
 	    doStreaming(collideField,streamField,flagField,procData.xLength);
 

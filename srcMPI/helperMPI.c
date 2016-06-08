@@ -1,5 +1,6 @@
 
 #include "helperMPI.h"
+#include "boundary.h"
 
 //TODO: (TKS) 
 //Reduce bufferSize[6]--> bufferSize[3]?
@@ -12,33 +13,42 @@
 //                  * Extract/Inject need only get indecies of cillideField + buffer.
 //
 
-void p_assignIndices(int *direction, int *index);
 
-void communicate(double** sendBuffer, double**readBuffer, double* collideField, int* xlength, int* bufferSize){
+void communicate(double** sendBuffer, double**readBuffer, double* collideField, const t_procData *procData){
     //Run extract, swap, inject for all sides and cells.
     //
     int index[5];
+    int endInner;
+    int endOuter;
+    int fixedValue;
+
     for (int direction = LEFT; direction < BACK; ++direction) {
         //TODO: (TKS) iterate over all planes and do the following:
+        //          * Using inner/outer formulation.
+        //          * Functions operate on single cells.
+
+
+        
+        p_setIterationParameters(&endOuter, &endInner, &fixedValue, *procData, direction);
         p_assignIndices(&direction, index);
-        extract(sendBuffer, collideField, xlength, bufferSize, direction);
-        swap(sendBuffer, readBuffer, bufferSize, direction);
-        inject(readBuffer, collideField, xlength, bufferSize, direction);
+        extract(sendBuffer, collideField, procData, direction);
+        swap(sendBuffer, readBuffer, procData, direction);
+        inject(readBuffer, collideField, procData, direction);
     }
 
 }
 
 //Copy distributions needed to sendbuffer.
-void extract( double** sendBuffer, double* collideField, int* xlength, int* bufferSize, int direction){
+void extract( double** sendBuffer, double* collideField, const t_procData *procData, int direction){
 }
 
 //Send distributions and wait to receive.
-void swap(double** sendBuffer, double**readBuffer, int* bufferSize, int direction){
+void swap(double** sendBuffer, double**readBuffer, const t_procData *procData, int direction){
 
 }
 
 //Copy read buffer to ghost layer
-void inject(double** readBuffer, double* collideField, int* xlength, int* bufferSize, int direction){
+void inject(double** readBuffer, double* collideField, const t_procData *procData, int direction){
 }
 
 //Function to find indecies being extracted/injected
