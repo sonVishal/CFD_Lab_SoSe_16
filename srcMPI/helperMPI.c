@@ -43,27 +43,24 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 void extract( double** sendBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData,
               int direction, int* index){
 
-    //int currentIndexField;
+    int currentIndexField;
     int currentIndexBuff;
+    int fieldSize = (procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2);
 
     //k - corresponds to the 'outer' value when computing the offset
     for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
         //j - corresponds to the 'inner' value
         for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
 
-            //currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
+            currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
 
             currentIndexBuff  =  5*p_computeBuffCellOffset(k, j, procData->bufferLength, direction);
-            if(currentIndexBuff > procData->bufferSize[direction/2] || currentIndexBuff >=0){
-                //printf("k = %d j = %d currentIndexBuff %d \t direction %d bufferSize %d\n",
-                //        k, j,currentIndexBuff, direction ,procData->bufferSize[direction/2]);
-            }
             assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
+            assert(currentIndexField < fieldSize  && currentIndexField <= 0);
 
             for (int i = 0; i < 5; i++) {
-                //TODO: (TKS) Not correct indexing
-                //sendBuffer[direction][currentIndexBuff + i] = collideField[currentIndexField+index[i]];
-                //sendBuffer[direction][currentIndexBuff + i] = 0;
+                //TODO: (TKS) Not correct indexing yet
+                sendBuffer[direction][currentIndexBuff + i] = collideField[currentIndexField+index[i]];
             }
         }
     }
@@ -181,11 +178,11 @@ void p_assignIndices(int *direction, int *index) {
 }
 
 //Function to compute index in buffer given outer and inner coordinate
-//TODO: (TKS) finish
 int p_computeBuffCellOffset(const int outer, const int inner, 
                             const int bufferLength[3][3], const int direction){
 
 
+    //TODO: (TKS) Confirm that indecies are correct.
 	//direction has valid integer values from 0 to 5
 	switch (direction/2) { //integer division to get the type of face (see enum in LBDefinitions.h)
 		case 0: // LEFT, RIGHT -> Y fixed
