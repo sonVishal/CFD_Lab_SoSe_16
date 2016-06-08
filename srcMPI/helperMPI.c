@@ -27,13 +27,19 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         //          * Using inner/outer formulation.
         //          * Functions operate on single cells.
 
+	    //k - corresponds to the 'outer' value when computing the offset
+        for(int k = 0; k <= endOuter; ++k){
+            //j - corresponds to the 'inner' value
+            for(int j = 0; j <= endInner; ++j){
 
-        
-        p_setIterationParameters(&endOuter, &endInner, &fixedValue, *procData, direction);
-        p_assignIndices(&direction, index);
-        extract(sendBuffer, collideField, procData, direction);
-        swap(sendBuffer, readBuffer, procData, direction);
-        inject(readBuffer, collideField, procData, direction);
+            
+                p_setIterationParameters(&endOuter, &endInner, &fixedValue, *procData, direction);
+                p_assignIndices(&direction, index);
+                extract(sendBuffer, collideField, procData, direction);
+                swap(sendBuffer, readBuffer, procData, direction);
+                inject(readBuffer, collideField, procData, direction);
+            }
+        }
     }
 
 }
