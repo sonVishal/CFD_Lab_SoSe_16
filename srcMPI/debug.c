@@ -19,15 +19,107 @@ void printProcDataPos(t_procData procData, int *pos) {
     printf("-----------------------------------\n");
 }
 
-void writeVtkDebug(const double * const collideField,
-    const int * const flagField, const char * filename, int xlength)
+void writeVtkOutputDebug(const double * const collideField,
+    const int * const flagField, const char * filename,
+    unsigned int t, t_procData procData, int *procsPerAxis)
 {
     // Files related variables
     char pFileName[80];
     FILE *fp = NULL;
 
     // Create the file with time information in the name
-    sprintf(pFileName, "%s.vtk", filename);
+    sprintf(pFileName, "%s.%i.%i.vts", "debug/Debug",procData.rank,t);
+    fp  = fopen(pFileName, "w");
+
+    int myPos[3] = {0,0,0};
+    // printf("Rank %d\n",procData.rank);
+    p_rankToPos(procsPerAxis, procData.rank, myPos);
+
+    // Check if files were opened or not
+    if(fp == NULL)
+    {
+        char szBuff[80];
+        sprintf(szBuff, "Failed to open %s", pFileName);
+        ERROR(szBuff);
+        return;
+    }
+
+    fprintf(fp,"<VTKFile type=\"StructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" header_type=\"UInt32\">\n");
+
+    // Write the point data for the domain
+    writevtkPointCoordinatesDebug(fp,procData.xLength,myPos);
+
+    fprintf(fp,"<CellData>\n");
+    fprintf(fp,"<DataArray type=\"Int32\" NumberOfComponents=\"1\" Name=\"BoundaryType\">\n");
+
+    int x, y, z;            // iteration variables
+    int idx;                // cell index
+
+    // Temporary variables for (xlength+2)^2
+    int const xylen = (procData.xLength[0]+2)*(procData.xLength[1]+2);
+
+    // Temporary variables for z and y offsets
+    int zOffset, yzOffset;
+    // Write cell average denisties the file
+    for(z = 0; z <= procData.xLength[2]+1; z++) {
+        zOffset = z*xylen;
+        for(y = 0; y <= procData.xLength[1]+1; y++) {
+            yzOffset = zOffset + y*(procData.xLength[0]+2);
+            for(x = 0; x <= procData.xLength[0]+1; x++) {
+                // Compute the base index for collideField
+                idx = (yzOffset + x);
+
+                // Write Boundary type
+                fprintf(fp, "%d\n", flagField[idx]);
+            }
+        }
+    }
+    fprintf(fp,"</DataArray>\n");
+    fprintf(fp,"</CellData>\n");
+    fprintf(fp,"</Piece>\n");
+    fprintf(fp,"</StructuredGrid>\n");
+    fprintf(fp,"</VTKFile>\n");
+    // Close file
+    if(fclose(fp))
+    {
+        char szBuff[80];
+        sprintf(szBuff, "Failed to close %s", pFileName);
+        ERROR(szBuff);
+    }
+}
+
+void writevtkPointCoordinatesDebug(FILE *fp, int *xlength, int *myPos) {
+    int x, y, z;
+    // printf("Position = (%d,%d,%d)\n",myPos[0],myPos[1],myPos[2]);
+    unsigned int x1 = myPos[0]*(xlength[0]+2);
+    unsigned int x2 = x1 + xlength[0] + 2;
+    unsigned int y1 = myPos[1]*(xlength[1]+2);
+    unsigned int y2 = y1 + xlength[1] + 2;
+    unsigned int z1 = myPos[2]*(xlength[2]+2);
+    unsigned int z2 = z1 + xlength[2] + 2;
+    fprintf(fp,"<StructuredGrid WholeExtent=\"%d %d %d %d %d %d\">\n",x1,x2,y1,y2,z1,z2);
+    fprintf(fp,"<Piece Extent=\"%d %d %d %d %d %d\">\n",x1,x2,y1,y2,z1,z2);
+    fprintf(fp,"<Points>\n");
+    fprintf(fp,"<DataArray type=\"UInt32\" Name=\"Points\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+    // We have xlength + 1 points for xlength cells in each direction
+    for(z = z1; z <= z2; z++) {
+        for(y = y1; y <= y2; y++) {
+            for(x = x1; x <= x2; x++) {
+                fprintf(fp, "%d %d %d\n", x, y, z);
+            }
+        }
+    }
+    fprintf(fp,"</DataArray>\n");
+    fprintf(fp,"</Points>\n");
+}
+
+void p_writeCombinedPVTSFileDebug(const char * filename, unsigned int t, int xlength, int *procsPerAxis) {
+    // Files related variables
+    char pFileName[80];
+    FILE *fp = NULL;
+
+    // Create the file with time information in the name
+    sprintf(pFileName, "%s.%i.pvts", "debug/Debug",t);
     fp  = fopen(pFileName, "w");
 
     // Check if files were opened or not
@@ -39,108 +131,45 @@ void writeVtkDebug(const double * const collideField,
         return;
     }
 
-    // Write header for the VTK file
-    writevtkHeaderDebug(fp, xlength);
+    fprintf(fp, "<VTKFile type=\"PStructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n");
+    fprintf(fp, "<PStructuredGrid WholeExtent=\"0 %d 0 %d 0 %d\" GhostLevel=\"1\">\n",xlength+4,xlength+4,xlength+4);
+    fprintf(fp, "<PPoints>\n");
+    fprintf(fp, "%s\n","<PDataArray NumberOfComponents=\"3\" type=\"UInt32\" />");
+    fprintf(fp, "</PPoints>\n");
+    fprintf(fp, "<PCellData>\n");
+    fprintf(fp, "<PDataArray type=\"Int32\" NumberOfComponents=\"1\" Name=\"BoundaryType\"/>\n");
+    fprintf(fp, "</PCellData>\n");
 
-    // Write the point data for the domain
-    writevtkPointCoordinatesDebug(fp, xlength);
+    // Perform domain decomposition again
+    int procXlength[3] = {0,0,0};
+    procXlength[0] = (xlength+4)/procsPerAxis[0];
+    procXlength[1] = (xlength+4)/procsPerAxis[1];
+    procXlength[2] = (xlength+4)/procsPerAxis[2];
+    int x1,x2,y1,y2,z1,z2;
 
-    // iteration variables
-    int x, y, z;
-
-    fprintf(fp,"\nCELL_DATA %d \n", (xlength+2)*(xlength+2)*(xlength+2));
-
-    // Write cell average density to a temporary vtk file
-    fprintf(fp, "SCALARS boundaryType integer 1 \n");
-    fprintf(fp, "LOOKUP_TABLE default \n");
-    for(z = 0; z <= xlength+1; z++) {
-        for(y = 0; y <= xlength+1; y++) {
-            for(x = 0; x <= xlength+1; x++) {
-                // Compute the base index for collideField
-                int xyzoffset = z*(xlength+2)*(xlength+2) + y*(xlength+2) + x;
-                fprintf(fp, "%d\n", flagField[xyzoffset]);
+    for (int k = 0; k < procsPerAxis[2]; k++) {
+        for (int j = 0; j < procsPerAxis[1]; j++) {
+            for (int i = 0; i < procsPerAxis[0]; i++) {
+                procXlength[0] += ((procsPerAxis[0]-1)==i)?(xlength+4)%procsPerAxis[0]:0;
+                procXlength[1] += ((procsPerAxis[1]-1)==j)?(xlength+4)%procsPerAxis[1]:0;
+                procXlength[2] += ((procsPerAxis[2]-1)==k)?(xlength+4)%procsPerAxis[2]:0;
+                x1 = i*procXlength[0]; x2 = x1 + procXlength[0];
+                y1 = j*procXlength[1]; y2 = y1 + procXlength[1];
+                z1 = k*procXlength[2]; z2 = z1 + procXlength[2];
+                snprintf(pFileName, 80, "%s.%i.%i.vts",filename,i+(j+k*procsPerAxis[1])*procsPerAxis[0],t);
+                // This is stupid "../<fileName>" but what the heck
+                fprintf(fp, "<Piece Extent=\"%d %d %d %d %d %d\" Source=\"%s.%i.%i.vts\"/>\n",x1,x2,y1,y2,z1,z2,"Debug",i+j*procsPerAxis[0]+k*procsPerAxis[0]*procsPerAxis[1],t);
             }
         }
     }
-    // Close files
+    fprintf(fp, "</PStructuredGrid>\n");
+    fprintf(fp, "</VTKFile>\n");
+
+    // Close file
     if(fclose(fp))
     {
         char szBuff[80];
         sprintf(szBuff, "Failed to close %s", pFileName);
-        ERROR(szBuff);
-    }
-}
-
-void writevtkHeaderDebug(FILE *fp, int xlength)
-{
-    if(fp == NULL)
-    {
-        char szBuff[80];
-        sprintf(szBuff, "Null pointer in write_vtkHeader");
-        ERROR(szBuff);
-        return;
-    }
-
-    fprintf(fp,"# vtk DataFile Version 2.0\n");
-    fprintf(fp,"generated by CFD-lab course output (written by Vishal Sontakke) \n");
-    fprintf(fp,"ASCII\n");
-    fprintf(fp,"\n");
-    fprintf(fp,"DATASET STRUCTURED_GRID\n");
-    fprintf(fp,"DIMENSIONS  %i %i %i \n", xlength+3, xlength+3, xlength+3);
-    fprintf(fp,"POINTS %i integer\n", (xlength+3)*(xlength+3)*(xlength+3));
-    fprintf(fp,"\n");
-}
-
-void writevtkPointCoordinatesDebug(FILE *fp, int xlength) {
-    int x, y, z;
-
-    // We have xlength + 3 points for xlength+2 cells in each direction
-    for(z = 0; z <= xlength+2; z++) {
-        for(y = 0; y <= xlength+2; y++) {
-            for(x = 0; x <= xlength+2; x++) {
-                fprintf(fp, "%d %d %d\n", x, y, z);
-            }
-        }
-    }
-}
-
-
-void writeCollideFieldDebug(char *filename, double* collideField, int size){
-
-    FILE *fp = NULL;
-
-    char filenameExt[100];
-    snprintf(filenameExt, 100, "%s.array", filename);
-
-    fp  = fopen(filenameExt, "w");
-
-    if(fp == NULL)
-    {
-        char szBuff[80];
-        sprintf(szBuff, "Failed to open %s", filenameExt);
-        ERROR(szBuff);
-        return;
-    }
-
-    int linebreak = Q;
-    int counter = 0;
-    int keepWriting = 1;
-
-    while(keepWriting){
-    	for(int l = 0; l < linebreak && keepWriting; ++l){
-    		fprintf(fp,"%.16lf ", collideField[counter]);
-    		counter++;
-
-    		if(counter >= size-1)
-    			keepWriting = 0;
-    	}
-    	fprintf(fp, "\n");
-    }
-
-    if(fclose(fp))
-    {
-        char szBuff[80];
-        sprintf(szBuff, "Failed to close %s", filenameExt);
         ERROR(szBuff);
     }
 }
