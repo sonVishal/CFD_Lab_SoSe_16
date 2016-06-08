@@ -45,9 +45,9 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
                 //int currentCellIndex = Q*p_computeCellOffset(k, j, iterPara.fixedValue, procData->xLength, direction);
 
                 //TODO: (TKS) Decide whether to take in procData of introduce temp variables, xlength, bufferSize.
-                extract(sendBuffer, collideField, procData, direction);
+                extract(sendBuffer, collideField, &iterPara, procData, direction);
                 swap(sendBuffer, readBuffer, procData, direction);
-                inject(readBuffer, collideField, procData, direction);
+                inject(readBuffer, collideField, &iterPara, procData, direction);
             }
         }
     }
@@ -55,7 +55,8 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 }
 
 //Copy distributions needed to sendbuffer.
-void extract( double** sendBuffer, double* collideField, const t_procData *procData, int direction){
+void extract( double** sendBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData,
+              int direction){
 }
 
 //Send distributions and wait to receive.
@@ -64,7 +65,8 @@ void swap(double** sendBuffer, double**readBuffer, const t_procData *procData, i
 }
 
 //Copy read buffer to ghost layer
-void inject(double** readBuffer, double* collideField, const t_procData *procData, int direction){
+void inject(double** readBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData, 
+            int direction){
 }
 
 //Function to assign iteration parameters for communication.
