@@ -1,4 +1,9 @@
 
+#include "LBDefinitions.h"
+#include "helperMPI.h"
+#include "boundary.h"
+#include "helper.h"
+#include <mpi/mpi.h>
 
 //TODO: (TKS) 
 //Reduce bufferSize[6]--> bufferSize[3]?
@@ -11,7 +16,6 @@
 //          * make a double for in communicate and use inner/outer formulation.
 //                  * Extract/Inject need only get indecies of cillideField + buffer.
 //
-
 
 
 void communicate(double** sendBuffer, double**readBuffer, double* collideField, const t_procData *procData){
@@ -31,7 +35,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         p_setCommIterationParameters(&iterPara, procData, direction);
         p_assignIndices(&direction, index);
 
-        extract(sendBuffer, collideField, &iterPara, procData, &direction, index);
+        extract(sendBuffer, collideField, &iterPara, procData, direction, index);
         swap(sendBuffer, readBuffer, procData, &direction);
         inject(readBuffer, collideField, &iterPara, procData, &direction, index);
     }
@@ -40,14 +44,27 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 
 //Copy distributions needed to sendbuffer.
 void extract( double** sendBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData,
-              int *direction, int* index){
+              int direction, int* index){
+
+    //int currentIndexField;
+    int currentIndexBuff;
 
     //k - corresponds to the 'outer' value when computing the offset
     for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
         //j - corresponds to the 'inner' value
         for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
 
-          //int currentCellIndex = Q*p_computeCellOffset(k, j, iterPara.fixedValue, procData->xLength, direction);
+            //currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
+
+            // Buffer two dimensional, hence fixedValue = 0;
+            currentIndexBuff  =  5*p_computeBuffCellOffset(k, j, procData->bufferLength, direction);
+            //assert(currentIndexBuff < )
+
+            for (int i = 0; i < 5; i++) {
+                //TODO: (TKS) Not correct indexing
+                //sendBuffer[direction][currentIndexBuff + i] = collideField[currentIndexField+index[i]];
+                sendBuffer[direction][currentIndexBuff + i] = 0;
+            }
         }
     }
 }
@@ -160,5 +177,32 @@ void p_assignIndices(int *direction, int *index) {
 			// y = 0
 			index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18;
 			break;
+	}
+}
+
+//Function to compute index in buffer given outer and inner coordinate
+//TODO: (TKS) finish
+int p_computeBuffCellOffset(const int outer, const int inner, 
+                            const int bufferLength[3][3], const int direction){
+
+
+	//direction has valid integer values from 0 to 5
+	switch (direction/2) { //integer division to get the type of face (see enum in LBDefinitions.h)
+		case 0: // LEFT, RIGHT -> Y fixed
+			//outer = Z, inner = X
+            //TODO: Subtract one from inner/outer?
+			return bufferLength[direction][0]*(outer-1) + (inner-1);
+
+		case 1: // TOP, BOTTOM -> Z fixed
+			//outer = Y, inner = X
+			return bufferLength[direction][0]*outer + (inner-1);
+
+		case 2: // FRONT, BACK -> X fixed
+			//outer = Z, inner = Y
+			return bufferLength[direction][1]*outer + inner;
+
+		default:
+			ERROR("Invalid direction occured. This should not happen !!!");
+			return -1;
 	}
 }

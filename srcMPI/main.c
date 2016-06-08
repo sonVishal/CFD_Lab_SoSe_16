@@ -113,7 +113,7 @@ int main(int argc, char *argv[]){
     initialiseFields(collideField, streamField, flagField, procData);
     // printf("Finished Initializing Proc %d\n",procData.rank);
 
-    initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.bufferSize);
+    initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.bufferLength);
     // printf("Finished Initializing Buffers Proc %d\n",procData.rank);
 
     if(procData.rank == 0)

@@ -206,14 +206,16 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
 	// printProcDataPos(*procData,procPos);
 }
 
-void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength, int* s_bufferSize) {
+void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength, int bufferLength[3][3]) {
 
 	const int nrDistSwap = 5;
 
 	// XZ inner domain (no edges included)
 	int bufferSize		= nrDistSwap*(xlength[0]*xlength[2]);
-    s_bufferSize[LEFT]  = bufferSize;
-    s_bufferSize[RIGHT] = bufferSize;
+
+    bufferLength[0][0]  = xlength[0];
+    bufferLength[0][1]  = xlength[1];
+    bufferLength[0][2]  = xlength[2];
 	sendBuffer[LEFT] 	= (double *) malloc(bufferSize*sizeof(double));
 	sendBuffer[RIGHT] 	= (double *) malloc(bufferSize*sizeof(double));
 	readBuffer[LEFT] 	= (double *) malloc(bufferSize*sizeof(double));
@@ -221,8 +223,9 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 
 	// XY plane including edges at the boundary to left/right
 	bufferSize 			= nrDistSwap*(xlength[0]*(xlength[1]+2));
-    s_bufferSize[TOP]   = bufferSize;
-    s_bufferSize[BOTTOM]= bufferSize;
+    bufferLength[1][0]  = xlength[0];
+    bufferLength[1][1]  = xlength[1]+2;  //Buffer includes ghost layer in y-direction.
+    bufferLength[1][2]  = xlength[2];
 	sendBuffer[TOP] 	= (double *) malloc(bufferSize*sizeof(double));
 	sendBuffer[BOTTOM] 	= (double *) malloc(bufferSize*sizeof(double));
 	readBuffer[TOP] 	= (double *) malloc(bufferSize*sizeof(double));
@@ -230,8 +233,9 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 
 	// YZ plane including all edges
 	bufferSize 			= nrDistSwap*((xlength[1]+2)*(xlength[2]+2));
-    s_bufferSize[FRONT] = bufferSize;
-    s_bufferSize[BACK]  = bufferSize;
+    bufferLength[2][0]  = xlength[0]-2;
+    bufferLength[2][1]  = xlength[1]+2; //Buffer includes ghost layer in y and z direction.
+    bufferLength[2][2]  = xlength[2]+2;
 	sendBuffer[FRONT] 	= (double *) malloc(bufferSize*sizeof(double));
 	sendBuffer[BACK] 	= (double *) malloc(bufferSize*sizeof(double));
 	readBuffer[FRONT] 	= (double *) malloc(bufferSize*sizeof(double));
