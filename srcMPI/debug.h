@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include "LBDefinitions.h"
 
-void writevtkHeaderDebug(FILE *fp, int xlength);
-void writevtkPointCoordinatesDebug(FILE *fp, int xlength);
+void writeVtkOutputDebug(const double * const collideField, const int * const flagField, const char * filename, unsigned int t, t_procData procData, int *procsPerAxis);
 
-void writeVtkDebug(const double * const collideField,
-    const int * const flagField, const char * filename, int xlength);
+void writevtkPointCoordinatesDebug(FILE *fp, int *xlength, int *myPos);
+
+void p_writeCombinedPVTSFileDebug(const char * filename, unsigned int t, int xlength, int *procsPerAxis);
 
 void writeCollideFieldDebug(char *filename, double* collideField, int size);
 
