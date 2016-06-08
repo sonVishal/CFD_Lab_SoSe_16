@@ -16,7 +16,7 @@ void p_setBounceBack(double *collideField, const double * const wallVelocity,
 	if(type == 1){ 			//bounce back
 		/* equation 17 */
 		collideField[current_cell_index + i] = collideField[n_cell_index + (Q-i-1)];
-	}else if(type == 2){ 	//moving wall
+	}else{ // type == 2 (MOVING_WALL)
 
 		double density = 0;
 		computeDensity(&collideField[n_cell_index], &density);
@@ -28,9 +28,6 @@ void p_setBounceBack(double *collideField, const double * const wallVelocity,
 		collideField[current_cell_index + i] = collideField[n_cell_index + (Q-i-1)] +
 				2 * weight * density * dot_uwall_c / (C_S*C_S);
 
-	}else{ //Wrong input parameter
-		printf("TYPE BOUNDARY: %i\n" , type);
-		ERROR("A FLUID cell appeared when setting boundaries. This should not happen!!\n");
 	}
 }
 
@@ -169,6 +166,8 @@ void p_treatSingleWall(double *collideField, const int * const flagField, const 
 			int xyz_offset = p_computeCellOffset(k, j, fixedValue, xlength, wallIdx);
 			int current_cell_index = Q*xyz_offset;
 			int boundaryType = flagField[xyz_offset];
+
+			assert(boundaryType == NO_SLIP || boundaryType == PARALLEL_BOUNDARY);
 
 			//PARALLEL boundaries are not treated when they occur (e.g. at shared edges)
 			for(int i = 0; i < Q && boundaryType != PARALLEL_BOUNDARY; ++i){
