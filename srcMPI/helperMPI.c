@@ -54,7 +54,10 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
             //currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
 
             currentIndexBuff  =  5*p_computeBuffCellOffset(k, j, procData->bufferLength, direction);
-            printf("currentIndexBuff %d \t direction %d\n", currentIndexBuff, direction);
+            if(currentIndexBuff > procData->bufferSize[direction/2] || currentIndexBuff >=0){
+                //printf("k = %d j = %d currentIndexBuff %d \t direction %d bufferSize %d\n",
+                //        k, j,currentIndexBuff, direction ,procData->bufferSize[direction/2]);
+            }
             assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
 
             for (int i = 0; i < 5; i++) {
@@ -143,7 +146,7 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 		break;
 
 	default:
-		ERROR("Invalid wallIdx occurred. This should never happen!");
+		ERROR("Invalid direction occurred. This should never happen!");
 	}
 }
 
@@ -187,15 +190,15 @@ int p_computeBuffCellOffset(const int outer, const int inner,
 	switch (direction/2) { //integer division to get the type of face (see enum in LBDefinitions.h)
 		case 0: // LEFT, RIGHT -> Y fixed
 			//outer = Z, inner = X
-			return bufferLength[direction][0]*(outer-1) + (inner-1);
+			return bufferLength[direction/2][0]*(outer-1) + (inner-1);
 
 		case 1: // TOP, BOTTOM -> Z fixed
 			//outer = Y, inner = X
-			return bufferLength[direction][0]*outer + (inner-1);
+			return bufferLength[direction/2][0]*outer + (inner-1);
 
 		case 2: // FRONT, BACK -> X fixed
 			//outer = Z, inner = Y
-			return bufferLength[direction][1]*outer + inner;
+			return bufferLength[direction/2][1]*outer + inner;
 
 		default:
 			ERROR("Invalid direction occured. This should not happen !!!");
