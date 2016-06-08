@@ -132,18 +132,14 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		}
 	}
 
-	// Now set up the ghost boundary layer with moving wall
-	for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
-		if (thisProcData.neighbours[wallIdx] == MPI_PROC_NULL && wallIdx == TOP) {
-			p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, wallIdx);
-			for (z = 0; z <= endOuter; z++) {
-				for (y = 0; y <= endInner; y++) {
-					idx = p_computeCellOffset(z,y,fixedValue,thisProcData.xLength,wallIdx);
-					flagField[idx] = MOVING_WALL;
-				}
+	// Now set up the ghost boundary layer with moving wall - if it's at the TOP ghost layer
+	if (thisProcData.neighbours[TOP] == MPI_PROC_NULL) {
+		p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, TOP);
+		for (z = 0; z <= endOuter; z++) {
+			for (y = 0; y <= endInner; y++) {
+				idx = p_computeCellOffset(z,y,fixedValue,thisProcData.xLength, TOP);
+				flagField[idx] = MOVING_WALL;
 			}
-			// Break because only 1 moving wall
-			break;
 		}
 	}
 
