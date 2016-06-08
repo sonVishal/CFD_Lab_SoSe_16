@@ -167,7 +167,10 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD,rank);
 }
 
+
+
 void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, const int * const procsPerAxis) {
+
 	// printf("Calling domain decomposition from %d\n",procData->rank);
 	int procPos[3] = {0,0,0};
 	p_rankToPos(procsPerAxis,procData->rank,procPos);
@@ -181,6 +184,13 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
     procData->xLength[1] += (procPos[1] == procsPerAxis[1]-1)?xlength%procsPerAxis[1]:0;
     procData->xLength[2] += (procPos[2] == procsPerAxis[2]-1)?xlength%procsPerAxis[2]:0;
 
+    /* TODO: (DL) make it shorter, discuss if this is an alternative:
+     *
+	 *  #define setNb(wall, cond, nb) procData->neighbours[wall] = cond ? MPI_PROC_NULL : nb
+	 *
+     *  e.g. first line:
+     *  setNb(LEFT, (procPos[1] == 0), procData->rank-procsPerAxis[0]);
+	 */
 
     /* Decide whether it is a ghost boundary (= MPI_PROC_NULL) or a parallel boundary (rank of neighbour) */
     procData->neighbours[LEFT]   = (procPos[1] == 0) 				  ? MPI_PROC_NULL : procData->rank-procsPerAxis[0];
