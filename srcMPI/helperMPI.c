@@ -16,13 +16,14 @@
 //
 
 
+
 void communicate(double** sendBuffer, double**readBuffer, double* collideField, const t_procData *procData){
     //Run extract, swap, inject for all sides and cells.
     //
     int index[5];
-    int startInner, endInner;
-    int startOuter, endOuter;
-    int fixedValue;
+
+    t_iterPara iterPara;
+
 
     for (int direction = LEFT; direction < BACK; ++direction) {
         //TODO: (TKS) iterate over all planes and do the following:
@@ -30,16 +31,18 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         //          * Functions operate on single cells.
         //              - Need functions to take the whole extraction etc?
 
-        p_setCommIterationParameters(&startOuter, &endOuter,&startInner, &endInner, &fixedValue, *procData, direction);
+        p_setCommIterationParameters(&iterPara, procData, direction);
         p_assignIndices(&direction, index);
 
         //TODO:(TKS) Should move for loops into the functions. Want to do whole extraction before doing swap etc.
-	    //k - corresponds to the 'outer' value when computing the offset
-        for(int k = startOuter; k <= endOuter; ++k){
-            //j - corresponds to the 'inner' value
-            for(int j = startInner; j <= endInner; ++j){
+        //      * Change signatures (Add struct to hold iteration variables?)
 
-                int currentCellIndex = Q*p_computeCellOffset(k, j, fixedValue, (*procData).xLength, direction);
+	    //k - corresponds to the 'outer' value when computing the offset
+        for(int k = iterPara.startOuter; k <= iterPara.endOuter; ++k){
+            //j - corresponds to the 'inner' value
+            for(int j = iterPara.startInner; j <= iterPara.endInner; ++j){
+
+                //int currentCellIndex = Q*p_computeCellOffset(k, j, iterPara.fixedValue, procData->xLength, direction);
 
                 //TODO: (TKS) Decide whether to take in procData of introduce temp variables, xlength, bufferSize.
                 extract(sendBuffer, collideField, procData, direction);
@@ -65,10 +68,7 @@ void inject(double** readBuffer, double* collideField, const t_procData *procDat
 }
 
 //Function to assign iteration parameters for communication.
-
-void p_setCommIterationParameters(int *startOuter, int *endOuter, int *startInner, int *endInner, 
-                                  int *fixedValue, const t_procData procData, const int direction){
-
+void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procData, const int direction){
     //TODO: (TKS) Confirm that indecies are correct.
 	switch(direction){
 
@@ -76,51 +76,51 @@ void p_setCommIterationParameters(int *startOuter, int *endOuter, int *startInne
 	//outer = Z, inner = X, Y fixed
     //only iterate over inner domain of plane (FLUID cells)
 	case LEFT:
-        *startOuter = 1;
-		*endOuter   = procData.xLength[2];
-        *startInner = 1;
-		*endInner   = procData.xLength[0];
-		*fixedValue = 1;
+        iterPara->startOuter = 1;
+		iterPara->endOuter   = procData->xLength[2];
+        iterPara->startInner = 1;
+		iterPara->endInner   = procData->xLength[0];
+		iterPara->fixedValue = 1;
 		break;
 	case RIGHT:
-        *startOuter = 1;
-		*endOuter   = procData.xLength[2];
-        *startInner = 1;
-		*endInner   = procData.xLength[0];
-		*fixedValue = procData.xLength[1];
+        iterPara->startOuter = 1;
+		iterPara->endOuter   = procData->xLength[2];
+        iterPara->startInner = 1;
+		iterPara->endInner   = procData->xLength[0];
+		iterPara->fixedValue = procData->xLength[1];
 		break;
 	//---------------------------------------------
 	//outer = Y, inner = X, Z fixed
 	case TOP:
-        *startOuter = 0;
-		*endOuter   = procData.xLength[1]+1;
-        *startInner = 1;
-		*endInner   = procData.xLength[0];
-		*fixedValue = procData.xLength[2];
+        iterPara->startOuter = 0;
+		iterPara->endOuter   = procData->xLength[1]+1;
+        iterPara->startInner = 1;
+		iterPara->endInner   = procData->xLength[0];
+		iterPara->fixedValue = procData->xLength[2];
 		break;
 	case BOTTOM:
-        *startOuter = 0;
-		*endOuter   = procData.xLength[1]+1;
-        *startInner = 1;
-		*endInner   = procData.xLength[0];
-		*fixedValue = 1;
+        iterPara->startOuter = 0;
+		iterPara->endOuter   = procData->xLength[1]+1;
+        iterPara->startInner = 1;
+		iterPara->endInner   = procData->xLength[0];
+		iterPara->fixedValue = 1;
 		break;
 
 	//---------------------------------------------
 	//outer = Z, inner = Y, X fixed
 	case FRONT:
-        *startOuter = 0;
-		*endOuter   = procData.xLength[2]+1;
-        *startInner = 0;
-		*endInner   = procData.xLength[1]+1;
-		*fixedValue = procData.xLength[0];
+        iterPara->startOuter = 0;
+		iterPara->endOuter   = procData->xLength[2]+1;
+        iterPara->startInner = 0;
+		iterPara->endInner   = procData->xLength[1]+1;
+		iterPara->fixedValue = procData->xLength[0];
 		break;
 	case BACK:
-        *startOuter = 0;
-		*endOuter = procData.xLength[2]+1;
-        *startInner = 0;
-		*endInner = procData.xLength[1]+1;
-		*fixedValue = 1;
+        iterPara->startOuter = 0;
+		iterPara->endOuter = procData->xLength[2]+1;
+        iterPara->startInner = 0;
+		iterPara->endInner = procData->xLength[1]+1;
+		iterPara->fixedValue = 1;
 		break;
 
 	default:
