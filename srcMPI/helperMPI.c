@@ -1,7 +1,4 @@
 
-#include "helperMPI.h"
-#include "boundary.h"
-#include "helper.h"
 
 //TODO: (TKS) 
 //Reduce bufferSize[6]--> bufferSize[3]?
@@ -70,6 +67,7 @@ void inject(double** readBuffer, double* collideField, const t_iterPara *iterPar
         for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
 
           //int currentCellIndex = Q*p_computeCellOffset(k, j, iterPara.fixedValue, procData->xLength, direction);
+
         }
     }
 }

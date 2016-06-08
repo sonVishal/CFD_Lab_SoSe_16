@@ -3,6 +3,9 @@
 #define _HELPERMPI_H_
 
 #include "LBDefinitions.h"
+#include "helperMPI.h"
+#include "boundary.h"
+#include "helper.h"
 #include <mpi/mpi.h>
 
 typedef struct{
