@@ -19,5 +19,7 @@ void inject(double** readBuffer, double* collideField, const t_iterPara *iterPar
 
 void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procData, const int direction);
 void p_assignIndices(int *direction, int *index);
+int p_computeBuffCellOffset(const int outer, const int inner, 
+                            const int currbufferLength[3][3], const int direction);
 
 #endif

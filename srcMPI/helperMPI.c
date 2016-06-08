@@ -46,7 +46,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 void extract( double** sendBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData,
               int direction, int* index){
 
-    int currentIndexField;
+    //int currentIndexField;
     int currentIndexBuff;
 
     //k - corresponds to the 'outer' value when computing the offset
@@ -54,17 +54,15 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
         //j - corresponds to the 'inner' value
         for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
 
-            currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
+            //currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
 
             // Buffer two dimensional, hence fixedValue = 0;
-            currentIndexBuff  =  
-            5*p_computeCellOffset(k-1, j-1, 0, procData->bufferLength[direction], direction);
+            currentIndexBuff  =  5*p_computeBuffCellOffset(k, j, procData->bufferLength, direction);
 
             for (int i = 0; i < 5; i++) {
                 //TODO: (TKS) Not correct indexing
-                //            Add another counter to keep track of bufferSize?
-                //            Introduce bufferLength in procData?
-                sendBuffer[direction][currentIndexBuff + i] = collideField[currentIndexField+index[i]];
+                //sendBuffer[direction][currentIndexBuff + i] = collideField[currentIndexField+index[i]];
+                sendBuffer[direction][currentIndexBuff + i] = 0;
             }
         }
     }
@@ -178,5 +176,32 @@ void p_assignIndices(int *direction, int *index) {
 			// y = 0
 			index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18;
 			break;
+	}
+}
+
+//Function to compute index in buffer given outer and inner coordinate
+//TODO: (TKS) finish
+int p_computeBuffCellOffset(const int outer, const int inner, 
+                            const int currbufferLength[3][3], const int direction){
+
+	//Computes index: z * (xlen*ylen) + y * (xlen) + x
+
+	//wallIdx has valid integer values from 0 to 5
+	switch (direction/2) { //integer division to get the type of face (see enum in LBDefinitions.h)
+		case 0: // LEFT, RIGHT -> Y fixed
+			//outer = Z, inner = X
+			return 0;
+
+		case 1: // TOP, BOTTOM -> Z fixed
+			//outer = Y, inner = X
+			return 0;
+
+		case 2: // FRONT, BACK -> X fixed
+			//outer = Z, inner = Y
+			return 0;
+
+		default:
+			ERROR("Invalid wall index occured. This should not happen !!!");
+			return -1;
 	}
 }
