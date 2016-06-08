@@ -45,7 +45,8 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
 
     int currentIndexField;
     int currentIndexBuff;
-    int fieldSize = (procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2);
+    int fieldSize = Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2);
+    //printf("fieldSize = %d\n", fieldSize);
 
     //k - corresponds to the 'outer' value when computing the offset
     for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
@@ -53,9 +54,10 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
         for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
 
             currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
-
             currentIndexBuff  =  5*p_computeBuffCellOffset(k, j, procData->bufferLength, direction);
+
             assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
+            //printf("currentIndexField = %d\n", currentIndexField);
             assert(currentIndexField < fieldSize  && currentIndexField <= 0);
 
             for (int i = 0; i < 5; i++) {
