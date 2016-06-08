@@ -184,14 +184,6 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
     procData->xLength[1] += (procPos[1] == procsPerAxis[1]-1)?xlength%procsPerAxis[1]:0;
     procData->xLength[2] += (procPos[2] == procsPerAxis[2]-1)?xlength%procsPerAxis[2]:0;
 
-    /* TODO: (DL) make it shorter, discuss if this is an alternative:
-     *
-	 *  #define setNb(wall, cond, nb) procData->neighbours[wall] = cond ? MPI_PROC_NULL : nb
-	 *
-     *  e.g. first line:
-     *  setNb(LEFT, (procPos[1] == 0), procData->rank-procsPerAxis[0]);
-	 */
-
     /* Decide whether it is a ghost boundary (= MPI_PROC_NULL) or a parallel boundary (rank of neighbour) */
     procData->neighbours[LEFT]   = (procPos[1] == 0) 				  ? MPI_PROC_NULL : procData->rank-procsPerAxis[0];
     procData->neighbours[RIGHT]  = (procPos[1] == procsPerAxis[1]-1)  ? MPI_PROC_NULL : procData->rank+procsPerAxis[0];
@@ -236,7 +228,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 	// YZ plane including all edges
 	bufferSize 			= nrDistSwap*((xlength[1]+2)*(xlength[2]+2));
     s_bufferSize[2] = bufferSize;
-    bufferLength[2][0]  = xlength[0]-2;
+    bufferLength[2][0]  = xlength[0]+2;
     bufferLength[2][1]  = xlength[1]+2; //Buffer includes ghost layer in y and z direction.
     bufferLength[2][2]  = xlength[2]+2;
 	sendBuffer[FRONT] 	= (double *) malloc(bufferSize*sizeof(double));
