@@ -2,11 +2,6 @@
 #ifndef _HELPERMPI_H_
 #define _HELPERMPI_H_
 
-#include "LBDefinitions.h"
-#include "helperMPI.h"
-#include "boundary.h"
-#include "helper.h"
-#include <mpi/mpi.h>
 
 typedef struct{
     int startInner, endInner;
@@ -17,7 +12,7 @@ typedef struct{
 
 void communicate(double** sendBuffer, double**readBuffer, double* collideField, const t_procData *procData);
 void extract( double** sendBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData,
-              int *direction, int* index);
+              int direction, int* index);
 void swap(double** sendBuffer, double**readBuffer, const t_procData *procData, int *direction);
 void inject(double** readBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData, 
             int *direction, int *index);

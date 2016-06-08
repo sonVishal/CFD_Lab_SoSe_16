@@ -1,4 +1,9 @@
 
+#include "LBDefinitions.h"
+#include "helperMPI.h"
+#include "boundary.h"
+#include "helper.h"
+#include <mpi/mpi.h>
 
 //TODO: (TKS) 
 //Reduce bufferSize[6]--> bufferSize[3]?
@@ -11,7 +16,6 @@
 //          * make a double for in communicate and use inner/outer formulation.
 //                  * Extract/Inject need only get indecies of cillideField + buffer.
 //
-
 
 
 void communicate(double** sendBuffer, double**readBuffer, double* collideField, const t_procData *procData){
@@ -31,7 +35,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         p_setCommIterationParameters(&iterPara, procData, direction);
         p_assignIndices(&direction, index);
 
-        extract(sendBuffer, collideField, &iterPara, procData, &direction, index);
+        extract(sendBuffer, collideField, &iterPara, procData, direction, index);
         swap(sendBuffer, readBuffer, procData, &direction);
         inject(readBuffer, collideField, &iterPara, procData, &direction, index);
     }
@@ -40,14 +44,26 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 
 //Copy distributions needed to sendbuffer.
 void extract( double** sendBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData,
-              int *direction, int* index){
+              int direction, int* index){
+
+    int currentIndexField;
+    int currentIndexBuff;
 
     //k - corresponds to the 'outer' value when computing the offset
     for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
         //j - corresponds to the 'inner' value
         for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
 
-          //int currentCellIndex = Q*p_computeCellOffset(k, j, iterPara.fixedValue, procData->xLength, direction);
+            currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
+            currentIndexBuff  =  
+            5*p_computeCellOffset(k-1, j-1, iterPara->fixedValue, procData->xLength, direction);
+
+            for (int i = 0; i < 5; i++) {
+                //TODO: (TKS) Not correct indexing
+                //            Add another counter to keep track of bufferSize?
+                //            Introduce bufferLength in procData?
+                sendBuffer[direction][currentIndexBuff + i] = collideField[currentIndexField+index[i]];
+            }
         }
     }
 }
