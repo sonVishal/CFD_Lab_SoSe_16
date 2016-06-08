@@ -34,22 +34,10 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         p_setCommIterationParameters(&iterPara, procData, direction);
         p_assignIndices(&direction, index);
 
-        //TODO:(TKS) Should move for loops into the functions. Want to do whole extraction before doing swap etc.
-        //      * Change signatures (Add struct to hold iteration variables?)
-
-	    //k - corresponds to the 'outer' value when computing the offset
-        for(int k = iterPara.startOuter; k <= iterPara.endOuter; ++k){
-            //j - corresponds to the 'inner' value
-            for(int j = iterPara.startInner; j <= iterPara.endInner; ++j){
-
-                //int currentCellIndex = Q*p_computeCellOffset(k, j, iterPara.fixedValue, procData->xLength, direction);
-
-                //TODO: (TKS) Decide whether to take in procData of introduce temp variables, xlength, bufferSize.
-                extract(sendBuffer, collideField, &iterPara, procData, direction);
-                swap(sendBuffer, readBuffer, procData, direction);
-                inject(readBuffer, collideField, &iterPara, procData, direction);
-            }
-        }
+        //TODO: (TKS) Decide whether to take in procData of introduce temp variables, xlength, bufferSize.
+        extract(sendBuffer, collideField, &iterPara, procData, direction);
+        swap(sendBuffer, readBuffer, procData, direction);
+        inject(readBuffer, collideField, &iterPara, procData, direction);
     }
 
 }
@@ -57,6 +45,15 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 //Copy distributions needed to sendbuffer.
 void extract( double** sendBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData,
               int direction){
+
+    //k - corresponds to the 'outer' value when computing the offset
+    for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
+        //j - corresponds to the 'inner' value
+        for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
+
+          //int currentCellIndex = Q*p_computeCellOffset(k, j, iterPara.fixedValue, procData->xLength, direction);
+        }
+    }
 }
 
 //Send distributions and wait to receive.
@@ -67,6 +64,15 @@ void swap(double** sendBuffer, double**readBuffer, const t_procData *procData, i
 //Copy read buffer to ghost layer
 void inject(double** readBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData, 
             int direction){
+
+    //k - corresponds to the 'outer' value when computing the offset
+    for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
+        //j - corresponds to the 'inner' value
+        for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
+
+          //int currentCellIndex = Q*p_computeCellOffset(k, j, iterPara.fixedValue, procData->xLength, direction);
+        }
+    }
 }
 
 //Function to assign iteration parameters for communication.
