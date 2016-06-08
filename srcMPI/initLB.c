@@ -84,7 +84,7 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *procsPe
   return 0;
 }
 
-void initialiseFields(double *collideField, double *streamField, int *flagField, t_procData thisProcData){
+void initialiseFields(double *collideField, double *streamField, int *flagField, const t_procData thisProcData){
 
     /*Setting initial distributions*/
     //f_i(x,0) = f^eq(1,0,0) = w_i
