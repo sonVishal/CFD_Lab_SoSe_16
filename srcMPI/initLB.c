@@ -196,13 +196,14 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
 	// printProcDataPos(*procData,procPos);
 }
 
-void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength, int bufferLength[3][3]) {
+void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength, int bufferLength[3][3],
+                       int s_bufferSize[3]) {
 
 	const int nrDistSwap = 5;
 
 	// XZ inner domain (no edges included)
 	int bufferSize		= nrDistSwap*(xlength[0]*xlength[2]);
-
+    s_bufferSize[0] = bufferSize;
     bufferLength[0][0]  = xlength[0];
     bufferLength[0][1]  = xlength[1];
     bufferLength[0][2]  = xlength[2];
@@ -213,6 +214,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 
 	// XY plane including edges at the boundary to left/right
 	bufferSize 			= nrDistSwap*(xlength[0]*(xlength[1]+2));
+    s_bufferSize[1] = bufferSize;
     bufferLength[1][0]  = xlength[0];
     bufferLength[1][1]  = xlength[1]+2;  //Buffer includes ghost layer in y-direction.
     bufferLength[1][2]  = xlength[2];
@@ -223,6 +225,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 
 	// YZ plane including all edges
 	bufferSize 			= nrDistSwap*((xlength[1]+2)*(xlength[2]+2));
+    s_bufferSize[2] = bufferSize;
     bufferLength[2][0]  = xlength[0]-2;
     bufferLength[2][1]  = xlength[1]+2; //Buffer includes ghost layer in y and z direction.
     bufferLength[2][2]  = xlength[2]+2;

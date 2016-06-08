@@ -56,14 +56,16 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
 
             //currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
 
-            // Buffer two dimensional, hence fixedValue = 0;
             currentIndexBuff  =  5*p_computeBuffCellOffset(k, j, procData->bufferLength, direction);
-            //assert(currentIndexBuff < )
+            printf("currentIndexBuff %d\n", currentIndexBuff);
+            printf("bufferSize %d\n", procData->bufferSize[direction/2]);
+            assert(currentIndexBuff < procData->bufferSize[direction/2]);
+            assert(currentIndexBuff >= 0);
 
             for (int i = 0; i < 5; i++) {
                 //TODO: (TKS) Not correct indexing
                 //sendBuffer[direction][currentIndexBuff + i] = collideField[currentIndexField+index[i]];
-                sendBuffer[direction][currentIndexBuff + i] = 0;
+                //sendBuffer[direction][currentIndexBuff + i] = 0;
             }
         }
     }
