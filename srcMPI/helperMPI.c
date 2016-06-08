@@ -58,6 +58,7 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
 
             // Buffer two dimensional, hence fixedValue = 0;
             currentIndexBuff  =  5*p_computeBuffCellOffset(k, j, procData->bufferLength, direction);
+            //assert(currentIndexBuff < )
 
             for (int i = 0; i < 5; i++) {
                 //TODO: (TKS) Not correct indexing
@@ -182,26 +183,26 @@ void p_assignIndices(int *direction, int *index) {
 //Function to compute index in buffer given outer and inner coordinate
 //TODO: (TKS) finish
 int p_computeBuffCellOffset(const int outer, const int inner, 
-                            const int currbufferLength[3][3], const int direction){
+                            const int bufferLength[3][3], const int direction){
 
-	//Computes index: z * (xlen*ylen) + y * (xlen) + x
 
-	//wallIdx has valid integer values from 0 to 5
+	//direction has valid integer values from 0 to 5
 	switch (direction/2) { //integer division to get the type of face (see enum in LBDefinitions.h)
 		case 0: // LEFT, RIGHT -> Y fixed
 			//outer = Z, inner = X
-			return 0;
+            //TODO: Subtract one from inner/outer?
+			return bufferLength[direction][0]*(outer-1) + (inner-1);
 
 		case 1: // TOP, BOTTOM -> Z fixed
 			//outer = Y, inner = X
-			return 0;
+			return bufferLength[direction][0]*outer + (inner-1);
 
 		case 2: // FRONT, BACK -> X fixed
 			//outer = Z, inner = Y
-			return 0;
+			return bufferLength[direction][1]*outer + inner;
 
 		default:
-			ERROR("Invalid wall index occured. This should not happen !!!");
+			ERROR("Invalid direction occured. This should not happen !!!");
 			return -1;
 	}
 }
