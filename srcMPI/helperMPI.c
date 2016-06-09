@@ -37,27 +37,24 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         p_setCommIterationParameters(&iterPara2, procData, direction+1);
         p_assignIndices(&direction, index);
 
-        if(procData->neighbours[direction] != MPI_PROC_NULL){
+        if(procData->neighbours[direction] != MPI_PROC_NULL)
             extract(sendBuffer, collideField, &iterPara, procData, direction, index);
-        }
 
-        if(procData->neighbours[direction+1] != MPI_PROC_NULL){
+        if(procData->neighbours[direction+1] != MPI_PROC_NULL)
             extract(sendBuffer, collideField, &iterPara2, procData, direction+1, index);
-        }
 
         swap(sendBuffer, readBuffer, procData, &direction);
 
-        if(procData->neighbours[direction] != MPI_PROC_NULL){
+        if(procData->neighbours[direction] != MPI_PROC_NULL)
             inject(readBuffer, collideField, &iterPara, procData, direction, index);
-        }
 
-        if(procData->neighbours[direction+1] != MPI_PROC_NULL){
+        if(procData->neighbours[direction+1] != MPI_PROC_NULL)
             inject(readBuffer, collideField, &iterPara2, procData, direction+1, index);
-        }
     }
 
 }
 
+//TODO (TKS) Join extract and inject into one function.
 //Copy distributions needed to sendbuffer.
 void extract( double** sendBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData,
               int direction, int* index){
@@ -93,7 +90,6 @@ void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, 
     //int dest, int sendtag, void *recvbuf, int recvcount,
     //MPI_Datatype recvtype, int source, int recvtag,
     //MPI_Comm comm, MPI_Status *status)
-
     MPI_Status status;
 
     //temp variables for readabillity.
