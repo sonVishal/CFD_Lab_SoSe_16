@@ -200,22 +200,16 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 	const int nrDistSwap = 5;
 
 	// XZ inner domain (no edges included)
-	int bufferSize		= nrDistSwap*(xlength[0]*xlength[2]);
+	int bufferSize		= nrDistSwap*((xlength[0]+2)*(xlength[2]+2));
     s_bufferSize[0] = bufferSize;
-    bufferLength[0][0]  = xlength[0];
-    bufferLength[0][1]  = xlength[1];
-    bufferLength[0][2]  = xlength[2];
 	sendBuffer[LEFT] 	= (double *) malloc(bufferSize*sizeof(double));
 	sendBuffer[RIGHT] 	= (double *) malloc(bufferSize*sizeof(double));
 	readBuffer[LEFT] 	= (double *) malloc(bufferSize*sizeof(double));
 	readBuffer[RIGHT] 	= (double *) malloc(bufferSize*sizeof(double));
 
 	// XY plane including edges at the boundary to left/right
-	bufferSize 			= nrDistSwap*(xlength[0]*(xlength[1]+2));
+	bufferSize 			= nrDistSwap*((xlength[0]+2)*(xlength[1]+2));
     s_bufferSize[1] = bufferSize;
-    bufferLength[1][0]  = xlength[0];
-    bufferLength[1][1]  = xlength[1]+2;  //Buffer includes ghost layer in y-direction.
-    bufferLength[1][2]  = xlength[2];
 	sendBuffer[TOP] 	= (double *) malloc(bufferSize*sizeof(double));
 	sendBuffer[BOTTOM] 	= (double *) malloc(bufferSize*sizeof(double));
 	readBuffer[TOP] 	= (double *) malloc(bufferSize*sizeof(double));
@@ -224,9 +218,6 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 	// YZ plane including all edges
 	bufferSize 			= nrDistSwap*((xlength[1]+2)*(xlength[2]+2));
     s_bufferSize[2] = bufferSize;
-    bufferLength[2][0]  = xlength[0]+2;
-    bufferLength[2][1]  = xlength[1]+2; //Buffer includes ghost layer in y and z direction.
-    bufferLength[2][2]  = xlength[2]+2;
 	sendBuffer[FRONT] 	= (double *) malloc(bufferSize*sizeof(double));
 	sendBuffer[BACK] 	= (double *) malloc(bufferSize*sizeof(double));
 	readBuffer[FRONT] 	= (double *) malloc(bufferSize*sizeof(double));
