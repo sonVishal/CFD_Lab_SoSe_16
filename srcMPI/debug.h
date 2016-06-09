@@ -14,3 +14,11 @@ void checkCollideFieldDebug(char *referenceFile, double *currentCollideField, in
 void printProcData(t_procData procData);
 
 void printProcDataPos(t_procData procData, int *pos);
+
+void convertEnumWallToString(const int wall, char *wallName);
+
+void printWallEnum(const int wall);
+
+void convertEnumCellToString(const int wall, char *wallName);
+
+void printCellEnum(const int wall);

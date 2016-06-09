@@ -2,6 +2,68 @@
 #include "helper.h"
 #include <stdio.h>
 
+void convertEnumWallToString(const int wall, char *wallName) {
+    switch (wall) {
+        case LEFT:
+            snprintf(wallName, 80, "%s", "LEFT");
+            break;
+        case RIGHT:
+            snprintf(wallName, 80, "%s", "RIGHT");
+            break;
+        case TOP:
+            snprintf(wallName, 80, "%s", "TOP");
+            break;
+        case BOTTOM:
+            snprintf(wallName, 80, "%s", "BOTTOM");
+            break;
+        case FRONT:
+            snprintf(wallName, 80, "%s", "FRONT");
+            break;
+        case BACK:
+            snprintf(wallName, 80, "%s", "BACK");
+            break;
+        default:
+            snprintf(wallName, 80, "%s", "NULL");
+            break;
+    }
+}
+
+void convertEnumCellToString(const int cell, char *cellName) {
+    switch (cell) {
+        case FLUID:
+            snprintf(cellName, 80, "%s", "FLUID");
+            break;
+        case NO_SLIP:
+            snprintf(cellName, 80, "%s", "NO_SLIP");
+            break;
+        case MOVING_WALL:
+            snprintf(cellName, 80, "%s", "MOVING_WALL");
+            break;
+        case PARALLEL_BOUNDARY:
+            snprintf(cellName, 80, "%s", "PARALLEL_BOUNDARY");
+            break;
+        default:
+            snprintf(cellName, 80, "%s", "NULL");
+            break;
+    }
+}
+
+void printWallEnum(const int wall) {
+    char wallName[80];
+    convertEnumWallToString(wall,wallName);
+    fprintf(stderr, "%s\n", wallName);
+    fflush(stdout);
+    fflush(stderr);
+}
+
+void printCellEnum(const int cellType) {
+    char typeName[80];
+    convertEnumWallToString(cellType,typeName);
+    fprintf(stderr, "%s\n", typeName);
+    fflush(stdout);
+    fflush(stderr);
+}
+
 void printProcData(t_procData procData) {
     fprintf(stderr,"------------- Proc %d -------------\n",procData.rank);
     fprintf(stderr,"My length = (%d,%d,%d)\n",procData.xLength[0],procData.xLength[1],procData.xLength[2]);
