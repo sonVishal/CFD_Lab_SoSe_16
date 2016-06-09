@@ -58,6 +58,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 
 }
 
+//TODO (TKS) Join extract and inject into one function.
 //Copy distributions needed to sendbuffer.
 void extract( double** sendBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData,
               int direction, int* index){
