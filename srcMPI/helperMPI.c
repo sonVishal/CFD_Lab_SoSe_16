@@ -29,21 +29,31 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 
     for (int direction = LEFT; direction <= BACK; direction+=2) {
 
-        //TODO: (TKS) Does not return correct iteration parameters after loop change;
-        //          * temp solution: introduce new variable iterPara2.
-
         //TODO: (TKS) Overwriting domain boundaries in inject.
         //          * Check if direction is a boundary by checking for MPI_PROC_NULL
         //          * Add case in swap to avoid deadlock
+
         p_setCommIterationParameters(&iterPara,  procData, direction);
         p_setCommIterationParameters(&iterPara2, procData, direction+1);
         p_assignIndices(&direction, index);
 
-        extract(sendBuffer, collideField, &iterPara, procData, direction, index);
-        extract(sendBuffer, collideField, &iterPara2, procData, direction+1, index);
+        if(procData->neighbours[direction] != MPI_PROC_NULL){
+            extract(sendBuffer, collideField, &iterPara, procData, direction, index);
+        }
+
+        if(procData->neighbours[direction+1] != MPI_PROC_NULL){
+            extract(sendBuffer, collideField, &iterPara2, procData, direction+1, index);
+        }
+
         swap(sendBuffer, readBuffer, procData, &direction);
-        inject(readBuffer, collideField, &iterPara, procData, direction, index);
-        inject(readBuffer, collideField, &iterPara2, procData, direction+1, index);
+
+        if(procData->neighbours[direction] != MPI_PROC_NULL){
+            inject(readBuffer, collideField, &iterPara, procData, direction, index);
+        }
+
+        if(procData->neighbours[direction+1] != MPI_PROC_NULL){
+            inject(readBuffer, collideField, &iterPara2, procData, direction+1, index);
+        }
     }
 
 }
@@ -91,20 +101,18 @@ void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, 
     int proc1 = procData->neighbours[*direction];
     int proc2 = procData->neighbours[*direction+1];
 
-    //TODO: (TKS) Test difference in speed.
-    //MPI_Send(sendBuffer[*direction],   bufferSize , MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD);
-    //MPI_Send(sendBuffer[*direction+1], bufferSize , MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD);
-
-    //MPI_Recv(readBuffer[*direction],   bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, &status);
-    //MPI_Recv(readBuffer[*direction+1], bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, &status);
 
     //Send proc1 receive proc2
-    MPI_Sendrecv(sendBuffer[*direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[*direction+1], bufferSize,
-    MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, &status);
+    if(procData->neighbours[*direction] != MPI_PROC_NULL){
+        MPI_Sendrecv(sendBuffer[*direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[*direction+1], 
+                bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, &status);
+    }
 
-    //Send proc1 receive proc1
-    MPI_Sendrecv(sendBuffer[*direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[*direction], bufferSize,
-    MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, &status);
+    //Send proc2 receive proc1
+    if(procData->neighbours[*direction+1] != MPI_PROC_NULL){
+        MPI_Sendrecv(sendBuffer[*direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[*direction], 
+                bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, &status);
+    }
 
 }
 
@@ -220,31 +228,32 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 	}
 }
 
+//TODO: (TKS) Exchange opposited
 //Function to find indecies being extracted/injected
 void p_assignIndices(int *direction, int *index) {
 	switch (*direction) {
-		case BOTTOM:
-			// z = 0
-			index[0] = 14; index[1] = 15; index[2] = 16; index[3] = 17; index[4] = 18;
-			break;
 		case TOP:
 			// z = xlength[2]+1
-			index[0] = 0; index[1] = 1; index[2] = 2; index[3] = 3; index[4] = 4;
+			index[0] = 14; index[1] = 15; index[2] = 16; index[3] = 17; index[4] = 18;
 			break;
-		case BACK:
-			// x = 0
-			index[0] = 3; index[1] = 7; index[2] = 10; index[3] = 13; index[4] = 17;
+		case BOTTOM:
+			// z = 0
+			index[0] = 0; index[1] = 1; index[2] = 2; index[3] = 3; index[4] = 4;
 			break;
 		case FRONT:
 			// x = xlength[0]+1
-			index[0] = 1; index[1] = 5; index[2] = 8; index[3] =  11; index[4] = 15;
+			index[0] = 3; index[1] = 7; index[2] = 10; index[3] = 13; index[4] = 17;
 			break;
-		case RIGHT:
-			// y = xlength[1]+1
-			index[0] = 0; index[1] = 5; index[2] = 6; index[3] = 7; index[4] = 14;
+		case BACK:
+			// x = 0
+			index[0] = 1; index[1] = 5; index[2] = 8; index[3] =  11; index[4] = 15;
 			break;
 		case LEFT:
 			// y = 0
+			index[0] = 0; index[1] = 5; index[2] = 6; index[3] = 7; index[4] = 14;
+			break;
+		case RIGHT:
+			// y = xlength[1]+1
 			index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18;
 			break;
 	}
