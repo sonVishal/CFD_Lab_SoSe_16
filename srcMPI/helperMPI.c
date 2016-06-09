@@ -62,8 +62,9 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
     int currentIndexField;
     int currentIndexBuff= 0;
 
-    //For error checking. TODO: May remove later or #ifndef
+#ifndef NO_CHECKS
     int fieldSize = Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2);
+#endif
 
     //k - corresponds to the 'outer' value when computing the offset
     for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
@@ -119,10 +120,12 @@ void inject(double** readBuffer, double* collideField, t_iterPara *iterPara, con
     int currentIndexField;
     int currentIndexBuff= 0;
 
-    //For error checking. TODO: (TKS) Add #ifndef
+#ifndef NO_CHECKS
     int fieldSize = Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2);
+#endif
 
     //TODO: (TKS) Exchange switch with shiftFixedValue array potentially outside function call.
+
     switch (direction){
         case LEFT:
               iterPara->fixedValue--;
