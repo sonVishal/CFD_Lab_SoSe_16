@@ -1,22 +1,93 @@
 #include "debug.h"
 #include "helper.h"
+#include <mpi/mpi.h>
 #include <stdio.h>
 
+void convertEnumWallToString(const int wall, char *wallName) {
+    int myRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+    switch (wall) {
+        case LEFT:
+            snprintf(wallName, 80, "Proc: %d\t Wall: %s\n",myRank, "LEFT");
+            break;
+        case RIGHT:
+            snprintf(wallName, 80, "Proc: %d\t Wall: %s\n",myRank, "RIGHT");
+            break;
+        case TOP:
+            snprintf(wallName, 80, "Proc: %d\t Wall: %s\n",myRank, "TOP");
+            break;
+        case BOTTOM:
+            snprintf(wallName, 80, "Proc: %d\t Wall: %s\n",myRank, "BOTTOM");
+            break;
+        case FRONT:
+            snprintf(wallName, 80, "Proc: %d\t Wall: %s\n",myRank, "FRONT");
+            break;
+        case BACK:
+            snprintf(wallName, 80, "Proc: %d\t Wall: %s\n",myRank, "BACK");
+            break;
+        default:
+            snprintf(wallName, 80, "Proc: %d\t Wall: %s\n",myRank, "NULL");
+            break;
+    }
+}
+
+void convertEnumCellToString(const int cell, char *cellName) {
+    int myRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+    switch (cell) {
+        case FLUID:
+            snprintf(cellName, 80, "Proc: %d\t Cell: %s\n",myRank, "FLUID");
+            break;
+        case NO_SLIP:
+            snprintf(cellName, 80, "Proc: %d\t Cell: %s\n",myRank, "NO_SLIP");
+            break;
+        case MOVING_WALL:
+            snprintf(cellName, 80, "Proc: %d\t Cell: %s\n",myRank, "MOVING_WALL");
+            break;
+        case PARALLEL_BOUNDARY:
+            snprintf(cellName, 80, "Proc: %d\t Cell: %s\n",myRank, "PARALLEL_BOUNDARY");
+            break;
+        default:
+            snprintf(cellName, 80, "Proc: %d\t Cell: %s\n",myRank, "NULL");
+            break;
+    }
+}
+
+void printWallEnum(const int wall) {
+    char wallName[80];
+    convertEnumWallToString(wall,wallName);
+    fprintf(stderr, "%s\n",wallName);
+    fflush(stdout);
+    fflush(stderr);
+}
+
+void printCellEnum(const int cellType) {
+    char typeName[80];
+    convertEnumWallToString(cellType,typeName);
+    fprintf(stderr, "%s\n",typeName);
+    fflush(stdout);
+    fflush(stderr);
+}
+
 void printProcData(t_procData procData) {
-    printf("------------- Proc %d -------------\n",procData.rank);
-    printf("My length = (%d,%d,%d)\n",procData.xLength[0],procData.xLength[1],procData.xLength[2]);
-    printf("My neighbors are\n");
-    printf("LEFT = %d, RIGHT = %d,\nTOP = %d, BOTTOM = %d,\nFRONT = %d, BACK = %d\n",procData.neighbours[LEFT],procData.neighbours[RIGHT],procData.neighbours[TOP],procData.neighbours[BOTTOM],procData.neighbours[FRONT],procData.neighbours[BACK]);
-    printf("-----------------------------------\n");
+    fprintf(stderr,"------------- Proc %d -------------\n",procData.rank);
+    fprintf(stderr,"My length = (%d,%d,%d)\n",procData.xLength[0],procData.xLength[1],procData.xLength[2]);
+    fprintf(stderr,"My neighbors are\n");
+    fprintf(stderr,"LEFT = %d, RIGHT = %d,\nTOP = %d, BOTTOM = %d,\nFRONT = %d, BACK = %d\n",procData.neighbours[LEFT],procData.neighbours[RIGHT],procData.neighbours[TOP],procData.neighbours[BOTTOM],procData.neighbours[FRONT],procData.neighbours[BACK]);
+    fprintf(stderr,"-----------------------------------\n");
+    fflush(stdout);
+    fflush(stderr);
 }
 
 void printProcDataPos(t_procData procData, int *pos) {
-    printf("------------- Proc %d -------------\n",procData.rank);
-    printf("My position = (%d,%d,%d)\n",pos[0],pos[1],pos[2]);
-    printf("My length = (%d,%d,%d)\n",procData.xLength[0],procData.xLength[1],procData.xLength[2]);
-    printf("My neighbors are\n");
-    printf("LEFT\t= %d,\tRIGHT\t= %d,\nTOP\t= %d,\tBOTTOM\t= %d,\nFRONT\t= %d,\tBACK\t= %d\n",procData.neighbours[LEFT],procData.neighbours[RIGHT],procData.neighbours[TOP],procData.neighbours[BOTTOM],procData.neighbours[FRONT],procData.neighbours[BACK]);
-    printf("-----------------------------------\n");
+    fprintf(stderr,"------------- Proc %d -------------\n",procData.rank);
+    fprintf(stderr,"My position = (%d,%d,%d)\n",pos[0],pos[1],pos[2]);
+    fprintf(stderr,"My length = (%d,%d,%d)\n",procData.xLength[0],procData.xLength[1],procData.xLength[2]);
+    fprintf(stderr,"My neighbors are\n");
+    fprintf(stderr,"LEFT\t= %d,\tRIGHT\t= %d,\nTOP\t= %d,\tBOTTOM\t= %d,\nFRONT\t= %d,\tBACK\t= %d\n",procData.neighbours[LEFT],procData.neighbours[RIGHT],procData.neighbours[TOP],procData.neighbours[BOTTOM],procData.neighbours[FRONT],procData.neighbours[BACK]);
+    fprintf(stderr,"-----------------------------------\n");
+    fflush(stdout);
+    fflush(stderr);
 }
 
 void writeVtkOutputDebug(const double * const collideField,

@@ -161,17 +161,17 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 	//outer = Z, inner = X, Y fixed
     //only iterate over inner domain of plane (FLUID cells)
 	case LEFT:
-        iterPara->startOuter = 1;
-		iterPara->endOuter   = procData->xLength[2];
-        iterPara->startInner = 1;
-		iterPara->endInner   = procData->xLength[0];
+        iterPara->startOuter = 0;
+		iterPara->endOuter   = procData->xLength[2]+1;
+        iterPara->startInner = 0;
+		iterPara->endInner   = procData->xLength[0]+1;
 		iterPara->fixedValue = 1;
 		break;
 	case RIGHT:
-        iterPara->startOuter = 1;
-		iterPara->endOuter   = procData->xLength[2];
-        iterPara->startInner = 1;
-		iterPara->endInner   = procData->xLength[0];
+        iterPara->startOuter = 0;
+		iterPara->endOuter   = procData->xLength[2]+1;
+        iterPara->startInner = 0;
+		iterPara->endInner   = procData->xLength[0]+1;
 		iterPara->fixedValue = procData->xLength[1];
 		break;
 	//---------------------------------------------
@@ -180,15 +180,15 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 	case TOP:
         iterPara->startOuter = 0;
 		iterPara->endOuter   = procData->xLength[1]+1;
-        iterPara->startInner = 1;
-		iterPara->endInner   = procData->xLength[0];
+        iterPara->startInner = 0;
+		iterPara->endInner   = procData->xLength[0]+1;
 		iterPara->fixedValue = procData->xLength[2];
 		break;
 	case BOTTOM:
         iterPara->startOuter = 0;
 		iterPara->endOuter   = procData->xLength[1]+1;
-        iterPara->startInner = 1;
-		iterPara->endInner   = procData->xLength[0];
+        iterPara->startInner = 0;
+		iterPara->endInner   = procData->xLength[0]+1;
 		iterPara->fixedValue = 1;
 		break;
 

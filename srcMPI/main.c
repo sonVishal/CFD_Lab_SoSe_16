@@ -122,7 +122,7 @@ int main(int argc, char *argv[]){
 
     // Write the VTK at t = 0
     printf("R %i INFO: write vtk file at time t = %d \n", procData.rank, t);
-    //writeVtkOutput(collideField,flagField,fName,t,procData,procsPerAxis);
+    //writeVtkOutput(collideField,flagField,fName,t,xlength,procData,procsPerAxis);
     // writeVtkOutputDebug(collideField,flagField,fName,t,procData,procsPerAxis);
     // Combine VTS file at t = 0
     if (procData.rank == 0) {
@@ -158,7 +158,7 @@ int main(int argc, char *argv[]){
 
 	    if (t%timestepsPerPlotting == 0){
             printf("R %i, INFO: write vtk file at time t = %d \n", procData.rank, t);
-	        writeVtkOutput(collideField,flagField,fName,t,procData,procsPerAxis);
+	        writeVtkOutput(collideField,flagField,fName,t,xlength,procData,procsPerAxis);
             // Combine VTS file at t
             if (procData.rank == 0) {
                 p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
