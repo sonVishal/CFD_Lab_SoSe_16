@@ -68,6 +68,8 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
 
 //Send distributions and wait to receive.
 void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, int *direction){
+    //TODO: (TKS) Add error handling.
+
 //int MPI_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
     //int dest, int sendtag, void *recvbuf, int recvcount,
     //MPI_Datatype recvtype, int source, int recvtag,
@@ -80,19 +82,20 @@ void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, 
     int proc1 = procData->neighbours[*direction];
     int proc2 = procData->neighbours[*direction+1];
 
-    //TODO: (TKS) Not iterating through every direction, so need two sendreceive. Deadlock with two
-    //            succesively?
-    //              * Both try to send left?
+    //TODO: (TKS) Test difference in speed.
+    //MPI_Send(sendBuffer[*direction],   bufferSize , MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD);
+    //MPI_Send(sendBuffer[*direction+1], bufferSize , MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD);
 
-    MPI_Sendrecv(sendBuffer[*direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[*direction +1], bufferSize,
+    //MPI_Recv(readBuffer[*direction],   bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, &status);
+    //MPI_Recv(readBuffer[*direction+1], bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, &status);
+
+    //Send left receive right
+    MPI_Sendrecv(sendBuffer[*direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[*direction+1], bufferSize,
     MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, &status);
 
-
-
-    //MPI_Sendrecv(sendBuffer[*direction +1], bufferSize , MPI_DOUBLE, proc2 ,0, readBuffer[*direction], bufferSize,
-    //MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, &status);
-
-
+    //Send right receive left
+    MPI_Sendrecv(sendBuffer[*direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[*direction], bufferSize,
+    MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, &status);
 
 }
 
