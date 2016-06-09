@@ -54,21 +54,17 @@ void convertEnumCellToString(const int cell, char *cellName) {
 }
 
 void printWallEnum(const int wall) {
-    int myRank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
     char wallName[80];
     convertEnumWallToString(wall,wallName);
-    fprintf(stderr, "Proc: %d\t Wall: %s\n",myRank, wallName);
+    fprintf(stderr, "%s\n",wallName);
     fflush(stdout);
     fflush(stderr);
 }
 
 void printCellEnum(const int cellType) {
-    int myRank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
     char typeName[80];
     convertEnumWallToString(cellType,typeName);
-    fprintf(stderr, "Proc: %d\t Cell: %s\n",myRank, typeName);
+    fprintf(stderr, "%s\n",typeName);
     fflush(stdout);
     fflush(stderr);
 }

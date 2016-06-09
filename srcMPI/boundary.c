@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "boundary.h"
 #include "helper.h"
+#include "debug.h"
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 #include <mpi/mpi.h>
@@ -190,7 +191,7 @@ void p_treatSingleWall(double *collideField, const int * const flagField, const 
 void treatBoundary(double * collideField, int const * const flagField, const t_procData procData){
 	for(int wall=LEFT; wall<=BACK; ++wall){ //see LBDefinitions for order of walls
 		if(procData.neighbours[wall] == MPI_PROC_NULL){
-			
+			printWallEnum(wall);
 			p_treatSingleWall(collideField, flagField, procData, wall);
 		}
 	}
