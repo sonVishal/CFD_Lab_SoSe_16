@@ -94,8 +94,6 @@ void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, 
     //MPI_Datatype recvtype, int source, int recvtag,
     //MPI_Comm comm, MPI_Status *status)
 
-    MPI_Status status;
-
     //temp variables for readabillity.
     int bufferSize = procData->bufferSize[*direction/2];
     int proc1 = procData->neighbours[*direction];
@@ -105,13 +103,13 @@ void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, 
     //Send proc1 receive proc2
     if(procData->neighbours[*direction] != MPI_PROC_NULL){
         MPI_Sendrecv(sendBuffer[*direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[*direction+1], 
-                bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, &status);
+                bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
 
     //Send proc2 receive proc1
     if(procData->neighbours[*direction+1] != MPI_PROC_NULL){
         MPI_Sendrecv(sendBuffer[*direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[*direction], 
-                bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, &status);
+                bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
 
 }
