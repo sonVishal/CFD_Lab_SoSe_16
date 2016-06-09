@@ -72,7 +72,7 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
 }
 
 //Send distributions and wait to receive.
-void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, int *direction){
+void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, int direction){
     //TODO: (TKS) Add error handling.
 
 //int MPI_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
@@ -81,20 +81,19 @@ void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, 
     //MPI_Comm comm, MPI_Status *status)
 
     //temp variables for readabillity.
-    int bufferSize = procData->bufferSize[*direction/2];
-    int proc1 = procData->neighbours[*direction];
-    int proc2 = procData->neighbours[*direction+1];
-
+    int bufferSize = procData->bufferSize[direction/2];
+    int proc1 = procData->neighbours[direction];
+    int proc2 = procData->neighbours[direction+1];
 
     //Send proc1 receive proc1
-    if(procData->neighbours[*direction] != MPI_PROC_NULL){
-        MPI_Sendrecv(sendBuffer[*direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[*direction],
+    if(procData->neighbours[direction] != MPI_PROC_NULL){
+        MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[direction],
                 bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
 
     //Send proc2 receive proc2
-    if(procData->neighbours[*direction+1] != MPI_PROC_NULL){
-        MPI_Sendrecv(sendBuffer[*direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[*direction+1],
+    if(procData->neighbours[direction+1] != MPI_PROC_NULL){
+        MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
                 bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
 
