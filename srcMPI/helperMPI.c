@@ -5,18 +5,6 @@
 #include "helper.h"
 #include <mpi/mpi.h>
 
-//TODO: (TKS)
-//Reduce bufferSize[6]--> bufferSize[3]?
-//          * Can do two iterations of the loop at the same time.
-//          * Or complete loop unroll
-//          * REMOVE it if not used
-//
-//At what level to iterate plane?
-//          * inside each function
-//          * make a double for in communicate and use inner/outer formulation.
-//                  * Extract/Inject need only get indecies of cillideField + buffer.
-//
-
 
 void communicate(double** sendBuffer, double**readBuffer, double* collideField, const t_procData *procData){
     //Run extract, swap, inject for all sides and cells.
