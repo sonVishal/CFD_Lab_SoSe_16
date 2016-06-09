@@ -17,7 +17,7 @@ EXECUTABLE=lbsim
 all: CFLAGS+= -O0
 all: clean $(EXECUTABLE) ; @echo "\nINFO:Use make speed for a faster code without checks."
 
-speed: CFLAGS+= -DNO_CHECKS -O3
+speed: CFLAGS+= -DNDEBUG -O3
 speed: clean $(EXECUTABLE)
 
 debug: CFLAGS+=-O0 -g -enable-checking -v -da -Q

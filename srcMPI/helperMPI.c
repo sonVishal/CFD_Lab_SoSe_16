@@ -62,7 +62,7 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
     int currentIndexField;
     int currentIndexBuff= 0;
 
-#ifndef NO_CHECKS
+#ifndef NDEBUG
     int fieldSize = Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2);
 #endif
 
@@ -120,7 +120,7 @@ void inject(double** readBuffer, double* collideField, t_iterPara *iterPara, con
     int currentIndexField;
     int currentIndexBuff= 0;
 
-#ifndef NO_CHECKS
+#ifndef NDEBUG
     int fieldSize = Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2);
 #endif
 

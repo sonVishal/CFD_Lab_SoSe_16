@@ -88,11 +88,11 @@ int main(int argc, char *argv[]){
 
     if(procData.rank == 0)
     {
-#ifdef NO_CHECKS
-    	printf("INFO: The compiler directive NO_CHECKS is enabled. Faster execution time is gained, "
+#ifdef NDEBUG
+    	printf("INFO: The compiler directive NDEBUG is enabled. Faster execution time is gained, "
     			"at the cost of less correctness checks during runtime!\n");
 #else
-		printf("INFO: The compiler directive NO_CHECKS is disabled. Checks for "
+		printf("INFO: The compiler directive NDEBUG is disabled. Checks for "
 				"correctness are carried out at the cost of execution speed!\n"
 				"      Use \"make speed\" for a faster execution time.\n");
 #endif
@@ -122,11 +122,11 @@ int main(int argc, char *argv[]){
 
     // Write the VTK at t = 0
     printf("R %i INFO: write vtk file at time t = %d \n", procData.rank, t);
-    writeVtkOutput(collideField,flagField,fName,t,procData,procsPerAxis);
+    //writeVtkOutput(collideField,flagField,fName,t,procData,procsPerAxis);
     // writeVtkOutputDebug(collideField,flagField,fName,t,procData,procsPerAxis);
     // Combine VTS file at t = 0
     if (procData.rank == 0) {
-        p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
+        //p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
         // p_writeCombinedPVTSFileDebug(fName, t, xlength, procsPerAxis);
     }
 

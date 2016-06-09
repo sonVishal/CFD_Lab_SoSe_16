@@ -10,7 +10,7 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 	for ( int i = 0;  i< Q; ++i ) {
 		currentCell[i] = currentCell[i]  - (currentCell[i]  - feq[i])/(*tau);
 
-#ifndef NO_CHECKS
+#ifndef NDEBUG
 		if(currentCell[i]<0){
 			char msg[100];
 			sprintf(msg, "A negative cell particle distribution (value=%f) was detected!! (Aborting)", currentCell[i]);
@@ -52,7 +52,7 @@ void doCollision(double *collideField, int *flagField,const double * const tau, 
 				// Compute the cell density
 				computeDensity(currentCell, &density);
 
-#ifndef NO_CHECKS
+#ifndef NDEBUG
 				// We check if the density deviation is more than densityTol%
 				// This value can be changed in LBDefinitions.h
 				if(fabs(density-1) > densityTol){
