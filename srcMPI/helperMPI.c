@@ -33,7 +33,8 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         //          * temp solution: introduce new variable iterPara2.
 
         //TODO: (TKS) Overwriting domain boundaries in inject.
-        //          * Add flagField to add boundary treatment.
+        //          * Check if direction is a boundary by checking for MPI_PROC_NULL
+        //          * Add case in swap to avoid deadlock
         p_setCommIterationParameters(&iterPara,  procData, direction);
         p_setCommIterationParameters(&iterPara2, procData, direction+1);
         p_assignIndices(&direction, index);
@@ -151,8 +152,8 @@ void inject(double** readBuffer, double* collideField, t_iterPara *iterPara, con
             for (int i = 0; i < 5; i++) {
                 //TODO: (TKS) Copy to ghost layer. Right now it is only copied from extract.
                 //      * Modify so it copies readBuffer to ghost layer
-                //readBuffer[direction][currentIndexBuff++]  = collideField[currentIndexField+index[i]];
-                collideField[currentIndexField+index[i]] = readBuffer[direction][currentIndexBuff++];
+                readBuffer[direction][currentIndexBuff++]  = collideField[currentIndexField+index[i]];
+                //collideField[currentIndexField+index[i]] = readBuffer[direction][currentIndexBuff++];
             }
         }
     }
