@@ -18,6 +18,6 @@ void inject(double** readBuffer, double* collideField, t_iterPara *iterPara, con
             int direction, int *index);
 
 void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procData, const int direction);
-void p_assignIndices(int *direction, int *index);
+void p_assignIndices(int direction, int *index);
 
 #endif
