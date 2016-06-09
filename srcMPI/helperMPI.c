@@ -44,11 +44,10 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
               int direction, int* index){
 
     int currentIndexField;
-    int currentIndexBuff;
+    int currentIndexBuff= 0;
 
-    //For error checking. may remove later.
+    //For error checking. TODO: May remove later or #ifndef
     int fieldSize = Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2);
-    //printf("fieldSize = %d\n", fieldSize);
 
     //k - corresponds to the 'outer' value when computing the offset
     for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
@@ -56,22 +55,42 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
         for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
 
             currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
-            currentIndexBuff  =  5*p_computeBuffCellOffset(k, j, procData->bufferLength, direction);
 
             assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
-            //printf("currentIndexField = %d\n", currentIndexField);
-            assert(currentIndexField < fieldSize  && currentIndexField <= 0);
-
+            assert(currentIndexField < fieldSize  && currentIndexField >= 0);
             for (int i = 0; i < 5; i++) {
-                //TODO: (TKS) Not correct indexing yet
-                sendBuffer[direction][currentIndexBuff + i] = collideField[currentIndexField+index[i]];
+                sendBuffer[direction][currentIndexBuff++] = collideField[currentIndexField+index[i]];
             }
         }
     }
+
 }
 
 //Send distributions and wait to receive.
-void swap(double** sendBuffer, double**readBuffer, const t_procData *procData, int *direction){
+void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, int *direction){
+//int MPI_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+    //int dest, int sendtag, void *recvbuf, int recvcount,
+    //MPI_Datatype recvtype, int source, int recvtag,
+    //MPI_Comm comm, MPI_Status *status)
+
+    MPI_Status status;
+
+    //temp variables for readabillity.
+    int bufferSize = procData->bufferSize[*direction/2];
+    int proc1 = procData->neighbours[*direction];
+    //int proc2 = procData->neighbours[*direction+1];
+
+    //TODO: (TKS) Not iterating through every direction, so need two sendreceive. Deadlock with two
+    //            succesively?
+    //              * Both try to send left?
+
+    MPI_Sendrecv(sendBuffer[*direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[*direction], bufferSize,
+    MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, &status);
+
+    //MPI_Sendrecv(sendBuffer[*direction +1], bufferSize , MPI_DOUBLE, proc2 ,0, readBuffer[*direction], bufferSize,
+    //MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, &status);
+
+
 
 }
 
@@ -79,13 +98,25 @@ void swap(double** sendBuffer, double**readBuffer, const t_procData *procData, i
 void inject(double** readBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData, 
             int direction, int *index){
 
+    int currentIndexField;
+    int currentIndexBuff= 0;
+
+    //For error checking. TODO: (TKS) Add #ifndef
+    int fieldSize = Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2);
+
     //k - corresponds to the 'outer' value when computing the offset
     for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
         //j - corresponds to the 'inner' value
         for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
 
-          //int currentCellIndex = Q*p_computeCellOffset(k, j, iterPara.fixedValue, procData->xLength, direction);
+            currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
 
+            assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
+            assert(currentIndexField < fieldSize  && currentIndexField >= 0);
+            for (int i = 0; i < 5; i++) {
+                //TODO: (TKS) Copy to ghost layer. Right now it is only reversed from extract.
+                  readBuffer[direction][currentIndexBuff++]  = collideField[currentIndexField+index[i]];
+            }
         }
     }
 }
@@ -181,28 +212,3 @@ void p_assignIndices(int *direction, int *index) {
 	}
 }
 
-//Function to compute index in buffer given outer and inner coordinate
-int p_computeBuffCellOffset(const int outer, const int inner, 
-                            const int bufferLength[3][3], const int direction){
-
-
-    //TODO: (TKS) Confirm that indecies are correct.
-	//direction has valid integer values from 0 to 5
-	switch (direction/2) { //integer division to get the type of face (see enum in LBDefinitions.h)
-		case 0: // LEFT, RIGHT -> Y fixed
-			//outer = Z, inner = X
-			return bufferLength[direction/2][0]*(outer-1) + (inner-1);
-
-		case 1: // TOP, BOTTOM -> Z fixed
-			//outer = Y, inner = X
-			return bufferLength[direction/2][0]*outer + (inner-1);
-
-		case 2: // FRONT, BACK -> X fixed
-			//outer = Z, inner = Y
-			return bufferLength[direction/2][1]*outer + inner;
-
-		default:
-			ERROR("Invalid direction occured. This should not happen !!!");
-			return -1;
-	}
-}
