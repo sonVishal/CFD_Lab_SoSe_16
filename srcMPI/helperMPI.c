@@ -125,6 +125,8 @@ void inject(double** readBuffer, double* collideField, t_iterPara *iterPara, con
 #endif
 
     //TODO: (TKS) Exchange switch with shiftFixedValue array potentially outside function call.
+    // int shiftFixedValue = {-1, 1, 1, -1, 1, -1}
+    // iterPara->fixedvalue += shiftFixedValue[direction]
 
     switch (direction){
         case LEFT:
