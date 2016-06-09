@@ -187,6 +187,7 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 		break;
 	//---------------------------------------------
 	//outer = Y, inner = X, Z fixed
+    //iterate over inner domain and include ghost layer in y-direction
 	case TOP:
         iterPara->startOuter = 0;
 		iterPara->endOuter   = procData->xLength[1]+1;
@@ -204,6 +205,7 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 
 	//---------------------------------------------
 	//outer = Z, inner = Y, X fixed
+    //Iterate over entire ZY plane
 	case FRONT:
         iterPara->startOuter = 0;
 		iterPara->endOuter   = procData->xLength[2]+1;
