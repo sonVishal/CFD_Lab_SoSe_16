@@ -143,7 +143,7 @@ int main(int argc, char *argv[]){
          do extraction , swap , injection for y (forth and back; back and forth)
          do extraction , swap , injection for z (down and up ; up and down)
         */
-
+	    debug_setBufferValues(sendBuffer, readBuffer, procData);
         communicate(sendBuffer, readBuffer, collideField, &procData);
 
 	    doStreaming(collideField,streamField,flagField,procData.xLength);

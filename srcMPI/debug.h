@@ -22,3 +22,5 @@ void printWallEnum(const int wall);
 void convertEnumCellToString(const int wall, char *wallName);
 
 void printCellEnum(const int wall);
+
+void debug_setBufferValues(double **sendBuffer, double **readBuffer, t_procData procData);

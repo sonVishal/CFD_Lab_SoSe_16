@@ -31,6 +31,15 @@ void convertEnumWallToString(const int wall, char *wallName) {
     }
 }
 
+
+void debug_setBufferValues(double **sendBuffer, double **readBuffer, t_procData procData){
+	for(int i = 0; i < 6; ++i){
+		memset(sendBuffer[i], -1, procData.bufferSize[i/2]*sizeof(double));
+		memset(readBuffer[i], -1, procData.bufferSize[i/2]*sizeof(double));
+	}
+}
+
+
 void convertEnumCellToString(const int cell, char *cellName) {
     int myRank;
     MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
