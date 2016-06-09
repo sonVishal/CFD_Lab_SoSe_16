@@ -224,7 +224,6 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 	}
 }
 
-//TODO: (TKS) Exchange opposited
 //Function to find indecies being extracted/injected
 void p_assignIndices(int *direction, int *index) {
 	switch (*direction) {
