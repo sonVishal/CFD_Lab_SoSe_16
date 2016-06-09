@@ -27,6 +27,8 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 
 
     for (int direction = LEFT; direction <= BACK; direction+=2) {
+
+        //TODO: (TKS) Does not return correct iteration parameters after loop change;
         p_setCommIterationParameters(&iterPara, procData, direction);
         p_assignIndices(&direction, index);
 
@@ -120,7 +122,9 @@ void inject(double** readBuffer, double* collideField, const t_iterPara *iterPar
             assert(currentIndexField < fieldSize  && currentIndexField >= 0);
             for (int i = 0; i < 5; i++) {
                 //TODO: (TKS) Copy to ghost layer. Right now it is only copied from extract.
+                //      * Modify so it copies readBuffer to ghost layer
                   readBuffer[direction][currentIndexBuff++]  = collideField[currentIndexField+index[i]];
+                  //collideField[currentIndexField+index[i]] = readBuffer[direction][currentIndexBuff++];
             }
         }
     }
