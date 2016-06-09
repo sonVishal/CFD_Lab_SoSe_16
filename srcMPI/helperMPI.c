@@ -119,7 +119,7 @@ void inject(double** readBuffer, double* collideField, const t_iterPara *iterPar
             assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
             assert(currentIndexField < fieldSize  && currentIndexField >= 0);
             for (int i = 0; i < 5; i++) {
-                //TODO: (TKS) Copy to ghost layer. Right now it is only reversed from extract.
+                //TODO: (TKS) Copy to ghost layer. Right now it is only copied from extract.
                   readBuffer[direction][currentIndexBuff++]  = collideField[currentIndexField+index[i]];
             }
         }
