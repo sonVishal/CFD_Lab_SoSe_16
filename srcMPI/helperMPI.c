@@ -24,19 +24,25 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
     int index[5];
 
     t_iterPara iterPara;
+    t_iterPara iterPara2;
 
 
     for (int direction = LEFT; direction <= BACK; direction+=2) {
 
         //TODO: (TKS) Does not return correct iteration parameters after loop change;
-        p_setCommIterationParameters(&iterPara, procData, direction);
+        //          * temp solution: introduce new variable iterPara2.
+
+        //TODO: (TKS) Overwriting domain boundaries in inject.
+        //          * Add flagField to add boundary treatment.
+        p_setCommIterationParameters(&iterPara,  procData, direction);
+        p_setCommIterationParameters(&iterPara2, procData, direction+1);
         p_assignIndices(&direction, index);
 
         extract(sendBuffer, collideField, &iterPara, procData, direction, index);
-        extract(sendBuffer, collideField, &iterPara, procData, direction+1, index);
+        extract(sendBuffer, collideField, &iterPara2, procData, direction+1, index);
         swap(sendBuffer, readBuffer, procData, &direction);
         inject(readBuffer, collideField, &iterPara, procData, direction, index);
-        inject(readBuffer, collideField, &iterPara, procData, direction+1, index);
+        inject(readBuffer, collideField, &iterPara2, procData, direction+1, index);
     }
 
 }
@@ -102,7 +108,7 @@ void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, 
 }
 
 //Copy read buffer to ghost layer
-void inject(double** readBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData, 
+void inject(double** readBuffer, double* collideField, t_iterPara *iterPara, const t_procData *procData, 
             int direction, int *index){
 
     int currentIndexField;
@@ -110,6 +116,28 @@ void inject(double** readBuffer, double* collideField, const t_iterPara *iterPar
 
     //For error checking. TODO: (TKS) Add #ifndef
     int fieldSize = Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2);
+
+    //TODO: (TKS) Exchange switch with shiftFixedValue array potentially outside function call.
+    switch (direction){
+        case LEFT:
+              iterPara->fixedValue--;
+              break;
+        case RIGHT:
+              iterPara->fixedValue++;
+              break;
+        case TOP:
+              iterPara->fixedValue++;
+              break;
+        case BOTTOM:
+              iterPara->fixedValue--;
+              break;
+        case FRONT:
+              iterPara->fixedValue++;
+              break;
+        case BACK:
+              iterPara->fixedValue--;
+              break;
+    }
 
     //k - corresponds to the 'outer' value when computing the offset
     for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
@@ -123,8 +151,8 @@ void inject(double** readBuffer, double* collideField, const t_iterPara *iterPar
             for (int i = 0; i < 5; i++) {
                 //TODO: (TKS) Copy to ghost layer. Right now it is only copied from extract.
                 //      * Modify so it copies readBuffer to ghost layer
-                  readBuffer[direction][currentIndexBuff++]  = collideField[currentIndexField+index[i]];
-                  //collideField[currentIndexField+index[i]] = readBuffer[direction][currentIndexBuff++];
+                //readBuffer[direction][currentIndexBuff++]  = collideField[currentIndexField+index[i]];
+                collideField[currentIndexField+index[i]] = readBuffer[direction][currentIndexBuff++];
             }
         }
     }

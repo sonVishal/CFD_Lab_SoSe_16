@@ -14,7 +14,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 void extract( double** sendBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData,
               int direction, int* index);
 void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, int *direction);
-void inject(double** readBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData, 
+void inject(double** readBuffer, double* collideField, t_iterPara *iterPara, const t_procData *procData, 
             int direction, int *index);
 
 void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procData, const int direction);
