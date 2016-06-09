@@ -86,6 +86,7 @@ void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, 
     int proc1 = procData->neighbours[direction];
     int proc2 = procData->neighbours[direction+1];
 
+
     if(proc1 == MPI_PROC_NULL){
     	MPI_Recv(readBuffer[direction+1], bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     	MPI_Send(sendBuffer[direction+1], bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD);
@@ -106,17 +107,11 @@ void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, 
         }
     }
 
-    //Send proc1 receive proc1
-//    if(procData->neighbours[direction] != MPI_PROC_NULL){
-//        MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[direction],
-//                bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-//    }
-//
-//    //Send proc2 receive proc2
-//    if(procData->neighbours[direction+1] != MPI_PROC_NULL){
-//        MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
-//                bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-//    }
+    //Send proc2 receive proc2
+    if(procData->neighbours[direction+1] != MPI_PROC_NULL){
+        MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
+                bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
 
 }
 
