@@ -89,11 +89,11 @@ void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, 
     //MPI_Recv(readBuffer[*direction],   bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, &status);
     //MPI_Recv(readBuffer[*direction+1], bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, &status);
 
-    //Send left receive right
+    //Send proc1 receive proc2
     MPI_Sendrecv(sendBuffer[*direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[*direction+1], bufferSize,
     MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, &status);
 
-    //Send right receive left
+    //Send proc1 receive proc1
     MPI_Sendrecv(sendBuffer[*direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[*direction], bufferSize,
     MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, &status);
 
