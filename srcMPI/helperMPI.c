@@ -9,7 +9,8 @@
 void communicate(double** sendBuffer, double**readBuffer, double* collideField, const t_procData *procData){
     //Run extract, swap, inject for all sides and cells.
     //
-    int index[5];
+    int index1[5];
+    int index2[5];
 
     t_iterPara iterPara;
     t_iterPara iterPara2;
@@ -23,21 +24,22 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 
         p_setCommIterationParameters(&iterPara,  procData, direction);
         p_setCommIterationParameters(&iterPara2, procData, direction+1);
-        p_assignIndices(&direction, index);
+        p_assignIndices(direction, index1);
+        p_assignIndices(direction+1, index2);
 
         if(procData->neighbours[direction] != MPI_PROC_NULL)
-            extract(sendBuffer, collideField, &iterPara, procData, direction, index);
+            extract(sendBuffer, collideField, &iterPara, procData, direction, index1);
 
         if(procData->neighbours[direction+1] != MPI_PROC_NULL)
-            extract(sendBuffer, collideField, &iterPara2, procData, direction+1, index);
+            extract(sendBuffer, collideField, &iterPara2, procData, direction+1, index2);
 
         swap(sendBuffer, readBuffer, procData, direction);
 
         if(procData->neighbours[direction] != MPI_PROC_NULL)
-            inject(readBuffer, collideField, &iterPara, procData, direction, index);
+            inject(readBuffer, collideField, &iterPara, procData, direction, index1);
 
         if(procData->neighbours[direction+1] != MPI_PROC_NULL)
-            inject(readBuffer, collideField, &iterPara2, procData, direction+1, index);
+            inject(readBuffer, collideField, &iterPara2, procData, direction+1, index2);
     }
 
 }
@@ -215,8 +217,8 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 }
 
 //Function to find indecies being extracted/injected
-void p_assignIndices(int *direction, int *index) {
-	switch (*direction) {
+void p_assignIndices(int direction, int *index) {
+	switch (direction) {
 		case TOP:
 			// z = xlength[2]+1
 			index[0] = 14; index[1] = 15; index[2] = 16; index[3] = 17; index[4] = 18;
