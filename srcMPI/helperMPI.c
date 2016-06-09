@@ -78,14 +78,16 @@ void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, 
     //temp variables for readabillity.
     int bufferSize = procData->bufferSize[*direction/2];
     int proc1 = procData->neighbours[*direction];
-    //int proc2 = procData->neighbours[*direction+1];
+    int proc2 = procData->neighbours[*direction+1];
 
     //TODO: (TKS) Not iterating through every direction, so need two sendreceive. Deadlock with two
     //            succesively?
     //              * Both try to send left?
 
-    MPI_Sendrecv(sendBuffer[*direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[*direction], bufferSize,
-    MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, &status);
+    MPI_Sendrecv(sendBuffer[*direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[*direction +1], bufferSize,
+    MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, &status);
+
+
 
     //MPI_Sendrecv(sendBuffer[*direction +1], bufferSize , MPI_DOUBLE, proc2 ,0, readBuffer[*direction], bufferSize,
     //MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, &status);

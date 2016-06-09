@@ -165,7 +165,6 @@ int main(int argc, char *argv[]){
             }
 	    }
     }
-    printf("main for ended\n");
     endProcTime = MPI_Wtime();
 
     MPI_Reduce(&beginProcTime, &beginSimTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
