@@ -19,7 +19,7 @@
 
 void writeVtkOutput(const double * const collideField,
     const int * const flagField, const char * filename,
-    unsigned int t, t_procData procData, int *procsPerAxis)
+    unsigned int t, int xlen, t_procData procData, int *procsPerAxis)
 {
     // Files related variables
     char pFileName[80];
@@ -45,7 +45,7 @@ void writeVtkOutput(const double * const collideField,
     fprintf(fp,"<VTKFile type=\"StructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" header_type=\"UInt32\">\n");
 
     // Write the point data for the domain
-    writevtkPointCoordinates(fp,procData.xLength,myPos);
+    writevtkPointCoordinates(fp,xlen,procData.xLength,myPos,procsPerAxis);
 
     fprintf(fp,"<CellData>\n");
     fprintf(fp,"<DataArray type=\"Float32\" NumberOfComponents=\"3\" Name=\"Velocity\">\n");
@@ -112,14 +112,14 @@ void writeVtkOutput(const double * const collideField,
     }
 }
 
-void writevtkPointCoordinates(FILE *fp, int *xlength, int *myPos) {
+void writevtkPointCoordinates(FILE *fp, int xlen, int *xlength, int *myPos, int *procsPerAxis) {
     int x, y, z;
     // printf("Position = (%d,%d,%d)\n",myPos[0],myPos[1],myPos[2]);
-    unsigned int x1 = myPos[0]*(xlength[0]);
+    unsigned int x1 = myPos[0]*(xlen/procsPerAxis[0]);
     unsigned int x2 = x1 + xlength[0];
-    unsigned int y1 = myPos[1]*(xlength[1]);
+    unsigned int y1 = myPos[1]*(xlen/procsPerAxis[1]);
     unsigned int y2 = y1 + xlength[1];
-    unsigned int z1 = myPos[2]*(xlength[2]);
+    unsigned int z1 = myPos[2]*(xlen/procsPerAxis[2]);
     unsigned int z2 = z1 + xlength[2];
     fprintf(fp,"<StructuredGrid WholeExtent=\"%d %d %d %d %d %d\">\n",x1,x2,y1,y2,z1,z2);
     fprintf(fp,"<Piece Extent=\"%d %d %d %d %d %d\">\n",x1,x2,y1,y2,z1,z2);
@@ -137,7 +137,7 @@ void writevtkPointCoordinates(FILE *fp, int *xlength, int *myPos) {
     fprintf(fp,"</Points>\n");
 }
 
-void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlength, int *procsPerAxis) {
+void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlen, int *procsPerAxis) {
     // Files related variables
     char pFileName[80];
     FILE *fp = NULL;
@@ -156,7 +156,7 @@ void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlength,
     }
 
     fprintf(fp, "<VTKFile type=\"PStructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n");
-    fprintf(fp, "<PStructuredGrid WholeExtent=\"0 %d 0 %d 0 %d\" GhostLevel=\"1\">\n",xlength,xlength,xlength);
+    fprintf(fp, "<PStructuredGrid WholeExtent=\"0 %d 0 %d 0 %d\" GhostLevel=\"1\">\n",xlen,xlen,xlen);
     fprintf(fp, "<PPoints>\n");
     fprintf(fp, "%s\n","<PDataArray NumberOfComponents=\"3\" type=\"UInt32\" />");
     fprintf(fp, "</PPoints>\n");
@@ -166,23 +166,29 @@ void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlength,
     fprintf(fp, "</PCellData>\n");
 
     // Perform domain decomposition again
-    int procXlength[3] = {0,0,0};
-    procXlength[0] = xlength/procsPerAxis[0];
-    procXlength[1] = xlength/procsPerAxis[1];
-    procXlength[2] = xlength/procsPerAxis[2];
-    int x1,x2,y1,y2,z1,z2;
+    int baseSubDiv[3] = {xlen/procsPerAxis[0],xlen/procsPerAxis[1],xlen/procsPerAxis[2]};
 
     for (int k = 0; k < procsPerAxis[2]; k++) {
         for (int j = 0; j < procsPerAxis[1]; j++) {
             for (int i = 0; i < procsPerAxis[0]; i++) {
-                procXlength[0] += ((procsPerAxis[0]-1)==i)?xlength%procsPerAxis[0]:0;
-                procXlength[1] += ((procsPerAxis[1]-1)==j)?xlength%procsPerAxis[1]:0;
-                procXlength[2] += ((procsPerAxis[2]-1)==k)?xlength%procsPerAxis[2]:0;
-                x1 = i*procXlength[0]; x2 = x1 + procXlength[0];
-                y1 = j*procXlength[1]; y2 = y1 + procXlength[1];
-                z1 = k*procXlength[2]; z2 = z1 + procXlength[2];
+                unsigned int x1 = i*(baseSubDiv[0]);
+                unsigned int x2 = x1 + baseSubDiv[0];
+                unsigned int y1 = j*(baseSubDiv[1]);
+                unsigned int y2 = y1 + baseSubDiv[1];
+                unsigned int z1 = k*(baseSubDiv[2]);
+                unsigned int z2 = z1 + baseSubDiv[2];
+                if (i == (procsPerAxis[0] - 1)) {
+                    x2 += xlen%procsPerAxis[0];
+                }
+                if (j == (procsPerAxis[1] - 1)) {
+                    y2 += xlen%procsPerAxis[1];
+                }
+                if (k == (procsPerAxis[2] - 1)) {
+                    z2 += xlen%procsPerAxis[2];
+                }
                 snprintf(pFileName, 80, "%s.%i.%i.vts",filename,i+(j+k*procsPerAxis[1])*procsPerAxis[0],t);
                 // This is stupid "../<fileName>" but what the heck
+                // printf("%d\t%d\t%d\t%d\t%d\t%d\n",x1,x2,y1,y2,z1,z2);
                 fprintf(fp, "<Piece Extent=\"%d %d %d %d %d %d\" Source=\"../%s\"/>\n",x1,x2,y1,y2,z1,z2,pFileName);
             }
         }
