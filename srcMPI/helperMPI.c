@@ -5,7 +5,7 @@
 #include "helper.h"
 #include <mpi/mpi.h>
 
-//TODO: (TKS) 
+//TODO: (TKS)
 //Reduce bufferSize[6]--> bufferSize[3]?
 //          * Can do two iterations of the loop at the same time.
 //          * Or complete loop unroll
@@ -102,22 +102,22 @@ void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, 
     int proc2 = procData->neighbours[*direction+1];
 
 
-    //Send proc1 receive proc2
+    //Send proc1 receive proc1
     if(procData->neighbours[*direction] != MPI_PROC_NULL){
-        MPI_Sendrecv(sendBuffer[*direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[*direction+1], 
-                bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, &status);
+        MPI_Sendrecv(sendBuffer[*direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[*direction],
+                bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, &status);
     }
 
-    //Send proc2 receive proc1
+    //Send proc2 receive proc2
     if(procData->neighbours[*direction+1] != MPI_PROC_NULL){
-        MPI_Sendrecv(sendBuffer[*direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[*direction], 
-                bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, &status);
+        MPI_Sendrecv(sendBuffer[*direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[*direction+1],
+                bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, &status);
     }
 
 }
 
 //Copy read buffer to ghost layer
-void inject(double** readBuffer, double* collideField, t_iterPara *iterPara, const t_procData *procData, 
+void inject(double** readBuffer, double* collideField, t_iterPara *iterPara, const t_procData *procData,
             int direction, int *index){
 
     int currentIndexField;
@@ -258,4 +258,3 @@ void p_assignIndices(int *direction, int *index) {
 			break;
 	}
 }
-

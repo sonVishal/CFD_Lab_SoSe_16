@@ -30,14 +30,14 @@
 
 #
 # Size of mesh
-xlength              10
+xlength              20
 
 # Relaxation time
 # In recent version calculated from the Reynolds number
 #tau                  1
 
 # Reynolds Number
-Re                    1
+Re                    2
 
 # Velocity of moving wall
 xvelocity         0.01
