@@ -37,23 +37,19 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         p_setCommIterationParameters(&iterPara2, procData, direction+1);
         p_assignIndices(&direction, index);
 
-        if(procData->neighbours[direction] != MPI_PROC_NULL){
+        if(procData->neighbours[direction] != MPI_PROC_NULL)
             extract(sendBuffer, collideField, &iterPara, procData, direction, index);
-        }
 
-        if(procData->neighbours[direction+1] != MPI_PROC_NULL){
+        if(procData->neighbours[direction+1] != MPI_PROC_NULL)
             extract(sendBuffer, collideField, &iterPara2, procData, direction+1, index);
-        }
 
         swap(sendBuffer, readBuffer, procData, &direction);
 
-        if(procData->neighbours[direction] != MPI_PROC_NULL){
+        if(procData->neighbours[direction] != MPI_PROC_NULL)
             inject(readBuffer, collideField, &iterPara, procData, direction, index);
-        }
 
-        if(procData->neighbours[direction+1] != MPI_PROC_NULL){
+        if(procData->neighbours[direction+1] != MPI_PROC_NULL)
             inject(readBuffer, collideField, &iterPara2, procData, direction+1, index);
-        }
     }
 
 }
