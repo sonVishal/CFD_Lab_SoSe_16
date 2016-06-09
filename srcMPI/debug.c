@@ -1,65 +1,74 @@
 #include "debug.h"
 #include "helper.h"
+#include <mpi/mpi.h>
 #include <stdio.h>
 
 void convertEnumWallToString(const int wall, char *wallName) {
+    int myRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
     switch (wall) {
         case LEFT:
-            snprintf(wallName, 80, "%s", "LEFT");
+            snprintf(wallName, 80, "Proc: %d\t Wall: %s\n",myRank, "LEFT");
             break;
         case RIGHT:
-            snprintf(wallName, 80, "%s", "RIGHT");
+            snprintf(wallName, 80, "Proc: %d\t Wall: %s\n",myRank, "RIGHT");
             break;
         case TOP:
-            snprintf(wallName, 80, "%s", "TOP");
+            snprintf(wallName, 80, "Proc: %d\t Wall: %s\n",myRank, "TOP");
             break;
         case BOTTOM:
-            snprintf(wallName, 80, "%s", "BOTTOM");
+            snprintf(wallName, 80, "Proc: %d\t Wall: %s\n",myRank, "BOTTOM");
             break;
         case FRONT:
-            snprintf(wallName, 80, "%s", "FRONT");
+            snprintf(wallName, 80, "Proc: %d\t Wall: %s\n",myRank, "FRONT");
             break;
         case BACK:
-            snprintf(wallName, 80, "%s", "BACK");
+            snprintf(wallName, 80, "Proc: %d\t Wall: %s\n",myRank, "BACK");
             break;
         default:
-            snprintf(wallName, 80, "%s", "NULL");
+            snprintf(wallName, 80, "Proc: %d\t Wall: %s\n",myRank, "NULL");
             break;
     }
 }
 
 void convertEnumCellToString(const int cell, char *cellName) {
+    int myRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
     switch (cell) {
         case FLUID:
-            snprintf(cellName, 80, "%s", "FLUID");
+            snprintf(cellName, 80, "Proc: %d\t Cell: %s\n",myRank, "FLUID");
             break;
         case NO_SLIP:
-            snprintf(cellName, 80, "%s", "NO_SLIP");
+            snprintf(cellName, 80, "Proc: %d\t Cell: %s\n",myRank, "NO_SLIP");
             break;
         case MOVING_WALL:
-            snprintf(cellName, 80, "%s", "MOVING_WALL");
+            snprintf(cellName, 80, "Proc: %d\t Cell: %s\n",myRank, "MOVING_WALL");
             break;
         case PARALLEL_BOUNDARY:
-            snprintf(cellName, 80, "%s", "PARALLEL_BOUNDARY");
+            snprintf(cellName, 80, "Proc: %d\t Cell: %s\n",myRank, "PARALLEL_BOUNDARY");
             break;
         default:
-            snprintf(cellName, 80, "%s", "NULL");
+            snprintf(cellName, 80, "Proc: %d\t Cell: %s\n",myRank, "NULL");
             break;
     }
 }
 
 void printWallEnum(const int wall) {
+    int myRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
     char wallName[80];
     convertEnumWallToString(wall,wallName);
-    fprintf(stderr, "%s\n", wallName);
+    fprintf(stderr, "Proc: %d\t Wall: %s\n",myRank, wallName);
     fflush(stdout);
     fflush(stderr);
 }
 
 void printCellEnum(const int cellType) {
+    int myRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
     char typeName[80];
     convertEnumWallToString(cellType,typeName);
-    fprintf(stderr, "%s\n", typeName);
+    fprintf(stderr, "Proc: %d\t Cell: %s\n",myRank, typeName);
     fflush(stdout);
     fflush(stderr);
 }
