@@ -201,7 +201,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 	// TODO: Adapt buffer size. Currently entire layer is being sent and received.
 
 	// XZ inner domain (no edges included)
-	int bufferSize		= nrDistSwap*((xlength[0]+2)*(xlength[2]+2));
+	int bufferSize		= nrDistSwap*(xlength[0]*xlength[2]);
     s_bufferSize[0] 	= bufferSize;
 	sendBuffer[LEFT] 	= (neighbours[LEFT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
 	sendBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
