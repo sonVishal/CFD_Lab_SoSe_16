@@ -190,14 +190,14 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
     procData->neighbours[TOP]    = (procPos[2] == procsPerAxis[2]-1)  ? MPI_PROC_NULL : procData->rank+procsPerAxis[1]*procsPerAxis[0];
 }
 
-void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength, int *neighbours, int procBuffer[3]) {
+void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength, int *neighbours, int procBufferSize[3]) {
 
 	const int nrDistSwap = 5;
 	const int db = sizeof(double); //double in bytes
 
 	// XZ inner domain (no edges included)
 	int bufferSize		= nrDistSwap*(xlength[0]*xlength[2]);
-    procBuffer[0] 		= bufferSize; //Valid for left and right
+    procBufferSize[0] 	= bufferSize; //Valid for left and right
 	sendBuffer[LEFT] 	= (neighbours[LEFT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 	sendBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 	readBuffer[LEFT] 	= (neighbours[LEFT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
@@ -205,7 +205,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 
 	// XY plane including edges at the boundary to left/right
 	bufferSize 			= nrDistSwap*(xlength[0]*(xlength[1]+2));
-    procBuffer[1] 		= bufferSize; //Valid for top and bottom
+    procBufferSize[1] 	= bufferSize; //Valid for top and bottom
 	sendBuffer[TOP] 	= (neighbours[TOP] 	  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 	sendBuffer[BOTTOM] 	= (neighbours[BOTTOM] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 	readBuffer[TOP] 	= (neighbours[TOP]    != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
@@ -213,7 +213,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 
 	// YZ plane including all edges
 	bufferSize 			= nrDistSwap*((xlength[1]+2)*(xlength[2]+2));
-    procBuffer[2] 		= bufferSize; //Valid for front and back
+    procBufferSize[2] 	= bufferSize; //Valid for front and back
 	sendBuffer[FRONT] 	= (neighbours[FRONT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 	sendBuffer[BACK] 	= (neighbours[BACK]   != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 	readBuffer[FRONT] 	= (neighbours[FRONT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
