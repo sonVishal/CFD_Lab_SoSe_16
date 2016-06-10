@@ -111,7 +111,7 @@ int main(int argc, char *argv[]){
     initialiseFields(collideField, streamField, flagField, procData);
 
     // Allocate memory to send and read buffers
-    initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.bufferLength, procData.bufferSize);
+    initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.bufferLength, procData.neighbours, procData.bufferSize);
 
     // INFO Printing
     if(procData.rank == 0)
