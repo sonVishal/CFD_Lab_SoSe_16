@@ -12,6 +12,9 @@ from matplotlib import pyplot as plt
 #   * Add print of speedup
 #   * Add print of parallel efficiency
 #   * Add second graph
+#       * Need to also change xlength in cavity.dat
+#   * Save plots to file
+#   * Add option to not run C program
 
 #Clear file
 f = "scaleData.dat"
@@ -42,7 +45,7 @@ for i in range(0,3):
 #   increment for the procs.
 
 increment = 1;
-numRuns   = 15;
+numRuns   = 5;
 
 #Run simulation the given numRun times.
 run = "";
