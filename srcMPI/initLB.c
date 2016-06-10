@@ -232,6 +232,6 @@ void finaliseMPI(t_procData *procData) {
     fflush(stdout);
     fflush(stderr);
     MPI_Barrier(MPI_COMM_WORLD);
-    printf("Rank %i: FINISHED. \n", procData->rank);
+//    printf("Rank %i: FINISHED. \n", procData->rank);
     MPI_Finalize();
 }
