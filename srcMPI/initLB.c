@@ -73,9 +73,7 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *procsPe
 	}
 
 	if (*xlength%iProc != 0 || *xlength%jProc != 0 || *xlength%kProc != 0) {
-		char buffer[160];
-        snprintf(buffer, 160, "WARNING: The domain decomposition is not uniform. This might create load unbalances between processes.\n");
-		ERROR(buffer);
+        printf("WARNING: The domain decomposition is not uniform. This might create load unbalances between processes.\n");
 	}
 
   return 0;
