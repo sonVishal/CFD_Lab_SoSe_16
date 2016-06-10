@@ -8,7 +8,7 @@
 void p_setBounceBack(double *collideField, const double * const wallVelocity,
 		const int type, const int i, const int current_cell_index, const int n_cell_index, const int *c) {
 
-	if(type == 1){ 			//bounce back
+	if(type == 1){ 	 //bounce back
 		/* equation 17 */
 		collideField[current_cell_index + i] = collideField[n_cell_index + (Q-i-1)];
 	}else{ // type == 2 (MOVING_WALL)
@@ -91,7 +91,6 @@ int p_computeNeighborCellOffset(int outer, int inner, int fixedValue,
 void p_setIterationParameters(int *endOuter, int *endInner, int *fixedValue, const t_procData * const procData, const int wallIdx){
 
 	switch(wallIdx){
-
 	//---------------------------------------------
 	//outer = Z, inner = X, Y fixed
 	case LEFT:
@@ -162,10 +161,10 @@ void p_treatSingleWall(double *collideField, const int * const flagField, const 
 			int current_cell_index = Q*xyz_offset;
 			int boundaryType = flagField[xyz_offset];
 
-			assert(boundaryType == NO_SLIP || boundaryType == PARALLEL_BOUNDARY || boundaryType == MOVING_WALL);
+			assert(boundaryType == NO_SLIP || boundaryType == MOVING_WALL);
 
 			//PARALLEL boundaries are not treated when they occur (e.g. at shared edges)
-			for(int i = 0; i < Q && boundaryType != PARALLEL_BOUNDARY; ++i){
+			for(int i = 0; i < Q; ++i){
 				int c[3] = {LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2]};
 				int n_xyzoffset = p_computeNeighborCellOffset(k, j, fixedValue, c, xlength, wallIdx);
 				int n_cell_index = Q*n_xyzoffset;
