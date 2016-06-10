@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 3
 #include <stdio.h>
 #include "LBDefinitions.h"
 

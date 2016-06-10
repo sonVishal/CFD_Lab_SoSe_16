@@ -1,6 +1,5 @@
 #ifndef _MAIN_C_
 #define _MAIN_C_
-#define _POSIX_C_SOURCE 3
 #include "boundary.h"
 #include "collision.h"
 #include "initLB.h"
@@ -198,9 +197,6 @@ int main(int argc, char *argv[]){
         free(sendBuffer[i]);
         free(readBuffer[i]);
     }
-
-
-
 
     //TODO: (DL) DEBUG PART
     MPI_Barrier(MPI_COMM_WORLD);

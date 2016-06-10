@@ -1,8 +1,5 @@
 #include "debug.h"
 #include "helper.h"
-
-#define _POSIX_C_SOURCE 3
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi/mpi.h>
@@ -50,12 +47,10 @@ int parse_output(void) {
 	char command[200];
 	snprintf(command, 200, "%s", "debug/ExecuteComparison.sh");
 
-    char *cmd = "ls -l";
-
     char buf[BUFSIZE];
     FILE *fp;
 
-    if ((fp = popen(cmd, "r")) == NULL) {
+    if ((fp = popen(command, "r")) == NULL) {
         printf("Error opening pipe!\n");
         return -1;
     }
