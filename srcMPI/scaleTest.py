@@ -64,6 +64,10 @@ for i in range(0, numRuns):
     #os.system(s);
     counter+=1;
 
+# --------------- #
+#    Plotting     #
+# --------------- #
+
 #scaleTest.dat arranged columnwise as follows separated by a space
 #iproc jproc kproc elapsedTime numCells MLUPS
 
@@ -79,17 +83,27 @@ _elapsedTime = []
 _numCells = []
 _MLUPS = []
 
+#Read each variables from file
 with open(f) as g:
     for line in g:
         z = line.split(" ");
-        _iproc.append(z[0]);
-        _jproc.append(z[1]);
-        _kproc.append(z[2]);
-        _elapsedTime.append(z[3]);
-        _numCells.append(z[4]);
-        _MLUPS.append(z[5]);
+        _iproc.append(int(z[0]));
+        _jproc.append(int(z[1]));
+        _kproc.append(int(z[2]));
+        _elapsedTime.append(int(z[3]));
+        _numCells.append(int(z[4]));
+        _MLUPS.append(float(z[5]));
 
 numVar = len(_iproc);
 
 
+
+totProcs = [a*b for a,b in zip(_iproc,_jproc)]
+totProcs = [a*b for a,b in zip(totProcs,_kproc)]
+
+plt.plot(totProcs, _MLUPS,"*")
+plt.xlabel('# processes')
+plt.ylabel('MLUPS')
+
+plt.show();
 
