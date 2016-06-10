@@ -47,6 +47,7 @@ int parse_output(void) {
 	char command[200];
 	snprintf(command, 200, "%s", "debug/ExecuteComparison.sh");
 
+
     char buf[BUFSIZE];
     FILE *fp;
 

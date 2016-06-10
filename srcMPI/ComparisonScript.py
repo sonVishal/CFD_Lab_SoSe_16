@@ -21,7 +21,6 @@ from paraview import simple
 from numpy import genfromtxt
 import numpy as np
 import os
-import datetime
 
 path_debug = os.path.dirname(os.path.abspath(__file__)) # the file should be in /debug/!
 
@@ -42,14 +41,9 @@ writer.UpdatePipeline()
 csv_ref = genfromtxt(os.path.join(path_debug, "REF_SOLUTION.csv"), delimiter=',', skip_header=1)
 csv_MPI = genfromtxt(os.path.join(path_debug,"MPI_SOLUTION.csv"), delimiter=',', skip_header=1)
 
-
-filename = str(datetime.datetime.now())
 if np.all(csv_ref == csv_MPI):
 	print "TEST SUCCESSFUL!!!"
-	#open(filename+"__TEST_SUCCESSFULL", 'w+')
-
 else:
 	print "TEST FAILED!!!"
-	#open(filename+"__TEST_FAILED", 'w+')
 
 

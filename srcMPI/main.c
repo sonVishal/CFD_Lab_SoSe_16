@@ -199,14 +199,6 @@ int main(int argc, char *argv[]){
         free(readBuffer[i]);
     }
 
-    //TODO: (DL) DEBUG PART
-    MPI_Barrier(MPI_COMM_WORLD);
-    if(procData.rank == 0){
-    	parse_output();
-    }
-    //==================
-
-
     finaliseMPI(&procData);
     return 0;
 }
