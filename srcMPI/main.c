@@ -65,11 +65,6 @@ int main(int argc, char *argv[]){
     MPI_Bcast(&timesteps, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(procsPerAxis, 3, MPI_INT, 0, MPI_COMM_WORLD);
-    // printf("After broadcast Proc %d xlength %d\n",procData.rank,xlength);
-
-    // TODO: (VS) Remove later. For safety.
-    MPI_Barrier(MPI_COMM_WORLD);
-    // printf("After barrier Proc %d\n",procData.rank);
 
     procData.wallVelocity[0] = wallVelocity[0];
     procData.wallVelocity[1] = wallVelocity[1];
@@ -180,8 +175,6 @@ int main(int argc, char *argv[]){
 		printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
 				(domTotalsize/(1000000*elapsedTime))*timesteps);
     }
-
-    // TODO: (VS) Combine the VTS files for each time
 
     /* TODO: (DL) when checking with MPI implementation, the values of collideField
      * have to get collected from the different processes and then checked with

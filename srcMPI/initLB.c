@@ -119,7 +119,21 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     /*Looping over boundary of flagFields*/
     //All points set to zero at memory allocation (using calloc)
 	int endOuter, endInner, fixedValue, wallIdx;
-	// First set up the ghost boundary layer with no slip
+
+	// First set up the parallel boundary layer
+	for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
+		if (thisProcData.neighbours[wallIdx] != MPI_PROC_NULL) {
+			p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, wallIdx);
+			for (z = 0; z <= endOuter; z++) {
+				for (y = 0; y <= endInner; y++) {
+					idx = p_computeCellOffset(z,y,fixedValue,thisProcData.xLength,wallIdx);
+					flagField[idx] = PARALLEL_BOUNDARY;
+				}
+			}
+		}
+	}
+
+	// Now set up the ghost boundary layer with no slip
 	for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
 		if (thisProcData.neighbours[wallIdx] == MPI_PROC_NULL && wallIdx != TOP) {
 			p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, wallIdx);
@@ -139,19 +153,6 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 			for (y = 0; y <= endInner; y++) {
 				idx = p_computeCellOffset(z,y,fixedValue,thisProcData.xLength, TOP);
 				flagField[idx] = MOVING_WALL;
-			}
-		}
-	}
-
-	// Now set up the parallel boundary layer
-	for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
-		if (thisProcData.neighbours[wallIdx] != MPI_PROC_NULL) {
-			p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, wallIdx);
-			for (z = 0; z <= endOuter; z++) {
-				for (y = 0; y <= endInner; y++) {
-					idx = p_computeCellOffset(z,y,fixedValue,thisProcData.xLength,wallIdx);
-					flagField[idx] = PARALLEL_BOUNDARY;
-				}
 			}
 		}
 	}
@@ -198,6 +199,8 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
                        int s_bufferSize[3]) {
 
 	const int nrDistSwap = 5;
+
+	// TODO: (VS) As per WS4: Only allocate memory if neighbour exists
 
 	// XZ inner domain (no edges included)
 	int bufferSize		= nrDistSwap*((xlength[0]+2)*(xlength[2]+2));
