@@ -49,11 +49,11 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 void extract( double sendBuffer[], double* collideField, const t_iterPara *iterPara, const t_procData *procData,
               int direction, int* index){
 
-    int currentIndexField;
+    // int currentIndexField;
     int currentIndexBuff= 0;
 
 #ifndef NDEBUG
-    int fieldSize = Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2);
+    // int fieldSize = Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2);
 #endif
 
     //k - corresponds to the 'outer' value when computing the offset
@@ -61,12 +61,13 @@ void extract( double sendBuffer[], double* collideField, const t_iterPara *iterP
         //j - corresponds to the 'inner' value
         for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
 
-            currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
+            // currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
 
             assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
-            assert(currentIndexField < fieldSize  && currentIndexField >= 0);
+            // assert(currentIndexField < fieldSize  && currentIndexField >= 0);
             for (int i = 0; i < 5; i++) {
-                sendBuffer[currentIndexBuff++] = collideField[currentIndexField+index[i]];
+                // sendBuffer[currentIndexBuff++] = collideField[currentIndexField+index[i]];
+                sendBuffer[currentIndexBuff++] = 99;
             }
         }
     }
@@ -145,9 +146,11 @@ void inject(double readBuffer[], double* collideField, t_iterPara *iterPara, con
             currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
 
             assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
-            assert(currentIndexField < fieldSize  && currentIndexField >= 0);
             for (int i = 0; i < 5; i++) {
-                collideField[currentIndexField+index[i]] = readBuffer[currentIndexBuff++];
+                assert(currentIndexField < fieldSize  && currentIndexField >= 0);
+                assert(readBuffer[currentIndexBuff] == 99);
+                collideField[currentIndexField+index[i]] = readBuffer[currentIndexBuff];
+                currentIndexBuff++;
             }
         }
     }
