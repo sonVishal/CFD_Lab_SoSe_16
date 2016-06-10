@@ -10,9 +10,9 @@ f = open("scaleData.dat", "w");
 f.close();
 
 #Define starting processes.
-iproc = 2;
-jproc = 2;
-kproc = 2;
+iproc = 1;
+jproc = 1;
+kproc = 1;
 procValue = [iproc, jproc, kproc]
 
 
@@ -32,20 +32,31 @@ for i in range(0,3):
 #Define increment which the number of processes is increased by.
 #   We assume the increment will not be big and apply a circular 
 #   increment for the procs.
-increment = 2;
-numProcs  = 4;
-numRuns   = 1;#int(math.floor(numProcs/increment));
+increment = 1;
+numRuns   = 2;
 
-#TODO: Make function that sets procs.
-#os.system("sed -i '/^iProc/c\This line is removed by the admin.' scenarios/cavity.dat")
 #Run simulation the given numRun times.
+run = "";
 counter = 0;
+j = 0; #Index to be changed.
 for i in range(0, numRuns):
-    s = "mpirun -np "
-    s += str(iproc*jproc*kproc)
-    s += " ./lbsim scenarios/cavity.dat"
-    #os.system(s)
-    print s;
+
+    #Circular counter
+    if counter == 4:
+        counter = 0;
+    j = counter%3;
+
+    #Run program for current proc values
+    run = "mpirun -np "
+    run += str(procValue[0]*procValue[1]*procValue[2])
+    run += " ./lbsim scenarios/cavity.dat"
+    os.system(run)
+
+    #Update proc value
+    procValue[j]+=increment
+    s = sedStr[0] + procStr[j] + sedStr[1] + procStr[j] + "    " + str(procValue[j]) + sedStr[2]
+    os.system(s);
+    counter+=1;
 
 
 def setProcs(iproc, jproc, kproc):
