@@ -57,7 +57,7 @@ print "Max. value that differs: " + str(maxDiffer)
 print "Norm relative difference: " + str(normDiffer)
 print "Nr. values that differ: " + str(nrDifferValues) 
 
-if normDiffer <= 1e-4:
+if normDiffer <= 1e-5:
 	print "TEST SUCCESSFUL!!!"
 else:
 	print "TEST FAILED!!!"
