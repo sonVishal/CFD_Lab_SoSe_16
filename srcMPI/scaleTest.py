@@ -10,8 +10,8 @@ from matplotlib import pyplot as plt
 
 #Clear file
 f = "scaleData.dat"
-g = open(f, "w");
-g.close();
+#g = open(f, "w");
+#g.close();
 
 #Define starting processes.
 iproc = 1;
@@ -29,7 +29,7 @@ sedStr = ["sed -i '/^" , "/c\\","' scenarios/cavity.dat"]
 #Set initial values for procs
 for i in range(0,3):
     s = sedStr[0] + procStr[i] + sedStr[1] + procStr[i] + "    " + str(procValue[i]) + sedStr[2]
-    os.system(s);
+    #os.system(s);
 
 
 #Define increment which the number of processes is increased by.
@@ -56,21 +56,40 @@ for i in range(0, numRuns):
     run = "mpirun -np "
     run += str(procValue[0]*procValue[1]*procValue[2])
     run += " ./lbsim scenarios/cavity.dat"
-    os.system(run)
+    #os.system(run)
 
     #Update proc value
     procValue[j]+=increment
     s = sedStr[0] + procStr[j] + sedStr[1] + procStr[j] + "    " + str(procValue[j]) + sedStr[2]
-    os.system(s);
+    #os.system(s);
     counter+=1;
 
 #scaleTest.dat arranged columnwise as follows separated by a space
 #iproc jproc kproc elapsedTime numCells MLUPS
 
 g = open(f);
-line = g.readline();
-print line
+line = g.readlines();
+g.close();
 
+#Holds the variables for each run
+_iproc = []
+_jproc = []
+_kproc = []
+_elapsedTime = []
+_numCells = []
+_MLUPS = []
+
+with open(f) as g:
+    for line in g:
+        z = line.split(" ");
+        _iproc.append(z[0]);
+        _jproc.append(z[1]);
+        _kproc.append(z[2]);
+        _elapsedTime.append(z[3]);
+        _numCells.append(z[4]);
+        _MLUPS.append(z[5]);
+
+numVar = len(_iproc);
 
 
 
