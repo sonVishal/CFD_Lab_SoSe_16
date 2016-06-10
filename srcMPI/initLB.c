@@ -1,8 +1,4 @@
-#include "helper.h"
 #include "initLB.h"
-#include "boundary.h"
-#include <mpi/mpi.h>
-#include <math.h>
 
 int readParameters(int *xlength, double *tau, double *velocityWall, int *procsPerAxis,
 	int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){

@@ -1,11 +1,4 @@
-#include <mpi/mpi.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
 #include "parallel.h"
-#include "helper.h"
-#include "boundary.h"
-#include "LBDefinitions.h"
 
 void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 	MPI_Init(&argc, &argv);

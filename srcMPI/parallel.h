@@ -3,7 +3,8 @@
 #include <mpi/mpi.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "parallel.h"
+#include <assert.h>
+#include "helper.h"
 #include "boundary.h"
 #include "LBDefinitions.h"
 

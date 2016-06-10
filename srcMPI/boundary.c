@@ -1,10 +1,4 @@
-#include <stdio.h>
 #include "boundary.h"
-#include "helper.h"
-#include "debug.h"
-#include "LBDefinitions.h"
-#include "computeCellValues.h"
-#include <mpi/mpi.h>
 
 /* Helper function that carries out the moving wall or bounce back condition, depending on flag 'type'.
  * The value in flagField corresponding to the current cell (current_cell_index) has to indicate a boundary

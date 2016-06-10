@@ -1,5 +1,14 @@
-#define _POSIX_C_SOURCE 3
+#ifndef _DEBUG_H_
+#define _DEBUG_H_
+
+#if _POSIX_C_SOURCE < 2
+    #define _POSIX_C_SOURCE 3
+#endif
+
+#include "helper.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <mpi/mpi.h>
 #include "LBDefinitions.h"
 
 void writeVtkOutputDebug(const double * const collideField, const int * const flagField, const char * filename, unsigned int t, t_procData procData, int *procsPerAxis);
@@ -27,3 +36,5 @@ void printCellEnum(const int wall);
 void debug_setBufferValues(double **sendBuffer, double **readBuffer, t_procData procData);
 
 int parse_output(void);
+
+#endif
