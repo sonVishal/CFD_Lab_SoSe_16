@@ -209,7 +209,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 	readBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
 
 	// XY plane including edges at the boundary to left/right
-	bufferSize 			= nrDistSwap*((xlength[0]+2)*(xlength[1]+2));
+	bufferSize 			= nrDistSwap*(xlength[0]*(xlength[1]+2));
     s_bufferSize[1] 	= bufferSize;
 	sendBuffer[TOP] 	= (neighbours[TOP] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
 	sendBuffer[BOTTOM] 	= (neighbours[BOTTOM] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
