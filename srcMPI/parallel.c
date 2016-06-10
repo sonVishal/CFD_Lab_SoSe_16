@@ -71,22 +71,28 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
     t_iterPara iterPara1;
     t_iterPara iterPara2;
 
+	// Treat opposite directions in one go
     for (int direction = LEFT; direction <= BACK; direction+=2) {
 
+		// Set iteration parameters for the opposite directions
         p_setCommIterationParameters(&iterPara1, procData, direction);
         p_setCommIterationParameters(&iterPara2, procData, direction+1);
 
+		// Assign the indices for the 5 distributions that go out of the cell in the direction
         p_assignIndices(direction,   index1);
         p_assignIndices(direction+1, index2);
 
+		// Extract the distributions from collide field to the send buffer
         if(procData->neighbours[direction] != MPI_PROC_NULL)
             extract(sendBuffer[direction], collideField, &iterPara1, procData, direction, index1);
 
         if(procData->neighbours[direction+1] != MPI_PROC_NULL)
             extract(sendBuffer[direction+1], collideField, &iterPara2, procData, direction+1, index2);
 
+		// Swap the distributions
         swap(sendBuffer, readBuffer, procData, direction);
 
+		// Inject the distributions from read buffer to collide field
         if(procData->neighbours[direction] != MPI_PROC_NULL)
             inject(readBuffer[direction], collideField, &iterPara1, procData, direction, index2);
 
