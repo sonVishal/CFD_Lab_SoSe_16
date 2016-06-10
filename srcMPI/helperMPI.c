@@ -36,10 +36,10 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         swap(sendBuffer, readBuffer, procData, direction);
 
         if(procData->neighbours[direction] != MPI_PROC_NULL)
-            inject(readBuffer, collideField, &iterPara, procData, direction, index1);
+            inject(readBuffer, collideField, &iterPara, procData, direction, index2);
 
         if(procData->neighbours[direction+1] != MPI_PROC_NULL)
-            inject(readBuffer, collideField, &iterPara2, procData, direction+1, index2);
+            inject(readBuffer, collideField, &iterPara2, procData, direction+1, index1);
     }
 
 }
