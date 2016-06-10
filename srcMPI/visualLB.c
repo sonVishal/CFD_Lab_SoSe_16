@@ -1,8 +1,4 @@
 #include "visualLB.h"
-#include "computeCellValues.h"
-#include "LBDefinitions.h"
-#include "helper.h"
-#include <stdlib.h>
 
 // Function to write VTK output files for visualization
 // Inputs

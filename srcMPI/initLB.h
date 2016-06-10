@@ -1,6 +1,10 @@
 #ifndef _INITLB_H_
 #define _INITLB_H_
 #include "LBDefinitions.h"
+#include "helper.h"
+#include "boundary.h"
+#include <mpi/mpi.h>
+#include <math.h>
 /* reads the parameters for the lid driven cavity scenario from a config file */
 int readParameters(
     int *xlength,                       /* reads domain size. Parameter name: "xlength" */
@@ -16,18 +20,5 @@ int readParameters(
 
 /* initialises the particle distribution functions and the flagfield */
 void initialiseFields(double *collideField, double *streamField,int *flagField, const t_procData thisProcData);
-
-// Domain decomposition and setting of neighbours
-void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, const int * const procsPerAxis);
-
-// Initialise the message passing interface
-void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]);
-
-// Initialise the buffers
-void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength, int *neighbours,
-		int procBufferSize[3]);
-
-// Finalise all the processes and join
-void finaliseMPI();
 
 #endif

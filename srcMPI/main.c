@@ -8,7 +8,7 @@
 #include "LBDefinitions.h"
 #include "debug.h"
 #include "helper.h"
-#include "helperMPI.h"
+#include "parallel.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi/mpi.h>

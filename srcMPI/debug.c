@@ -1,8 +1,4 @@
 #include "debug.h"
-#include "helper.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <mpi/mpi.h>
 
 void convertEnumWallToString(const int wall, char *wallName) {
 	int myRank;

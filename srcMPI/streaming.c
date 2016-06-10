@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <assert.h>
-#include "LBDefinitions.h"
 #include "streaming.h"
 
 /* Another (obsolete) version where we iterated over FLUID cells with 3 loops (x,y,z) turned out to

@@ -9,6 +9,9 @@
 #include <string.h>
 #include <float.h>
 #include <time.h>
+#include <ctype.h>
+#include <errno.h>
+#include <stdio.h>
 #include "LBDefinitions.h"
 #ifdef PI
 #undef PI

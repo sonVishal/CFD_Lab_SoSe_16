@@ -1,7 +1,4 @@
 #include "collision.h"
-#include "computeCellValues.h"
-#include "LBDefinitions.h"
-#include "helper.h"
 
 // Get the post collision cell distribution using BGK update rule
 // for the current cell
