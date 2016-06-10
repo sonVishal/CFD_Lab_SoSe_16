@@ -58,9 +58,4 @@ for i in range(0, numRuns):
     os.system(s);
     counter+=1;
 
-
-def setProcs(iproc, jproc, kproc):
-    print iproc
-    print jproc
-    print kproc
-    #TODO: Sed for all procs and set them.
+#TODO: Plotting
