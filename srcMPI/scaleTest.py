@@ -8,6 +8,11 @@ from matplotlib import pyplot as plt
 # ASSUMES this will not be run with high increment values.#
 ###########################################################
 
+#TODO:
+#   * Add print of speedup
+#   * Add print of parallel efficiency
+#   * Add second graph
+
 #Clear file
 f = "scaleData.dat"
 g = open(f, "w");
