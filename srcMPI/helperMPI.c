@@ -12,7 +12,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
     int index1[5];
     int index2[5];
 
-    t_iterPara iterPara;
+    t_iterPara iterPara1;
     t_iterPara iterPara2;
 
     for (int direction = LEFT; direction <= BACK; direction+=2) {
@@ -21,13 +21,14 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         //          * Check if direction is a boundary by checking for MPI_PROC_NULL
         //          * Add case in swap to avoid deadlock
 
-        p_setCommIterationParameters(&iterPara,  procData, direction);
+        p_setCommIterationParameters(&iterPara1, procData, direction);
         p_setCommIterationParameters(&iterPara2, procData, direction+1);
-        p_assignIndices(direction, index1);
+
+        p_assignIndices(direction,   index1);
         p_assignIndices(direction+1, index2);
 
         if(procData->neighbours[direction] != MPI_PROC_NULL)
-            extract(sendBuffer[direction], collideField, &iterPara, procData, direction, index1);
+            extract(sendBuffer[direction], collideField, &iterPara1, procData, direction, index1);
 
         if(procData->neighbours[direction+1] != MPI_PROC_NULL)
             extract(sendBuffer[direction+1], collideField, &iterPara2, procData, direction+1, index2);
@@ -35,7 +36,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         swap(sendBuffer, readBuffer, procData, direction);
 
         if(procData->neighbours[direction] != MPI_PROC_NULL)
-            inject(readBuffer[direction], collideField, &iterPara, procData, direction, index2);
+            inject(readBuffer[direction], collideField, &iterPara1, procData, direction, index2);
 
         if(procData->neighbours[direction+1] != MPI_PROC_NULL)
             inject(readBuffer[direction+1], collideField, &iterPara2, procData, direction+1, index1);
@@ -120,30 +121,29 @@ void inject(double readBuffer[], double* collideField, t_iterPara *iterPara, con
     int fieldSize = Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2);
 #endif
 
-    //TODO: (TKS) Exchange switch with shiftFixedValue array potentially outside function call.
-    // int shiftFixedValue = {-1, 1, 1, -1, 1, -1}
-    // iterPara->fixedvalue += shiftFixedValue[direction]
+    int shiftFixedValue[6] = {-1, 1, 1, -1, 1, -1};
+    iterPara->fixedValue += shiftFixedValue[direction];
 
-    switch (direction){
-        case LEFT:
-              iterPara->fixedValue--;
-              break;
-        case RIGHT:
-              iterPara->fixedValue++;
-              break;
-        case TOP:
-              iterPara->fixedValue++;
-              break;
-        case BOTTOM:
-              iterPara->fixedValue--;
-              break;
-        case FRONT:
-              iterPara->fixedValue++;
-              break;
-        case BACK:
-              iterPara->fixedValue--;
-              break;
-    }
+//    switch (direction){
+//        case LEFT:
+//              iterPara->fixedValue--;
+//              break;
+//        case RIGHT:
+//              iterPara->fixedValue++;
+//              break;
+//        case TOP:
+//              iterPara->fixedValue++;
+//              break;
+//        case BOTTOM:
+//              iterPara->fixedValue--;
+//              break;
+//        case FRONT:
+//              iterPara->fixedValue++;
+//              break;
+//        case BACK:
+//              iterPara->fixedValue--;
+//              break;
+//    }
 
     //k - corresponds to the 'outer' value when computing the offset
     for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){

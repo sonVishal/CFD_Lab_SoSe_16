@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 3
 #include <stdio.h>
 #include "LBDefinitions.h"
 
@@ -24,3 +25,5 @@ void convertEnumCellToString(const int wall, char *wallName);
 void printCellEnum(const int wall);
 
 void debug_setBufferValues(double **sendBuffer, double **readBuffer, t_procData procData);
+
+int parse_output(void);
