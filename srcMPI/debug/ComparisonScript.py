@@ -15,8 +15,6 @@
 # 4) go back to master (git checkout master)
 # 5) run the MPI solution with "DEBUG_MPI_REF.dat"
 
-
-
 from paraview import simple
 from numpy import genfromtxt
 import numpy as np
@@ -45,14 +43,25 @@ csv_MPI = genfromtxt(os.path.join(path_debug,"MPI_SOLUTION.csv"), delimiter=',',
 
 filename = str(datetime.datetime.now())
 
-print csv_ref == csv_MPI
+#some additional information
+nrDifferValues = np.sum(csv_ref == csv_MPI)
+differVals = np.abs(csv_ref - csv_MPI)[csv_ref != csv_MPI]
+maxDiffer = np.max(differVals)
+normDiffer = np.linalg.norm(csv_ref - csv_MPI) / np.linalg.norm(csv_MPI)
 
-if np.all(csv_ref == csv_MPI):
+print "=============================================================\n"
+print "                         RESULT\n"
+print "=============================================================\n"
+
+print "Max. value that differs: " + str(maxDiffer)
+print "Norm relative difference: " + str(normDiffer)
+print "Nr. values that differ: " + str(nrDifferValues) 
+
+if normDiffer <= 1e-4:
 	print "TEST SUCCESSFUL!!!"
-	#open(filename+"__TEST_SUCCESSFULL", 'w+')
-
 else:
 	print "TEST FAILED!!!"
-	#open(filename+"__TEST_FAILED", 'w+')
+
+
 
 
