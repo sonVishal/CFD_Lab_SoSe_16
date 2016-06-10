@@ -15,7 +15,7 @@ void computeDensity(const double *const currentCell, double *density){
 }
 
 /** computes the velocity within currentCell and stores the result in velocity */
-void computeVelocity(const double * const currentCell, const double * const density, double *velocity){
+void computeVelocity(const double * const currentCell, const double density, double *velocity){
 
     // Velocity is the momentum divided by the density
     // Momentum is the sum of the product of lattice velocity with distribution
@@ -60,15 +60,15 @@ void computeVelocity(const double * const currentCell, const double * const dens
     velocity[2] += currentCell[16]+currentCell[17]+currentCell[18];
 
     // Divide by density
-    velocity[0] /= (*density);
-    velocity[1] /= (*density);
-    velocity[2] /= (*density);
+    velocity[0] /= density;
+    velocity[1] /= density;
+    velocity[2] /= density;
 }
 
 /** computes the equilibrium distributions for all particle distribution
  *  functions of one cell from density and velocity and stores the results in feq.
  */
-void computeFeq(const double * const density, const double * const velocity, double *feq){
+void computeFeq(const double density, const double * const velocity, double *feq){
 
     // Temporary variables for speed of sound squared and ^4
 	// Since it is called that often and having the most work, we made these static
@@ -86,9 +86,9 @@ void computeFeq(const double * const density, const double * const velocity, dou
 
     // Temporary variables for density*LATTICEWEIGHTS
     // There are only 3 different LATTTICEWEIGHTS
-    double const d1 = (*density)*LATTICEWEIGHTS[0];
-    double const d2 = (*density)*LATTICEWEIGHTS[2];
-    double const d3 = (*density)*LATTICEWEIGHTS[9];
+    double const d1 = density*LATTICEWEIGHTS[0];
+    double const d2 = density*LATTICEWEIGHTS[2];
+    double const d3 = density*LATTICEWEIGHTS[9];
 
     // Semantics for the unrolled loop
     // int i;

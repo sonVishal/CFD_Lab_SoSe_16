@@ -81,7 +81,7 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *procsPe
   return 0;
 }
 
-void initialiseFields(double *collideField, double *streamField, int *flagField, const t_procData thisProcData){
+void initialiseFields(double *collideField, double *streamField, int *flagField, const t_procData * const thisProcData){
 
     /*Setting initial distributions*/
     //f_i(x,0) = f^eq(1,0,0) = w_i
@@ -90,18 +90,18 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
     int idx;
 
     // Temporary variables for xlength^2
-    int const xylen = (thisProcData.xLength[0]+2)*(thisProcData.xLength[1]+2);
+    int const xylen = (thisProcData->xLength[0]+2)*(thisProcData->xLength[1]+2);
 
     // Temporary variables for z and y offsets
     int zOffset, yzOffset;
 
     /* initialize collideField and streamField */
     int x,y,z;
-    for ( z = 0; z <= thisProcData.xLength[2]+1; ++z) {
+    for ( z = 0; z <= thisProcData->xLength[2]+1; ++z) {
         zOffset = z*xylen;
-        for ( y = 0; y <= thisProcData.xLength[1]+1; ++y) {
-            yzOffset = y*(thisProcData.xLength[0]+2) + zOffset;
-            for ( x = 0; x <= thisProcData.xLength[0]+1; ++x) {
+        for ( y = 0; y <= thisProcData->xLength[1]+1; ++y) {
+            yzOffset = y*(thisProcData->xLength[0]+2) + zOffset;
+            for ( x = 0; x <= thisProcData->xLength[0]+1; ++x) {
                 // Compute the base index
                 idx = Q*(yzOffset + x);
                 for (int i = 0; i < Q; ++i) {
@@ -118,11 +118,11 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
 	// First set up the parallel boundary layer
 	for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
-		if (thisProcData.neighbours[wallIdx] != MPI_PROC_NULL) {
+		if (thisProcData->neighbours[wallIdx] != MPI_PROC_NULL) {
 			p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, wallIdx);
 			for (z = 0; z <= endOuter; z++) {
 				for (y = 0; y <= endInner; y++) {
-					idx = p_computeCellOffset(z,y,fixedValue,thisProcData.xLength,wallIdx);
+					idx = p_computeCellOffset(z,y,fixedValue,thisProcData->xLength,wallIdx);
 					flagField[idx] = PARALLEL_BOUNDARY;
 				}
 			}
@@ -131,11 +131,11 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
 	// Now set up the ghost boundary layer with no slip
 	for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
-		if (thisProcData.neighbours[wallIdx] == MPI_PROC_NULL && wallIdx != TOP) {
+		if (thisProcData->neighbours[wallIdx] == MPI_PROC_NULL && wallIdx != TOP) {
 			p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, wallIdx);
 			for (z = 0; z <= endOuter; z++) {
 				for (y = 0; y <= endInner; y++) {
-					idx = p_computeCellOffset(z,y,fixedValue,thisProcData.xLength,wallIdx);
+					idx = p_computeCellOffset(z,y,fixedValue,thisProcData->xLength,wallIdx);
 					flagField[idx] = NO_SLIP;
 				}
 			}
@@ -143,11 +143,11 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 	}
 
 	// Now set up the ghost boundary layer with moving wall - if it's at the TOP ghost layer
-	if (thisProcData.neighbours[TOP] == MPI_PROC_NULL) {
+	if (thisProcData->neighbours[TOP] == MPI_PROC_NULL) {
 		p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, TOP);
 		for (z = 0; z <= endOuter; z++) {
 			for (y = 0; y <= endInner; y++) {
-				idx = p_computeCellOffset(z,y,fixedValue,thisProcData.xLength, TOP);
+				idx = p_computeCellOffset(z,y,fixedValue,thisProcData->xLength, TOP);
 				flagField[idx] = MOVING_WALL;
 			}
 		}

@@ -102,7 +102,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 
 //TODO (TKS) Join extract and inject into one function.
 //Copy distributions needed to sendbuffer.
-void extract( double sendBuffer[], double* collideField, const t_iterPara *iterPara, const t_procData *procData,
+void extract( double sendBuffer[], double* collideField, const t_iterPara * const iterPara, const t_procData *procData,
               int direction, int* index){
 
     int currentIndexField;
@@ -211,7 +211,6 @@ void inject(double readBuffer[], double* collideField, t_iterPara *iterPara, con
 //Function to assign iteration parameters for communication.
 void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procData, const int direction){
     //TODO: (TKS) Confirm that indecies are correct.
-    //TODO: Adapt the indices so that the right amount of cells are sent or received
 	switch(direction){
 
 	//---------------------------------------------

@@ -19,7 +19,7 @@ typedef struct{
 void communicate(double** sendBuffer, double**readBuffer, double* collideField, const t_procData *procData);
 
 // Exracts the collide field to the send buffer
-void extract( double sendBuffer[], double* collideField, const t_iterPara *iterPara, const t_procData *procData,
+void extract( double sendBuffer[], double* collideField, const t_iterPara * const iterPara, const t_procData *procData,
               int direction, int* index);
 
 // Swaps the data between neighbors

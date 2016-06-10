@@ -108,7 +108,7 @@ int main(int argc, char *argv[]){
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     // Initialise the fields
-    initialiseFields(collideField, streamField, flagField, procData);
+    initialiseFields(collideField, streamField, flagField, &procData);
 
     // Allocate memory to send and read buffers
     initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.neighbours, procData.bufferSize);
@@ -132,9 +132,6 @@ int main(int argc, char *argv[]){
 
     for(t = 1; t <= timesteps; t++){
 	    double *swap = NULL;
-        // TODO: (All) remove?
-	    // debug_setBufferValues(sendBuffer, readBuffer, procData);
-
         /* communicate(...) does the following
          do extraction , swap , injection for x (left to right)
          do extraction , swap , injection for x (right to left)
@@ -152,10 +149,10 @@ int main(int argc, char *argv[]){
 	    streamField = swap;
 
         // Perform local collision
-	    doCollision(collideField,flagField,&tau,procData.xLength);
+	    doCollision(collideField,flagField,tau,procData.xLength);
 
         // Treat local boundaries
-	    treatBoundary(collideField,flagField,procData);
+	    treatBoundary(collideField,flagField,&procData);
 
         // Print VTS files at given interval
 	    if (t%timestepsPerPlotting == 0){
