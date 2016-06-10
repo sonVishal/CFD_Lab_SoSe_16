@@ -28,7 +28,7 @@ path_debug = os.path.dirname(os.path.abspath(__file__)) # the file should be in 
 reader = simple.OpenDataFile(os.path.join(path_debug, "DEBUG_REFERENCE_SOLUTION.100.vtk"))
 readerRef = simple.OpenDataFile(os.path.join(path_debug, "../pv_files/worksheet4.100.pvts"))
 
-writer = simple.CreateWriter(os.path.join(path_debug,"REF_SOLUTION.csv"), reader)
+writer = simple.CreateWriter(os.path.join(path_debug,"REF_SOLUTION.csv"), readerRef)
 writer.WriteAllTimeSteps = 0
 writer.FieldAssociation = "Cells"
 writer.UpdatePipeline()
@@ -44,6 +44,9 @@ csv_MPI = genfromtxt(os.path.join(path_debug,"MPI_SOLUTION.csv"), delimiter=',',
 
 
 filename = str(datetime.datetime.now())
+
+print csv_ref == csv_MPI
+
 if np.all(csv_ref == csv_MPI):
 	print "TEST SUCCESSFUL!!!"
 	#open(filename+"__TEST_SUCCESSFULL", 'w+')
