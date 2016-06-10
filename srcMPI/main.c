@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
     		(totalsize/(1000000*time_spent))*timesteps);
 
     char fileRef[] = {"debug/collideField"};
-    writeCollideFieldDebug(fileRef, collideField, Q*totalsize);
+//    writeCollideFieldDebug(fileRef, collideField, Q*totalsize);
 //    checkCollideFieldDebug(fileRef, collideField, Q*totalsize);
 
     free(streamField);
