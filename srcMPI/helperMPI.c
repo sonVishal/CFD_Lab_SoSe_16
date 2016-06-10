@@ -155,6 +155,7 @@ void inject(double readBuffer[], double* collideField, t_iterPara *iterPara, con
 //Function to assign iteration parameters for communication.
 void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procData, const int direction){
     //TODO: (TKS) Confirm that indecies are correct.
+    //TODO: Adapt the indices so that the right amount of cells are sent or received
 	switch(direction){
 
 	//---------------------------------------------

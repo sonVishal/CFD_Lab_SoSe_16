@@ -198,6 +198,8 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 
 	const int nrDistSwap = 5;
 
+	// TODO: Adapt buffer size. Currently entire layer is being sent and received.
+
 	// XZ inner domain (no edges included)
 	int bufferSize		= nrDistSwap*((xlength[0]+2)*(xlength[2]+2));
     s_bufferSize[0] 	= bufferSize;
