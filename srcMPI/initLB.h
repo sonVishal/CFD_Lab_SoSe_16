@@ -25,7 +25,7 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]);
 
 // Initialise the buffers
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength, int bufferLength[3][3],
-                       int s_bufferSize[3]);
+                       int *neighbours, int s_bufferSize[3]);
 
 // Finalise all the processes and join
 void finaliseMPI();

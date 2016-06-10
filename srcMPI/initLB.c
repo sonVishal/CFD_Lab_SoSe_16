@@ -79,6 +79,7 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *procsPe
 	if (*xlength%iProc != 0 || *xlength%jProc != 0 || *xlength%kProc != 0) {
 		char buffer[160];
         snprintf(buffer, 160, "WARNING: The domain decomposition is not uniform. This might create load unbalances between processes.\n");
+		ERROR(buffer);
 	}
 
   return 0;
@@ -168,8 +169,8 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 
 void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, const int * const procsPerAxis) {
 
-	// printf("Calling domain decomposition from %d\n",procData->rank);
 	int procPos[3] = {0,0,0};
+	// Get the position of the process based on its rank
 	p_rankToPos(procsPerAxis,procData->rank,procPos);
 
     /* Compute the subdomain size and save it into procData */
@@ -190,41 +191,38 @@ void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, 
 
     procData->neighbours[BOTTOM] = (procPos[2] == 0) 				  ? MPI_PROC_NULL : procData->rank-procsPerAxis[1]*procsPerAxis[0];
     procData->neighbours[TOP]    = (procPos[2] == procsPerAxis[2]-1)  ? MPI_PROC_NULL : procData->rank+procsPerAxis[1]*procsPerAxis[0];
-
-	// printf("Proc %d \t Position (%d,%d,%d)\n",procData->rank,procPos[0],procPos[1],procPos[2]);
-	// printProcDataPos(*procData,procPos);
 }
 
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength, int bufferLength[3][3],
-                       int s_bufferSize[3]) {
+                       int *neighbours, int s_bufferSize[3]) {
 
 	const int nrDistSwap = 5;
 
-	// TODO: (VS) As per WS4: Only allocate memory if neighbour exists
+	// TODO: Adapt buffer size. Currently entire layer is being sent and received.
 
 	// XZ inner domain (no edges included)
 	int bufferSize		= nrDistSwap*((xlength[0]+2)*(xlength[2]+2));
-    s_bufferSize[0] = bufferSize;
-	sendBuffer[LEFT] 	= (double *) malloc(bufferSize*sizeof(double));
-	sendBuffer[RIGHT] 	= (double *) malloc(bufferSize*sizeof(double));
-	readBuffer[LEFT] 	= (double *) malloc(bufferSize*sizeof(double));
-	readBuffer[RIGHT] 	= (double *) malloc(bufferSize*sizeof(double));
+    s_bufferSize[0] 	= bufferSize;
+	sendBuffer[LEFT] 	= (neighbours[LEFT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
+	sendBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
+	readBuffer[LEFT] 	= (neighbours[LEFT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
+	readBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
 
 	// XY plane including edges at the boundary to left/right
 	bufferSize 			= nrDistSwap*((xlength[0]+2)*(xlength[1]+2));
-    s_bufferSize[1] = bufferSize;
-	sendBuffer[TOP] 	= (double *) malloc(bufferSize*sizeof(double));
-	sendBuffer[BOTTOM] 	= (double *) malloc(bufferSize*sizeof(double));
-	readBuffer[TOP] 	= (double *) malloc(bufferSize*sizeof(double));
-	readBuffer[BOTTOM] 	= (double *) malloc(bufferSize*sizeof(double));
+    s_bufferSize[1] 	= bufferSize;
+	sendBuffer[TOP] 	= (neighbours[TOP] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
+	sendBuffer[BOTTOM] 	= (neighbours[BOTTOM] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
+	readBuffer[TOP] 	= (neighbours[TOP] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
+	readBuffer[BOTTOM] 	= (neighbours[BOTTOM] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
 
 	// YZ plane including all edges
 	bufferSize 			= nrDistSwap*((xlength[1]+2)*(xlength[2]+2));
-    s_bufferSize[2] = bufferSize;
-	sendBuffer[FRONT] 	= (double *) malloc(bufferSize*sizeof(double));
-	sendBuffer[BACK] 	= (double *) malloc(bufferSize*sizeof(double));
-	readBuffer[FRONT] 	= (double *) malloc(bufferSize*sizeof(double));
-	readBuffer[BACK] 	= (double *) malloc(bufferSize*sizeof(double));
+    s_bufferSize[2] 	= bufferSize;
+	sendBuffer[FRONT] 	= (neighbours[FRONT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
+	sendBuffer[BACK] 	= (neighbours[BACK] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
+	readBuffer[FRONT] 	= (neighbours[FRONT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
+	readBuffer[BACK] 	= (neighbours[BACK] != MPI_PROC_NULL)?(double *) malloc(bufferSize*sizeof(double)):NULL;
 }
 
 /* TODO: (DL) This should go somewhere else!! */

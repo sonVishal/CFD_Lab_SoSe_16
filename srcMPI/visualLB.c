@@ -17,7 +17,7 @@
 // t            - Time at which output is to be stored
 // xlength      - Number of cells in one direction
 
-void writeVtkOutput(const double * const collideField,
+void writeVtsOutput(const double * const collideField,
     const int * const flagField, const char * filename,
     unsigned int t, int xlen, t_procData procData, int *procsPerAxis)
 {
@@ -45,7 +45,7 @@ void writeVtkOutput(const double * const collideField,
     fprintf(fp,"<VTKFile type=\"StructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" header_type=\"UInt32\">\n");
 
     // Write the point data for the domain
-    writevtkPointCoordinates(fp,xlen,procData.xLength,myPos,procsPerAxis);
+    writevtsPointCoordinates(fp,xlen,procData.xLength,myPos,procsPerAxis);
 
     fprintf(fp,"<CellData>\n");
     fprintf(fp,"<DataArray type=\"Float32\" NumberOfComponents=\"3\" Name=\"Velocity\">\n");
@@ -112,7 +112,7 @@ void writeVtkOutput(const double * const collideField,
     }
 }
 
-void writevtkPointCoordinates(FILE *fp, int xlen, int *xlength, int *myPos, int *procsPerAxis) {
+void writevtsPointCoordinates(FILE *fp, int xlen, int *xlength, int *myPos, int *procsPerAxis) {
     int x, y, z;
     // printf("Position = (%d,%d,%d)\n",myPos[0],myPos[1],myPos[2]);
     unsigned int x1 = myPos[0]*(xlen/procsPerAxis[0]);
