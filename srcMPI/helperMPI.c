@@ -28,25 +28,25 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         p_assignIndices(direction+1, index2);
 
         if(procData->neighbours[direction] != MPI_PROC_NULL)
-            extract(sendBuffer, collideField, &iterPara, procData, direction, index1);
+            extract(sendBuffer[direction], collideField, &iterPara, procData, direction, index1);
 
         if(procData->neighbours[direction+1] != MPI_PROC_NULL)
-            extract(sendBuffer, collideField, &iterPara2, procData, direction+1, index2);
+            extract(sendBuffer[direction+1], collideField, &iterPara2, procData, direction+1, index2);
 
         swap(sendBuffer, readBuffer, procData, direction);
 
         if(procData->neighbours[direction] != MPI_PROC_NULL)
-            inject(readBuffer, collideField, &iterPara, procData, direction, index2);
+            inject(readBuffer[direction], collideField, &iterPara, procData, direction, index2);
 
         if(procData->neighbours[direction+1] != MPI_PROC_NULL)
-            inject(readBuffer, collideField, &iterPara2, procData, direction+1, index1);
+            inject(readBuffer[direction+1], collideField, &iterPara2, procData, direction+1, index1);
     }
 
 }
 
 //TODO (TKS) Join extract and inject into one function.
 //Copy distributions needed to sendbuffer.
-void extract( double** sendBuffer, double* collideField, const t_iterPara *iterPara, const t_procData *procData,
+void extract( double sendBuffer[], double* collideField, const t_iterPara *iterPara, const t_procData *procData,
               int direction, int* index){
 
     int currentIndexField;
@@ -66,7 +66,7 @@ void extract( double** sendBuffer, double* collideField, const t_iterPara *iterP
             assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
             assert(currentIndexField < fieldSize  && currentIndexField >= 0);
             for (int i = 0; i < 5; i++) {
-                sendBuffer[direction][currentIndexBuff++] = collideField[currentIndexField+index[i]];
+                sendBuffer[currentIndexBuff++] = collideField[currentIndexField+index[i]];
             }
         }
     }
@@ -102,7 +102,7 @@ void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, 
 }
 
 //Copy read buffer to ghost layer
-void inject(double** readBuffer, double* collideField, t_iterPara *iterPara, const t_procData *procData,
+void inject(double readBuffer[], double* collideField, t_iterPara *iterPara, const t_procData *procData,
             int direction, int *index){
 
     int currentIndexField;
@@ -147,7 +147,7 @@ void inject(double** readBuffer, double* collideField, t_iterPara *iterPara, con
             assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
             assert(currentIndexField < fieldSize  && currentIndexField >= 0);
             for (int i = 0; i < 5; i++) {
-                collideField[currentIndexField+index[i]] = readBuffer[direction][currentIndexBuff++];
+                collideField[currentIndexField+index[i]] = readBuffer[currentIndexBuff++];
             }
         }
     }
