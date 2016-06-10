@@ -1,20 +1,23 @@
 import math
 from subprocess import call
 import os
+from matplotlib import pyplot as plt
 
-#Script to test the scaling of lbsim.
-# ASSUMES this will not be run with high increment values.
+###########################################################
+#Quick and dirty script to test the scaling of lbsim.     #
+# ASSUMES this will not be run with high increment values.#
+###########################################################
 
 #Clear file
-f = open("scaleData.dat", "w");
-f.close();
+f = "scaleData.dat"
+g = open(f, "w");
+g.close();
 
 #Define starting processes.
 iproc = 1;
 jproc = 1;
 kproc = 1;
 procValue = [iproc, jproc, kproc]
-
 
 iprocStr = "iProc"
 jprocStr = "jProc"
@@ -30,10 +33,13 @@ for i in range(0,3):
 
 
 #Define increment which the number of processes is increased by.
-#   We assume the increment will not be big and apply a circular 
+#   We assume the increment will not be big and we apply a circular 
 #   increment for the procs.
+
+#BEWARE of check for unbalanced decomposition in C program
+#TODO: Handle unbalanced domain decomposition.
 increment = 1;
-numRuns   = 2;
+numRuns   = 5;
 
 #Run simulation the given numRun times.
 run = "";
@@ -58,4 +64,13 @@ for i in range(0, numRuns):
     os.system(s);
     counter+=1;
 
-#TODO: Plotting
+#scaleTest.dat arranged columnwise as follows separated by a space
+#iproc jproc kproc elapsedTime numCells MLUPS
+
+g = open(f);
+line = g.readline();
+print line
+
+
+
+
