@@ -171,24 +171,12 @@ void inject(double readBuffer[], double* collideField, t_iterPara *iterPara, con
     iterPara->fixedValue += shiftFixedValue[direction];
 
 //    switch (direction){
-//        case LEFT:
-//              iterPara->fixedValue--;
-//              break;
-//        case RIGHT:
-//              iterPara->fixedValue++;
-//              break;
-//        case TOP:
-//              iterPara->fixedValue++;
-//              break;
-//        case BOTTOM:
-//              iterPara->fixedValue--;
-//              break;
-//        case FRONT:
-//              iterPara->fixedValue++;
-//              break;
-//        case BACK:
-//              iterPara->fixedValue--;
-//              break;
+//        case LEFT:   iterPara->fixedValue--; break;
+//        case RIGHT:  iterPara->fixedValue++; break;
+//        case TOP:    iterPara->fixedValue++; break;
+//        case BOTTOM: iterPara->fixedValue--; break;
+//        case FRONT:  iterPara->fixedValue++; break;
+//        case BACK:   iterPara->fixedValue--; break;
 //    }
 
     //k - corresponds to the 'outer' value when computing the offset
