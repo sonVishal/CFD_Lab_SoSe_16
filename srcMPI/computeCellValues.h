@@ -9,11 +9,11 @@
 void computeDensity(const double *const currentCell, double *density);
 
 /** computes the velocity within currentCell and stores the result in velocity */
-void computeVelocity(const double *const currentCell, const double * const density,double *velocity);
+void computeVelocity(const double *const currentCell, const double density,double *velocity);
 
 /** computes the equilibrium distributions for all particle distribution functions of one
  *  cell from density and velocity and stores the results in feq.
  */
-void computeFeq(const double * const density, const double * const velocity, double *feq);
+void computeFeq(const double density, const double * const velocity, double *feq);
 
 #endif

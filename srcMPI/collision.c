@@ -2,10 +2,10 @@
 
 // Get the post collision cell distribution using BGK update rule
 // for the current cell
-void computePostCollisionDistributions(double *currentCell, const double * const tau, const double *const feq){
+void computePostCollisionDistributions(double *currentCell, const double tau, const double *const feq){
 	//double tau_val = *tau;
 	for ( int i = 0;  i< Q; ++i ) {
-		currentCell[i] = currentCell[i]  - (currentCell[i]  - feq[i])/(*tau);
+		currentCell[i] = currentCell[i]  - (currentCell[i]  - feq[i])/(tau);
 
 #ifndef NDEBUG
 		if(currentCell[i]<0){
@@ -18,7 +18,7 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 }
 
 // Perform collision for all inner cells
-void doCollision(double *collideField, int *flagField,const double * const tau, int *xlength){
+void doCollision(double *collideField, int *flagField,const double tau, int *xlength){
 
 	// Define iteration indices
 	int idx, x, y, z;
@@ -61,10 +61,10 @@ void doCollision(double *collideField, int *flagField,const double * const tau, 
 #endif
 
 				// Compute the cell velocity
-				computeVelocity(currentCell, &density, velocity);
+				computeVelocity(currentCell, density, velocity);
 
 				// Compute the equilibrium distributions
-				computeFeq(&density,velocity,feq);
+				computeFeq(density,velocity,feq);
 
 				// Compute the post collision distributions
 				computePostCollisionDistributions(currentCell,tau,feq);

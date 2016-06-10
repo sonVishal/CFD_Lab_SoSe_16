@@ -88,45 +88,45 @@ int p_computeNeighborCellOffset(int outer, int inner, int fixedValue,
 }
 
 
-void p_setIterationParameters(int *endOuter, int *endInner, int *fixedValue, const t_procData procData, const int wallIdx){
+void p_setIterationParameters(int *endOuter, int *endInner, int *fixedValue, const t_procData * const procData, const int wallIdx){
 
 	switch(wallIdx){
 
 	//---------------------------------------------
 	//outer = Z, inner = X, Y fixed
 	case LEFT:
-		*endOuter = procData.xLength[2]+1;
-		*endInner = procData.xLength[0]+1;
+		*endOuter = procData->xLength[2]+1;
+		*endInner = procData->xLength[0]+1;
 		*fixedValue = 0;
 		break;
 	case RIGHT:
-		*endOuter = procData.xLength[2]+1;
-		*endInner = procData.xLength[0]+1;
-		*fixedValue = procData.xLength[1]+1;
+		*endOuter = procData->xLength[2]+1;
+		*endInner = procData->xLength[0]+1;
+		*fixedValue = procData->xLength[1]+1;
 		break;
 	//---------------------------------------------
 	//outer = Y, inner = X, Z fixed
 	case TOP:
-		*endOuter = procData.xLength[1]+1;
-		*endInner = procData.xLength[0]+1;
-		*fixedValue = procData.xLength[2]+1;
+		*endOuter = procData->xLength[1]+1;
+		*endInner = procData->xLength[0]+1;
+		*fixedValue = procData->xLength[2]+1;
 		break;
 	case BOTTOM:
-		*endOuter = procData.xLength[1]+1;
-		*endInner = procData.xLength[0]+1;
+		*endOuter = procData->xLength[1]+1;
+		*endInner = procData->xLength[0]+1;
 		*fixedValue = 0;
 		break;
 
 	//---------------------------------------------
 	//outer = Z, inner = Y, X fixed
 	case FRONT:
-		*endOuter = procData.xLength[2]+1;
-		*endInner = procData.xLength[1]+1;
-		*fixedValue = procData.xLength[0]+1;
+		*endOuter = procData->xLength[2]+1;
+		*endInner = procData->xLength[1]+1;
+		*fixedValue = procData->xLength[0]+1;
 		break;
 	case BACK:
-		*endOuter = procData.xLength[2]+1;
-		*endInner = procData.xLength[1]+1;
+		*endOuter = procData->xLength[2]+1;
+		*endInner = procData->xLength[1]+1;
 		*fixedValue = 0;
 		break;
 
@@ -141,13 +141,13 @@ void p_setIterationParameters(int *endOuter, int *endInner, int *fixedValue, con
  * (from enum WALLS) and the 'fixedValue' (generally 0 or xlength+1).
  */
 
-void p_treatSingleWall(double *collideField, const int * const flagField, const t_procData procData, const int wallIdx){
+void p_treatSingleWall(double *collideField, const int * const flagField, const t_procData * const procData, const int wallIdx){
 
 	int endOuter = -1, endInner = -1, fixedValue = -1;
 	p_setIterationParameters(&endOuter, &endInner, &fixedValue, procData, wallIdx);
 	assert(endOuter != -1 && endInner != -1 && fixedValue != -1);
 
-	int xlength[3] = {procData.xLength[0], procData.xLength[1], procData.xLength[2]};
+	int xlength[3] = {procData->xLength[0], procData->xLength[1], procData->xLength[2]};
 
 	//variable needed at check whether it is an in-domain (FLUID) cell
 	int maxValidIndex = Q*(xlength[0]+2)*(xlength[1]+2)*(xlength[2]+2);
@@ -175,16 +175,16 @@ void p_treatSingleWall(double *collideField, const int * const flagField, const 
 				if(n_cell_index >= 0 && n_cell_index < maxValidIndex &&
 						(flagField[n_xyzoffset] == FLUID || flagField[n_xyzoffset] == PARALLEL_BOUNDARY)
 				){
-					p_setBounceBack(collideField, procData.wallVelocity, boundaryType, i, current_cell_index, n_cell_index, c);
+					p_setBounceBack(collideField, procData->wallVelocity, boundaryType, i, current_cell_index, n_cell_index, c);
 				}
 			}
 		}
 	}
 }
 
-void treatBoundary(double * collideField, int const * const flagField, const t_procData procData){
+void treatBoundary(double * collideField, int const * const flagField, const t_procData * const procData){
 	for(int wall=LEFT; wall<=BACK; ++wall){ //see LBDefinitions for order of walls
-		if(procData.neighbours[wall] == MPI_PROC_NULL){
+		if(procData->neighbours[wall] == MPI_PROC_NULL){
 			// printWallEnum(wall);
 			p_treatSingleWall(collideField, flagField, procData, wall);
 		}

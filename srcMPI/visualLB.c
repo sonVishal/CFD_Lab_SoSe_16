@@ -69,7 +69,7 @@ void writeVtsOutput(const double * const collideField,
                 idx = Q*(yzOffset + x);
 
                 computeDensity(&collideField[idx], &cellDensity);
-                computeVelocity(&collideField[idx], &cellDensity, &cellVelocity[0]);
+                computeVelocity(&collideField[idx], cellDensity, &cellVelocity[0]);
 
                 // Write cell average velocities
                 fprintf(fp, "%f %f %f\n", cellVelocity[0],

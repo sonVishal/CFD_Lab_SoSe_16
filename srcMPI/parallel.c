@@ -71,26 +71,28 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
     t_iterPara iterPara1;
     t_iterPara iterPara2;
 
+	// Treat opposite directions in one go
     for (int direction = LEFT; direction <= BACK; direction+=2) {
 
-        //TODO: (TKS) Overwriting domain boundaries in inject.
-        //          * Check if direction is a boundary by checking for MPI_PROC_NULL
-        //          * Add case in swap to avoid deadlock
-
+		// Set iteration parameters for the opposite directions
         p_setCommIterationParameters(&iterPara1, procData, direction);
         p_setCommIterationParameters(&iterPara2, procData, direction+1);
 
+		// Assign the indices for the 5 distributions that go out of the cell in the direction
         p_assignIndices(direction,   index1);
         p_assignIndices(direction+1, index2);
 
+		// Extract the distributions from collide field to the send buffer
         if(procData->neighbours[direction] != MPI_PROC_NULL)
             extract(sendBuffer[direction], collideField, &iterPara1, procData, direction, index1);
 
         if(procData->neighbours[direction+1] != MPI_PROC_NULL)
             extract(sendBuffer[direction+1], collideField, &iterPara2, procData, direction+1, index2);
 
+		// Swap the distributions
         swap(sendBuffer, readBuffer, procData, direction);
 
+		// Inject the distributions from read buffer to collide field
         if(procData->neighbours[direction] != MPI_PROC_NULL)
             inject(readBuffer[direction], collideField, &iterPara1, procData, direction, index2);
 
@@ -100,9 +102,8 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 
 }
 
-//TODO (TKS) Join extract and inject into one function.
 //Copy distributions needed to sendbuffer.
-void extract( double sendBuffer[], double* collideField, const t_iterPara *iterPara, const t_procData *procData,
+void extract( double sendBuffer[], double* collideField, const t_iterPara * const iterPara, const t_procData *procData,
               int direction, int* index){
 
     int currentIndexField;
@@ -131,8 +132,6 @@ void extract( double sendBuffer[], double* collideField, const t_iterPara *iterP
 
 //Send distributions and wait to receive.
 void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, int direction){
-    //TODO: (TKS) Add error handling.
-
 //int MPI_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
     //int dest, int sendtag, void *recvbuf, int recvcount,
     //MPI_Datatype recvtype, int source, int recvtag,
@@ -218,10 +217,8 @@ void inject(double readBuffer[], double* collideField, t_iterPara *iterPara, con
 
 //Function to assign iteration parameters for communication.
 void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procData, const int direction){
-    //TODO: (TKS) Confirm that indecies are correct.
-    //TODO: Adapt the indices so that the right amount of cells are sent or received
-	switch(direction){
 
+	switch(direction){
 	//---------------------------------------------
 	//outer = Z, inner = X, Y fixed
     //only iterate over inner domain of plane (FLUID cells)

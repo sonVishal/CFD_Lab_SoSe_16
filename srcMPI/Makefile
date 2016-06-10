@@ -1,5 +1,5 @@
 # Include files
-SOURCES=initLB.c visualLB.c boundary.c collision.c streaming.c computeCellValues.c parallel.c main.c helper.c debug.c
+SOURCES=initLB.c visualLB.c boundary.c collision.c streaming.c computeCellValues.c parallel.c helper.c main.c
 
 # Compiler
 # --------
@@ -20,6 +20,7 @@ all: clean $(EXECUTABLE) ; @echo "\nINFO:Use make speed for a faster code withou
 speed: CFLAGS+= -DNDEBUG -O3
 speed: clean $(EXECUTABLE)
 
+debug: SOURCES+= debug.c
 debug: CFLAGS+=-O0 -g -enable-checking -v -da -Q
 debug: LDFLAGS+=-pg
 debug: clean $(EXECUTABLE)
