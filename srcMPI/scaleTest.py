@@ -10,8 +10,8 @@ from matplotlib import pyplot as plt
 
 #Clear file
 f = "scaleData.dat"
-#g = open(f, "w");
-#g.close();
+g = open(f, "w");
+g.close();
 
 #Define starting processes.
 iproc = 1;
@@ -29,17 +29,15 @@ sedStr = ["sed -i '/^" , "/c\\","' scenarios/cavity.dat"]
 #Set initial values for procs
 for i in range(0,3):
     s = sedStr[0] + procStr[i] + sedStr[1] + procStr[i] + "    " + str(procValue[i]) + sedStr[2]
-    #os.system(s);
+    os.system(s);
 
 
 #Define increment which the number of processes is increased by.
 #   We assume the increment will not be big and we apply a circular 
 #   increment for the procs.
 
-#BEWARE of check for unbalanced decomposition in C program
-#TODO: Handle unbalanced domain decomposition.
 increment = 1;
-numRuns   = 5;
+numRuns   = 15;
 
 #Run simulation the given numRun times.
 run = "";
@@ -56,12 +54,12 @@ for i in range(0, numRuns):
     run = "mpirun -np "
     run += str(procValue[0]*procValue[1]*procValue[2])
     run += " ./lbsim scenarios/cavity.dat"
-    #os.system(run)
+    os.system(run)
 
     #Update proc value
     procValue[j]+=increment
     s = sedStr[0] + procStr[j] + sedStr[1] + procStr[j] + "    " + str(procValue[j]) + sedStr[2]
-    #os.system(s);
+    os.system(s);
     counter+=1;
 
 # --------------- #
