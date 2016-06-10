@@ -148,7 +148,12 @@ void inject(double readBuffer[], double* collideField, t_iterPara *iterPara, con
             assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
             for (int i = 0; i < 5; i++) {
                 assert(currentIndexField < fieldSize  && currentIndexField >= 0);
-                assert(readBuffer[currentIndexBuff] == 99);
+                // assert(readBuffer[currentIndexBuff] == 99);
+                if (readBuffer[currentIndexBuff] != 99) {
+                    fprintf(stderr, "%s\n", "Danger");
+                    fflush(stderr);
+                    fflush(stdout);
+                }
                 collideField[currentIndexField+index[i]] = readBuffer[currentIndexBuff];
                 currentIndexBuff++;
             }
