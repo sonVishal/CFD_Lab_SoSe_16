@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
 
     // File printing parameters
     char fName[80];
-    snprintf(fName, 80, "pv_files/worksheet2");
+    snprintf(fName, 80, "debug/DEBUG_REFERENCE_SOLUTION");
 
     //Timing variables:
     clock_t begin_timing, end_timing;
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]){
 
     // Write the VTK at t = 0
     printf("INFO: write vtk file at time t = %d \n", t);
-    writeVtkOutput(collideField,flagField,fName,t,xlength);
+//    writeVtkOutput(collideField,flagField,fName,t,xlength);
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
@@ -91,7 +91,7 @@ int main(int argc, char *argv[]){
     printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
     		(totalsize/(1000000*time_spent))*timesteps);
 
-    char fileRef[] = {"debug/collideField"};
+//    char fileRef[] = {"debug/collideField"};
 //    writeCollideFieldDebug(fileRef, collideField, Q*totalsize);
 //    checkCollideFieldDebug(fileRef, collideField, Q*totalsize);
 
