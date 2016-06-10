@@ -107,12 +107,6 @@ void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, 
         }
     }
 
-    //Send proc2 receive proc2
-    if(procData->neighbours[direction+1] != MPI_PROC_NULL){
-        MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
-                bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    }
-
 }
 
 //Copy read buffer to ghost layer
