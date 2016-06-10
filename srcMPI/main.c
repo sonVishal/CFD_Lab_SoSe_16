@@ -68,7 +68,7 @@ int main(int argc, char *argv[]){
     MPI_Bcast(&timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(procsPerAxis, 3, MPI_INT, 0, MPI_COMM_WORLD);
 
-    // Assign the process wall velocity even
+    // Assign the wall velocity
     procData.wallVelocity[0] = wallVelocity[0];
     procData.wallVelocity[1] = wallVelocity[1];
     procData.wallVelocity[2] = wallVelocity[2];
@@ -120,7 +120,7 @@ int main(int argc, char *argv[]){
 
     // Write the VTK at t = 0
     printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
-    writeVtkOutput(collideField,flagField,fName,t,xlength,procData,procsPerAxis);
+    writeVtsOutput(collideField,flagField,fName,t,xlength,procData,procsPerAxis);
 
     // Combine VTS file at t = 0
     // Only done by root
@@ -160,7 +160,7 @@ int main(int argc, char *argv[]){
         // Print VTS files at given interval
 	    if (t%timestepsPerPlotting == 0){
             printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
-	        writeVtkOutput(collideField,flagField,fName,t,xlength,procData,procsPerAxis);
+	        writeVtsOutput(collideField,flagField,fName,t,xlength,procData,procsPerAxis);
             // Combine VTS file at t
             if (procData.rank == 0) {
                 p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
