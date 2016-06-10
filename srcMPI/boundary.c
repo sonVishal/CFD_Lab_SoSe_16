@@ -22,7 +22,6 @@ void p_setBounceBack(double *collideField, const double * const wallVelocity,
 		/* equation 19 */
 		collideField[current_cell_index + i] = collideField[n_cell_index + (Q-i-1)] +
 				2 * weight * density * dot_uwall_c / (C_S*C_S);
-
 	}
 }
 
@@ -87,52 +86,37 @@ int p_computeNeighborCellOffset(int outer, int inner, int fixedValue,
 	}
 }
 
-
+/* TODO: (DL) place this somewhere else because it is also needed at other places */
 void p_setIterationParameters(int *endOuter, int *endInner, int *fixedValue, const t_procData * const procData, const int wallIdx){
 
-	switch(wallIdx){
+	switch(wallIdx/2){
 	//---------------------------------------------
 	//outer = Z, inner = X, Y fixed
-	case LEFT:
+	case 0:
 		*endOuter = procData->xLength[2]+1;
 		*endInner = procData->xLength[0]+1;
-		*fixedValue = 0;
+		*fixedValue = wallIdx == LEFT ? 0 : procData->xLength[1]+1;
 		break;
-	case RIGHT:
-		*endOuter = procData->xLength[2]+1;
-		*endInner = procData->xLength[0]+1;
-		*fixedValue = procData->xLength[1]+1;
-		break;
+
 	//---------------------------------------------
 	//outer = Y, inner = X, Z fixed
-	case TOP:
+	case 1:
 		*endOuter = procData->xLength[1]+1;
 		*endInner = procData->xLength[0]+1;
-		*fixedValue = procData->xLength[2]+1;
-		break;
-	case BOTTOM:
-		*endOuter = procData->xLength[1]+1;
-		*endInner = procData->xLength[0]+1;
-		*fixedValue = 0;
+		*fixedValue = wallIdx == BOTTOM ? 0 : procData->xLength[2]+1;
 		break;
 
 	//---------------------------------------------
 	//outer = Z, inner = Y, X fixed
-	case FRONT:
+	case 2:
 		*endOuter = procData->xLength[2]+1;
 		*endInner = procData->xLength[1]+1;
-		*fixedValue = procData->xLength[0]+1;
-		break;
-	case BACK:
-		*endOuter = procData->xLength[2]+1;
-		*endInner = procData->xLength[1]+1;
-		*fixedValue = 0;
+		*fixedValue = wallIdx == BACK ? 0 : procData->xLength[0]+1;
 		break;
 
 	default:
 		ERROR("Invalid wallIdx occurred. This should never happen!");
 	}
-
 }
 
 
