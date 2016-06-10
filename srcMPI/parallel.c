@@ -73,10 +73,6 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 
     for (int direction = LEFT; direction <= BACK; direction+=2) {
 
-        //TODO: (TKS) Overwriting domain boundaries in inject.
-        //          * Check if direction is a boundary by checking for MPI_PROC_NULL
-        //          * Add case in swap to avoid deadlock
-
         p_setCommIterationParameters(&iterPara1, procData, direction);
         p_setCommIterationParameters(&iterPara2, procData, direction+1);
 
@@ -100,7 +96,6 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 
 }
 
-//TODO (TKS) Join extract and inject into one function.
 //Copy distributions needed to sendbuffer.
 void extract( double sendBuffer[], double* collideField, const t_iterPara * const iterPara, const t_procData *procData,
               int direction, int* index){
@@ -131,8 +126,6 @@ void extract( double sendBuffer[], double* collideField, const t_iterPara * cons
 
 //Send distributions and wait to receive.
 void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, int direction){
-    //TODO: (TKS) Add error handling.
-
 //int MPI_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
     //int dest, int sendtag, void *recvbuf, int recvcount,
     //MPI_Datatype recvtype, int source, int recvtag,
@@ -210,9 +203,8 @@ void inject(double readBuffer[], double* collideField, t_iterPara *iterPara, con
 
 //Function to assign iteration parameters for communication.
 void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procData, const int direction){
-    //TODO: (TKS) Confirm that indecies are correct.
-	switch(direction){
 
+	switch(direction){
 	//---------------------------------------------
 	//outer = Z, inner = X, Y fixed
     //only iterate over inner domain of plane (FLUID cells)
