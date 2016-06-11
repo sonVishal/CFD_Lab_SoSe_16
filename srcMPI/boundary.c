@@ -25,34 +25,6 @@ void p_setBounceBack(double *collideField, const double * const wallVelocity,
 	}
 }
 
-/* Helper function that computes the offset of the current cell. 'Inner' corresponds to the first value of (x,y,z)
- * that is not fixed; 'outer' to the second value. By this ordering a better cache efficiency is obtained.
- * WallIdx has to be a valid index from the enum WALLS.
- */
-int p_computeCellOffset(const int outer, const int inner, const int fixedValue, int const * const xlength, const int wallIdx){
-
-	//Computes index: z * (xlen*ylen) + y * (xlen) + x
-
-	//wallIdx has valid integer values from 0 to 5
-	switch (wallIdx/2) { //integer division to get the type of face (see enum in LBDefinitions.h)
-		case 0: // LEFT, RIGHT -> Y fixed
-			//outer = Z, inner = X
-			return (xlength[0]+2) * (outer * (xlength[1]+2) + fixedValue) + inner;
-
-		case 1: // TOP, BOTTOM -> Z fixed
-			//outer = Y, inner = X
-			return (xlength[0]+2) * (fixedValue * (xlength[1]+2) + outer) + inner;
-
-		case 2: // FRONT, BACK -> X fixed
-			//outer = Z, inner = Y
-			return (xlength[0]+2) * (outer * (xlength[1]+2) + inner) + fixedValue;
-
-		default:
-			ERROR("Invalid wall index occured. This should not happen !!!");
-			return -1;
-	}
-}
-
 /* Helper function similar to p_computeCellOffset, except that it computes the offset value
  * of a neighboring cell in the direction of 'c_vec'.
  * There are no checks that guarantee that the computed offset value is valid.
@@ -83,39 +55,6 @@ int p_computeNeighborCellOffset(int outer, int inner, int fixedValue,
 		default:
 			ERROR("Invalid wall index occured. This should not happen !!!");
 			return -1;
-	}
-}
-
-/* TODO: (DL) place this somewhere else because it is also needed at other places */
-void p_setIterationParameters(int *endOuter, int *endInner, int *fixedValue, const t_procData * const procData, const int wallIdx){
-
-	switch(wallIdx/2){
-	//---------------------------------------------
-	//outer = Z, inner = X, Y fixed
-	case 0:
-		*endOuter = procData->xLength[2]+1;
-		*endInner = procData->xLength[0]+1;
-		*fixedValue = wallIdx == LEFT ? 0 : procData->xLength[1]+1;
-		break;
-
-	//---------------------------------------------
-	//outer = Y, inner = X, Z fixed
-	case 1:
-		*endOuter = procData->xLength[1]+1;
-		*endInner = procData->xLength[0]+1;
-		*fixedValue = wallIdx == BOTTOM ? 0 : procData->xLength[2]+1;
-		break;
-
-	//---------------------------------------------
-	//outer = Z, inner = Y, X fixed
-	case 2:
-		*endOuter = procData->xLength[2]+1;
-		*endInner = procData->xLength[1]+1;
-		*fixedValue = wallIdx == BACK ? 0 : procData->xLength[0]+1;
-		break;
-
-	default:
-		ERROR("Invalid wallIdx occurred. This should never happen!");
 	}
 }
 

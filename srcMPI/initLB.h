@@ -2,7 +2,6 @@
 #define _INITLB_H_
 #include "LBDefinitions.h"
 #include "helper.h"
-#include "boundary.h"
 #include <mpi/mpi.h>
 #include <math.h>
 /* reads the parameters for the lid driven cavity scenario from a config file */

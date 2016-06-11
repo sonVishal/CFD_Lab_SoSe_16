@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <assert.h>
 #include "helper.h"
-#include "boundary.h"
 #include "LBDefinitions.h"
 
 typedef struct{
