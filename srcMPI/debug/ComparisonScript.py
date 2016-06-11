@@ -43,11 +43,13 @@ csv_MPI = genfromtxt(os.path.join(path_debug,"MPI_SOLUTION.csv"), delimiter=',',
 
 filename = str(datetime.datetime.now())
 
+diff = (csv_ref - csv_MPI)[:, 0:-1]
+
 #some additional information
 nrDifferValues = np.sum(csv_ref == csv_MPI)
-differVals = np.abs(csv_ref - csv_MPI)[csv_ref != csv_MPI]
+differVals = np.abs(diff)[csv_ref != csv_MPI]
 maxDiffer = np.max(differVals)
-normDiffer = np.linalg.norm(csv_ref - csv_MPI) / np.linalg.norm(csv_MPI)
+normDiffer = np.linalg.norm(diff) / np.linalg.norm(csv_MPI[:, 0:-1])
 
 print "=============================================================\n"
 print "                         RESULT\n"
@@ -64,6 +66,6 @@ else:
 
 np.set_printoptions(threshold=np.nan)
 np.set_printoptions(precision=6)
-print "velocity:0 - velocity:1 - velocity:2 - density - Cell Type"
-print csv_ref - csv_MPI
+print "velocity:0 - velocity:1 - velocity:2 - density"
+print diff
 
