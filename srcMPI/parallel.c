@@ -46,7 +46,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 	readBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 
 	// XY plane including edges at the boundary to left/right
-	bufferSize 			= nrDistSwap*((xlength[0])*(xlength[1]+2));
+	bufferSize 			= nrDistSwap*((xlength[0]+2)*(xlength[1]));
     procBufferSize[1] 	= bufferSize; //Valid for top and bottom
 	sendBuffer[TOP] 	= (neighbours[TOP] 	  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 	sendBuffer[BOTTOM] 	= (neighbours[BOTTOM] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
@@ -214,10 +214,10 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 	//outer = Y, inner = X, Z fixed
     //iterate over inner domain and include ghost layer in y-direction
 	case 1:
-        iterPara->startOuter = 0;
-		iterPara->endOuter   = procData->xLength[1]+1;
-        iterPara->startInner = 1;
-		iterPara->endInner   = procData->xLength[0];
+        iterPara->startOuter = 1;
+		iterPara->endOuter   = procData->xLength[1];
+        iterPara->startInner = 0;
+		iterPara->endInner   = procData->xLength[0]+1;
 		iterPara->fixedValue = (direction == BOTTOM) ? 1 : procData->xLength[2];
 		break;
 
