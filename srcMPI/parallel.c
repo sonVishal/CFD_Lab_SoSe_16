@@ -209,8 +209,8 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 	//outer = Y, inner = X, Z fixed
     //iterate over inner domain and include ghost layer in y-direction
 	case 1:
-        iterPara->startOuter = 0;
-		iterPara->endOuter   = procData->xLength[1]+1;
+        iterPara->startOuter = (procData->neighbours[LEFT] == MPI_PROC_NULL) ? 1:0;
+		iterPara->endOuter   = (procData->neighbours[RIGHT] == MPI_PROC_NULL) ? procData->xLength[1] : procData->xLength[1]+1;
         iterPara->startInner = 1;
 		iterPara->endInner   = procData->xLength[0];
 		iterPara->fixedValue = (direction == BOTTOM) ? 1 : procData->xLength[2];
@@ -220,10 +220,10 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 	//outer = Z, inner = Y, X fixed
     //Iterate over entire ZY plane
 	case 2:
-        iterPara->startOuter = 0;
-		iterPara->endOuter   = procData->xLength[2]+1;
-        iterPara->startInner = 0;
-		iterPara->endInner   = procData->xLength[1]+1;
+        iterPara->startOuter = (procData->neighbours[BOTTOM] == MPI_PROC_NULL) ? 1:0;
+		iterPara->endOuter   = (procData->neighbours[TOP] == MPI_PROC_NULL) ? procData->xLength[2] : procData->xLength[2]+1;
+        iterPara->startInner = (procData->neighbours[LEFT] == MPI_PROC_NULL) ? 1:0;
+		iterPara->endInner   = (procData->neighbours[RIGHT] == MPI_PROC_NULL) ? procData->xLength[1] : procData->xLength[1]+1;
 		iterPara->fixedValue = (direction == BACK) ? 1 : procData->xLength[0];
 		break;
 

@@ -1,6 +1,6 @@
 
 #NOTE: this script has to be executed with the executable "pvpython" provided by paraview
-#      For me it was in the folder [paraview]/bin  
+#      For me it was in the folder [paraview]/bin
 
 # in terminal execute:
 # [PATH_TO_PVPYTHON] ComparisonScript.py
@@ -43,8 +43,8 @@ csv_MPI = genfromtxt(os.path.join(path_debug,"MPI_SOLUTION.csv"), delimiter=',',
 filename = str(datetime.datetime.now())
 
 #some additional information
-nrDifferValues = np.sum(csv_ref == csv_MPI)
-differVals = np.abs(csv_ref - csv_MPI)[csv_ref != csv_MPI]
+nrDifferValues = np.sum(csv_ref != csv_MPI)
+differVals = np.abs(csv_ref - csv_MPI)[np.abs(csv_ref - csv_MPI) > 0]
 if len(differVals):
 	maxDiffer = np.max(differVals)
 else:
@@ -61,13 +61,12 @@ print "=============================================================\n"
 print "Max. value that differs: " + str(maxDiffer)
 print "Norm absolute difference: " + str(normDifferAbs)
 print "Norm relative difference: " + str(normDifferRel)
-print "Nr. values that differ: " + str(nrDifferValues) 
+print "Nr. values that differ: " + str(nrDifferValues)
 
 if normDifferRel <= 1e-5:
 	print "TEST SUCCESSFUL!!!"
 else:
 	print "TEST FAILED!!!"
 
-#np.set_printoptions(threshold=np.nan)
-#print csv_ref - csv_MPI
-
+np.set_printoptions(threshold=np.nan)
+print csv_ref - csv_MPI
