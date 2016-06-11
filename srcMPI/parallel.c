@@ -38,7 +38,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 	const int db = sizeof(double); //double in bytes
 
 	// XZ inner domain (no edges included)
-	int bufferSize		= nrDistSwap*((xlength[0]+2)*xlength[2]);
+	int bufferSize		= nrDistSwap*((xlength[0]+2)*(xlength[2]+2));
     procBufferSize[0] 	= bufferSize; //Valid for left and right
 	sendBuffer[LEFT] 	= (neighbours[LEFT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 	sendBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
@@ -46,7 +46,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 	readBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 
 	// XY plane including edges at the boundary to left/right
-	bufferSize 			= nrDistSwap*((xlength[0]+2)*(xlength[1]+2));
+	bufferSize 			= nrDistSwap*((xlength[0])*(xlength[1]+2));
     procBufferSize[1] 	= bufferSize; //Valid for top and bottom
 	sendBuffer[TOP] 	= (neighbours[TOP] 	  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 	sendBuffer[BOTTOM] 	= (neighbours[BOTTOM] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
@@ -72,7 +72,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
     t_iterPara iterPara2;
 
 	// Treat opposite directions in one go
-    int indexArr[] = {4, 5, 0,1, 2,3};
+    int indexArr[] = {4, 5, 2,3, 0,1};
     for (int i = 0; i <= 5; i+=2) {
         int direction = indexArr[i];
 
@@ -203,8 +203,8 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 	//outer = Z, inner = X, Y fixed
     //only iterate over inner domain of plane (FLUID cells)
 	case 0:
-        iterPara->startOuter = 1;
-		iterPara->endOuter   = procData->xLength[2];
+        iterPara->startOuter = 0;
+		iterPara->endOuter   = procData->xLength[2]+1;
         iterPara->startInner = 0;
 		iterPara->endInner   = procData->xLength[0]+1;
 		iterPara->fixedValue = (direction == LEFT) ? 1 : procData->xLength[1];
@@ -216,8 +216,8 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 	case 1:
         iterPara->startOuter = 0;
 		iterPara->endOuter   = procData->xLength[1]+1;
-        iterPara->startInner = 0;
-		iterPara->endInner   = procData->xLength[0]+1;
+        iterPara->startInner = 1;
+		iterPara->endInner   = procData->xLength[0];
 		iterPara->fixedValue = (direction == BOTTOM) ? 1 : procData->xLength[2];
 		break;
 
