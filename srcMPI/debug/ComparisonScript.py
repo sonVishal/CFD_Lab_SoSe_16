@@ -63,6 +63,7 @@ else:
 	print "TEST FAILED!!!"
 
 np.set_printoptions(threshold=np.nan)
+np.set_printoptions(precision=6)
 print "velocity:0 - velocity:1 - velocity:2 - density - Cell Type"
 print csv_ref - csv_MPI
 
