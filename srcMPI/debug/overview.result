@@ -1,63 +1,53 @@
 orig. case 0
 master
 
-Max. value that differs: 0.0001
-Norm relative difference: 2.52452830351e-05
-Norm absolute difference: 0.000798330758521
-Nr. values that differ: 3728
+Max. value that differs: 1.29938125619e-05
+Norm relative difference: 9.26189480672e-07
+Nr. values that differ: 3262
 TEST SUCCESSFUL!!!
+
 
 orig whole domain
-Max. value that differs: 0.0001
-Norm relative difference: 2.45281623017e-05
-Nr. values that differ: 3476
+Max. value that differs: 1.2993812561e-05
+Norm relative difference: 9.19059131697e-07
+Nr. values that differ: 3016
 TEST SUCCESSFUL!!!
-
 
 
 ======================================================
-alt. case 1   LR FB TB
-8fbd9996ab76487cbaf53edc081e2e308fbfdd1a
-Max. value that differs: 1.00000000001e-05
-Norm relative difference: 1.33597434025e-07
-Nr. values that differ: 4590
+alt. case 1   LR FB TB   OK
+Max. value that differs: 1.07288360618e-06
+Norm relative difference: 7.01477597524e-08
+Nr. values that differ: 4286
 TEST SUCCESSFUL!!!
+
 
 alt. case 2   FB LR TB
 6c98f6226c18491f9004ac08c9fa2181eafb9d81
-Max. value that differs: 1.00000000001e-05
-Norm relative difference: 1.34984029204e-07
-Nr. values that differ: 4362
+Max. value that differs: 2.02655792303e-06
+Norm relative difference: 8.59958327441e-08
+Nr. values that differ: 3978
 TEST SUCCESSFUL!!!
 
-=====================
-alt case 3    FB TB LR  /// NOT VALID?
-4c3ffe67f4468481bddbee91d915287305f6f850
-Max. value that differs: 0.000343
-Norm relative difference: 9.59436648287e-06
-Nr. values that differ: 1292
-TEST SUCCESSFUL!!!
-=====================
-
-alt case 3    FB TB LR  - fix
+alt case 3    FB TB LR  - fix OK
 36e82c5a9c1b5e9ce1022064287effa7b174a468
-Max. value that differs: 1.00000000001e-05
-Norm relative difference: 1.35443073137e-07
-Nr. values that differ: 4356
+Max. value that differs: 2.02655792303e-06
+Norm relative difference: 8.75931439722e-08
+Nr. values that differ: 3956
 TEST SUCCESSFUL!!!
 
 alt case 4    TB FB LR
 7ba09ab6b9adbb647ac141ac60ed52739ac05518
-Max. value that differs: 0.0001
-Norm relative difference: 2.01201897432e-06
-Nr. values that differ: 3672
+Max. value that differs: 1.40070915222e-05
+Norm relative difference: 9.24459761633e-07
+Nr. values that differ: 3218
 TEST SUCCESSFUL!!!
 
 alt case 5    TB LR FB
 6da0864920c997d660980ecd20493e006232464d
-Max. value that differs: 0.0001
-Norm relative difference: 2.10125405374e-06
-Nr. values that differ: 3238
+Max. value that differs: 1.29938125619e-05
+Norm relative difference: 9.262884604e-07
+Nr. values that differ: 2778
 TEST SUCCESSFUL!!!
 
 
