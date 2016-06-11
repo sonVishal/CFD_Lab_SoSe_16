@@ -26,13 +26,12 @@ path_debug = os.path.dirname(os.path.abspath(__file__)) # the file should be in 
 reader = simple.OpenDataFile(os.path.join(path_debug, "DEBUG_REFERENCE_SOLUTION.100.vtk"))
 readerRef = simple.OpenDataFile(os.path.join(path_debug, "../pv_files/worksheet4.100.pvts"))
 
-writer = simple.CreateWriter(os.path.join(path_debug,"REF_SOLUTION.csv"), readerRef)
+writer = simple.CreateWriter(os.path.join(path_debug,"REF_SOLUTION.csv",  ), readerRef, Precision=16)
 writer.WriteAllTimeSteps = 0
 writer.FieldAssociation = "Cells"
 writer.UpdatePipeline()
 
-
-writer = simple.CreateWriter(os.path.join(path_debug,"MPI_SOLUTION.csv"), reader)
+writer = simple.CreateWriter(os.path.join(path_debug,"MPI_SOLUTION.csv"), reader, Precision=16)
 writer.WriteAllTimeSteps = 0
 writer.FieldAssociation = "Cells"
 writer.UpdatePipeline()
@@ -62,6 +61,6 @@ if normDiffer <= 1e-5:
 else:
 	print "TEST FAILED!!!"
 
-np.set_printoptions(threshold=np.nan)
-print csv_ref - csv_MPI
+#np.set_printoptions(threshold=np.nan)
+#print csv_ref - csv_MPI
 
