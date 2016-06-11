@@ -110,13 +110,18 @@ void writeVtsOutput(const double * const collideField,
 
 void writevtsPointCoordinates(FILE *fp, int xlen, int *xlength, int *myPos, int *procsPerAxis) {
     int x, y, z;
-    // printf("Position = (%d,%d,%d)\n",myPos[0],myPos[1],myPos[2]);
-    unsigned int x1 = myPos[0]*(xlen/procsPerAxis[0]);
-    unsigned int x2 = x1 + xlength[0];
-    unsigned int y1 = myPos[1]*(xlen/procsPerAxis[1]);
-    unsigned int y2 = y1 + xlength[1];
-    unsigned int z1 = myPos[2]*(xlen/procsPerAxis[2]);
-    unsigned int z2 = z1 + xlength[2];
+    int baseLength[3] = {ceil(xlen/procsPerAxis[0]),ceil(xlen/procsPerAxis[1]),ceil(xlen/procsPerAxis[2])};
+    // If the proc is at the end of some axis then add the remaining length
+    int myLen[3] = {0,0,0};
+    myLen[0] = (myPos[0] == procsPerAxis[0]-1)?xlen-(procsPerAxis[0]-1)*baseLength[0]:baseLength[0];
+    myLen[1] = (myPos[1] == procsPerAxis[1]-1)?xlen-(procsPerAxis[1]-1)*baseLength[1]:baseLength[1];
+    myLen[2] = (myPos[2] == procsPerAxis[2]-1)?xlen-(procsPerAxis[2]-1)*baseLength[2]:baseLength[2];
+    unsigned int x1 = myPos[0]*baseLength[0];
+    unsigned int x2 = x1 + myLen[0];
+    unsigned int y1 = myPos[1]*baseLength[1];
+    unsigned int y2 = y1 + myLen[1];
+    unsigned int z1 = myPos[2]*baseLength[2];
+    unsigned int z2 = z1 + myLen[2];
     fprintf(fp,"<StructuredGrid WholeExtent=\"%d %d %d %d %d %d\">\n",x1,x2,y1,y2,z1,z2);
     fprintf(fp,"<Piece Extent=\"%d %d %d %d %d %d\">\n",x1,x2,y1,y2,z1,z2);
     fprintf(fp,"<Points>\n");
@@ -161,27 +166,22 @@ void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlen, in
     fprintf(fp, "<PDataArray type=\"Float32\" NumberOfComponents=\"1\" Name=\"Density\"/>\n");
     fprintf(fp, "</PCellData>\n");
 
-    // Perform domain decomposition again
-    int baseSubDiv[3] = {xlen/procsPerAxis[0],xlen/procsPerAxis[1],xlen/procsPerAxis[2]};
+    int baseLength[3] = {ceil(xlen/procsPerAxis[0]),ceil(xlen/procsPerAxis[1]),ceil(xlen/procsPerAxis[2])};
+    // If the proc is at the end of some axis then add the remaining length
+    int myLen[3] = {0,0,0};
 
     for (int k = 0; k < procsPerAxis[2]; k++) {
         for (int j = 0; j < procsPerAxis[1]; j++) {
             for (int i = 0; i < procsPerAxis[0]; i++) {
-                unsigned int x1 = i*(baseSubDiv[0]);
-                unsigned int x2 = x1 + baseSubDiv[0];
-                unsigned int y1 = j*(baseSubDiv[1]);
-                unsigned int y2 = y1 + baseSubDiv[1];
-                unsigned int z1 = k*(baseSubDiv[2]);
-                unsigned int z2 = z1 + baseSubDiv[2];
-                if (i == (procsPerAxis[0] - 1)) {
-                    x2 += xlen%procsPerAxis[0];
-                }
-                if (j == (procsPerAxis[1] - 1)) {
-                    y2 += xlen%procsPerAxis[1];
-                }
-                if (k == (procsPerAxis[2] - 1)) {
-                    z2 += xlen%procsPerAxis[2];
-                }
+                myLen[0] = (i == procsPerAxis[0]-1)?xlen-(procsPerAxis[0]-1)*baseLength[0]:baseLength[0];
+                myLen[1] = (j == procsPerAxis[1]-1)?xlen-(procsPerAxis[1]-1)*baseLength[1]:baseLength[1];
+                myLen[2] = (k == procsPerAxis[2]-1)?xlen-(procsPerAxis[2]-1)*baseLength[2]:baseLength[2];
+                unsigned int x1 = i*baseLength[0];
+                unsigned int x2 = x1 + myLen[0];
+                unsigned int y1 = j*baseLength[1];
+                unsigned int y2 = y1 + myLen[1];
+                unsigned int z1 = k*baseLength[2];
+                unsigned int z2 = z1 + myLen[2];
                 snprintf(pFileName, 80, "%s.%i.%i.vts",filename,i+(j+k*procsPerAxis[1])*procsPerAxis[0],t);
                 // This is stupid "../<fileName>" but what the heck
                 // printf("%d\t%d\t%d\t%d\t%d\t%d\n",x1,x2,y1,y2,z1,z2);

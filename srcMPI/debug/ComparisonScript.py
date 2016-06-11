@@ -1,6 +1,6 @@
 
 #NOTE: this script has to be executed with the executable "pvpython" provided by paraview
-#      For me it was in the folder [paraview]/bin  
+#      For me it was in the folder [paraview]/bin
 
 # in terminal execute:
 # [PATH_TO_PVPYTHON] ComparisonScript.py
@@ -23,16 +23,15 @@ import datetime
 
 path_debug = os.path.dirname(os.path.abspath(__file__)) # the file should be in /debug/!
 
-reader = simple.OpenDataFile(os.path.join(path_debug, "DEBUG_REFERENCE_SOLUTION.100.vtk"))
-readerRef = simple.OpenDataFile(os.path.join(path_debug, "../pv_files/worksheet4.100.pvts"))
+reader = simple.OpenDataFile(os.path.join(path_debug, "DEBUG_REFERENCE_SOLUTION.200.vtk"))
+readerRef = simple.OpenDataFile(os.path.join(path_debug, "../pv_files/worksheet4.200.pvts"))
 
-writer = simple.CreateWriter(os.path.join(path_debug,"REF_SOLUTION.csv"), readerRef)
+writer = simple.CreateWriter(os.path.join(path_debug,"REF_SOLUTION.csv",  ), readerRef, Precision=16)
 writer.WriteAllTimeSteps = 0
 writer.FieldAssociation = "Cells"
 writer.UpdatePipeline()
 
-
-writer = simple.CreateWriter(os.path.join(path_debug,"MPI_SOLUTION.csv"), reader)
+writer = simple.CreateWriter(os.path.join(path_debug,"MPI_SOLUTION.csv"), reader, Precision=16)
 writer.WriteAllTimeSteps = 0
 writer.FieldAssociation = "Cells"
 writer.UpdatePipeline()
@@ -44,24 +43,30 @@ csv_MPI = genfromtxt(os.path.join(path_debug,"MPI_SOLUTION.csv"), delimiter=',',
 filename = str(datetime.datetime.now())
 
 #some additional information
-nrDifferValues = np.sum(csv_ref == csv_MPI)
-differVals = np.abs(csv_ref - csv_MPI)[csv_ref != csv_MPI]
-maxDiffer = np.max(differVals)
-normDiffer = np.linalg.norm(csv_ref - csv_MPI) / np.linalg.norm(csv_MPI)
+nrDifferValues = np.sum(csv_ref != csv_MPI)
+differVals = np.abs(csv_ref - csv_MPI)[np.abs(csv_ref - csv_MPI) > 0]
+if len(differVals):
+	maxDiffer = np.max(differVals)
+else:
+	maxDiffer = np.nan
+
+normDifferAbs = np.linalg.norm(csv_ref - csv_MPI)
+normDifferRel = normDifferAbs / np.linalg.norm(csv_MPI)
+
 
 print "=============================================================\n"
 print "                         RESULT\n"
 print "=============================================================\n"
 
 print "Max. value that differs: " + str(maxDiffer)
-print "Norm relative difference: " + str(normDiffer)
-print "Nr. values that differ: " + str(nrDifferValues) 
+print "Norm absolute difference: " + str(normDifferAbs)
+print "Norm relative difference: " + str(normDifferRel)
+print "Nr. values that differ: " + str(nrDifferValues)
 
-if normDiffer <= 1e-5:
+if normDifferRel <= 1e-5:
 	print "TEST SUCCESSFUL!!!"
 else:
 	print "TEST FAILED!!!"
 
-
-
-
+# np.set_printoptions(threshold=np.nan)
+# print csv_ref - csv_MPI
