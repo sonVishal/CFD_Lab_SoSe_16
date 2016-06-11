@@ -38,7 +38,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 	const int db = sizeof(double); //double in bytes
 
 	// XZ inner domain (no edges included)
-	int bufferSize		= nrDistSwap*(xlength[0]+2*xlength[2]);
+	int bufferSize		= nrDistSwap*((xlength[0]+2)*xlength[2]);
     procBufferSize[0] 	= bufferSize; //Valid for left and right
 	sendBuffer[LEFT] 	= (neighbours[LEFT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 	sendBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
