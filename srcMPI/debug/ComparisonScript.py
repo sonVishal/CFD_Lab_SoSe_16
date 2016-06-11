@@ -62,6 +62,6 @@ if normDiffer <= 1e-5:
 else:
 	print "TEST FAILED!!!"
 
-
-
+np.set_printoptions(threshold=np.nan)
+print csv_ref - csv_MPI
 
