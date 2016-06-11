@@ -46,7 +46,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 	readBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 
 	// XY plane including edges at the boundary to left/right
-	bufferSize 			= nrDistSwap*((xlength[0]+2)*(xlength[1]));
+	bufferSize 			= nrDistSwap*((xlength[0])*(xlength[1]));
     procBufferSize[1] 	= bufferSize; //Valid for top and bottom
 	sendBuffer[TOP] 	= (neighbours[TOP] 	  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 	sendBuffer[BOTTOM] 	= (neighbours[BOTTOM] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
@@ -54,7 +54,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 	readBuffer[BOTTOM] 	= (neighbours[BOTTOM] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 
 	// YZ plane including all edges
-	bufferSize 			= nrDistSwap*((xlength[1])*(xlength[2]));
+	bufferSize 			= nrDistSwap*((xlength[1])*(xlength[2]+2));
     procBufferSize[2] 	= bufferSize; //Valid for front and back
 	sendBuffer[FRONT] 	= (neighbours[FRONT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 	sendBuffer[BACK] 	= (neighbours[BACK]   != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
@@ -72,7 +72,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
     t_iterPara iterPara2;
 
 	// Treat opposite directions in one go
-    int indexArr[] = {4, 5, 2,3, 0,1};
+    int indexArr[] = {2, 3, 4,5, 0,1};
     for (int i = 0; i <= 5; i+=2) {
         int direction = indexArr[i];
 
@@ -216,8 +216,8 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 	case 1:
         iterPara->startOuter = 1;
 		iterPara->endOuter   = procData->xLength[1];
-        iterPara->startInner = 0;
-		iterPara->endInner   = procData->xLength[0]+1;
+        iterPara->startInner = 1;
+		iterPara->endInner   = procData->xLength[0];
 		iterPara->fixedValue = (direction == BOTTOM) ? 1 : procData->xLength[2];
 		break;
 
@@ -225,8 +225,8 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 	//outer = Z, inner = Y, X fixed
     //Iterate over entire ZY plane
 	case 2:
-        iterPara->startOuter = 1;
-		iterPara->endOuter   = procData->xLength[2];
+        iterPara->startOuter = 0;
+		iterPara->endOuter   = procData->xLength[2]+1;
         iterPara->startInner = 1;
 		iterPara->endInner   = procData->xLength[1];
 		iterPara->fixedValue = (direction == BACK) ? 1 : procData->xLength[0];
