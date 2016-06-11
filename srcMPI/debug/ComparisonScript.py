@@ -45,7 +45,10 @@ filename = str(datetime.datetime.now())
 #some additional information
 nrDifferValues = np.sum(csv_ref == csv_MPI)
 differVals = np.abs(csv_ref - csv_MPI)[csv_ref != csv_MPI]
-maxDiffer = np.max(differVals)
+if len(differVals):
+	maxDiffer = np.max(differVals)
+else:
+	maxDiffer = np.nan
 
 normDifferAbs = np.linalg.norm(csv_ref - csv_MPI)
 normDifferRel = normDifferAbs / np.linalg.norm(csv_MPI)
