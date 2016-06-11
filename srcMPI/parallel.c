@@ -38,7 +38,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 	const int db = sizeof(double); //double in bytes
 
 	// XZ inner domain (no edges included)
-	int bufferSize		= nrDistSwap*(xlength[0]*xlength[2]);
+	int bufferSize		= nrDistSwap*(xlength[0]+2*xlength[2]);
     procBufferSize[0] 	= bufferSize; //Valid for left and right
 	sendBuffer[LEFT] 	= (neighbours[LEFT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 	sendBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
@@ -54,7 +54,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlengt
 	readBuffer[BOTTOM] 	= (neighbours[BOTTOM] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 
 	// YZ plane including all edges
-	bufferSize 			= nrDistSwap*((xlength[1]+2)*(xlength[2]));
+	bufferSize 			= nrDistSwap*((xlength[1])*(xlength[2]));
     procBufferSize[2] 	= bufferSize; //Valid for front and back
 	sendBuffer[FRONT] 	= (neighbours[FRONT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 	sendBuffer[BACK] 	= (neighbours[BACK]   != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
@@ -72,7 +72,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
     t_iterPara iterPara2;
 
 	// Treat opposite directions in one go
-    int indexArr[] = {0, 1, 4,5, 2,3};
+    int indexArr[] = {4, 5, 0,1, 2,3};
     for (int i = 0; i <= 5; i+=2) {
         int direction = indexArr[i];
 
@@ -205,8 +205,8 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 	case 0:
         iterPara->startOuter = 1;
 		iterPara->endOuter   = procData->xLength[2];
-        iterPara->startInner = 1;
-		iterPara->endInner   = procData->xLength[0];
+        iterPara->startInner = 0;
+		iterPara->endInner   = procData->xLength[0]+1;
 		iterPara->fixedValue = (direction == LEFT) ? 1 : procData->xLength[1];
 		break;
 
@@ -227,8 +227,8 @@ void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procDa
 	case 2:
         iterPara->startOuter = 1;
 		iterPara->endOuter   = procData->xLength[2];
-        iterPara->startInner = 0;
-		iterPara->endInner   = procData->xLength[1]+1;
+        iterPara->startInner = 1;
+		iterPara->endInner   = procData->xLength[1];
 		iterPara->fixedValue = (direction == BACK) ? 1 : procData->xLength[0];
 		break;
 
