@@ -26,13 +26,12 @@ path_debug = os.path.dirname(os.path.abspath(__file__)) # the file should be in 
 reader = simple.OpenDataFile(os.path.join(path_debug, "DEBUG_REFERENCE_SOLUTION.100.vtk"))
 readerRef = simple.OpenDataFile(os.path.join(path_debug, "../pv_files/worksheet4.100.pvts"))
 
-writer = simple.CreateWriter(os.path.join(path_debug,"REF_SOLUTION.csv"), readerRef)
+writer = simple.CreateWriter(os.path.join(path_debug,"REF_SOLUTION.csv",  ), readerRef, Precision=16)
 writer.WriteAllTimeSteps = 0
 writer.FieldAssociation = "Cells"
 writer.UpdatePipeline()
 
-
-writer = simple.CreateWriter(os.path.join(path_debug,"MPI_SOLUTION.csv"), reader)
+writer = simple.CreateWriter(os.path.join(path_debug,"MPI_SOLUTION.csv"), reader, Precision=16)
 writer.WriteAllTimeSteps = 0
 writer.FieldAssociation = "Cells"
 writer.UpdatePipeline()
@@ -43,31 +42,25 @@ csv_MPI = genfromtxt(os.path.join(path_debug,"MPI_SOLUTION.csv"), delimiter=',',
 
 filename = str(datetime.datetime.now())
 
-diff = (csv_ref - csv_MPI)[:, 0:-1]
-
 #some additional information
 nrDifferValues = np.sum(csv_ref == csv_MPI)
-differVals = np.abs(diff)[csv_ref != csv_MPI]
+differVals = np.abs(csv_ref - csv_MPI)[csv_ref != csv_MPI]
 maxDiffer = np.max(differVals)
-normDifferAbs = np.linalg.norm(diff)
-normDifferRel = normDifferAbs / np.linalg.norm(csv_MPI[:, 0:-1])
+normDiffer = np.linalg.norm(csv_ref - csv_MPI) / np.linalg.norm(csv_MPI)
 
 print "=============================================================\n"
 print "                         RESULT\n"
 print "=============================================================\n"
 
 print "Max. value that differs: " + str(maxDiffer)
-print "Norm relative difference: " + str(normDifferRel)
-print "Norm absolute difference: " + str(normDifferAbs)
+print "Norm relative difference: " + str(normDiffer)
 print "Nr. values that differ: " + str(nrDifferValues) 
 
-if normDifferRel <= 1e-4:
+if normDiffer <= 1e-5:
 	print "TEST SUCCESSFUL!!!"
 else:
 	print "TEST FAILED!!!"
 
-np.set_printoptions(threshold=np.nan)
-np.set_printoptions(precision=6)
-print "velocity:0 - velocity:1 - velocity:2 - density"
-print diff
+#np.set_printoptions(threshold=np.nan)
+#print csv_ref - csv_MPI
 
