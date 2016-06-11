@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 #TODO:
 #   * Add print of speedup
 #   * Add print of parallel efficiency
-#   * Add second graph
+#   * Add second graph with weak speedup
 #       * Need to also change xlength in cavity.dat
 #   * Save plots to file
 #   * Add option to not run C program
