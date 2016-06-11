@@ -49,17 +49,19 @@ diff = (csv_ref - csv_MPI)[:, 0:-1]
 nrDifferValues = np.sum(csv_ref == csv_MPI)
 differVals = np.abs(diff)[csv_ref != csv_MPI]
 maxDiffer = np.max(differVals)
-normDiffer = np.linalg.norm(diff) / np.linalg.norm(csv_MPI[:, 0:-1])
+normDifferAbs = np.linalg.norm(diff)
+normDifferRel = normDifferAbs / np.linalg.norm(csv_MPI[:, 0:-1])
 
 print "=============================================================\n"
 print "                         RESULT\n"
 print "=============================================================\n"
 
 print "Max. value that differs: " + str(maxDiffer)
-print "Norm relative difference: " + str(normDiffer)
+print "Norm relative difference: " + str(normDifferRel)
+print "Norm absolute difference: " + str(normDifferAbs)
 print "Nr. values that differ: " + str(nrDifferValues) 
 
-if normDiffer <= 1e-4:
+if normDifferRel <= 1e-4:
 	print "TEST SUCCESSFUL!!!"
 else:
 	print "TEST FAILED!!!"
