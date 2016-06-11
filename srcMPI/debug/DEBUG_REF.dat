@@ -1,12 +1,12 @@
 # Size of mesh
-xlength              10
+xlength              20
 
 # Relaxation time
 # In recent version calculated from the Reynolds number
 #tau                  1
 
 # Reynolds Number
-Re                    0.6
+Re                    2
 
 # Velocity of moving wall
 xvelocity         0.01
@@ -14,7 +14,7 @@ yvelocity         0
 zvelocity         0
 
 # Number of timesteps
-timesteps            100
+timesteps            200
 
 # timesteps between each plot
-timestepsPerPlotting 100
+timestepsPerPlotting 200
