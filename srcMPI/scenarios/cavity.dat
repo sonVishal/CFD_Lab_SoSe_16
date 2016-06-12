@@ -51,7 +51,7 @@ timesteps            2000
 timestepsPerPlotting 20
 
 # Domain decomposition
-# Number of processes per axis
+# Number of subdivisions per axis
 # x-axis = iProc
 # y-axis = jProc
 # z-axis = kProc
