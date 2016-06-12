@@ -7,42 +7,43 @@
 #include "helper.h"
 #include "LBDefinitions.h"
 
+
+/* struct that describes the iteration parameters in a certain direction */
 typedef struct{
     int startInner, endInner;
     int startOuter, endOuter;
     int fixedValue;
-
 } t_iterPara;
 
 // Performs extract, swap and inject for all the directions
-void communicate(double** sendBuffer, double**readBuffer, double* collideField, const t_procData *procData);
+void communicate(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData);
 
 // Exracts the collide field to the send buffer
-void extract( double sendBuffer[], double* collideField, const t_iterPara * const iterPara, const t_procData *procData,
-              int direction, int* index);
+void extract( double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara, t_procData const * const procData,
+              const int direction, int const * const index);
 
 // Swaps the data between neighbors
 void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, int direction);
 
 // Copys the data from the read buffer to the collide field
-void inject(double readBuffer[], double* collideField, t_iterPara *iterPara, const t_procData *procData,
-            int direction, int *index);
+void inject(double const const readBuffer[], double* collideField, t_iterPara *const iterPara, t_procData const * const procData,
+            const int direction, int const const index[5]);
 
 // Sets the iteration parameters
-void p_setCommIterationParameters(t_iterPara *iterPara, const t_procData *procData, const int direction);
+void p_setCommIterationParameters(t_iterPara * const iterPara, t_procData const*const procData, const int direction);
 
 // Assigns the 5 indices that are to be communicated
-void p_assignIndices(int direction, int *index);
+void p_assignIndices(const int face, int *const index);
 
-// Domain decomposition and setting of neighbours
-void p_domainDecompositionAndNeighbors(t_procData *procData, const int xlength, const int * const procsPerAxis);
+// Domain decomposition and setting of neighbors
+void domainDecompositionAndNeighbors(t_procData *const procData, const int xlength, const int * const procsPerAxis);
 
 // Initialise the message passing interface
 void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]);
 
 // Initialise the buffers
-void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int *xlength, int *neighbours,
-		int procBufferSize[3]);
+void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const * const xlength,
+		int const * const neighbours, int procBufferSize[3]);
 
 // Finalise all the processes and join
 void finaliseMPI();

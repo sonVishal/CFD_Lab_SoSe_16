@@ -96,8 +96,8 @@ int main(int argc, char *argv[]){
 #endif
     }
 
-    // Domain decomposition & Setting up neighbors
-    p_domainDecompositionAndNeighbors(&procData, xlength, procsPerAxis);
+    // Domain decomposition & setting up neighbors
+    domainDecompositionAndNeighbors(&procData, xlength, procsPerAxis);
 
     /*Allocate memory to pointers*/
     int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
