@@ -124,11 +124,13 @@ void extract(double sendBuffer[], double const * const collideField, t_iterPara 
 
             currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
 
-            assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
+			// Out of bounds check
             assert(currentIndexField < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
             		&& currentIndexField >= 0);
 
             for (int i = 0; i < 5; i++) {
+				// Out of bounds check
+				assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
                 sendBuffer[currentIndexBuff++] = collideField[currentIndexField+index[i]];
             }
         }
@@ -168,8 +170,8 @@ void swap(double** sendBuffer, double** readBuffer, t_procData const * const pro
 /*
  * Copy read buffer into ghost layer of collideField.
  */
-void inject(double const const readBuffer[], double* collideField, t_iterPara *const iterPara, t_procData const * const procData,
-            const int direction, int const const index[5]){
+void inject(double const readBuffer[], double* collideField, t_iterPara *const iterPara, t_procData const * const procData,
+            const int direction, int const index[5]){
 
     int currentIndexField = -1; //initially assign to invalid
     int currentIndexBuff = 0;
@@ -193,11 +195,12 @@ void inject(double const const readBuffer[], double* collideField, t_iterPara *c
             currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
 
             //out of bound checks
-            assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
             assert(currentIndexField < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
             		&& currentIndexField >= 0);
 
             for (int i = 0; i < 5; i++) {
+				//out of bound checks
+				assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
                 collideField[currentIndexField+index[i]] = readBuffer[currentIndexBuff++];
             }
         }
