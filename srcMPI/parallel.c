@@ -6,7 +6,11 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD,rank);
 }
 
-void domainDecompositionAndNeighbors(t_procData *const procData, const int xlength, const int * const procsPerAxis) {
+/*
+ * Divides the entire domain into sub-domains. The function sets the processor specific data to determine the size
+ * of the sub-domain and determines the neighbours.
+ */
+void domainDecompositionAndNeighbors(t_procData *const procData, const int xlength, int const * const procsPerAxis) {
 
 	int procPos[3] = {0,0,0};
 	// Get the position of the process based on its rank
@@ -114,7 +118,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 void extract(double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara, t_procData const * const procData,
              const int direction, int const * const index){
 
-    int currentIndexField = -1;//invalid assignment
+    int currentIndexField = -1;//initially invalid assignment
     int currentIndexBuff  = 0; //simple counter
 
     //k - corresponds to the 'outer' value when computing the offset

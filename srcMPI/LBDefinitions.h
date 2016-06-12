@@ -61,11 +61,13 @@ typedef struct {
     int numRanks;
     int xLength[3];
     int neighbours[6]; //same order as enum
-    int bufferSize[3];
+    int bufferSize[3]; //buffer sizes for all directions
     double wallVelocity[3];
 } t_procData;
 
-// Function for reverse index search for procs
+/* Function for reverse index search for procs.
+ * Is required in parallel.c and visualLB.c
+ */
 static inline void p_rankToPos(const int *const len, const int rank, int *pos) {
     int i,j,k;
     for (k = 0; k < len[2]; k++) {
