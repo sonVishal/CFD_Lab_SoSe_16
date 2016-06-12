@@ -67,8 +67,8 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *procsPe
 	// Check if iProc, jProc and kProc are less than the domain size and nonzero
 	if (iProc <= 0 || iProc > *xlength || jProc <= 0 || jProc > *xlength ||
 		kProc <= 0 || kProc > *xlength) {
-		char buffer[80];
-        snprintf(buffer, 80, "Please make sure that iProc, jProc and kProc are greater than 0 and less than xlength = %d (aborting)! \n",*xlength);
+		char buffer[120];
+        snprintf(buffer, 120, "Please make sure that iProc, jProc and kProc are greater than 0 and less than xlength = %d (aborting)! \n",*xlength);
     	ERROR(buffer);
 	}
 
