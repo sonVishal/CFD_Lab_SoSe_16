@@ -160,6 +160,9 @@ int main(int argc, char *argv[]){
     endProcTime = MPI_Wtime();
 
     //get earliest start and latest finish of processors
+    if(procData.rank == 0)
+        printf("\nINFO: Please open the WS4_combined.*.pvts file to view the combined result.\n");
+
     MPI_Reduce(&beginProcTime, &beginSimTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
     MPI_Reduce(&endProcTime, &endSimTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
