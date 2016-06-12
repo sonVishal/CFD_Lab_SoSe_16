@@ -17,7 +17,7 @@ void domainDecompositionAndNeighbors(t_procData *const procData, const int xleng
 	p_rankToPos(procsPerAxis,procData->rank,procPos);
 
     /* Compute the subdomain size and save it into procData */
-	int baseLength[3] = {ceil(xlength/procsPerAxis[0]),ceil(xlength/procsPerAxis[1]),ceil(xlength/procsPerAxis[2])};
+	int baseLength[3] = {xlength/procsPerAxis[0], xlength/procsPerAxis[1], xlength/procsPerAxis[2]};
     // If the proc is at the end of some axis then add the remaining length
     procData->xLength[0] = (procPos[0] == procsPerAxis[0]-1)?xlength-(procsPerAxis[0]-1)*baseLength[0]:baseLength[0];
     procData->xLength[1] = (procPos[1] == procsPerAxis[1]-1)?xlength-(procsPerAxis[1]-1)*baseLength[1]:baseLength[1];
