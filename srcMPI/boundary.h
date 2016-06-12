@@ -1,7 +1,6 @@
 #ifndef _BOUNDARY_H_
 #define _BOUNDARY_H_
 #include "helper.h"
-#include "debug.h"
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 #include <stdio.h>
