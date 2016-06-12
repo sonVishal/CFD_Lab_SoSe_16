@@ -110,7 +110,9 @@ void writeVtsOutput(const double * const collideField,
 
 void writevtsPointCoordinates(FILE *fp, int xlen, int *xlength, int *myPos, int *procsPerAxis) {
     int x, y, z;
-    int baseLength[3] = {ceil(xlen/procsPerAxis[0]),ceil(xlen/procsPerAxis[1]),ceil(xlen/procsPerAxis[2])};
+    int baseLength[3] = {(int)ceil((double)xlen/(double)procsPerAxis[0]),
+                         (int)ceil((double)xlen/(double)procsPerAxis[1]),
+                         (int)ceil((double)xlen/(double)procsPerAxis[2])};
     // If the proc is at the end of some axis then add the remaining length
     int myLen[3] = {0,0,0};
     myLen[0] = (myPos[0] == procsPerAxis[0]-1)?xlen-(procsPerAxis[0]-1)*baseLength[0]:baseLength[0];
@@ -166,8 +168,10 @@ void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlen, in
     fprintf(fp, "<PDataArray type=\"Float32\" NumberOfComponents=\"1\" Name=\"Density\"/>\n");
     fprintf(fp, "</PCellData>\n");
 
-    int baseLength[3] = {ceil(xlen/procsPerAxis[0]),ceil(xlen/procsPerAxis[1]),ceil(xlen/procsPerAxis[2])};
-    // If the proc is at the end of some axis then add the remaining length
+    int baseLength[3] = {(int)ceil((double)xlen/(double)procsPerAxis[0]),
+                         (int)ceil((double)xlen/(double)procsPerAxis[1]),
+                         (int)ceil((double)xlen/(double)procsPerAxis[2])};
+                         
     int myLen[3] = {0,0,0};
 
     for (int k = 0; k < procsPerAxis[2]; k++) {
