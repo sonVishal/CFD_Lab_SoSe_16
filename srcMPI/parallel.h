@@ -26,8 +26,8 @@ void extract( double sendBuffer[], double const * const collideField, t_iterPara
 void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, int direction);
 
 // Copys the data from the read buffer to the collide field
-void inject(double const readBuffer[], double* collideField, t_iterPara *const iterPara, t_procData const * const procData,
-            const int direction, int const index[5]);
+void inject(double const * const readBuffer, double* collideField, t_iterPara *const iterPara, t_procData const * const procData,
+            const int direction, int const * const index);
 
 // Sets the iteration parameters
 void p_setCommIterationParameters(t_iterPara * const iterPara, t_procData const*const procData, const int direction);

@@ -170,8 +170,8 @@ void swap(double** sendBuffer, double** readBuffer, t_procData const * const pro
 /*
  * Copy read buffer into ghost layer of collideField.
  */
-void inject(double const readBuffer[], double* collideField, t_iterPara *const iterPara, t_procData const * const procData,
-            const int direction, int const index[5]){
+void inject(double const * const readBuffer, double* collideField, t_iterPara *const iterPara, t_procData const * const procData,
+            const int direction, int const * const index){
 
     int currentIndexField = -1; //initially assign to invalid
     int currentIndexBuff = 0;
