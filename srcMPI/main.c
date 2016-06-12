@@ -166,6 +166,9 @@ int main(int argc, char *argv[]){
     }
     endProcTime = MPI_Wtime();
 
+    if(procData.rank == 0)
+        printf("\nINFO: Please open the WS4_combined.*.pvts file to view the combined result.\n");
+
     MPI_Reduce(&beginProcTime, &beginSimTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
     MPI_Reduce(&endProcTime, &endSimTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
@@ -183,7 +186,7 @@ int main(int argc, char *argv[]){
     /* To generate the current reference solution switch to branch:
      * git checkout generate_reference_solution
      */
-    //char fileRef[] = {"debug/collideField"};
+    // char fileRef[] = {"debug/collideField"};
     // writeCollideFieldDebug(fileRef, collideField, Q*totalsize);
     // checkCollideFieldDebug(fileRef, collideField, Q*totalsize);
 

@@ -144,7 +144,7 @@ void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlen, in
     FILE *fp = NULL;
 
     // Create the file with time information in the name
-    sprintf(pFileName, "%s.%i.pvts", "pv_files/worksheet4",t);
+    sprintf(pFileName, "%s.%i.pvts", "pv_files/WS4_combined",t);
     fp  = fopen(pFileName, "w");
 
     // Check if files were opened or not
@@ -184,7 +184,6 @@ void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlen, in
                 unsigned int z2 = z1 + myLen[2];
                 snprintf(pFileName, 80, "%s.%i.%i.vts",filename,i+(j+k*procsPerAxis[1])*procsPerAxis[0],t);
                 // This is stupid "../<fileName>" but what the heck
-                // printf("%d\t%d\t%d\t%d\t%d\t%d\n",x1,x2,y1,y2,z1,z2);
                 fprintf(fp, "<Piece Extent=\"%d %d %d %d %d %d\" Source=\"../%s\"/>\n",x1,x2,y1,y2,z1,z2,pFileName);
             }
         }
