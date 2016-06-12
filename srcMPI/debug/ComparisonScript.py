@@ -24,7 +24,7 @@ import datetime
 path_debug = os.path.dirname(os.path.abspath(__file__)) # the file should be in /debug/!
 
 reader = simple.OpenDataFile(os.path.join(path_debug, "DEBUG_REFERENCE_SOLUTION.200.vtk"))
-readerRef = simple.OpenDataFile(os.path.join(path_debug, "../pv_files/worksheet4.200.pvts"))
+readerRef = simple.OpenDataFile(os.path.join(path_debug, "../pv_files/WS4_combined.200.pvts"))
 
 writer = simple.CreateWriter(os.path.join(path_debug,"REF_SOLUTION.csv",  ), readerRef, Precision=16)
 writer.WriteAllTimeSteps = 0
