@@ -111,5 +111,10 @@ plt.plot(totProcs, _MLUPS,"*")
 plt.xlabel('# processes')
 plt.ylabel('MLUPS')
 
+#plt.figure();
+#plt.plot(totProcs, _elapsedTime, "*");
+#plt.xlabel('# processes')
+#plt.ylabel('elapsed time')
+
 plt.show();
 
