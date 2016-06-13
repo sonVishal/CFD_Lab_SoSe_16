@@ -1,0 +1,6 @@
+
+xlength   iproc   jproc   kproc   elapsedTime   MLUPS   numCells
+20        1       1       1       1.406         15.15   10648
+25        2       1       1       1.528         25.77   19683
+26        2       1       1       1.759         24.6    21952
+32        2       2       1       2.748         28.6    39304
