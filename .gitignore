@@ -105,4 +105,4 @@ lbsim
 *.m~
 
 # Atom ctags
-.tags
+.tags*
