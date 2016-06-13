@@ -103,3 +103,6 @@ lbsim
 
 # Matlab
 *.m~
+
+# Atom ctags
+.tags
