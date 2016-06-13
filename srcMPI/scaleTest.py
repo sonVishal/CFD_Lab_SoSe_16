@@ -96,7 +96,7 @@ with open(f) as g:
         _iproc.append(int(z[0]));
         _jproc.append(int(z[1]));
         _kproc.append(int(z[2]));
-        _elapsedTime.append(int(z[3]));
+        _elapsedTime.append(float(z[3]));
         _numCells.append(int(z[4]));
         _MLUPS.append(float(z[5]));
 

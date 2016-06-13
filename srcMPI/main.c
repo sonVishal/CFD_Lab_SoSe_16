@@ -24,7 +24,7 @@ void clearFile(char *file){
     fclose(f);
 }
 
-void writeScaleData(char *file, int iproc, int jproc, int kproc, int elapsedTime, int numCells, double MLUPS){
+void writeScaleData(char *file, int iproc, int jproc, int kproc, double elapsedTime, int numCells, double MLUPS){
     FILE* f = fopen("scaleData.dat", "a");
     if(f == NULL)
     {
@@ -32,7 +32,7 @@ void writeScaleData(char *file, int iproc, int jproc, int kproc, int elapsedTime
         exit(1);
     }
 
-    fprintf(f, "%d %d %d %d %d %f\n", iproc, jproc, kproc, elapsedTime, numCells, MLUPS);
+    fprintf(f, "%d %d %d %f %d %f\n", iproc, jproc, kproc, elapsedTime, numCells, MLUPS);
 
     fclose(f);
 
