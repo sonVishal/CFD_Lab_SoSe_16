@@ -46,7 +46,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const *
 		int const * const neighbours, int procBufferSize[3]);
 
 // Finalise all the processes and join
-void finaliseMPI();
+void finaliseMPI(t_procData const * const procData);
 
 /* produces a stderr text output  */
 void Program_Message(char *txt);

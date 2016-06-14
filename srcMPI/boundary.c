@@ -104,6 +104,7 @@ void p_treatSingleWall(double *collideField, const int * const flagField, const 
 	}
 }
 
+// TODO: (VS) make the if statement independent of the MPI_PROC_NULL
 void treatBoundary(double * collideField, int const * const flagField, const t_procData * const procData){
 	for(int wall=LEFT; wall<=BACK; ++wall){ //see LBDefinitions for order of walls
 		if(procData->neighbours[wall] == MPI_PROC_NULL){

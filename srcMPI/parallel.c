@@ -291,7 +291,7 @@ void p_assignIndices(const int face, int *const index) {
 	}
 }
 
-void finaliseMPI(t_procData *procData) {
+void finaliseMPI(t_procData const * const procData) {
     fflush(stdout);
     fflush(stderr);
     MPI_Barrier(MPI_COMM_WORLD);
