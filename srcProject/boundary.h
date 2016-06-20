@@ -6,6 +6,6 @@
 #include <stdio.h>
 
 /** handles the boundaries in our simulation setup */
-void treatBoundary(double * collideField, int const * const flagField, const t_procData * const procData);
+void treatBoundary(t_component *c, int const * const flagField, const t_procData * const procData);
 
 #endif

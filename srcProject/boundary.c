@@ -104,13 +104,13 @@ void p_treatSingleWall(double *collideField, const int * const flagField, const 
 	}
 }
 
-void treatBoundary(double * collideField, int const * const flagField, const t_procData * const procData){
+void treatBoundary(t_component *c, int const * const flagField, const t_procData * const procData){
 	const int NO_NEIGHBOUR = -2; // equals the MPI_PROC_NULL = -2
 
 	for(int wall=LEFT; wall<=BACK; ++wall){ //see LBDefinitions for order of walls
 		if(procData->neighbours[wall] == NO_NEIGHBOUR){
 			// printWallEnum(wall);
-			p_treatSingleWall(collideField, flagField, procData, wall);
+			p_treatSingleWall(c->collideField, flagField, procData, wall);
 		}
 	}
 }

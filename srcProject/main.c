@@ -23,8 +23,6 @@ int main(int argc, char *argv[]){
     //TODO: Temporarily initialization of component
     c1.collideField = collideField;
     c1.streamField  = streamField;
-    c1.tau = 1;
-
 
 
     // Simulation parameters
@@ -152,7 +150,7 @@ int main(int argc, char *argv[]){
 	    doCollision(&c1, procData.xLength);
 
         // Treat local boundaries
-	    treatBoundary(c1.collideField,flagField,&procData);
+	    treatBoundary(&c1, flagField, &procData);
 
         // Print VTS files at given interval
 	    if (t%timestepsPerPlotting == 0){
