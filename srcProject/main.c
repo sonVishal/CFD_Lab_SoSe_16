@@ -149,7 +149,7 @@ int main(int argc, char *argv[]){
 	    c1.streamField = swap;
 
         // Perform local collision
-	    doCollision(c1.collideField,flagField,c1.tau,procData.xLength);
+	    doCollision(&c1, procData.xLength);
 
         // Treat local boundaries
 	    treatBoundary(c1.collideField,flagField,&procData);

@@ -18,7 +18,7 @@ void computePostCollisionDistributions(double *currentCell, const double tau, co
 }
 
 // Perform collision for all inner cells
-void doCollision(double *collideField, int *flagField,const double tau, int *xlength){
+void doCollision(t_component *c1, int *xlength){
 
 	// Define iteration indices
 	int idx, x, y, z;
@@ -39,7 +39,7 @@ void doCollision(double *collideField, int *flagField,const double tau, int *xle
 				// Get the index of the first distribution
 				// in the current cell
 				idx = Q*(zOffset + yOffset + x);
-				double *currentCell = &collideField[idx];
+				double *currentCell = &c1->collideField[idx];
 
 				// Allocate memory to local cell parameters
 				double density;
@@ -67,7 +67,7 @@ void doCollision(double *collideField, int *flagField,const double tau, int *xle
 				computeFeq(density,velocity,feq);
 
 				// Compute the post collision distributions
-				computePostCollisionDistributions(currentCell,tau,feq);
+				computePostCollisionDistributions(currentCell,c1->tau,feq);
 			}
 		}
 	}
