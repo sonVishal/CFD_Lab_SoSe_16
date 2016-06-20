@@ -65,6 +65,14 @@ typedef struct {
     double wallVelocity[3];
 } t_procData;
 
+typedef struct {
+    double* streamField;
+    double* collideField;
+    int*    flagField;
+    double  tau;
+    double  m;
+} t_component;
+
 /* Function for reverse index search for procs.
  * Is required in parallel.c and visualLB.c
  */
