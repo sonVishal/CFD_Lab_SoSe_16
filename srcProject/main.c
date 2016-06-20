@@ -19,8 +19,15 @@ int main(int argc, char *argv[]){
     double *streamField     = NULL;
     int *flagField          = NULL;
 
+    t_component c1;
+    //TODO: Temporarily initialization of component
+    c1.collideField = collideField;
+    c1.streamField  = streamField;
+    c1.tau = 1;
+
+
+
     // Simulation parameters
-    double tau;
     int xlength = 0;
     t_procData procData;
     double wallVelocity[3];
@@ -54,12 +61,12 @@ int main(int argc, char *argv[]){
      * Only performed by the root and broadcasted*/
     //tau is calculated automatically from the reynoldsnumber
     if (procData.rank == 0) {
-        readParameters(&xlength, &tau, wallVelocity, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
+        readParameters(&xlength, &c1.tau, wallVelocity, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
     }
 
     // Broadcast the data from rank 0 (root) to other processes
     MPI_Bcast(&xlength, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&c1.tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(wallVelocity, 3, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&timesteps, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -98,14 +105,14 @@ int main(int argc, char *argv[]){
 
     /*Allocate memory to pointers*/
     int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
-    collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
-    streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
+    c1.collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
+    c1.streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     // Initialise the fields
-    initialiseFields(collideField, streamField, flagField, &procData);
+    initialiseFields(c1.collideField, c1.streamField, flagField, &procData);
 
     // Allocate memory to send and read buffers
     initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.neighbours, procData.bufferSize);
@@ -117,7 +124,7 @@ int main(int argc, char *argv[]){
 
     // Write the VTK at t = 0
     printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
-    writeVtsOutput(collideField,flagField,fName,t,xlength,procData,procsPerAxis);
+    writeVtsOutput(c1.collideField,flagField,fName,t,xlength,procData,procsPerAxis);
 
     // Combine VTS file at t = 0
     // Only done by root
@@ -131,26 +138,26 @@ int main(int argc, char *argv[]){
 	    double *swap = NULL;
 
         //do extraction , swap , injection for - left/right, top/bottom, front/back
-        communicate(sendBuffer, readBuffer, collideField, &procData);
+        communicate(sendBuffer, readBuffer, c1.collideField, &procData);
 
         // Perform local streaming
-	    doStreaming(collideField,streamField,flagField,procData.xLength);
+	    doStreaming(c1.collideField,c1.streamField,flagField,procData.xLength);
 
         // Swap the local fields
-	    swap = collideField;
-	    collideField = streamField;
-	    streamField = swap;
+	    swap = c1.collideField;
+	    c1.collideField = c1.streamField;
+	    c1.streamField = swap;
 
         // Perform local collision
-	    doCollision(collideField,flagField,tau,procData.xLength);
+	    doCollision(c1.collideField,flagField,c1.tau,procData.xLength);
 
         // Treat local boundaries
-	    treatBoundary(collideField,flagField,&procData);
+	    treatBoundary(c1.collideField,flagField,&procData);
 
         // Print VTS files at given interval
 	    if (t%timestepsPerPlotting == 0){
             printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
-	        writeVtsOutput(collideField,flagField,fName,t,xlength,procData,procsPerAxis);
+	        writeVtsOutput(c1.collideField,flagField,fName,t,xlength,procData,procsPerAxis);
             // Combine VTS file at t
             if (procData.rank == 0) {
                 p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
@@ -179,8 +186,8 @@ int main(int argc, char *argv[]){
     }
 
     //free allocated heap memory
-    free(streamField);
-    free(collideField);
+    free(c1.streamField);
+    free(c1.collideField);
     free(flagField);
 
     for (int i = LEFT; i <= BACK; i++) {

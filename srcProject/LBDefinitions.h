@@ -68,7 +68,6 @@ typedef struct {
 typedef struct {
     double* streamField;
     double* collideField;
-    int*    flagField;
     double  tau;
     double  m;
 } t_component;
