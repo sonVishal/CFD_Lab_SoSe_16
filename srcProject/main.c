@@ -141,7 +141,7 @@ int main(int argc, char *argv[]){
         communicate(sendBuffer, readBuffer, c1.collideField, &procData);
 
         // Perform local streaming
-	    doStreaming(c1.collideField,c1.streamField,flagField,procData.xLength);
+	    doStreaming(&c1, flagField,procData.xLength);
 
         // Swap the local fields
 	    swap = c1.collideField;
