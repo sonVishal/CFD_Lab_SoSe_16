@@ -57,6 +57,8 @@ enum CELLS {
 };
 
 
+
+//TODO: (DL) There can be "better" ways to number edges. At the moment the numbering is benefical for computing indices.  
 // Numbering of edges of the domain:
 // //
 //

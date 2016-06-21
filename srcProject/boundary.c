@@ -108,6 +108,18 @@ void p_setBounceBack(double *collideField, const double * const wallVelocity,
 		}
 
 
+		void extractEdge(double sendBuffer[], double const * const collideField, t_iterParaEdge const * const iterPara, t_procData const * const procData,
+		              const int edge, const int index){
+			ERROR("IMPLEMENT!!!");
+		}
+
+
+		void injectEdge(double readBuffer[], double const * const collideField, t_iterParaEdge const * const iterPara, t_procData const * const procData,
+						const int edge, const int index){
+			ERROR("IMPLEMENT!!!");
+		}
+
+
 		void p_setBoundaryIterParameters(t_iterPara * const iterPara, t_procData const*const procData, const int direction){
 			switch(direction/2){ //integer division to get the type of face (see enum in LBDefinitions.h)
 
@@ -144,73 +156,42 @@ void p_setBounceBack(double *collideField, const double * const wallVelocity,
 			}
 		}
 
+		void p_setEdgeIterParameters(t_iterParaEdge * const iterPara, t_procData const*const procData, const int edge){
+			const int VARIABLE = -1;
 
-		void p_setEdgeIterParameters(t_iterPara * const iterPara, int *direction, t_procData const*const procData, const int edge){
-
-			switch(edge){
+			switch(edge/4){ //integer division - 12 edges, 3 cases
 				case 0:
+					iterPara->z = 0;
+					if(edge == 0 || edge == 2){
+						iterPara->x = VARIABLE;
+						iterPara->y = (edge == 0) ? 0 : procData->xLength[2];
+					}else{
+						iterPara->y = VARIABLE;
+						iterPara->x = (edge == 1) ? procData->xLength[0] : 1;
+					}
 				break;
+
 				case 1:
+					iterPara->z = VARIABLE;
+					iterPara->y = (edge == 4 || edge == 5) ? 1 : procData->xLength[1];
+					iterPara->x = (edge == 4 || edge == 7) ? 1 : procData->xLength[0];
 				break;
+
 				case 2:
-				break;
-				case 3:
-				break;
-				case 4:
-				break;
-				case 5:
-				break;
-				case 6:
-				break;
-				case 7:
-				break;
-				case 8:
-				break;
-				case 9:
-				break;
-				case 10:
-				break;
-				case 11:
+					iterPara->z = procData->xLength[2];
+					if(edge == 0 || edge == 2){
+						iterPara->x = VARIABLE;
+						iterPara->y = edge == 0 ? 0 : procData->xLength[2];
+					}else{
+						iterPara->y = VARIABLE;
+						iterPara->x = edge == 1 ? procData->xLength[0] : 0;
+					}
 				break;
 
 				default:
-				ERROR("TODO: msg");
-
+					ERROR("TODO: msg");
 			}
-
-
-			//---------------------------------------------
-			//outer = Z, inner = X, Y fixed
-			// case 0:
-			// iterPara->startOuter = 1;
-			// iterPara->startInner = 1;
-			// iterPara->endOuter   = procData->xLength[2];
-			// iterPara->endInner   = procData->xLength[0];
-			// iterPara->fixedValue = (direction == LEFT) ? 1 : procData->xLength[1];
-			// break;
-
-			//---------------------------------------------
-		// 	//outer = Y, inner = X, Z fixed
-		// 	case 1:
-		// 	iterPara->endOuter   = procData->xLength[1];
-		// 	iterPara->endInner   = procData->xLength[0];
-		// 	iterPara->fixedValue = (direction == BOTTOM) ? 1 : procData->xLength[2];
-		// 	break;
-		//
-		// 	//---------------------------------------------
-		// 	//outer = Z, inner = Y, X fixed
-		// 	case 2:
-		// 	iterPara->endOuter   = procData->xLength[2];
-		// 	iterPara->endInner   = procData->xLength[1];
-		// 	iterPara->fixedValue = (direction == BACK) ? 1 : procData->xLength[0];
-		// 	break;
-		//
-		// 	default:
-		// 	ERROR("Invalid direction occurred. This should never happen!");
-		// }
 	}
-
-
 
 	void p_assignSharedEdgeIndex(const int edge, int *index) {
 
@@ -233,10 +214,8 @@ void p_setBounceBack(double *collideField, const double * const wallVelocity,
 			5,7,13,11,
 			14,17,18,15};
 
-			*index = indices[edge];
+			index[0] = indices[edge];
 		}
-
-
 
 		void treatBoundary(t_component *c, int const * const flagField, double *collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer){
 			// const int NO_NEIGHBOUR = -2; // equals the MPI_PROC_NULL = -2
@@ -303,9 +282,6 @@ void p_setBounceBack(double *collideField, const double * const wallVelocity,
 						}
 					}
 
-
-					ERROR("TODO: COMPLETE EDGE HANDLING.");
-
 					// #2 SHARED EDGES ONLY
 					//1) extract
 					//2) swap
@@ -313,15 +289,26 @@ void p_setBounceBack(double *collideField, const double * const wallVelocity,
 					int edge1[6] = {0,1,2,3,4,5};
 					int edge2[6] = {10,11,8,9,6,7};
 
+					t_iterParaEdge iterParaEdge;
+
 					for(int idx = 0; idx < 6; ++idx){
 
 						if(procData->periodicEdgeNeighbours[edge1[idx]]){
-							p_assignIndices(edge1[idx], indexOut);
-							p_assignIndices(edge2[idx], indexIn);
+							p_assignSharedEdgeIndex(edge1[idx], indexOut);
+							p_assignSharedEdgeIndex(edge2[idx], indexIn);
 
-							int direction;
-							p_setEdgeIterParameters(&iterPara, &direction, procData,  edge1[idx]);
+							p_setEdgeIterParameters(&iterParaEdge, procData,  edge1[idx]);
 
+							//TODO: (DL) At the moment re-susing existing buffers...
+							extractEdge(sendBuffer[idx], collideField, &iterParaEdge, procData, edge1[idx], indexOut[0]);
+
+							int commRank = procData->periodicEdgeNeighbours[idx];
+
+							//TODO: compute buffersize!!
+							MPI_Sendrecv(sendBuffer[idx], bufferSize, MPI_DOUBLE, commRank, 0, readBuffer[idx],
+								bufferSize, MPI_DOUBLE, commRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+							injectEdge(readBuffer[idx], collideField, &iterParaEdge, procData, edge1[idx], indexIn[0]);
 
 						}
 

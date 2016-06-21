@@ -7,6 +7,11 @@
 #include <stdio.h>
 #include <mpi/mpi.h>
 
+
+typedef struct{
+    int x, y, z;
+} t_iterParaEdge;
+
 /** handles the boundaries in our simulation setup */
 void treatBoundary(t_component *c, int const * const flagField, double *collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer);
 
