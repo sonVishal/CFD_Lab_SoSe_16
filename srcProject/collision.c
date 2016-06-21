@@ -17,6 +17,7 @@ void computePostCollisionDistributions(double *currentCell, const double tau, co
 	}
 }
 
+//TODO: (TKS) Adapt to multiple components
 // Perform collision for all inner cells
 void doCollision(t_component *c1, int *xlength){
 
