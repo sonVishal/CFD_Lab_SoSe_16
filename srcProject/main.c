@@ -135,8 +135,8 @@ int main(int argc, char *argv[]){
     for(t = 1; t <= timesteps; t++){
 	    double *swap = NULL;
 
-        //do extraction , swap , injection for - left/right, top/bottom, front/back
-        communicate(sendBuffer, readBuffer, c1.collideField, &procData);
+        //do extraction , swap , injection for - left/right, top/bottom, front/back for each component
+        communicateComponents(sendBuffer, readBuffer, &c1, 1, &procData);
 
         // Perform local streaming
 	    streamComponents(&c1, 1, flagField, procData.xLength);

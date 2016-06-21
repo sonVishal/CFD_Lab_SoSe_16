@@ -15,6 +15,9 @@ typedef struct{
     int fixedValue;
 } t_iterPara;
 
+// Wrapper around communicate function to communicate each component
+void communicateComponents(double** sendBuffer, double**readBuffer, t_component *c, int numComp, t_procData const * const procData);
+
 // Performs extract, swap and inject for all the directions
 void communicate(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData);
 
