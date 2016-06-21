@@ -52,7 +52,8 @@ enum {
     FLUID,
     NO_SLIP,
     MOVING_WALL,
-    PARALLEL_BOUNDARY
+    PARALLEL_BOUNDARY,
+    PERIODIC_BOUNDARY
 };
 
 // Local struct for each process
@@ -60,7 +61,8 @@ typedef struct {
     int rank;
     int numRanks;
     int xLength[3];
-    int neighbours[6]; //same order as enum
+    int neighbours[6];         //same order as enum //TODO: (DL) possibly rename neighbours, e.g. "parallelNeighbours"
+    int periodicNeighbours[6]; //only value if MPI_PROC_NULL in neighbours
     int bufferSize[3]; //buffer sizes for all directions
     double wallVelocity[3];
 } t_procData;
