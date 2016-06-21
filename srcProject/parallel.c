@@ -74,264 +74,268 @@ void domainDecompositionAndNeighbors(t_procData *const procData, const int xleng
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const * const xlength,
 	int const * const neighbours, int procBufferSize[3]) {
 
-		const int nrDistSwap = 5;
-		const int db = sizeof(double); //double in bytes
+    const int nrDistSwap = 5;
+    const int db = sizeof(double); //double in bytes
 
-		/*TODO: (DL) Do we even need for each side a new buffer?
-		When we only have one readBuffer and one sendBuffer, and we allocate it such that also
-		the shared edges are included, then we can reuse this buffer for all directions?
-		*/
-		
-		// XZ inner domain (no edges included)
-		int bufferSize		= nrDistSwap*(xlength[0]*xlength[2]);
-		procBufferSize[0] 	= bufferSize; //Valid for left and right
-		sendBuffer[LEFT] 	= (neighbours[LEFT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
-		sendBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
-		readBuffer[LEFT] 	= (neighbours[LEFT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
-		readBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
+    /*TODO: (DL) Do we even need for each side a new buffer?
+    When we only have one readBuffer and one sendBuffer, and we allocate it such that also
+    the shared edges are included, then we can reuse this buffer for all directions?
+    */
+    
+    // XZ inner domain (no edges included)
+    int bufferSize		= nrDistSwap*(xlength[0]*xlength[2]);
+    procBufferSize[0] 	= bufferSize; //Valid for left and right
+    sendBuffer[LEFT] 	= (neighbours[LEFT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
+    sendBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
+    readBuffer[LEFT] 	= (neighbours[LEFT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
+    readBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 
-		// XY plane including edges at the boundary to left/right
-		bufferSize 			= nrDistSwap*(xlength[0]*(xlength[1]+2));
-		procBufferSize[1] 	= bufferSize; //Valid for top and bottom
-		sendBuffer[TOP] 	= (neighbours[TOP] 	  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
-		sendBuffer[BOTTOM] 	= (neighbours[BOTTOM] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
-		readBuffer[TOP] 	= (neighbours[TOP]    != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
-		readBuffer[BOTTOM] 	= (neighbours[BOTTOM] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
+    // XY plane including edges at the boundary to left/right
+    bufferSize 			= nrDistSwap*(xlength[0]*(xlength[1]+2));
+    procBufferSize[1] 	= bufferSize; //Valid for top and bottom
+    sendBuffer[TOP] 	= (neighbours[TOP] 	  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
+    sendBuffer[BOTTOM] 	= (neighbours[BOTTOM] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
+    readBuffer[TOP] 	= (neighbours[TOP]    != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
+    readBuffer[BOTTOM] 	= (neighbours[BOTTOM] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
 
-		// YZ plane including all edges
-		bufferSize 			= nrDistSwap*((xlength[1]+2)*(xlength[2]+2));
-		procBufferSize[2] 	= bufferSize; //Valid for front and back
-		sendBuffer[FRONT] 	= (neighbours[FRONT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
-		sendBuffer[BACK] 	= (neighbours[BACK]   != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
-		readBuffer[FRONT] 	= (neighbours[FRONT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
-		readBuffer[BACK] 	= (neighbours[BACK]   != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
-	}
+    // YZ plane including all edges
+    bufferSize 			= nrDistSwap*((xlength[1]+2)*(xlength[2]+2));
+    procBufferSize[2] 	= bufferSize; //Valid for front and back
+    sendBuffer[FRONT] 	= (neighbours[FRONT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
+    sendBuffer[BACK] 	= (neighbours[BACK]   != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
+    readBuffer[FRONT] 	= (neighbours[FRONT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
+    readBuffer[BACK] 	= (neighbours[BACK]   != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
+}
 
-	/*
-	* Main algorithm to carry out the communication between the processes.
-	*/
-	void communicate(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData){
-		//Run extract, swap, inject for all sides and cells.
+/*
+* Main algorithm to carry out the communication between the processes.
+*/
+void communicate(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData){
+    //Run extract, swap, inject for all sides and cells.
 
-		int 		index1[5], index2[5];
-		t_iterPara  iterPara1, iterPara2;
+    int 		index1[5], index2[5];
+    t_iterPara  iterPara1, iterPara2;
 
-		// Iterate through directions (left/right, top/bottom, front/back)
-		for (int direction = LEFT; direction <= BACK; direction+=2) {
+    // Iterate through directions (left/right, top/bottom, front/back)
+    for (int direction = LEFT; direction <= BACK; direction+=2) {
 
-			const int face1 = direction;   //LEFT,  TOP,    FRONT
-			const int face2 = direction+1; //RIGHT, BOTTOM, BACK
+        const int face1 = direction;   //LEFT,  TOP,    FRONT
+        const int face2 = direction+1; //RIGHT, BOTTOM, BACK
 
-			/* Set iteration parameters for both faces of a direction */
-			p_setCommIterationParameters(&iterPara1, procData, face1);
-			p_setCommIterationParameters(&iterPara2, procData, face2);
+        /* Set iteration parameters for both faces of a direction */
+        p_setCommIterationParameters(&iterPara1, procData, face1);
+        p_setCommIterationParameters(&iterPara2, procData, face2);
 
-			/* Assign the indices for the 5 distributions that go out of the two faces of the current direction */
-			p_assignIndices(face1, index1);
-			p_assignIndices(face2, index2);
+        /* Assign the indices for the 5 distributions that go out of the two faces of the current direction */
+        p_assignIndices(face1, index1);
+        p_assignIndices(face2, index2);
 
-			/* Extract the distributions from collideField to the send buffer */
-			if(procData->neighbours[face1] != MPI_PROC_NULL)
-			extract(sendBuffer[face1], collideField, &iterPara1, procData, face1, index1);
+        /* Extract the distributions from collideField to the send buffer */
+        if(procData->neighbours[face1] != MPI_PROC_NULL)
+            extract(sendBuffer[face1], collideField, &iterPara1, procData, face1, index1);
 
-			if(procData->neighbours[face2] != MPI_PROC_NULL)
-			extract(sendBuffer[face2], collideField, &iterPara2, procData, face2, index2);
+        if(procData->neighbours[face2] != MPI_PROC_NULL)
+            extract(sendBuffer[face2], collideField, &iterPara2, procData, face2, index2);
 
-			/* Swap the distributions */
-			swap(sendBuffer, readBuffer, procData, direction);
+        /* Swap the distributions */
+        swap(sendBuffer, readBuffer, procData, direction);
 
-			/* Inject the distributions from read buffer to collide field */
-			//NOTE: opposite index get injected from the readBuffer
-			if(procData->neighbours[face1] != MPI_PROC_NULL)
-			inject(readBuffer[face1], collideField, &iterPara1, procData, face1, index2);
+        /* Inject the distributions from read buffer to collide field */
+        //NOTE: opposite index get injected from the readBuffer
+        if(procData->neighbours[face1] != MPI_PROC_NULL)
+            inject(readBuffer[face1], collideField, &iterPara1, procData, face1, index2);
 
-			if(procData->neighbours[face2] != MPI_PROC_NULL)
-			inject(readBuffer[face2], collideField, &iterPara2, procData, face2, index1);
-		}
-	}
+        if(procData->neighbours[face2] != MPI_PROC_NULL)
+            inject(readBuffer[face2], collideField, &iterPara2, procData, face2, index1);
+    }
+}
 
-	/*
-	* Copy distributions into sendBuffer.
-	*/
-	void extract(double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara, t_procData const * const procData,
-		const int direction, int const * const index){
+/*
+* Copy distributions into sendBuffer.
+*/
+void extract(double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara, t_procData const * const procData,
+    const int direction, int const * const index){
 
-			int currentIndexField = -1;//initially invalid assignment
-			int currentIndexBuff  = 0; //simple counter
+    int currentIndexField = -1;//initially invalid assignment
+    int currentIndexBuff  = 0; //simple counter
 
-			//k - corresponds to the 'outer' value when computing the offset
-			for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
-				//j - corresponds to the 'inner' value
-				for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
+    //k - corresponds to the 'outer' value when computing the offset
+    for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
+        //j - corresponds to the 'inner' value
+        for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
 
-					currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
+            currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
 
-					// Out of bounds check
-					assert(currentIndexField < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
-					&& currentIndexField >= 0);
+            // Out of bounds check
+            assert(currentIndexField < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
+            && currentIndexField >= 0);
 
-					for (int i = 0; i < 5; i++) {
-						// Out of bounds check
-						assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
-						sendBuffer[currentIndexBuff++] = collideField[currentIndexField+index[i]];
-					}
-				}
-			}
+            for (int i = 0; i < 5; i++) {
+                // Out of bounds check
+                assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
+                sendBuffer[currentIndexBuff++] = collideField[currentIndexField+index[i]];
+            }
+        }
+    }
+}
 
-		}
+/*
+* Swap distributions with neighboring processes.
+*/
+void swap(double** sendBuffer, double** readBuffer, t_procData const * const procData, const int direction){
 
-		/*
-		* Swap distributions with neighboring processes.
-		*/
-		void swap(double** sendBuffer, double** readBuffer, t_procData const * const procData, const int direction){
+    //temp variables for readabillity.
+    const int bufferSize = procData->bufferSize[direction/2];
+    const int proc1 = procData->neighbours[direction];
+    const int proc2 = procData->neighbours[direction+1];
 
-			//temp variables for readabillity.
-			const int bufferSize = procData->bufferSize[direction/2];
-			const int proc1 = procData->neighbours[direction];
-			const int proc2 = procData->neighbours[direction+1];
+    //MPI Sendrecv API
+    //int MPI_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+    //                 int dest, int sendtag, void *recvbuf, int recvcount,
+    //                 MPI_Datatype recvtype, int source, int recvtag,
+    //                 MPI_Comm comm, MPI_Status *status)
+    //Send proc1 receive proc1
+    if(procData->neighbours[direction] != MPI_PROC_NULL){
+        MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[direction],
+            bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
 
-			//MPI Sendrecv API
-			//int MPI_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-			//                 int dest, int sendtag, void *recvbuf, int recvcount,
-			//                 MPI_Datatype recvtype, int source, int recvtag,
-			//                 MPI_Comm comm, MPI_Status *status)
-			//Send proc1 receive proc1
-			if(procData->neighbours[direction] != MPI_PROC_NULL){
-				MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[direction],
-					bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-				}
+    //Send proc2 receive proc2
+    if(procData->neighbours[direction+1] != MPI_PROC_NULL){
+        MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
+            bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+}
 
-				//Send proc2 receive proc2
-				if(procData->neighbours[direction+1] != MPI_PROC_NULL){
-					MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
-						bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-					}
+/*
+* Copy read buffer into ghost layer of collideField.
+*/
+void inject(double const * const readBuffer, double* collideField, t_iterPara *const iterPara, t_procData const * const procData,
+    const int direction, int const * const index){
 
-				}
+    int currentIndexField = -1; //initially assign to invalid
+    int currentIndexBuff = 0;
 
-				/*
-				* Copy read buffer into ghost layer of collideField.
-				*/
-				void inject(double const * const readBuffer, double* collideField, t_iterPara *const iterPara, t_procData const * const procData,
-					const int direction, int const * const index){
+    //    switch (direction){
+    //        case LEFT:   iterPara->fixedValue--; break;
+    //        case RIGHT:  iterPara->fixedValue++; break;
+    //        case TOP:    iterPara->fixedValue++; break;
+    //        case BOTTOM: iterPara->fixedValue--; break;
+    //        case FRONT:  iterPara->fixedValue++; break;
+    //        case BACK:   iterPara->fixedValue--; break;
+    //    }
+    static int shiftFixedValue[6] = {-1, 1, 1, -1, 1, -1}; //static to allocate/assign only once
+    iterPara->fixedValue += shiftFixedValue[direction]; //change value also in outer scope okay, because not needed afterwards
 
-						int currentIndexField = -1; //initially assign to invalid
-						int currentIndexBuff = 0;
+    //k - corresponds to the 'outer' value when computing the offset
+    for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
+        //j - corresponds to the 'inner' value
+        for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
 
-						//    switch (direction){
-						//        case LEFT:   iterPara->fixedValue--; break;
-						//        case RIGHT:  iterPara->fixedValue++; break;
-						//        case TOP:    iterPara->fixedValue++; break;
-						//        case BOTTOM: iterPara->fixedValue--; break;
-						//        case FRONT:  iterPara->fixedValue++; break;
-						//        case BACK:   iterPara->fixedValue--; break;
-						//    }
-						static int shiftFixedValue[6] = {-1, 1, 1, -1, 1, -1}; //static to allocate/assign only once
-						iterPara->fixedValue += shiftFixedValue[direction]; //change value also in outer scope okay, because not needed afterwards
+            currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
 
-						//k - corresponds to the 'outer' value when computing the offset
-						for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
-							//j - corresponds to the 'inner' value
-							for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
+            //out of bound checks
+            assert(currentIndexField < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
+            && currentIndexField >= 0);
 
-								currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
+            for (int i = 0; i < 5; i++) {
+                //out of bound checks
+                assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
+                collideField[currentIndexField+index[i]] = readBuffer[currentIndexBuff++];
+            }
+        }
+    }
+}
 
-								//out of bound checks
-								assert(currentIndexField < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
-								&& currentIndexField >= 0);
+/* Function to assign iteration parameters for communication.
+*
+* To save communication workload:
+* LEFT/RIGHT faces do only iterate the inner domain (no shared edges)
+* TOP/BOTTOM faces do iterate the inner domain in X direction and the shared edges in Y direction
+* FRONT/BACK faces do iterate the entire face (all shared edges)
+*
+* For correctness:
+* If a processor lies at a real boundary the shared edges that would be normally included are excluded in this case.
+*/
+void p_setCommIterationParameters(t_iterPara * const iterPara, t_procData const*const procData, const int direction){
 
-								for (int i = 0; i < 5; i++) {
-									//out of bound checks
-									assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
-									collideField[currentIndexField+index[i]] = readBuffer[currentIndexBuff++];
-								}
-							}
-						}
-					}
+    switch(direction/2){ //integer division to get the type of face (see enum in LBDefinitions.h)
+        //---------------------------------------------
+        //outer = Z, inner = X, Y fixed
+        //only iterate over inner domain of plane (FLUID cells)
+        case 0:
+        iterPara->startOuter = 1;
+        iterPara->endOuter   = procData->xLength[2];
+        iterPara->startInner = 1;
+        iterPara->endInner   = procData->xLength[0];
+        iterPara->fixedValue = (direction == LEFT) ? 1 : procData->xLength[1];
+        break;
 
-					/* Function to assign iteration parameters for communication.
-					*
-					* To save communication workload:
-					* LEFT/RIGHT faces do only iterate the inner domain (no shared edges)
-					* TOP/BOTTOM faces do iterate the inner domain in X direction and the shared edges in Y direction
-					* FRONT/BACK faces do iterate the entire face (all shared edges)
-					*
-					* For correctness:
-					* If a processor lies at a real boundary the shared edges that would be normally included are excluded in this case.
-					*/
-					void p_setCommIterationParameters(t_iterPara * const iterPara, t_procData const*const procData, const int direction){
+        //---------------------------------------------
+        //outer = Y, inner = X, Z fixed
+        //iterate over inner domain and include ghost layer in y-direction
+        case 1:
+        //A real boundary cell should never be included in the iteration.
+        //-> Test for real boundary (MPI_PROC_NULL), and set start index accordingly
+        iterPara->startOuter = (procData->neighbours[LEFT]  == MPI_PROC_NULL) ? 1:0;
+        iterPara->endOuter   = (procData->neighbours[RIGHT] == MPI_PROC_NULL) ? procData->xLength[1] : procData->xLength[1]+1;
+        iterPara->startInner = 1;
+        iterPara->endInner   = procData->xLength[0];
+        iterPara->fixedValue = (direction == BOTTOM) ? 1 : procData->xLength[2];
+        break;
 
-						switch(direction/2){ //integer division to get the type of face (see enum in LBDefinitions.h)
-							//---------------------------------------------
-							//outer = Z, inner = X, Y fixed
-							//only iterate over inner domain of plane (FLUID cells)
-							case 0:
-							iterPara->startOuter = 1;
-							iterPara->endOuter   = procData->xLength[2];
-							iterPara->startInner = 1;
-							iterPara->endInner   = procData->xLength[0];
-							iterPara->fixedValue = (direction == LEFT) ? 1 : procData->xLength[1];
-							break;
+        //---------------------------------------------
+        //outer = Z, inner = Y, X fixed
+        //Iterate over entire ZY plane
+        case 2:
+        //A real boundary cell should never be included in the iteration.
+        //-> Test for real boundary (MPI_PROC_NULL), and set start index accordingly
+        iterPara->startOuter = (procData->neighbours[BOTTOM] == MPI_PROC_NULL) ? 1:0;
+        iterPara->endOuter   = (procData->neighbours[TOP]    == MPI_PROC_NULL) ? procData->xLength[2] : procData->xLength[2]+1;
+        iterPara->startInner = (procData->neighbours[LEFT]   == MPI_PROC_NULL) ? 1:0;
+        iterPara->endInner   = (procData->neighbours[RIGHT]  == MPI_PROC_NULL) ? procData->xLength[1] : procData->xLength[1]+1;
+        iterPara->fixedValue = (direction == BACK) ? 1 : procData->xLength[0];
+        break;
 
-							//---------------------------------------------
-							//outer = Y, inner = X, Z fixed
-							//iterate over inner domain and include ghost layer in y-direction
-							case 1:
-							//A real boundary cell should never be included in the iteration.
-							//-> Test for real boundary (MPI_PROC_NULL), and set start index accordingly
-							iterPara->startOuter = (procData->neighbours[LEFT]  == MPI_PROC_NULL) ? 1:0;
-							iterPara->endOuter   = (procData->neighbours[RIGHT] == MPI_PROC_NULL) ? procData->xLength[1] : procData->xLength[1]+1;
-							iterPara->startInner = 1;
-							iterPara->endInner   = procData->xLength[0];
-							iterPara->fixedValue = (direction == BOTTOM) ? 1 : procData->xLength[2];
-							break;
+        default:
+        ERROR("Invalid direction occurred. This should never happen!");
+    }
+}
 
-							//---------------------------------------------
-							//outer = Z, inner = Y, X fixed
-							//Iterate over entire ZY plane
-							case 2:
-							//A real boundary cell should never be included in the iteration.
-							//-> Test for real boundary (MPI_PROC_NULL), and set start index accordingly
-							iterPara->startOuter = (procData->neighbours[BOTTOM] == MPI_PROC_NULL) ? 1:0;
-							iterPara->endOuter   = (procData->neighbours[TOP]    == MPI_PROC_NULL) ? procData->xLength[2] : procData->xLength[2]+1;
-							iterPara->startInner = (procData->neighbours[LEFT]   == MPI_PROC_NULL) ? 1:0;
-							iterPara->endInner   = (procData->neighbours[RIGHT]  == MPI_PROC_NULL) ? procData->xLength[1] : procData->xLength[1]+1;
-							iterPara->fixedValue = (direction == BACK) ? 1 : procData->xLength[0];
-							break;
+//Function to find indices being extracted/injected
+void p_assignIndices(const int face, int *const index) {
 
-							default:
-							ERROR("Invalid direction occurred. This should never happen!");
-						}
-					}
+    switch (face) {
+        case LEFT:     	// y = 0
+        index[0] = 0; index[1] = 5; index[2] = 6; index[3] = 7; index[4] = 14;
+        break;
 
-					//Function to find indices being extracted/injected
-					void p_assignIndices(const int face, int *const index) {
-						switch (face) {
-							case LEFT:     	// y = 0
-							index[0] = 0; index[1] = 5; index[2] = 6; index[3] = 7; index[4] = 14;
-							break;
-							case RIGHT:     // y = xlength[1]+1
-							index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18;
-							break;
-							case TOP: 		// z = xlength[2]+1
-							index[0] = 14; index[1] = 15; index[2] = 16; index[3] = 17; index[4] = 18;
-							break;
-							case BOTTOM: 	// z = 0
-							index[0] = 0; index[1] = 1; index[2] = 2; index[3] = 3; index[4] = 4;
-							break;
-							case FRONT:     // x = xlength[0]+1
-							index[0] = 3; index[1] = 7; index[2] = 10; index[3] = 13; index[4] = 17;
-							break;
-							case BACK:      // x = 0
-							index[0] = 1; index[1] = 5; index[2] = 8; index[3] =  11; index[4] = 15;
-							break;
-						}
-					}
+        case RIGHT:     // y = xlength[1]+1
+        index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18;
+        break;
 
-					void finaliseMPI(t_procData const * const procData) {
-						fflush(stdout);
-						fflush(stderr);
-						MPI_Barrier(MPI_COMM_WORLD);
-						printf("Rank %i: FINISHED. \n", procData->rank);
-						MPI_Finalize();
-					}
+        case TOP: 		// z = xlength[2]+1
+        index[0] = 14; index[1] = 15; index[2] = 16; index[3] = 17; index[4] = 18;
+        break;
+
+        case BOTTOM: 	// z = 0
+        index[0] = 0; index[1] = 1; index[2] = 2; index[3] = 3; index[4] = 4;
+        break;
+
+        case FRONT:     // x = xlength[0]+1
+        index[0] = 3; index[1] = 7; index[2] = 10; index[3] = 13; index[4] = 17;
+        break;
+
+        case BACK:      // x = 0
+        index[0] = 1; index[1] = 5; index[2] = 8; index[3] =  11; index[4] = 15;
+        break;
+    }
+}
+
+void finaliseMPI(t_procData const * const procData) {
+    fflush(stdout);
+    fflush(stderr);
+    MPI_Barrier(MPI_COMM_WORLD);
+    printf("Rank %i: FINISHED. \n", procData->rank);
+    MPI_Finalize();
+}
