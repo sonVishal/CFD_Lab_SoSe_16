@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
     int *flagField          = NULL;
 
     //TODO: (TKS) Should read in number of components externally (Maybe temporarily do it from LBDef)
-    t_component c[1];
+    t_component c[g_numComp];
     //TODO: Temporarily initialization of component
     c[0].collideField = collideField;
     c[0].streamField  = streamField;
@@ -137,10 +137,10 @@ int main(int argc, char *argv[]){
 	    double *swap = NULL;
 
         //do extraction , swap , injection for - left/right, top/bottom, front/back for each component
-        communicateComponents(sendBuffer, readBuffer, c, 1, &procData);
+        communicateComponents(sendBuffer, readBuffer, c, g_numComp, &procData);
 
         // Perform local streaming
-	    streamComponents(c, 1, flagField, procData.xLength);
+	    streamComponents(c, g_numComp, flagField, procData.xLength);
 
         // Swap the local fields
 	    swap = c[0].collideField;

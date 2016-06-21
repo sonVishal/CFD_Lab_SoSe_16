@@ -2,6 +2,17 @@
 #define _LBDEFINITIONS_H_
 #include "helper.h"
 
+//TODO: (TKS) Remove and read in form settingsfile instead
+//-----------------------------------
+//TEMPORARY -------------------------
+//-----------------------------------
+
+const int g_numComp = 1;
+
+//-----------------------------------
+//-----------------------------------
+
+
 // Number of lattice directions
 static const int Q = 19;
 
