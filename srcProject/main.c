@@ -32,11 +32,11 @@ int main(int argc, char *argv[]){
     double *streamField     = NULL;
     int *flagField          = NULL;
 
-    //TODO: (TKS) Should read in number of components externally, For now having a global variable.
+    //TODO: (TKS) Should read in number of components externally. For now having a global variable.
     // Array of the components in our simulation
     t_component c[g_numComp];
 
-    //TODO: Temporarily initialization of component, REMOVE whn implementin
+    //TODO: Temporarily initialization of component, REMOVE when implementing multicomponent
     c[0].collideField = collideField;
     c[0].streamField  = streamField;
 
