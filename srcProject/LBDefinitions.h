@@ -7,10 +7,10 @@ static const int Q = 19;
 
 // Lattice velocity vectors
 static const int LATTICEVELOCITIES[19][3] = {
-    {0,-1,-1}, {-1,0,-1}, {0,0,-1}, {1,0,-1}, {0,1,-1},
-    {-1,-1,0}, {0,-1,0},  {1,-1,0}, {-1,0,0}, {0,0,0},
-    {1,0,0},   {-1,1,0},  {0,1,0},  {1,1,0},  {0,-1,1},
-    {-1,0,1},  {0,0,1},   {1,0,1},  {0,1,1}
+    {0,-1,-1}, {-1,0,-1}, {0,0,-1}, {1,0,-1}, {0,1,-1}, //[0-4]
+    {-1,-1,0}, {0,-1,0},  {1,-1,0}, {-1,0,0}, {0,0,0},  //[5-9]
+    {1,0,0},   {-1,1,0},  {0,1,0},  {1,1,0},  {0,-1,1}, //[10-14]
+    {-1,0,1},  {0,0,1},   {1,0,1},  {0,1,1}             //[15-18]
 };
 
 // Temporary variables for Lattice weights
@@ -38,7 +38,7 @@ static const double densityTol  = 0.03;
 static const double machNrTol   = 0.1;
 
 // Enum for send and read buffer directions
-enum {
+enum WALLS {
     LEFT,
     RIGHT,
     TOP,
@@ -48,13 +48,38 @@ enum {
 };
 
 // Enum for cell type
-enum {
+enum CELLS {
     FLUID,
     NO_SLIP,
     MOVING_WALL,
     PARALLEL_BOUNDARY,
     PERIODIC_BOUNDARY
 };
+
+
+// Numbering of edges of the domain:
+// //
+//
+//            ^  (Z)
+//            |
+//            |
+//            |
+//            |             (11)
+//            +-----------------------------+
+//        (8)/|                            /|
+//          / |        (9)            (10)/ |
+//         +-----------------------------+  |
+//         |  |                          |  |
+//         |  | (4)                      |  |(7)
+//         |  |                          |  |
+//      (5)|  |                       (6)|  |                    (Y)
+//         |  +--------------------------|--+--------------------->
+//         | /           (3)             | /
+//         |/(0)                         |/ (2)
+//         +-----------------------------+
+//        /          (1)
+//       / (X)
+//      v
 
 // Local struct for each process
 typedef struct {
@@ -63,6 +88,7 @@ typedef struct {
     int xLength[3];
     int neighbours[6];         //same order as enum //TODO: (DL) possibly rename neighbours, e.g. "parallelNeighbours"
     int periodicNeighbours[6]; //only value if MPI_PROC_NULL in neighbours
+    int periodicEdgeNeighbours[12]; //shared edges - diagonal opposite neighbours
     int bufferSize[3]; //buffer sizes for all directions
     double wallVelocity[3];
 } t_procData;

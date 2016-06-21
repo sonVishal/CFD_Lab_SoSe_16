@@ -14,6 +14,8 @@ void domainDecompositionAndNeighbors(t_procData *const procData, const int xleng
 
 	#define M_NBGH procData->neighbours
 	#define M_PDICNBGH procData->periodicNeighbours
+	#define M_EDGENBGH procData->periodicEdgeNeighbours
+	#define M_ISEDGE(N1, N2) M_NBGH[N1] == MPI_PROC_NULL && M_NBGH[N2] == MPI_PROC_NULL
 
 	int procPos[3] = {0,0,0};
 	// Get the position of the process based on its rank
@@ -47,6 +49,22 @@ void domainDecompositionAndNeighbors(t_procData *const procData, const int xleng
 
 	M_PDICNBGH[BOTTOM] = M_NBGH[BOTTOM]==MPI_PROC_NULL ? procData->rank+procsPerAxis[0]*procsPerAxis[1]*(procsPerAxis[2]-1) : MPI_PROC_NULL;
 	M_PDICNBGH[TOP]    = M_NBGH[TOP]==MPI_PROC_NULL    ? procData->rank-procsPerAxis[0]*procsPerAxis[1]*(procsPerAxis[2]-1) : MPI_PROC_NULL;
+
+	/* Set neighbours for shared edges */
+	M_EDGENBGH[0] = M_ISEDGE(LEFT, BOTTOM)  ? M_PDICNBGH[TOP]+procsPerAxis[0]*(procsPerAxis[1]-1): MPI_PROC_NULL;
+	M_EDGENBGH[1] = M_ISEDGE(FRONT, BOTTOM) ? M_PDICNBGH[TOP]-(procsPerAxis[0]-1): MPI_PROC_NULL;
+	M_EDGENBGH[2] = M_ISEDGE(RIGHT, BOTTOM) ? M_PDICNBGH[TOP]-(procsPerAxis[0]*(procsPerAxis[1]-1)): MPI_PROC_NULL;
+	M_EDGENBGH[3] = M_ISEDGE(BACK, BOTTOM)  ? M_PDICNBGH[TOP]+(procsPerAxis[0]-1): MPI_PROC_NULL;
+
+	M_EDGENBGH[4] = M_ISEDGE(BACK, LEFT)    ? M_PDICNBGH[LEFT]+(procsPerAxis[0]-1): MPI_PROC_NULL;
+	M_EDGENBGH[5] = M_ISEDGE(LEFT, FRONT)   ? M_PDICNBGH[LEFT]-(procsPerAxis[0]-1): MPI_PROC_NULL;
+	M_EDGENBGH[6] = M_ISEDGE(FRONT, RIGHT)  ? M_PDICNBGH[RIGHT]-(procsPerAxis[0]-1): MPI_PROC_NULL;
+	M_EDGENBGH[7] = M_ISEDGE(RIGHT, BACK)   ? M_PDICNBGH[RIGHT]+(procsPerAxis[0]-1): MPI_PROC_NULL;
+
+	M_EDGENBGH[8] = M_ISEDGE(TOP, LEFT)     ? M_PDICNBGH[BOTTOM]+(procsPerAxis[0]*(procsPerAxis[1]-1)): MPI_PROC_NULL;
+	M_EDGENBGH[9] = M_ISEDGE(TOP, FRONT)    ? M_PDICNBGH[BOTTOM]-(procsPerAxis[0]-1): MPI_PROC_NULL;
+	M_EDGENBGH[10] = M_ISEDGE(TOP, RIGHT)   ? M_PDICNBGH[BOTTOM]-(procsPerAxis[0]*(procsPerAxis[1]-1)): MPI_PROC_NULL;
+	M_EDGENBGH[11] = M_ISEDGE(TOP, BACK)    ? M_PDICNBGH[BOTTOM]+(procsPerAxis[0]-1): MPI_PROC_NULL;
 }
 
 /*
@@ -59,6 +77,11 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const *
 		const int nrDistSwap = 5;
 		const int db = sizeof(double); //double in bytes
 
+		/*TODO: (DL) Do we even need for each side a new buffer?
+		When we only have one readBuffer and one sendBuffer, and we allocate it such that also
+		the shared edges are included, then we can reuse this buffer for all directions?
+		*/
+		
 		// XZ inner domain (no edges included)
 		int bufferSize		= nrDistSwap*(xlength[0]*xlength[2]);
 		procBufferSize[0] 	= bufferSize; //Valid for left and right

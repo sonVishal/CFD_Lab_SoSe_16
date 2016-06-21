@@ -150,7 +150,7 @@ int main(int argc, char *argv[]){
 	    doCollision(&c1, procData.xLength);
 
         // Treat local boundaries
-	    treatBoundary(&c1, flagField, &procData);
+	    treatBoundary(&c1, flagField, collideField, &procData, sendBuffer, readBuffer);
 
         // Print VTS files at given interval
 	    if (t%timestepsPerPlotting == 0){
