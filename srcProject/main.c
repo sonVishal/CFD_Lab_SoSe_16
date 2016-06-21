@@ -159,7 +159,6 @@ int main(int argc, char *argv[]){
         // Swap the local fields for each component
         swapComponentFields(c, g_numComp);
 
-
         // Perform local collision
 	    doCollision(c, procData.xLength);
 

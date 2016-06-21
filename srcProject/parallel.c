@@ -114,7 +114,6 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const *
 void communicateComponents(double** sendBuffer, double**readBuffer, t_component *c, int numComp, t_procData const * const procData){
     for (int i = 0; i < numComp; ++i) {
         communicate(sendBuffer, readBuffer, c[i].collideField, procData);
-        
     }
 }
 
