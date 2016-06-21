@@ -119,11 +119,11 @@ int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEd
 		endIndex = procData->xLength[0];
 	}else if(iterPara->y == VARIABLE){
 		endIndex = procData->xLength[1];
-	}else if(iterPara->z == VARIABLE){
+	}else{ //(iterPara->z == VARIABLE){
+		assert(iterPara->z == VARIABLE);
 		endIndex = procData->xLength[2];
-	}else{
-		ERROR("TODO");
 	}
+
 	int currentIndexBuff = 0, currentIndexField = -1;
 
 	//z * (xlen*ylen) + y * (xlen) + x
@@ -132,10 +132,9 @@ int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEd
 			cellOffset = procData->xLength[0] * (procData->xLength[1] * iterPara->z + iterPara->y) + varIdx;
 		}else if(iterPara->y == VARIABLE){
 			cellOffset = procData->xLength[0] * (procData->xLength[1] * iterPara->z + varIdx) + iterPara->x;
-		}else if(iterPara->z == VARIABLE){
+		}else{ //(iterPara->z == VARIABLE)
+			assert(iterPara->z == VARIABLE);
 			cellOffset = procData->xLength[0] * (procData->xLength[1] * varIdx + iterPara->y) + iterPara->x;
-		}else{
-			ERROR("TODO");
 		}
 		currentIndexField = Q*cellOffset;
 
@@ -192,7 +191,6 @@ void p_setEdgeIterParameters(t_iterParaEdge * const iterPara, t_procData const*c
 	int start = injectFlag ? 0 : 1;
 	int endOffset = injectFlag ? 1 : 0;
 
-
 	switch(edge/4){ //integer division - 12 edges, 3 cases
 	case 0:
 		iterPara->z = 0;
@@ -223,23 +221,23 @@ void p_setEdgeIterParameters(t_iterParaEdge * const iterPara, t_procData const*c
 		break;
 
 	default:
-		ERROR("TODO: msg");
+		assert(edge>=0 && edge<=11);
 	}
 }
 
-void p_assignSharedEdgeIndex(const int edge, int *index) {
+int p_assignSharedEdgeIndex(const int edge) {
 
 	//Look for edges numbering in LBDefinitions.h
 	// edge 0: (0,-1,-1) 	-> [0]
 	// edge 1: (1,0,-1) 	-> [3]
 	// edge 2: (0,1,-1) 	-> [4]
 	// edge 3: (-1,0,-1) 	-> [1]
-	//
+
 	// edge 4: (-1,-1,0) 	-> [5]
 	// edge 5: (1,-1,0) 	-> [7]
 	// edge 6: (1,1,0) 		-> [13]
 	// edge 7: (-1,1,0) 	-> [11]
-	//
+
 	// edge 8: (0,-1,1) 	-> [14]
 	// edge 9: (1,0,1) 		-> [17]
 	// edge 10: (0,1,1) 	-> [18]
@@ -248,7 +246,7 @@ void p_assignSharedEdgeIndex(const int edge, int *index) {
 			5,7,13,11,
 			14,17,18,15};
 
-	*index = indices[edge];
+	return indices[edge];
 }
 
 void treatBoundary(t_component *c, int const * const flagField, double *collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer){
@@ -331,8 +329,8 @@ void treatBoundary(t_component *c, int const * const flagField, double *collideF
 		//TODO: (DL) probably the two cases could be joined into one function, and handle the differences via parameters
 		//TODO: (DL) handle case differently when send/recv is same processor - only copying is needed!
 		if(procData->periodicEdgeNeighbours[edge1[idx]] != MPI_PROC_NULL){
-			p_assignSharedEdgeIndex(edge1[idx], &indexOutEdge);
-			p_assignSharedEdgeIndex(edge2[idx], &indexInEdge);
+			indexOutEdge = p_assignSharedEdgeIndex(edge1[idx]);
+			indexInEdge =  p_assignSharedEdgeIndex(edge2[idx]);
 
 			p_setEdgeIterParameters(&iterParaEdge, procData,  edge1[idx], 0); //0 = extact
 
@@ -347,8 +345,8 @@ void treatBoundary(t_component *c, int const * const flagField, double *collideF
 		}
 
 		if(procData->periodicEdgeNeighbours[edge2[idx]] != MPI_PROC_NULL){
-			p_assignSharedEdgeIndex(edge2[idx], &indexOutEdge);
-			p_assignSharedEdgeIndex(edge1[idx], &indexInEdge);
+			indexOutEdge = p_assignSharedEdgeIndex(edge2[idx]);
+			indexInEdge  = p_assignSharedEdgeIndex(edge1[idx]);
 
 			p_setEdgeIterParameters(&iterParaEdge, procData,  edge2[idx], 0); //0 = extact
 			bufferSize = extractInjectEdge(sendBuffer[idx], collideField, &iterParaEdge, procData, indexOutEdge, 0);
