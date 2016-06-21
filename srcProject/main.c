@@ -20,8 +20,10 @@ int main(int argc, char *argv[]){
     int *flagField          = NULL;
 
     //TODO: (TKS) Should read in number of components externally (Maybe temporarily do it from LBDef)
+    // Array of the components in our simulation
     t_component c[g_numComp];
-    //TODO: Temporarily initialization of component
+
+    //TODO: Temporarily initialization of component, REMOVE whn implementin
     c[0].collideField = collideField;
     c[0].streamField  = streamField;
 
@@ -139,10 +141,11 @@ int main(int argc, char *argv[]){
         //do extraction , swap , injection for - left/right, top/bottom, front/back for each component
         communicateComponents(sendBuffer, readBuffer, c, g_numComp, &procData);
 
-        // Perform local streaming
+        // Perform local streaming for each component
 	    streamComponents(c, g_numComp, flagField, procData.xLength);
 
-        // Swap the local fields
+        // TODO: (TKS) Make into function
+        // Swap the local fields for each component
 	    swap = c[0].collideField;
 	    c[0].collideField = c[0].streamField;
 	    c[0].streamField = swap;
@@ -151,7 +154,7 @@ int main(int argc, char *argv[]){
 	    doCollision(c, procData.xLength);
 
         // Treat local boundaries
-	    treatBoundary(c, flagField, collideField, &procData, sendBuffer, readBuffer);
+	    treatBoundary(c, flagField, c[0].collideField, &procData, sendBuffer, readBuffer);
 
         // Print VTS files at given interval
 	    if (t%timestepsPerPlotting == 0){
