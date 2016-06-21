@@ -222,103 +222,103 @@ void p_assignSharedEdgeIndex(const int edge, int *index) {
         index[0] = indices[edge];
 }
 
-		void treatBoundary(t_component *c, int const * const flagField, double *collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer){
-			// const int NO_NEIGHBOUR = -2; // equals the MPI_PROC_NULL = -2
-			// for(int wall=LEFT; wall<=BACK; ++wall){ //see LBDefinitions for order of walls
-			// 	if(procData->neighbours[wall] == NO_NEIGHBOUR){
-			// 		// printWallEnum(wall);
-			// 		p_treatSingleWall(c->collideField, flagField, procData, wall);
-			// 	}
-			// }
+void treatBoundary(t_component *c, int const * const flagField, double *collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer){
+    // const int NO_NEIGHBOUR = -2; // equals the MPI_PROC_NULL = -2
+    // for(int wall=LEFT; wall<=BACK; ++wall){ //see LBDefinitions for order of walls
+    // 	if(procData->neighbours[wall] == NO_NEIGHBOUR){
+    // 		// printWallEnum(wall);
+    // 		p_treatSingleWall(c->collideField, flagField, procData, wall);
+    // 	}
+    // }
 
-			t_iterPara  iterPara;
-			int 		indexIn[5], indexOut[5], bufferSize;
+    t_iterPara  iterPara;
+    int 		indexIn[5], indexOut[5], bufferSize;
 
-			// #1 INNER DOMAIN ONLY
-			//1) extract values into buffer;
-			//2) swap with opposite site
-			//3) inject
+    // #1 INNER DOMAIN ONLY
+    //1) extract values into buffer;
+    //2) swap with opposite site
+    //3) inject
 
-			for(int wall=LEFT; wall<=BACK; wall+=2){ //see LBDefinitions for order of walls
+    for(int wall=LEFT; wall<=BACK; wall+=2){ //see LBDefinitions for order of walls
 
-				if(procData->periodicNeighbours[wall] != MPI_PROC_NULL &&
-					procData->periodicNeighbours[wall+1] != MPI_PROC_NULL
-				){
-					ERROR("TODO: THIS CASE WOULD LEAD TO A DEADLOCK! IPROC, JPROC, KPROC HAVE TO BE > 1 FOR NOW!");
-				}
+        if(procData->periodicNeighbours[wall] != MPI_PROC_NULL &&
+            procData->periodicNeighbours[wall+1] != MPI_PROC_NULL
+        ){
+            ERROR("TODO: THIS CASE WOULD LEAD TO A DEADLOCK! IPROC, JPROC, KPROC HAVE TO BE > 1 FOR NOW!");
+        }
 
-				//TODO: (DL) handle case differently when send/recv is same processor - only copying is needed!
-				//TODO: (DL) probably the two cases could be joined into one function, and handle the differences via parameters
-				if(procData->periodicNeighbours[wall] != MPI_PROC_NULL){
-					p_assignIndices(wall,   indexOut);
-					p_assignIndices(wall+1, indexIn);
+        //TODO: (DL) handle case differently when send/recv is same processor - only copying is needed!
+        //TODO: (DL) probably the two cases could be joined into one function, and handle the differences via parameters
+        if(procData->periodicNeighbours[wall] != MPI_PROC_NULL){
+            p_assignIndices(wall,   indexOut);
+            p_assignIndices(wall+1, indexIn);
 
-					p_setBoundaryIterParameters(&iterPara, procData,  wall);
-					//TODO: (DL) possibly safe this somewhere...
-					//always excluding shared edges
-					bufferSize = 5 * iterPara.endOuter * iterPara.endInner;
+            p_setBoundaryIterParameters(&iterPara, procData,  wall);
+            //TODO: (DL) possibly safe this somewhere...
+            //always excluding shared edges
+            bufferSize = 5 * iterPara.endOuter * iterPara.endInner;
 
-					extract(sendBuffer[wall], collideField, &iterPara, procData, wall, indexOut);
+            extract(sendBuffer[wall], collideField, &iterPara, procData, wall, indexOut);
 
-					int commRank = procData->periodicNeighbours[wall];
+            int commRank = procData->periodicNeighbours[wall];
 
-					MPI_Sendrecv(sendBuffer[wall], bufferSize, MPI_DOUBLE, commRank, 0, readBuffer[wall],
-						bufferSize, MPI_DOUBLE, commRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Sendrecv(sendBuffer[wall], bufferSize, MPI_DOUBLE, commRank, 0, readBuffer[wall],
+                bufferSize, MPI_DOUBLE, commRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-						inject(readBuffer[wall], collideField, &iterPara, procData, wall, indexIn);
-					}
+                inject(readBuffer[wall], collideField, &iterPara, procData, wall, indexIn);
+        }
 
-					if(procData->periodicNeighbours[wall+1] != MPI_PROC_NULL){
-						p_assignIndices(wall+1, indexOut);
-						p_assignIndices(wall, indexIn);
+        if(procData->periodicNeighbours[wall+1] != MPI_PROC_NULL){
+            p_assignIndices(wall+1, indexOut);
+            p_assignIndices(wall, indexIn);
 
-						p_setBoundaryIterParameters(&iterPara, procData,  wall);
+            p_setBoundaryIterParameters(&iterPara, procData,  wall);
 
-						bufferSize = 5 * iterPara.endOuter * iterPara.endInner;
+            bufferSize = 5 * iterPara.endOuter * iterPara.endInner;
 
-						extract(sendBuffer[wall+1], collideField, &iterPara, procData, wall+1, indexOut);
+            extract(sendBuffer[wall+1], collideField, &iterPara, procData, wall+1, indexOut);
 
-						int commRank = procData->periodicNeighbours[wall+1];
+            int commRank = procData->periodicNeighbours[wall+1];
 
-						MPI_Sendrecv(sendBuffer[wall+1], bufferSize, MPI_DOUBLE, commRank, 0, readBuffer[wall+1],
-							bufferSize, MPI_DOUBLE, commRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Sendrecv(sendBuffer[wall+1], bufferSize, MPI_DOUBLE, commRank, 0, readBuffer[wall+1],
+                bufferSize, MPI_DOUBLE, commRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-							inject(readBuffer[wall+1], collideField, &iterPara, procData, wall+1, indexIn);
-						}
-					}
+                inject(readBuffer[wall+1], collideField, &iterPara, procData, wall+1, indexIn);
+        }
+    }
 
-					// #2 SHARED EDGES ONLY
-					//1) extract
-					//2) swap
-					//3) inject
-					int edge1[6] = {0,1,2,3,4,5};
-					int edge2[6] = {10,11,8,9,6,7};
+    // #2 SHARED EDGES ONLY
+    //1) extract
+    //2) swap
+    //3) inject
+    int edge1[6] = {0,1,2,3,4,5};
+    int edge2[6] = {10,11,8,9,6,7};
 
-					t_iterParaEdge iterParaEdge;
+    t_iterParaEdge iterParaEdge;
 
-					for(int idx = 0; idx < 6; ++idx){
+    for(int idx = 0; idx < 6; ++idx){
 
-						if(procData->periodicEdgeNeighbours[edge1[idx]]){
-							p_assignSharedEdgeIndex(edge1[idx], indexOut);
-							p_assignSharedEdgeIndex(edge2[idx], indexIn);
+        if(procData->periodicEdgeNeighbours[edge1[idx]]){
+            p_assignSharedEdgeIndex(edge1[idx], indexOut);
+            p_assignSharedEdgeIndex(edge2[idx], indexIn);
 
-							p_setEdgeIterParameters(&iterParaEdge, procData,  edge1[idx]);
+            p_setEdgeIterParameters(&iterParaEdge, procData,  edge1[idx]);
 
-							//TODO: (DL) At the moment re-susing existing buffers...
-							extractEdge(sendBuffer[idx], collideField, &iterParaEdge, procData, edge1[idx], indexOut[0]);
+            //TODO: (DL) At the moment re-susing existing buffers...
+            extractEdge(sendBuffer[idx], collideField, &iterParaEdge, procData, edge1[idx], indexOut[0]);
 
-							int commRank = procData->periodicEdgeNeighbours[idx];
+            int commRank = procData->periodicEdgeNeighbours[idx];
 
-							//TODO: compute buffersize!!
-							MPI_Sendrecv(sendBuffer[idx], bufferSize, MPI_DOUBLE, commRank, 0, readBuffer[idx],
-								bufferSize, MPI_DOUBLE, commRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            //TODO: compute buffersize!!
+            MPI_Sendrecv(sendBuffer[idx], bufferSize, MPI_DOUBLE, commRank, 0, readBuffer[idx],
+                bufferSize, MPI_DOUBLE, commRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-							injectEdge(readBuffer[idx], collideField, &iterParaEdge, procData, edge1[idx], indexIn[0]);
+            injectEdge(readBuffer[idx], collideField, &iterParaEdge, procData, edge1[idx], indexIn[0]);
 
-						}
+        }
 
-						if(procData->periodicEdgeNeighbours[edge2[idx]]){
+        if(procData->periodicEdgeNeighbours[edge2[idx]]){
 
-						}
-					}
-				}
+        }
+    }
+}
