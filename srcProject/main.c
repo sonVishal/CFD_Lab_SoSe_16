@@ -12,6 +12,19 @@
 #include <mpi/mpi.h>
 
 
+//TODO: (TKS) Where should these swap functions be placed?
+void swapFields(double *collideField, double* streamField){
+    double* swap = collideField;
+    collideField = streamField;
+    streamField = swap;
+}
+
+void swapComponentFields(t_component *c, int numComp){
+    for (int i = 0; i < numComp; ++i) {
+        swapFields(c[i].collideField, c[i].streamField);
+    }
+}
+
 int main(int argc, char *argv[]){
 
 	// Distribution function vectors
@@ -19,7 +32,7 @@ int main(int argc, char *argv[]){
     double *streamField     = NULL;
     int *flagField          = NULL;
 
-    //TODO: (TKS) Should read in number of components externally (Maybe temporarily do it from LBDef)
+    //TODO: (TKS) Should read in number of components externally, For now having a global variable.
     // Array of the components in our simulation
     t_component c[g_numComp];
 
@@ -136,7 +149,6 @@ int main(int argc, char *argv[]){
     beginProcTime = MPI_Wtime();
 
     for(t = 1; t <= timesteps; t++){
-	    double *swap = NULL;
 
         //do extraction , swap , injection for - left/right, top/bottom, front/back for each component
         communicateComponents(sendBuffer, readBuffer, c, g_numComp, &procData);
@@ -144,11 +156,9 @@ int main(int argc, char *argv[]){
         // Perform local streaming for each component
 	    streamComponents(c, g_numComp, flagField, procData.xLength);
 
-        // TODO: (TKS) Make into function
         // Swap the local fields for each component
-	    swap = c[0].collideField;
-	    c[0].collideField = c[0].streamField;
-	    c[0].streamField = swap;
+        swapComponentFields(c, g_numComp);
+
 
         // Perform local collision
 	    doCollision(c, procData.xLength);
