@@ -110,7 +110,15 @@ void p_setBounceBack(double *collideField, const double * const wallVelocity,
 
 		void extractEdge(double sendBuffer[], double const * const collideField, t_iterParaEdge const * const iterPara, t_procData const * const procData,
 		              const int edge, const int index){
-			ERROR("IMPLEMENT!!!");
+			int endIndex;
+			const int VARIABLE = -1;
+
+			if(iterPara->x == VARIABLE){
+
+			}
+
+
+
 		}
 
 
