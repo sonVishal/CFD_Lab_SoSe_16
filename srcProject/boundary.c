@@ -65,7 +65,6 @@ int p_computeNeighborCellOffset(int outer, int inner, int fixedValue,
 /* Helper function that treats a single boundary wall. The wall itself is described with wallIdx
  * (from enum WALLS) and the 'fixedValue' (generally 0 or xlength+1).
  */
-
 void p_treatSingleWall(double *collideField, const int * const flagField, const t_procData * const procData, const int wallIdx){
 
 	int endOuter = -1, endInner = -1, fixedValue = -1;
@@ -111,6 +110,8 @@ void p_treatSingleWall(double *collideField, const int * const flagField, const 
 
 int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEdge const * const iterPara,
 		t_procData const * const procData, const int index, const int injectFlag){
+
+	assert(injectFlag == 0 || injectFlag == 1);
 
 	int endIndex, cellOffset;
 	const int VARIABLE = -1;
@@ -160,7 +161,6 @@ void p_setBoundaryIterParameters(t_iterPara * const iterPara, t_procData const*c
 		iterPara->endOuter   = procData->xLength[2];
 		iterPara->endInner   = procData->xLength[0];
 		iterPara->fixedValue = (direction == LEFT) ? 1 : procData->xLength[1];
-
 		break;
 
 		//---------------------------------------------
@@ -188,7 +188,7 @@ void p_setEdgeIterParameters(t_iterParaEdge * const iterPara, t_procData const*c
 	const int VARIABLE = -1;
 
 	assert(injectFlag == 0 || injectFlag == 1);
-	int start = injectFlag ? 0 : 1;
+	int start = injectFlag     ? 0 : 1;
 	int endOffset = injectFlag ? 1 : 0;
 
 	switch(edge/4){ //integer division - 12 edges, 3 cases
@@ -303,6 +303,7 @@ void treatBoundary(t_component *c, int const * const flagField, double *collideF
 
 			bufferSize = 5 * iterPara.endOuter * iterPara.endInner;
 
+			//TODO: (DL) should extract and inject be "common functions"?
 			extract(sendBuffer[wall+1], collideField, &iterPara, procData, wall+1, indexOut);
 
 			int commRank = procData->periodicNeighbours[wall+1];
