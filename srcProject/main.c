@@ -162,8 +162,8 @@ int main(int argc, char *argv[]){
         // Perform local collision
 	    doCollision(c, procData.xLength);
 
-        // Treat local boundaries
-	    treatBoundary(c, flagField, c[0].collideField, &procData, sendBuffer, readBuffer);
+        // Treat local boundaries for each component
+	    treatComponentBoundary(c, g_numComp, flagField, &procData, sendBuffer, readBuffer);
 
         // Print VTS files at given interval
 	    if (t%timestepsPerPlotting == 0){

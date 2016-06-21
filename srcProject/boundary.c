@@ -249,7 +249,14 @@ int p_assignSharedEdgeIndex(const int edge) {
 	return indices[edge];
 }
 
-void treatBoundary(t_component *c, int const * const flagField, double *collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer){
+void treatComponentBoundary(t_component *c,int numComp, int const * const flagField, const t_procData * const procData, double **sendBuffer, double **readBuffer){
+    for (int i = 0; i < numComp; ++i) {
+        treatBoundary(flagField, c[i].collideField, procData, sendBuffer, readBuffer);
+    }
+}
+
+//TODO: (TKS) Remove flagField if not in use when finished
+void treatBoundary(int const * const flagField, double *collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer){
 	// const int NO_NEIGHBOUR = -2; // equals the MPI_PROC_NULL = -2
 	// for(int wall=LEFT; wall<=BACK; ++wall){ //see LBDefinitions for order of walls
 	// 	if(procData->neighbours[wall] == NO_NEIGHBOUR){
