@@ -185,35 +185,37 @@ void p_setBoundaryIterParameters(t_iterPara * const iterPara, t_procData const*c
 void p_setEdgeIterParameters(t_iterParaEdge * const iterPara, t_procData const*const procData, const int edge, const int injectFlag){
 
 	assert(injectFlag == 0 || injectFlag == 1);
-	int start     = injectFlag ? 0 : 1;
-	int endOffset = injectFlag ? 1 : 0;
+
+	//if inject: copy into boundary; else: copy from domain cells lying at edge
+	int start     = injectFlag ? 0 : 1; //if inject: start = 0, is at (ghost) boundary layer
+	int endOffset = injectFlag ? 1 : 0; //if inject: add endOffset +1 to be at (ghost) boundary layer
 
 	switch(edge/4){ //integer division - 12 edges, 3 cases
-	case 0:
+	case 0: //edges 0-3 (horizontal, bottom)
 		iterPara->z = 0;
 		if(edge == 0 || edge == 2){
 			iterPara->x = VARIABLE;
-			iterPara->y = (edge == 0) ? start : procData->xLength[2]+endOffset;
-		}else{
+			iterPara->y = (edge == 0) ? start : procData->xLength[1]+endOffset;
+		}else{ //edge == 1 || edge == 3
 			iterPara->y = VARIABLE;
 			iterPara->x = (edge == 1) ? procData->xLength[0]+endOffset : start;
 		}
 		break;
 
-	case 1:
+	case 1: //edges 4-7 (vertical)
 		iterPara->z = VARIABLE;
 		iterPara->y = (edge == 4 || edge == 5) ? start : procData->xLength[1]+endOffset;
 		iterPara->x = (edge == 4 || edge == 7) ? start : procData->xLength[0]+endOffset;
 		break;
 
-	case 2:
+	case 2: //edges 8-11 (horizontal, top)
 		iterPara->z = procData->xLength[2]+endOffset;
-		if(edge == 0 || edge == 2){
+		if(edge == 8 || edge == 10){
 			iterPara->x = VARIABLE;
-			iterPara->y = (edge == 0) ? start : procData->xLength[2]+endOffset;
+			iterPara->y = (edge == 8) ? start : procData->xLength[1]+endOffset;
 		}else{
 			iterPara->y = VARIABLE;
-			iterPara->x = (edge == 1) ? procData->xLength[0]+endOffset : start;
+			iterPara->x = (edge == 9) ? procData->xLength[0]+endOffset : start;
 		}
 		break;
 
@@ -281,7 +283,7 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 	indexOutEdge = p_assignSharedEdgeIndex(procEdge);
 	indexInEdge =  p_assignSharedEdgeIndex(opponentEdge);
 
-	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, 0); //0 = extact
+	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, 0); //0 = extract
 
 	//At the moment re-using existing buffers
 	bufferSize = extractInjectEdge(sendBuffer, collideField, &iterParaEdge, procData, indexOutEdge, 0);

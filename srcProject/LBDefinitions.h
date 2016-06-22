@@ -69,7 +69,7 @@ enum CELLS {
 
 
 
-//TODO: (DL) There can be "better" ways to number edges. At the moment the numbering is benefical for computing indices.  
+//TODO: (DL) There can be "better" ways to number edges. At the moment the numbering is benefical for computing indices.
 // Numbering of edges of the domain:
 // //
 //
@@ -159,9 +159,10 @@ static inline void p_setIterationParameters(int *endOuter, int *endInner, int *f
 		*fixedValue = wallIdx == BACK ? 0 : procData->xLength[0]+1;
 		break;
 
-	// default:
+    default:
 	// 	ERROR("Invalid wallIdx occurred. This should never happen!");
-	}
+        assert(wallIdx <= 6 && wallIdx >= 0);
+    }
 }
 
 /* Helper function that computes the offset of the current cell. 'Inner' corresponds to the first value of (x,y,z)
@@ -188,6 +189,7 @@ static inline int p_computeCellOffset(const int outer, const int inner, const in
 
 		default:
 			// ERROR("Invalid wall index occured. This should not happen !!!");
+            assert(wallIdx <= 6 && wallIdx >= 0);
 			return -1;
 	}
 }
