@@ -65,12 +65,7 @@ However, leave it as long as possible for testing and compare with previous scen
 /* Helper function that treats a single boundary wall. The wall itself is described with wallIdx
  * (from enum WALLS) and the 'fixedValue' (generally 0 or xlength+1).
  */
-<<<<<<< HEAD
-void p_treatSingleWall(double *collideField, const int * const flagField, const t_procData * const procData, const int wallIdx){
-=======
-
 //void p_treatSingleWall(double *collideField, const int * const flagField, const t_procData * const procData, const int wallIdx){
->>>>>>> 8b710a334fc58b05ff2dda056e6992423c528d52
 
 	//int endOuter = -1, endInner = -1, fixedValue = -1;
 	//p_setIterationParameters(&endOuter, &endInner, &fixedValue, procData, wallIdx);
