@@ -269,6 +269,7 @@ void treatPeriodicWall(double *const collideField, double *const sendBuffer, dou
 	extract(sendBuffer, collideField, &iterPara, procData, procWall, indexOut);
 
 	commRank = procData->periodicNeighbours[procWall];
+	assert(commRank >= 0);
 
 	//tag is chosen to be 1 that it is different from parallel_boundary (0) and edges (2)
 	MPI_Sendrecv(sendBuffer, bufferSize, MPI_DOUBLE, commRank, 1, readBuffer,
@@ -293,6 +294,7 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 	bufferSize = extractInjectEdge(sendBuffer, collideField, &iterParaEdge, procData, indexOutEdge, 0);
 
 	commRank = procData->periodicEdgeNeighbours[procEdge]; //communication rank
+	assert(commRank >= 0);
 
 	//tag is chosen to be 2 that it is different from parallel_boundary (0) and periodic_boundary (1)
 	MPI_Sendrecv(sendBuffer, bufferSize, MPI_DOUBLE, commRank, 2, readBuffer,
@@ -330,6 +332,17 @@ void treatBoundary(int const * const flagField, double *collideField, const t_pr
 	// 	}
 	// }
 
+	//TODO: (DL) dirty implemented to find a valid buffer... thing to discuss
+	double *validSendBuffer = NULL, *validReadBuffer = NULL;
+	for(int i = 0; i < 6; ++i){
+		if(sendBuffer[i] != NULL){
+			validSendBuffer = sendBuffer[i];
+			validReadBuffer = readBuffer[i];
+			assert(readBuffer[i] != NULL);
+			break;
+		}
+	}
+
 	for(int wall=LEFT; wall<=BACK; wall+=2){ //see LBDefinitions for order of walls
 
 		int firstNeighbour = procData->periodicNeighbours[wall];
@@ -341,12 +354,12 @@ void treatBoundary(int const * const flagField, double *collideField, const t_pr
 		}
 		else{
 			if(firstNeighbour != MPI_PROC_NULL){
-				treatPeriodicWall(collideField, sendBuffer[wall], readBuffer[wall],
+				treatPeriodicWall(collideField, validSendBuffer, validReadBuffer,
 					procData, wall, wall+1);
 			}
 
 			if(secondNeighbour != MPI_PROC_NULL){
-				treatPeriodicWall(collideField, sendBuffer[wall], readBuffer[wall],
+				treatPeriodicWall(collideField, validSendBuffer, validReadBuffer,
 					procData, wall+1, wall);
 			}
 		}
@@ -365,12 +378,12 @@ void treatBoundary(int const * const flagField, double *collideField, const t_pr
 			treatPeriodicEdgeNoComm(); //TODO: (DL) implement
 		}else{
 			if(firstNeighbour != MPI_PROC_NULL){
-				treatPeriodicEdge(collideField, sendBuffer[idx], readBuffer[idx],
+				treatPeriodicEdge(collideField, validSendBuffer, validReadBuffer,
 					procData, edge1[idx], edge2[idx]);
 			}
 
 			if(secondNeighbour != MPI_PROC_NULL){
-				treatPeriodicEdge(collideField, sendBuffer[idx], readBuffer[idx],
+				treatPeriodicEdge(collideField, validSendBuffer, validReadBuffer,
 					procData, edge2[idx], edge1[idx]);
 			}
 		}

@@ -44,27 +44,41 @@ void domainDecompositionAndNeighbors(t_procData *const procData, const int xleng
 	M_PDICNBGH[LEFT]   = M_NBGH[LEFT]==MPI_PROC_NULL  ? procData->rank+procsPerAxis[0]*(procsPerAxis[1]-1) : MPI_PROC_NULL;
 	M_PDICNBGH[RIGHT]  = M_NBGH[RIGHT]==MPI_PROC_NULL ? procData->rank-procsPerAxis[0]*(procsPerAxis[1]-1) : MPI_PROC_NULL;
 
-	M_PDICNBGH[BACK]   = M_NBGH[BACK]==MPI_PROC_NULL  ? procData->rank-procsPerAxis[0]+1 : MPI_PROC_NULL;
-	M_PDICNBGH[FRONT]  = M_NBGH[FRONT]==MPI_PROC_NULL ? procData->rank+procsPerAxis[0]-1 : MPI_PROC_NULL;
+	M_PDICNBGH[BACK]   = M_NBGH[BACK]==MPI_PROC_NULL  ? procData->rank+(procsPerAxis[0]-1) : MPI_PROC_NULL;
+	M_PDICNBGH[FRONT]  = M_NBGH[FRONT]==MPI_PROC_NULL ? procData->rank-(procsPerAxis[0]-1) : MPI_PROC_NULL;
 
 	M_PDICNBGH[BOTTOM] = M_NBGH[BOTTOM]==MPI_PROC_NULL ? procData->rank+procsPerAxis[0]*procsPerAxis[1]*(procsPerAxis[2]-1) : MPI_PROC_NULL;
 	M_PDICNBGH[TOP]    = M_NBGH[TOP]==MPI_PROC_NULL    ? procData->rank-procsPerAxis[0]*procsPerAxis[1]*(procsPerAxis[2]-1) : MPI_PROC_NULL;
 
 	/* Set neighbours for shared edges */
-	M_EDGENBGH[0] = M_ISEDGE(LEFT, BOTTOM)  ? M_PDICNBGH[TOP]+procsPerAxis[0]*(procsPerAxis[1]-1): MPI_PROC_NULL;
-	M_EDGENBGH[1] = M_ISEDGE(FRONT, BOTTOM) ? M_PDICNBGH[TOP]-(procsPerAxis[0]-1): MPI_PROC_NULL;
-	M_EDGENBGH[2] = M_ISEDGE(RIGHT, BOTTOM) ? M_PDICNBGH[TOP]-(procsPerAxis[0]*(procsPerAxis[1]-1)): MPI_PROC_NULL;
-	M_EDGENBGH[3] = M_ISEDGE(BACK, BOTTOM)  ? M_PDICNBGH[TOP]+(procsPerAxis[0]-1): MPI_PROC_NULL;
+	M_EDGENBGH[0] = M_ISEDGE(LEFT, BOTTOM)  ? M_PDICNBGH[BOTTOM]+procsPerAxis[0]*(procsPerAxis[1]-1): MPI_PROC_NULL;
+	M_EDGENBGH[1] = M_ISEDGE(FRONT, BOTTOM) ? M_PDICNBGH[BOTTOM]-(procsPerAxis[0]-1): MPI_PROC_NULL;
+	M_EDGENBGH[2] = M_ISEDGE(RIGHT, BOTTOM) ? M_PDICNBGH[BOTTOM]-(procsPerAxis[0]*(procsPerAxis[1]-1)) : MPI_PROC_NULL;
+	M_EDGENBGH[3] = M_ISEDGE(BACK, BOTTOM)  ? M_PDICNBGH[BOTTOM]+(procsPerAxis[0]-1): MPI_PROC_NULL;
 
 	M_EDGENBGH[4] = M_ISEDGE(BACK, LEFT)    ? M_PDICNBGH[LEFT]+(procsPerAxis[0]-1): MPI_PROC_NULL;
 	M_EDGENBGH[5] = M_ISEDGE(LEFT, FRONT)   ? M_PDICNBGH[LEFT]-(procsPerAxis[0]-1): MPI_PROC_NULL;
 	M_EDGENBGH[6] = M_ISEDGE(FRONT, RIGHT)  ? M_PDICNBGH[RIGHT]-(procsPerAxis[0]-1): MPI_PROC_NULL;
 	M_EDGENBGH[7] = M_ISEDGE(RIGHT, BACK)   ? M_PDICNBGH[RIGHT]+(procsPerAxis[0]-1): MPI_PROC_NULL;
 
-	M_EDGENBGH[8] = M_ISEDGE(TOP, LEFT)     ? M_PDICNBGH[BOTTOM]+(procsPerAxis[0]*(procsPerAxis[1]-1)): MPI_PROC_NULL;
-	M_EDGENBGH[9] = M_ISEDGE(TOP, FRONT)    ? M_PDICNBGH[BOTTOM]-(procsPerAxis[0]-1): MPI_PROC_NULL;
-	M_EDGENBGH[10] = M_ISEDGE(TOP, RIGHT)   ? M_PDICNBGH[BOTTOM]-(procsPerAxis[0]*(procsPerAxis[1]-1)): MPI_PROC_NULL;
-	M_EDGENBGH[11] = M_ISEDGE(TOP, BACK)    ? M_PDICNBGH[BOTTOM]+(procsPerAxis[0]-1): MPI_PROC_NULL;
+	M_EDGENBGH[8] = M_ISEDGE(TOP, LEFT)     ? M_PDICNBGH[TOP]+(procsPerAxis[0]*(procsPerAxis[1]-1)): MPI_PROC_NULL;
+	M_EDGENBGH[9] = M_ISEDGE(TOP, FRONT)    ? M_PDICNBGH[TOP]-(procsPerAxis[0]-1): MPI_PROC_NULL;
+	M_EDGENBGH[10] = M_ISEDGE(TOP, RIGHT)   ? M_PDICNBGH[TOP]-(procsPerAxis[0]*(procsPerAxis[1]-1)): MPI_PROC_NULL;
+	M_EDGENBGH[11] = M_ISEDGE(TOP, BACK)    ? M_PDICNBGH[TOP]+(procsPerAxis[0]-1): MPI_PROC_NULL;
+
+	//TODO:(DL) Delete when finalizing. But leave for debugging. 
+	// printf("PER VALUES:");
+	// for(int i = 0; i < 6; i++){
+	// 	printf("%i ", M_PDICNBGH[i]);
+	// }
+	// printf("\n");
+
+	// printf("EDGE VALUES:");
+	// for(int i = 0; i < 12; i++){
+	// 	printf("%i ", M_EDGENBGH[i]);
+	// }
+	// printf("\n");
+
 }
 
 /*

@@ -127,6 +127,8 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		}
 	}
 
+	//TODO: (DL) only quickly changed to PERIODIC_BC
+
 	// Now set up the ghost boundary layer with no slip
 	for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
 		if (thisProcData->neighbours[wallIdx] == MPI_PROC_NULL && wallIdx != TOP) {
@@ -134,7 +136,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 			for (z = 0; z <= endOuter; z++) {
 				for (y = 0; y <= endInner; y++) {
 					idx = p_computeCellOffset(z,y,fixedValue,thisProcData->xLength,wallIdx);
-					flagField[idx] = NO_SLIP;
+					flagField[idx] = PERIODIC_BOUNDARY;
 				}
 			}
 		}
@@ -146,7 +148,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 		for (z = 0; z <= endOuter; z++) {
 			for (y = 0; y <= endInner; y++) {
 				idx = p_computeCellOffset(z,y,fixedValue,thisProcData->xLength, TOP);
-				flagField[idx] = MOVING_WALL;
+				flagField[idx] = PERIODIC_BOUNDARY;
 			}
 		}
 	}
