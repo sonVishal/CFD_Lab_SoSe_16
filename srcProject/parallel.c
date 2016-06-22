@@ -77,11 +77,11 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const *
     const int nrDistSwap = 5;
     const int db = sizeof(double); //double in bytes
 
-    /*TODO: (DL) Do we even need for each side a new buffer?
-    When we only have one readBuffer and one sendBuffer, and we allocate it such that also
-    the shared edges are included, then we can reuse this buffer for all directions?
-    */
-    
+    // TODO: (DL) Category memory optimization (not urgent):
+	// Do we even need for each face a new buffer?
+    // When we only have two readBuffer and two sendBuffer, and we allocate it such that also
+    // the max. possible shared walls are included (entire face), then we can reuse this buffer for all other directions?
+
     // XZ inner domain (no edges included)
     int bufferSize		= nrDistSwap*(xlength[0]*xlength[2]);
     procBufferSize[0] 	= bufferSize; //Valid for left and right
@@ -110,7 +110,6 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const *
 /*
 * Wrapper around communicate to communicate each component
 */
-
 void communicateComponents(double** sendBuffer, double**readBuffer, t_component *c, int numComp, t_procData const * const procData){
     for (int i = 0; i < numComp; ++i) {
         communicate(sendBuffer, readBuffer, c[i].collideField, procData);
