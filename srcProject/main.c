@@ -202,7 +202,7 @@ int main(int argc, char *argv[]){
     free(flagField);
 
     for (int i = LEFT; i <= BACK; i++) {
-    	//set to NULL in initializeBuffers if buffer is not allocated (due to non existing neighour)
+    	//set to NULL in initializeBuffers if buffer is not allocated (due to non existing neighbour)
         if(sendBuffer[i] != NULL) free(sendBuffer[i]);
         if(readBuffer[i] != NULL) free(readBuffer[i]);
     }

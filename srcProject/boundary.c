@@ -1,7 +1,7 @@
 #include "boundary.h"
 
-/* TODO: (DL) in case we do not need the boundaries NO_SLIP and MOVING_WALL then delete the code for clarity.
-However, leave it as long as possible for testing and compare with previous scenarios. */
+//TODO: (DL) in case we do not need the boundaries NO_SLIP and MOVING_WALL then delete the code for clarity.
+//However, leave it as long as possible for testing and compare with previous scenarios.
 
 /* Helper function that carries out the moving wall or bounce back condition, depending on flag 'type'.
  * The value in flagField corresponding to the current cell (current_cell_index) has to indicate a boundary
@@ -105,8 +105,7 @@ However, leave it as long as possible for testing and compare with previous scen
 		//}
 	//}
 //}
-
-
+#define VARIABLE -1 //symbol that is used in context of indices. It indicates which index is variable.
 
 int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEdge const * const iterPara,
 		t_procData const * const procData, const int index, const int injectFlag){
@@ -114,13 +113,12 @@ int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEd
 	assert(injectFlag == 0 || injectFlag == 1);
 
 	int endIndex, cellOffset;
-	const int VARIABLE = -1;
 
 	if(iterPara->x == VARIABLE){
 		endIndex = procData->xLength[0];
 	}else if(iterPara->y == VARIABLE){
 		endIndex = procData->xLength[1];
-	}else{ //(iterPara->z == VARIABLE){
+	}else{
 		assert(iterPara->z == VARIABLE);
 		endIndex = procData->xLength[2];
 	}
@@ -133,10 +131,11 @@ int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEd
 			cellOffset = procData->xLength[0] * (procData->xLength[1] * iterPara->z + iterPara->y) + varIdx;
 		}else if(iterPara->y == VARIABLE){
 			cellOffset = procData->xLength[0] * (procData->xLength[1] * iterPara->z + varIdx) + iterPara->x;
-		}else{ //(iterPara->z == VARIABLE)
+		}else{
 			assert(iterPara->z == VARIABLE);
 			cellOffset = procData->xLength[0] * (procData->xLength[1] * varIdx + iterPara->y) + iterPara->x;
 		}
+
 		currentIndexField = Q*cellOffset;
 
 		if(injectFlag)
@@ -144,14 +143,13 @@ int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEd
 		else
 			buffer[currentIndexBuff++] = collideField[currentIndexField+index];
 	}
-
-	return currentIndexBuff;
+	return currentIndexBuff; //Will be used as bufferSize
 }
 
 
 void p_setBoundaryIterParameters(t_iterPara * const iterPara, t_procData const*const procData, const int direction){
-	switch(direction/2){ //integer division to get the type of face (see enum in LBDefinitions.h)
 
+	switch(direction/2){ //integer division to get the type of face (see enum in LBDefinitions.h)
 	iterPara->startOuter = 1;
 	iterPara->startInner = 1;
 
@@ -163,16 +161,16 @@ void p_setBoundaryIterParameters(t_iterPara * const iterPara, t_procData const*c
 		iterPara->fixedValue = (direction == LEFT) ? 1 : procData->xLength[1];
 		break;
 
-		//---------------------------------------------
-		//outer = Y, inner = X, Z fixed
+	//---------------------------------------------
+	//outer = Y, inner = X, Z fixed
 	case 1:
 		iterPara->endOuter   = procData->xLength[1];
 		iterPara->endInner   = procData->xLength[0];
 		iterPara->fixedValue = (direction == BOTTOM) ? 1 : procData->xLength[2];
 		break;
 
-		//---------------------------------------------
-		//outer = Z, inner = Y, X fixed
+	//---------------------------------------------
+	//outer = Z, inner = Y, X fixed
 	case 2:
 		iterPara->endOuter   = procData->xLength[2];
 		iterPara->endInner   = procData->xLength[1];
@@ -185,10 +183,9 @@ void p_setBoundaryIterParameters(t_iterPara * const iterPara, t_procData const*c
 }
 
 void p_setEdgeIterParameters(t_iterParaEdge * const iterPara, t_procData const*const procData, const int edge, const int injectFlag){
-	const int VARIABLE = -1;
 
 	assert(injectFlag == 0 || injectFlag == 1);
-	int start = injectFlag     ? 0 : 1;
+	int start     = injectFlag ? 0 : 1;
 	int endOffset = injectFlag ? 1 : 0;
 
 	switch(edge/4){ //integer division - 12 edges, 3 cases
@@ -243,10 +240,59 @@ int p_assignSharedEdgeIndex(const int edge) {
 	// edge 10: (0,1,1) 	-> [18]
 	// edge 11: (-1,0,1) 	-> [15]
 	static int indices[12] = {0,3,4,1,
-			5,7,13,11,
-			14,17,18,15};
-
+							  5,7,13,11,
+							  14,17,18,15};
 	return indices[edge];
+}
+
+
+void treatPeriodicWall(double *collideField, double *const sendBuffer, double *const readBuffer,
+	const t_procData * const procData, const int procWall, const int opponentWall){
+
+	t_iterPara  iterPara;
+	int 		indexIn[5], indexOut[5], bufferSize, commRank;
+
+	p_assignIndices(procWall,     indexOut);
+	p_assignIndices(opponentWall, indexIn);
+
+	p_setBoundaryIterParameters(&iterPara, procData, procWall);
+
+	//TODO: (DL) possibly safe this somewhere...
+	//always excluding shared edges (treat differently)
+	bufferSize = 5 * iterPara.endOuter * iterPara.endInner;
+
+	extract(sendBuffer, collideField, &iterPara, procData, procWall, indexOut);
+
+	commRank = procData->periodicNeighbours[procWall];
+
+	//tag is chosen to be 1 that it is different from parallel_boundary (0) and edges (2)
+	MPI_Sendrecv(sendBuffer, bufferSize, MPI_DOUBLE, commRank, 1, readBuffer,
+		bufferSize, MPI_DOUBLE, commRank, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+	inject(readBuffer, collideField, &iterPara, procData, procWall, indexIn);
+}
+
+void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *const readBuffer,
+	const t_procData * const procData, const int procEdge, const int opponentEdge){
+
+	t_iterParaEdge iterParaEdge;
+	int indexOutEdge, indexInEdge, bufferSize, commRank;
+
+	indexOutEdge = p_assignSharedEdgeIndex(procEdge);
+	indexInEdge =  p_assignSharedEdgeIndex(opponentEdge);
+
+	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, 0); //0 = extact
+
+	//At the moment re-using existing buffers
+	bufferSize = extractInjectEdge(sendBuffer, collideField, &iterParaEdge, procData, indexOutEdge, 0);
+
+	commRank = procData->periodicEdgeNeighbours[procEdge];
+	//tag is chosen to be 2 that it is different from parallel_boundary (0) and periodic_boundary (1)
+	MPI_Sendrecv(sendBuffer, bufferSize, MPI_DOUBLE, commRank, 2, readBuffer,
+			bufferSize, MPI_DOUBLE, commRank, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, 1); //1 = inject
+	extractInjectEdge(readBuffer, collideField, &iterParaEdge, procData, indexInEdge, 1);
 }
 
 void treatComponentBoundary(t_component *c,int numComp, int const * const flagField, const t_procData * const procData, double **sendBuffer, double **readBuffer){
@@ -256,7 +302,10 @@ void treatComponentBoundary(t_component *c,int numComp, int const * const flagFi
 }
 
 //TODO: (TKS) Remove flagField if not in use when finished
+//TODO: (DL) Update header with new functions if necessary.
 void treatBoundary(int const * const flagField, double *collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer){
+
+	// Handle of "real" boundaries:
 	// const int NO_NEIGHBOUR = -2; // equals the MPI_PROC_NULL = -2
 	// for(int wall=LEFT; wall<=BACK; ++wall){ //see LBDefinitions for order of walls
 	// 	if(procData->neighbours[wall] == NO_NEIGHBOUR){
@@ -265,106 +314,32 @@ void treatBoundary(int const * const flagField, double *collideField, const t_pr
 	// 	}
 	// }
 
-	t_iterPara  iterPara;
-	int 		indexIn[5], indexOut[5], bufferSize;
-
-	// #1 INNER DOMAIN ONLY
-	//1) extract values into buffer;
-	//2) swap with opposite site
-	//3) inject
+	//TODO: (DL) handle cases differently when send/recv is same processor!
+	//Then no MPI operations are required. TODO: applies also for the edge case treatment.
 
 	for(int wall=LEFT; wall<=BACK; wall+=2){ //see LBDefinitions for order of walls
-
-		if(procData->periodicNeighbours[wall] != MPI_PROC_NULL &&
-				procData->periodicNeighbours[wall+1] != MPI_PROC_NULL
-		){
-			ERROR("TODO: THIS CASE WOULD LEAD TO A DEADLOCK! IPROC, JPROC, KPROC HAVE TO BE > 1 FOR NOW!");
-		}
-
-		//TODO: (DL) handle case differently when send/recv is same processor - only copying is needed!
-		//TODO: (DL) probably the two cases could be joined into one function, and handle the differences via parameters
 		if(procData->periodicNeighbours[wall] != MPI_PROC_NULL){
-			p_assignIndices(wall,   indexOut);
-			p_assignIndices(wall+1, indexIn);
-
-			p_setBoundaryIterParameters(&iterPara, procData,  wall);
-			//TODO: (DL) possibly safe this somewhere...
-			//always excluding shared edges
-			bufferSize = 5 * iterPara.endOuter * iterPara.endInner;
-
-			extract(sendBuffer[wall], collideField, &iterPara, procData, wall, indexOut);
-
-			int commRank = procData->periodicNeighbours[wall];
-
-			MPI_Sendrecv(sendBuffer[wall], bufferSize, MPI_DOUBLE, commRank, 0, readBuffer[wall],
-					bufferSize, MPI_DOUBLE, commRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-			inject(readBuffer[wall], collideField, &iterPara, procData, wall, indexIn);
+			treatPeriodicWall(collideField, sendBuffer[wall], readBuffer[wall],
+				procData, wall, wall+1);
 		}
 
 		if(procData->periodicNeighbours[wall+1] != MPI_PROC_NULL){
-			p_assignIndices(wall+1, indexOut);
-			p_assignIndices(wall, indexIn);
-
-			p_setBoundaryIterParameters(&iterPara, procData,  wall);
-
-			bufferSize = 5 * iterPara.endOuter * iterPara.endInner;
-
-			//TODO: (DL) should extract and inject be "common functions"?
-			extract(sendBuffer[wall+1], collideField, &iterPara, procData, wall+1, indexOut);
-
-			int commRank = procData->periodicNeighbours[wall+1];
-
-			MPI_Sendrecv(sendBuffer[wall+1], bufferSize, MPI_DOUBLE, commRank, 0, readBuffer[wall+1],
-					bufferSize, MPI_DOUBLE, commRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-			inject(readBuffer[wall+1], collideField, &iterPara, procData, wall+1, indexIn);
+			treatPeriodicWall(collideField, sendBuffer[wall], readBuffer[wall],
+				procData, wall+1, wall);
 		}
 	}
 
-	// #2 SHARED EDGES ONLY
-	//1) extract
-	//2) swap
-	//3) inject
-	int edge1[6] = {0,1,2,3,4,5};
-	int edge2[6] = {10,11,8,9,6,7}; //opposite edge to edge1
-
-	t_iterParaEdge iterParaEdge;
-
-	int indexOutEdge, indexInEdge;
-
+	static const int edge1[6] = {0,1,2,3,4,5};
+	static const int edge2[6] = {10,11,8,9,6,7}; //opposite edge to edge1; see numbering in LBDefinitions.h
 	for(int idx = 0; idx < 6; ++idx){
-		//TODO: (DL) probably the two cases could be joined into one function, and handle the differences via parameters
-		//TODO: (DL) handle case differently when send/recv is same processor - only copying is needed!
 		if(procData->periodicEdgeNeighbours[edge1[idx]] != MPI_PROC_NULL){
-			indexOutEdge = p_assignSharedEdgeIndex(edge1[idx]);
-			indexInEdge =  p_assignSharedEdgeIndex(edge2[idx]);
-
-			p_setEdgeIterParameters(&iterParaEdge, procData,  edge1[idx], 0); //0 = extact
-
-			//TODO: (DL) At the moment re-susing existing buffers...
-			bufferSize = extractInjectEdge(sendBuffer[idx], collideField, &iterParaEdge, procData, indexOutEdge, 0);
-			int commRank = procData->periodicEdgeNeighbours[idx];
-			MPI_Sendrecv(sendBuffer[idx], bufferSize, MPI_DOUBLE, commRank, 0, readBuffer[idx],
-					bufferSize, MPI_DOUBLE, commRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-			p_setEdgeIterParameters(&iterParaEdge, procData, edge1[idx], 1); //1 = inject
-			extractInjectEdge(readBuffer[idx], collideField, &iterParaEdge, procData, indexInEdge, 1);
+			treatPeriodicEdge(collideField, sendBuffer[idx], readBuffer[idx],
+				procData, edge1[idx], edge2[idx]);
 		}
 
 		if(procData->periodicEdgeNeighbours[edge2[idx]] != MPI_PROC_NULL){
-			indexOutEdge = p_assignSharedEdgeIndex(edge2[idx]);
-			indexInEdge  = p_assignSharedEdgeIndex(edge1[idx]);
-
-			p_setEdgeIterParameters(&iterParaEdge, procData,  edge2[idx], 0); //0 = extact
-			bufferSize = extractInjectEdge(sendBuffer[idx], collideField, &iterParaEdge, procData, indexOutEdge, 0);
-
-			int commRank = procData->periodicEdgeNeighbours[idx];
-			MPI_Sendrecv(sendBuffer[idx], bufferSize, MPI_DOUBLE, commRank, 0, readBuffer[idx],
-					bufferSize, MPI_DOUBLE, commRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-			p_setEdgeIterParameters(&iterParaEdge, procData, edge2[idx], 1); //1 = inject
-			extractInjectEdge(readBuffer[idx], collideField, &iterParaEdge, procData, indexInEdge, 1);
+			treatPeriodicEdge(collideField, sendBuffer[idx], readBuffer[idx],
+				procData, edge2[idx], edge1[idx]);
 		}
 	}
 }
