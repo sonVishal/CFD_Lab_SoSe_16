@@ -304,8 +304,48 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 	extractInjectEdge(readBuffer, collideField, &iterParaEdge, procData, indexInEdge, 1);
 }
 
-void treatPeriodicWallNoComm(){
-	ERROR("implement");
+void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wall2, t_procData const*const procData){
+	t_iterPara  iterPara1, iterPara2;
+	int index1[5], index2[5];
+
+	p_setBoundaryIterParameters(&iterPara1, procData, wall1);
+	p_setBoundaryIterParameters(&iterPara2, procData, wall2);
+	p_assignIndices(wall1, index1);
+	p_assignIndices(wall2, index2);
+
+	//only fixed value should be different
+	assert(iterPara1.startInner == iterPara2.startInner && iterPara1.startOuter == iterPara2.startOuter &&
+	       iterPara1.endInner == iterPara2.endInner && iterPara1.endOuter == iterPara2.endOuter);
+
+	int currentIndexFieldIn1 = -1, currentIndexFieldOut1 = -1,
+		currentIndexFieldIn2 = -1, currentIndexFieldOut2 = -1;//initially invalid assignment
+
+	static int shiftFixedValue[6] = {-1, 1, 1, -1, 1, -1}; //static to allocate/assign only once
+
+	//k - corresponds to the 'outer' value when computing the offset
+	for(int k = iterPara1.startOuter; k <= iterPara1.endOuter; ++k){
+		//j - corresponds to the 'inner' value
+		for(int j = iterPara1.startInner; j <= iterPara1.endInner; ++j){
+
+			currentIndexFieldIn1 = Q*p_computeCellOffset(k, j, iterPara1.fixedValue, procData->xLength, wall1);
+			currentIndexFieldOut1 = Q*p_computeCellOffset(k, j, iterPara1.fixedValue+shiftFixedValue[wall1], procData->xLength, wall1);
+
+			currentIndexFieldIn2 = Q*p_computeCellOffset(k, j, iterPara2.fixedValue, procData->xLength, wall2);
+			currentIndexFieldOut2 = Q*p_computeCellOffset(k, j, iterPara2.fixedValue+shiftFixedValue[wall2], procData->xLength, wall2);
+
+			// Out of bounds check (only 'out' values at the moment)
+			assert(currentIndexFieldOut1 < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
+			&& currentIndexFieldOut1 >= 0);
+			assert(currentIndexFieldOut2 < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
+			&& currentIndexFieldOut2 >= 0);
+
+			//Do copy operations:
+			for (int i = 0; i < 5; i++) {
+				collideField[currentIndexFieldOut1+index2[i]] = collideField[currentIndexFieldIn2+index1[i]];
+				collideField[currentIndexFieldOut2+index1[i]] = collideField[currentIndexFieldIn1+index2[i]];
+			}
+		}
+
 }
 
 void treatPeriodicEdgeNoComm(){
@@ -313,8 +353,7 @@ void treatPeriodicEdgeNoComm(){
 }
 
 
-void treatComponentBoundary(t_component *c,int numComp, int const * const flagField, const t_procData * const procData, double **sendBuffer, double **readBuffer){
-
+void treatComponentBoundary(t_component *c,int numComp, int const*const flagField, t_procData const*const procData, double **sendBuffer, double **readBuffer){
     for (int i = 0; i < numComp; ++i) {
         treatBoundary(flagField, c[i].collideField, procData, sendBuffer, readBuffer);
     }
@@ -322,7 +361,7 @@ void treatComponentBoundary(t_component *c,int numComp, int const * const flagFi
 
 //TODO: (TKS) Remove flagField if not in use when finished
 //TODO: (DL) Update header with new functions if necessary.
-void treatBoundary(int const * const flagField, double *collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer){
+void treatBoundary(int const*const flagField, double *const collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer){
 
 	// Handle of "real" boundaries:
 	// const int NO_NEIGHBOUR = -2; // equals the MPI_PROC_NULL = -2
@@ -334,6 +373,7 @@ void treatBoundary(int const * const flagField, double *collideField, const t_pr
 	// }
 
 	//TODO: (DL) dirty implemented to find a valid buffer... thing to discuss
+	//TODO: (DL) it may happen that the found buffer is too small! Therefore this needs a fix.
 	double *validSendBuffer = NULL, *validReadBuffer = NULL;
 	for(int i = 0; i < 6; ++i){
 		if(sendBuffer[i] != NULL){
