@@ -317,7 +317,7 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 }
 
 void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wall2, t_procData const*const procData){
-	t_iterPara  iterPara1, iterPara2;
+	t_iterPara  iterPara1 = {0}, iterPara2 = {0}; //default initialization to avoid "may be uninitialized warning" 
 	int index1[5], index2[5];
 
 	p_setBoundaryIterParameters(&iterPara1, procData, wall1);
