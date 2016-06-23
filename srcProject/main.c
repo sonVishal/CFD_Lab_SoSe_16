@@ -13,15 +13,11 @@
 
 
 //TODO: (TKS) Where should these swap functions be placed?
-void swapFields(double *collideField, double* streamField){
-    double* swap = collideField;
-    collideField = streamField;
-    streamField = swap;
-}
-
 void swapComponentFields(t_component *c, int numComp){
     for (int i = 0; i < numComp; ++i) {
-        swapFields(c[i].collideField, c[i].streamField);
+        double* swap = c[i].collideField;
+        c[i].collideField = c[i].streamField;
+        c[i].streamField = swap;
     }
 }
 
@@ -39,7 +35,6 @@ int main(int argc, char *argv[]){
     //TODO: Temporarily initialization of component, REMOVE when implementing multicomponent
     c[0].collideField = collideField;
     c[0].streamField  = streamField;
-
 
     // Simulation parameters
     int xlength = 0;

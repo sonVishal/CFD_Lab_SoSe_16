@@ -147,7 +147,7 @@ void initialiseComponents(t_component *c, int numComp, int *flagField, const t_p
 			for (outerIt = 0; outerIt <= endOuter; outerIt++) {
 				for (innerIt = 0; innerIt <= endInner; innerIt++) {
 					idx = p_computeCellOffset(outerIt,innerIt,fixedValue,thisProcData->xLength,wallIdx);
-					flagField[idx] = PERIODIC_BOUNDARY;
+					flagField[idx] = NO_SLIP;
 				}
 			}
 		}
@@ -159,7 +159,7 @@ void initialiseComponents(t_component *c, int numComp, int *flagField, const t_p
 		for (outerIt = 0; outerIt <= endOuter; outerIt++) {
 			for (innerIt = 0; innerIt <= endInner; innerIt++) {
 				idx = p_computeCellOffset(outerIt,innerIt,fixedValue,thisProcData->xLength, TOP);
-				flagField[idx] = PERIODIC_BOUNDARY;
+				flagField[idx] = MOVING_WALL;
 			}
 		}
 	}
