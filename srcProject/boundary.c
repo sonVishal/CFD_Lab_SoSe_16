@@ -350,8 +350,7 @@ void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wa
 	}
 }
 
-void treatPeriodicEdgeNoComm(double *collideField, double *const sendBuffer, double *const readBuffer,
-	const t_procData * const procData, const int edge1, const int edge2){
+void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const procData, const int edge1, const int edge2){
 
 	int endIndex;
 	t_iterParaEdge iterParaEdgeIn1, iterParaEdgeOut1, iterParaEdgeIn2, iterParaEdgeOut2;
@@ -450,7 +449,7 @@ void treatBoundary(int const*const flagField, double *const collideField, const 
 
 		if(firstNeighbour != MPI_PROC_NULL && secondNeighbour != MPI_PROC_NULL){
 			//Case when there is only one proc, then no communication is required
-			treatPeriodicWallNoComm(); //TODO: (DL) implement
+			treatPeriodicWallNoComm(collideField, wall, wall+1, procData);
 		}
 		else{
 			if(firstNeighbour != MPI_PROC_NULL){
@@ -475,7 +474,7 @@ void treatBoundary(int const*const flagField, double *const collideField, const 
 
 		if(firstNeighbour != MPI_PROC_NULL && secondNeighbour != MPI_PROC_NULL){
 			//Case when there is only one proc, then no communication is required
-			treatPeriodicEdgeNoComm(); //TODO: (DL) implement
+			treatPeriodicEdgeNoComm(collideField, procData, edge1[idx], edge2[idx]);
 		}else{
 			if(firstNeighbour != MPI_PROC_NULL){
 				treatPeriodicEdge(collideField, validSendBuffer, validReadBuffer,
