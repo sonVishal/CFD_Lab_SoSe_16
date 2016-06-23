@@ -232,12 +232,9 @@ void p_setEdgeIterParameters(t_iterParaEdge *const iterPara, t_procData const*co
 	// }else{
 	// 	printf("(INJECT) RANK: %i, x=%i, y=%i, z=%i, edge=%i \n", procData->rank, iterPara->x, iterPara->y, iterPara->z, edge);
 	// }
-
-
 }
 
 int p_assignSharedEdgeIndex(const int edge) {
-
 	//Look for edges numbering in LBDefinitions.h
 	// edge 0: (0,-1,-1) 	-> [0]
 	// edge 1: (1,0,-1) 	-> [3]
@@ -258,7 +255,6 @@ int p_assignSharedEdgeIndex(const int edge) {
 							  14,17,18,15};
 	return indices[edge];
 }
-
 
 void treatPeriodicWall(double *const collideField, double *const sendBuffer, double *const readBuffer,
 	const t_procData * const procData, const int procWall, const int opponentWall){
@@ -299,7 +295,6 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 	indexInEdge =  p_assignSharedEdgeIndex(opponentEdge);
 
 	//printf("RANK: %i: indexOutEdge = %i, indexInEdge = %i \n", procData->rank, procEdge, opponentEdge);
-
 	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, EXTRACT);
 
 	//using buffers from parallel boundaries
@@ -317,7 +312,7 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 }
 
 void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wall2, t_procData const*const procData){
-	t_iterPara  iterPara1 = {0}, iterPara2 = {0}; //default initialization to avoid "may be uninitialized warning" 
+	t_iterPara  iterPara1 = {0}, iterPara2 = {0}; //default initialization to avoid "may be uninitialized" warning (=error)
 	int index1[5], index2[5];
 
 	p_setBoundaryIterParameters(&iterPara1, procData, wall1);
@@ -353,8 +348,11 @@ void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wa
 
 			//Do copy operations:
 			for (int i = 0; i < 5; i++) {
-				collideField[currentIndexFieldOut1+index2[i]] = collideField[currentIndexFieldIn2+index1[i]];
-				collideField[currentIndexFieldOut2+index1[i]] = collideField[currentIndexFieldIn1+index2[i]];
+				// collideField[currentIndexFieldOut1+index2[i]] = collideField[currentIndexFieldIn2+index1[i]];
+				// collideField[currentIndexFieldOut2+index1[i]] = collideField[currentIndexFieldIn1+index2[i]];
+				collideField[currentIndexFieldOut1+index1[i]] = collideField[currentIndexFieldIn2+index1[i]];
+				collideField[currentIndexFieldOut2+index2[i]] = collideField[currentIndexFieldIn1+index2[i]];
+
 			}
 		}
 	}
