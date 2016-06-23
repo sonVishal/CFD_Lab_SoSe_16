@@ -146,15 +146,16 @@ int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEd
 		else
 			buffer[currentIndexBuff++] = collideField[currentIndexField+index];
 	}
-	return currentIndexBuff-1; //Will be used as bufferSize
+
+	return currentIndexBuff; //Will be used as bufferSize
 }
 
 
 void p_setBoundaryIterParameters(t_iterPara *const iterPara, t_procData const*const procData, const int direction){
 
 	switch(direction/2){ //integer division to get the type of face (see enum in LBDefinitions.h)
-	iterPara->startOuter = 1;
-	iterPara->startInner = 1;
+		iterPara->startOuter = 1;
+		iterPara->startInner = 1;
 
 	//---------------------------------------------
 	//outer = Z, inner = X, Y fixed
@@ -289,6 +290,8 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 
 	indexOutEdge = p_assignSharedEdgeIndex(procEdge);
 	indexInEdge =  p_assignSharedEdgeIndex(opponentEdge);
+
+	printf("RANK: %i: indexOutEdge = %i, indexInEdge = %i \n", procData->rank, procEdge, opponentEdge);
 
 	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, EXTRACT); //0 = extract
 
