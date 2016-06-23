@@ -13,21 +13,21 @@
 // t            - Time at which output is to be stored
 // xlength      - Number of cells in one direction
 
-void writeVtsOutput(const t_component * const c, int numComp,
+void writeVtsOutput(const t_component * const c, const int numComp,
     const int * const flagField, const char * filename, unsigned int t,
-    int xlen, t_procData procData, int *procsPerAxis)
+    int xlen, const t_procData * const procData, const int * const procsPerAxis)
 {
     // Files related variables
     char pFileName[80];
     FILE *fp = NULL;
 
     // Create the file with time information in the name
-    sprintf(pFileName, "%s.%i.%i.vts", filename,procData.rank,t);
+    sprintf(pFileName, "%s.%i.%i.vts", filename,procData->rank,t);
     fp  = fopen(pFileName, "w");
 
     int myPos[3] = {0,0,0};
-    // printf("Rank %d\n",procData.rank);
-    p_rankToPos(procsPerAxis, procData.rank, myPos);
+    // printf("Rank %d\n",procData->rank);
+    p_rankToPos(procsPerAxis, procData->rank, myPos);
 
     // Check if files were opened or not
     if(fp == NULL)
@@ -41,7 +41,7 @@ void writeVtsOutput(const t_component * const c, int numComp,
     fprintf(fp,"<VTKFile type=\"StructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" header_type=\"UInt32\">\n");
 
     // Write the point data for the domain
-    writevtsPointCoordinates(fp,xlen,procData.xLength,myPos,procsPerAxis);
+    writevtsPointCoordinates(fp,xlen,procData->xLength,myPos,procsPerAxis);
 
     fprintf(fp,"<CellData>\n");
 
@@ -56,17 +56,17 @@ void writeVtsOutput(const t_component * const c, int numComp,
         double cellVelocity[3] = {0.0,0.0,0.0};
 
         // Temporary variables for (xlength+2)^2
-        int const xylen = (procData.xLength[0]+2)*(procData.xLength[1]+2);
+        int const xylen = (procData->xLength[0]+2)*(procData->xLength[1]+2);
 
         // Temporary variables for z and y offsets
         int zOffset, yzOffset;
 
         // Write cell average velcity the file
-        for(z = 1; z <= procData.xLength[2]; z++) {
+        for(z = 1; z <= procData->xLength[2]; z++) {
             zOffset = z*xylen;
-            for(y = 1; y <= procData.xLength[1]; y++) {
-                yzOffset = zOffset + y*(procData.xLength[0]+2);
-                for(x = 1; x <= procData.xLength[0]; x++) {
+            for(y = 1; y <= procData->xLength[1]; y++) {
+                yzOffset = zOffset + y*(procData->xLength[0]+2);
+                for(x = 1; x <= procData->xLength[0]; x++) {
                     // Compute the base index for collideField
                     idx = Q*(yzOffset + x);
 
@@ -82,11 +82,11 @@ void writeVtsOutput(const t_component * const c, int numComp,
         fprintf(fp,"</DataArray>\n");
         fprintf(fp,"<DataArray type=\"Float32\" NumberOfComponents=\"1\" Name=\"Density_C%d\">\n",i);
         // Write cell average denisties the file
-        for(z = 1; z <= procData.xLength[2]; z++) {
+        for(z = 1; z <= procData->xLength[2]; z++) {
             zOffset = z*xylen;
-            for(y = 1; y <= procData.xLength[1]; y++) {
-                yzOffset = zOffset + y*(procData.xLength[0]+2);
-                for(x = 1; x <= procData.xLength[0]; x++) {
+            for(y = 1; y <= procData->xLength[1]; y++) {
+                yzOffset = zOffset + y*(procData->xLength[0]+2);
+                for(x = 1; x <= procData->xLength[0]; x++) {
                     // Compute the base index for collideField
                     idx = Q*(yzOffset + x);
 
@@ -112,7 +112,8 @@ void writeVtsOutput(const t_component * const c, int numComp,
     }
 }
 
-void writevtsPointCoordinates(FILE *fp, int xlen, int *xlength, int *myPos, int *procsPerAxis) {
+void writevtsPointCoordinates(FILE * fp, const int xlen, const int * const xlength,
+    const int * const myPos, const int * const procsPerAxis) {
     int x, y, z;
     int baseLength[3] = {xlen/procsPerAxis[0], xlen/procsPerAxis[1], xlen/procsPerAxis[2]};
     // If the proc is at the end of some axis then add the remaining length
@@ -142,7 +143,8 @@ void writevtsPointCoordinates(FILE *fp, int xlen, int *xlength, int *myPos, int 
     fprintf(fp,"</Points>\n");
 }
 
-void p_writeCombinedPVTSFile(const int numComp, const char * filename, unsigned int t, int xlen, int *procsPerAxis) {
+void p_writeCombinedPVTSFile(const int numComp, const char * const filename,
+    const unsigned int t, const int xlen, const int * const procsPerAxis) {
     // Files related variables
     char pFileName[80];
     FILE *fp = NULL;
