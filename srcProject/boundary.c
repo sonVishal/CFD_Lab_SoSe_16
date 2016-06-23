@@ -414,8 +414,8 @@ void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const proc
 		currentIndexFieldIn1 = Q*cellOffsetIn1;  currentIndexFieldOut1 = Q*cellOffsetOut1;
 		currentIndexFieldIn2 = Q*cellOffsetIn2;  currentIndexFieldOut2 = Q*cellOffsetOut2;
 
-		collideField[currentIndexFieldOut1+index2] = collideField[currentIndexFieldIn2+index1];
-		collideField[currentIndexFieldOut2+index1] = collideField[currentIndexFieldIn1+index2];
+		collideField[currentIndexFieldOut1+index1] = collideField[currentIndexFieldIn2+index1];
+		collideField[currentIndexFieldOut2+index2] = collideField[currentIndexFieldIn1+index2];
 	}
 }
 
