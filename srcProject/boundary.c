@@ -106,6 +106,8 @@
 // }
 
 #define VARIABLE -1 //symbol that is used in context of indices. It indicates which index is variable.
+#define EXTRACT 1
+#define INJECT 0
 
 int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEdge const * const iterPara,
 		t_procData const * const procData, const int index, const int injectFlag){
@@ -288,10 +290,10 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 	indexOutEdge = p_assignSharedEdgeIndex(procEdge);
 	indexInEdge =  p_assignSharedEdgeIndex(opponentEdge);
 
-	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, 0); //0 = extract
+	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, EXTRACT); //0 = extract
 
 	//using buffers from parallel boundaries
-	bufferSize = extractInjectEdge(sendBuffer, collideField, &iterParaEdge, procData, indexOutEdge, 0);
+	bufferSize = extractInjectEdge(sendBuffer, collideField, &iterParaEdge, procData, indexOutEdge, EXTRACT);
 
 	commRank = procData->periodicEdgeNeighbours[procEdge]; //communication rank
 	assert(commRank >= 0);
@@ -300,8 +302,8 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 	MPI_Sendrecv(sendBuffer, bufferSize, MPI_DOUBLE, commRank, 2, readBuffer,
 			bufferSize, MPI_DOUBLE, commRank, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, 1); //1 = inject
-	extractInjectEdge(readBuffer, collideField, &iterParaEdge, procData, indexInEdge, 1);
+	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, INJECT); //1 = inject
+	extractInjectEdge(readBuffer, collideField, &iterParaEdge, procData, indexInEdge, INJECT);
 }
 
 void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wall2, t_procData const*const procData){
@@ -345,13 +347,70 @@ void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wa
 				collideField[currentIndexFieldOut2+index1[i]] = collideField[currentIndexFieldIn1+index2[i]];
 			}
 		}
-
+	}
 }
 
-void treatPeriodicEdgeNoComm(){
-	ERROR("implement");
-}
+void treatPeriodicEdgeNoComm(double *collideField, double *const sendBuffer, double *const readBuffer,
+	const t_procData * const procData, const int edge1, const int edge2){
 
+	int endIndex;
+	t_iterParaEdge iterParaEdgeIn1, iterParaEdgeOut1, iterParaEdgeIn2, iterParaEdgeOut2;
+	int index1, index2;
+
+	index1 = p_assignSharedEdgeIndex(edge1);
+	index2 =  p_assignSharedEdgeIndex(edge2);
+	assert(index1 == Q-index2-1);
+
+	//fixed values change, iterParameters have to have the same value set to VARIABLE
+	p_setEdgeIterParameters(&iterParaEdgeIn1, procData, edge1, INJECT);
+	p_setEdgeIterParameters(&iterParaEdgeOut1, procData, edge1, EXTRACT);
+
+	p_setEdgeIterParameters(&iterParaEdgeIn2, procData, edge2, INJECT);
+	p_setEdgeIterParameters(&iterParaEdgeOut2, procData, edge2, EXTRACT);
+
+	//Note: the corners of shared edges do not have to be treated
+	//(in D3Q19 there are no distributions into the corners)
+	if(iterParaEdgeIn1.x == VARIABLE){
+		assert(iterParaEdgeOut1.x == VARIABLE && iterParaEdgeIn2.x == VARIABLE && iterParaEdgeOut2.x == VARIABLE);
+		endIndex = procData->xLength[0];
+	}else if(iterParaEdgeIn1.y == VARIABLE){
+		assert(iterParaEdgeOut1.y == VARIABLE && iterParaEdgeIn2.y == VARIABLE && iterParaEdgeOut2.y == VARIABLE);
+		endIndex = procData->xLength[1];
+	}else{
+		assert(iterParaEdgeIn1.z == VARIABLE && iterParaEdgeOut1.z == VARIABLE && iterParaEdgeIn2.z == VARIABLE && iterParaEdgeOut2.z == VARIABLE);
+		endIndex = procData->xLength[2];
+	}
+
+	int cellOffsetIn1, cellOffsetOut1, cellOffsetIn2, cellOffsetOut2;
+	int currentIndexFieldIn1, currentIndexFieldOut1, currentIndexFieldIn2, currentIndexFieldOut2;
+	//z * (xlen*ylen) + y * (xlen) + x
+	for(int varIdx = 1; varIdx <= endIndex; ++varIdx){
+		if(iterParaEdgeIn1.x == VARIABLE){
+			cellOffsetIn1 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn1.z + iterParaEdgeIn1.y) + varIdx;
+			cellOffsetOut1 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeOut1.z + iterParaEdgeOut1.y) + varIdx;
+			cellOffsetIn2 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn2.z + iterParaEdgeIn2.y) + varIdx;
+			cellOffsetOut2 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeOut2.z + iterParaEdgeOut2.y) + varIdx;
+
+		}else if(iterParaEdgeIn1.y == VARIABLE){
+			cellOffsetIn1 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn1.z + varIdx) + iterParaEdgeIn1.x;
+			cellOffsetOut1 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeOut1.z + varIdx) + iterParaEdgeOut1.x;
+			cellOffsetIn2 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn2.z + varIdx) + iterParaEdgeIn2.x;
+			cellOffsetOut2 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeOut2.z + varIdx) + iterParaEdgeOut2.x;
+
+		}else{
+			cellOffsetIn1 = procData->xLength[0] * (procData->xLength[1] * varIdx + iterParaEdgeIn1.y) + iterParaEdgeIn1.x;
+			cellOffsetOut1 = procData->xLength[0] * (procData->xLength[1] * varIdx + iterParaEdgeOut1.y) + iterParaEdgeOut1.x;
+			cellOffsetIn2 = procData->xLength[0] * (procData->xLength[1] * varIdx + iterParaEdgeIn2.y) + iterParaEdgeIn2.x;
+			cellOffsetOut2 = procData->xLength[0] * (procData->xLength[1] * varIdx + iterParaEdgeOut2.y) + iterParaEdgeOut2.x;
+		}
+
+		currentIndexFieldIn1 = Q*cellOffsetIn1;  currentIndexFieldOut1 = Q*cellOffsetOut1;
+		currentIndexFieldIn2 = Q*cellOffsetIn2;  currentIndexFieldOut2 = Q*cellOffsetOut2;
+
+		collideField[currentIndexFieldOut1+index2] = collideField[currentIndexFieldIn2+index1];
+		collideField[currentIndexFieldOut2+index1] = collideField[currentIndexFieldIn1+index2];
+	}
+}
 
 void treatComponentBoundary(t_component *c,int numComp, int const*const flagField, t_procData const*const procData, double **sendBuffer, double **readBuffer){
     for (int i = 0; i < numComp; ++i) {
