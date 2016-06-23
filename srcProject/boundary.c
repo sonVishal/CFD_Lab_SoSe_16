@@ -297,6 +297,10 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 	//printf("RANK: %i: indexOutEdge = %i, indexInEdge = %i \n", procData->rank, procEdge, opponentEdge);
 	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, EXTRACT);
 
+	if(procData->rank == 0){
+		printf("(EXTRACT) procData->rank=%i, procEdge=%i, opponentEdge=%i ",procData->rank, procEdge, opponentEdge);
+		printf("iterParaEdge.x=%i, iterParaEdge.y=%i, iterParaEdge.z=%i \n", iterParaEdge.x, iterParaEdge.y, iterParaEdge.z);
+	}
 	//using buffers from parallel boundaries
 	bufferSize = extractInjectEdge(sendBuffer, collideField, &iterParaEdge, procData, indexOutEdge, EXTRACT);
 
@@ -308,6 +312,11 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 			bufferSize, MPI_DOUBLE, commRank, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
 	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, INJECT);
+
+	if(procData->rank == 0){
+		printf("(INJECT) procData->rank=%i, procEdge=%i, opponentEdge=%i ",procData->rank, procEdge, opponentEdge);
+		printf("iterParaEdge.x=%i, iterParaEdge.y=%i, iterParaEdge.z=%i \n", iterParaEdge.x, iterParaEdge.y, iterParaEdge.z);
+	}
 	extractInjectEdge(readBuffer, collideField, &iterParaEdge, procData, indexInEdge, INJECT);
 }
 
@@ -348,11 +357,8 @@ void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wa
 
 			//Do copy operations:
 			for (int i = 0; i < 5; i++) {
-				// collideField[currentIndexFieldOut1+index2[i]] = collideField[currentIndexFieldIn2+index1[i]];
-				// collideField[currentIndexFieldOut2+index1[i]] = collideField[currentIndexFieldIn1+index2[i]];
 				collideField[currentIndexFieldOut1+index1[i]] = collideField[currentIndexFieldIn2+index1[i]];
 				collideField[currentIndexFieldOut2+index2[i]] = collideField[currentIndexFieldIn1+index2[i]];
-
 			}
 		}
 	}
@@ -365,7 +371,7 @@ void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const proc
 	int index1, index2;
 
 	index1 = p_assignSharedEdgeIndex(edge1);
-	index2 =  p_assignSharedEdgeIndex(edge2);
+	index2 = p_assignSharedEdgeIndex(edge2);
 	assert(index1 == Q-index2-1);
 
 	//fixed values change, iterParameters have to have the same value set to VARIABLE
@@ -438,18 +444,6 @@ void treatBoundary(int const*const flagField, double *const collideField, const 
 	// 	}
 	// }
 
-	//TODO: (DL) dirty implemented to find a valid buffer... thing to discuss
-	//TODO: (DL) it may happen that the found buffer is too small! Therefore this needs a fix.
-	double *validSendBuffer = NULL, *validReadBuffer = NULL;
-	for(int i = 0; i < 6; ++i){
-		if(sendBuffer[i] != NULL){
-			validSendBuffer = sendBuffer[i];
-			validReadBuffer = readBuffer[i];
-			assert(readBuffer[i] != NULL);
-			break;
-		}
-	}
-
 	for(int wall=LEFT; wall<=BACK; wall+=2){ //see LBDefinitions for order of walls
 
 		int firstNeighbour = procData->periodicNeighbours[wall];
@@ -461,12 +455,12 @@ void treatBoundary(int const*const flagField, double *const collideField, const 
 		}
 		else{
 			if(firstNeighbour != MPI_PROC_NULL){
-				treatPeriodicWall(collideField, validSendBuffer, validReadBuffer,
+				treatPeriodicWall(collideField, sendBuffer[wall], readBuffer[wall],
 					procData, wall, wall+1);
 			}
 
 			if(secondNeighbour != MPI_PROC_NULL){
-				treatPeriodicWall(collideField, validSendBuffer, validReadBuffer,
+				treatPeriodicWall(collideField, sendBuffer[wall+1], readBuffer[wall+1],
 					procData, wall+1, wall);
 			}
 		}
@@ -475,10 +469,25 @@ void treatBoundary(int const*const flagField, double *const collideField, const 
 	static const int edge1[6] = {0,1,2,3,4,5};
 	static const int edge2[6] = {10,11,8,9,6,7}; //opposite edge to edge1; see numbering in LBDefinitions.h
 
+	//TODO: (DL) this is not nice, think about alternatives. For now there is guaranteed enough space.
+	double *validSendBuffer, *validReadBuffer;
+
 	for(int idx = 0; idx < 6; ++idx){
 
 		int firstNeighbour = procData->periodicEdgeNeighbours[edge1[idx]];
 		int secondNeighbour = procData->periodicEdgeNeighbours[edge2[idx]];
+
+		if(edge1[idx] == 0 || edge1[idx] == 2 || edge1[idx] == 4 || edge1[idx] == 5){
+			validSendBuffer = sendBuffer[LEFT];
+			validReadBuffer = readBuffer[LEFT];
+		}else if(edge1[idx] == 1 || edge1[idx] == 3){
+			validSendBuffer = sendBuffer[TOP];
+			validReadBuffer = readBuffer[TOP];
+		}else{
+			validReadBuffer = NULL;
+			validSendBuffer = NULL;
+			ERROR("");
+		}
 
 		if(firstNeighbour != MPI_PROC_NULL && secondNeighbour != MPI_PROC_NULL){
 			//Case when there is only one proc, then no communication is required
