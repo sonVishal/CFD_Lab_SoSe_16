@@ -358,11 +358,11 @@ void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wa
 		//j - corresponds to the 'inner' value
 		for(int j = iterPara1.startInner; j <= iterPara1.endInner; ++j){
 
-			currentIndexFieldIn1 = Q*p_computeCellOffset(k, j, iterPara1.fixedValue, procData->xLength, wall1);
-			currentIndexFieldOut1 = Q*p_computeCellOffset(k, j, iterPara1.fixedValue+shiftFixedValue[wall1], procData->xLength, wall1);
+			currentIndexFieldIn1 = Q*p_computeCellOffset(k, j, iterPara1.fixedValue+shiftFixedValue[wall1], procData->xLength, wall1);
+			currentIndexFieldOut1 = Q*p_computeCellOffset(k, j, iterPara1.fixedValue, procData->xLength, wall1);
 
-			currentIndexFieldIn2 = Q*p_computeCellOffset(k, j, iterPara2.fixedValue, procData->xLength, wall2);
-			currentIndexFieldOut2 = Q*p_computeCellOffset(k, j, iterPara2.fixedValue+shiftFixedValue[wall2], procData->xLength, wall2);
+			currentIndexFieldIn2 = Q*p_computeCellOffset(k, j, iterPara2.fixedValue+shiftFixedValue[wall2], procData->xLength, wall2);
+			currentIndexFieldOut2 = Q*p_computeCellOffset(k, j, iterPara2.fixedValue, procData->xLength, wall2);
 
 			// Out of bounds check (only 'out' values at the moment)
 			assert(currentIndexFieldOut1 < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
@@ -372,8 +372,8 @@ void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wa
 
 			//Do copy operations:
 			for (int i = 0; i < 5; i++) {
-				collideField[currentIndexFieldOut1+index1[i]] = collideField[currentIndexFieldIn2+index1[i]];
-				collideField[currentIndexFieldOut2+index2[i]] = collideField[currentIndexFieldIn1+index2[i]];
+				collideField[currentIndexFieldIn1+index1[i]] = collideField[currentIndexFieldOut2+index1[i]];
+				collideField[currentIndexFieldIn2+index2[i]] = collideField[currentIndexFieldOut1+index2[i]];
 			}
 		}
 	}
@@ -439,8 +439,8 @@ void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const proc
 		currentIndexFieldIn1 = Q*cellOffsetIn1;  currentIndexFieldOut1 = Q*cellOffsetOut1;
 		currentIndexFieldIn2 = Q*cellOffsetIn2;  currentIndexFieldOut2 = Q*cellOffsetOut2;
 
-		collideField[currentIndexFieldOut1+index1] = collideField[currentIndexFieldIn2+index1];
-		collideField[currentIndexFieldOut2+index2] = collideField[currentIndexFieldIn1+index2];
+		collideField[currentIndexFieldIn1+index1] = collideField[currentIndexFieldOut2+index1];
+		collideField[currentIndexFieldIn2+index2] = collideField[currentIndexFieldOut1+index2];
 	}
 }
 
