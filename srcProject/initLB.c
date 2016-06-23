@@ -79,7 +79,7 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *procsPe
   return 0;
 }
 
-void initialiseFields(double *collideField, double *streamField, int *flagField, const t_procData * const thisProcData){
+void initialiseFields(double *collideField, double *streamField, const t_procData * const thisProcData){
 
     /*Setting initial distributions*/
     //f_i(x,0) = f^eq(1,0,0) = w_i
@@ -109,18 +109,29 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
             }
         }
     }
+}
 
-    /*Looping over boundary of flagFields*/
+void initialiseComponents(t_component *c, int numComp, int *flagField, const t_procData * const thisProcData) {
+
+	// Initialize the collide and stream fields for each component
+	for (int i = 0; i < numComp; i++) {
+		initialiseFields(c[i].collideField, c[i].streamField, thisProcData);
+	}
+
+	// Flag field is component independent
+
+	/*Looping over boundary of flagFields*/
     //All points set to zero at memory allocation (using calloc)
-	int endOuter, endInner, fixedValue, wallIdx;
+	int innerIt,outerIt;	// Iteration variables
+	int endOuter, endInner, fixedValue, wallIdx, idx;
 
 	// First set up the parallel boundary layer
 	for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
 		if (thisProcData->neighbours[wallIdx] != MPI_PROC_NULL) {
 			p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, wallIdx);
-			for (z = 0; z <= endOuter; z++) {
-				for (y = 0; y <= endInner; y++) {
-					idx = p_computeCellOffset(z,y,fixedValue,thisProcData->xLength,wallIdx);
+			for (outerIt = 0; outerIt <= endOuter; outerIt++) {
+				for (innerIt = 0; innerIt <= endInner; innerIt++) {
+					idx = p_computeCellOffset(outerIt,innerIt,fixedValue,thisProcData->xLength,wallIdx);
 					flagField[idx] = PARALLEL_BOUNDARY;
 				}
 			}
@@ -133,10 +144,10 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 	for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
 		if (thisProcData->neighbours[wallIdx] == MPI_PROC_NULL && wallIdx != TOP) {
 			p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, wallIdx);
-			for (z = 0; z <= endOuter; z++) {
-				for (y = 0; y <= endInner; y++) {
-					idx = p_computeCellOffset(z,y,fixedValue,thisProcData->xLength,wallIdx);
-					flagField[idx] = PERIODIC_BOUNDARY;
+			for (outerIt = 0; outerIt <= endOuter; outerIt++) {
+				for (innerIt = 0; innerIt <= endInner; innerIt++) {
+					idx = p_computeCellOffset(outerIt,innerIt,fixedValue,thisProcData->xLength,wallIdx);
+					flagField[idx] = NO_SLIP;
 				}
 			}
 		}
@@ -145,10 +156,10 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 	// Now set up the ghost boundary layer with moving wall - if it's at the TOP ghost layer
 	if (thisProcData->neighbours[TOP] == MPI_PROC_NULL) {
 		p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, TOP);
-		for (z = 0; z <= endOuter; z++) {
-			for (y = 0; y <= endInner; y++) {
-				idx = p_computeCellOffset(z,y,fixedValue,thisProcData->xLength, TOP);
-				flagField[idx] = PERIODIC_BOUNDARY;
+		for (outerIt = 0; outerIt <= endOuter; outerIt++) {
+			for (innerIt = 0; innerIt <= endInner; innerIt++) {
+				idx = p_computeCellOffset(outerIt,innerIt,fixedValue,thisProcData->xLength, TOP);
+				flagField[idx] = MOVING_WALL;
 			}
 		}
 	}

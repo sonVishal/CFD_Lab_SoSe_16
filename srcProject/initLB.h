@@ -18,6 +18,9 @@ int readParameters(
 
 
 /* initialises the particle distribution functions and the flagfield */
-void initialiseFields(double *collideField, double *streamField, int *flagField, const t_procData * const thisProcData);
+void initialiseFields(double *collideField, double *streamField, const t_procData * const thisProcData);
+
+/* Initialize the fields for all the components */
+void initialiseComponents(t_component *c, int numComp, int *flagField, const t_procData * const thisProcData);
 
 #endif

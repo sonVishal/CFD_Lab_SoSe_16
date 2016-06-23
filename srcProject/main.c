@@ -126,7 +126,7 @@ int main(int argc, char *argv[]){
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     // Initialise the fields
-    initialiseFields(c[0].collideField, c[0].streamField, flagField, &procData);
+    initialiseComponents(c, g_numComp, flagField, &procData);
 
     // Allocate memory to send and read buffers
     initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.neighbours, procData.bufferSize);

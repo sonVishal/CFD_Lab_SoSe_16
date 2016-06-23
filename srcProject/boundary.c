@@ -314,14 +314,6 @@ void treatPeriodicEdgeNoComm(){
 
 
 void treatComponentBoundary(t_component *c,int numComp, int const * const flagField, const t_procData * const procData, double **sendBuffer, double **readBuffer){
-    for (int i = 0; i < numComp; ++i) {
-        treatBoundary(flagField, c[i].collideField, procData, sendBuffer, readBuffer);
-    }
-}
-
-//TODO: (TKS) Remove flagField if not in use when finished
-//TODO: (DL) Update header with new functions if necessary.
-void treatBoundary(int const * const flagField, double *collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer){
 
 	// Handle of "real" boundaries:
 	// const int NO_NEIGHBOUR = -2; // equals the MPI_PROC_NULL = -2
@@ -331,6 +323,15 @@ void treatBoundary(int const * const flagField, double *collideField, const t_pr
 	// 		p_treatSingleWall(c->collideField, flagField, procData, wall);
 	// 	}
 	// }
+
+    for (int i = 0; i < numComp; ++i) {
+        treatBoundary(flagField, c[i].collideField, procData, sendBuffer, readBuffer);
+    }
+}
+
+//TODO: (TKS) Remove flagField if not in use when finished
+//TODO: (DL) Update header with new functions if necessary.
+void treatBoundary(int const * const flagField, double *collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer){
 
 	//TODO: (DL) dirty implemented to find a valid buffer... thing to discuss
 	double *validSendBuffer = NULL, *validReadBuffer = NULL;
