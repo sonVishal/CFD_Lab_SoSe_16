@@ -8,6 +8,7 @@
 #include "LBDefinitions.h"
 #include "helper.h"
 #include "parallel.h"
+#include "unitTest.h"
 #include <stdio.h>
 #include <mpi/mpi.h>
 
@@ -120,6 +121,18 @@ int main(int argc, char *argv[]){
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
+#ifdef UNITTEST
+    double *massBefore[g_numComp];
+    double *massAfter[g_numComp];
+    double momentumBefore[3];
+    double momentumAfter[3];
+
+    for (int i = 0; i < g_numComp; i++) {
+        massBefore[i] = (double *)  malloc(totalsize * sizeof( double ));
+        massAfter[i] = (double *)  malloc(totalsize * sizeof( double ));
+    }
+#endif
+
     // Initialise the fields for all components
     initialiseComponents(c, g_numComp, flagField, &procData);
 
@@ -131,7 +144,7 @@ int main(int argc, char *argv[]){
         printf("\nINFO: Storing cell data in VTS files.\n      Please use the"
         " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
 
-    // Write the VTK at t = 0
+    // // Write the VTK at t = 0
     printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
     writeVtsOutput(c, g_numComp, flagField, fName, t, xlength, &procData, procsPerAxis);
 
@@ -154,8 +167,23 @@ int main(int argc, char *argv[]){
         // Swap the local fields for each component
         swapComponentFields(c, g_numComp);
 
+#ifdef UNITTEST
+        storeMassVector(c, g_numComp, massBefore, procData.xLength);
+        computeGlobalMomentum(c, g_numComp, procData.xLength, momentumBefore);
+#endif
+
         // Perform local collision
 	    doCollision(c, procData.xLength);
+
+#ifdef UNITTEST
+        storeMassVector(c, g_numComp, massAfter, procData.xLength);
+        computeGlobalMomentum(c, g_numComp, procData.xLength, momentumAfter);
+
+        checkMassVector(massBefore, massAfter, procData.xLength, g_numComp, procData.rank);
+        if (procData.rank == 0) {
+            checkMomentum(momentumBefore, momentumAfter, g_numComp);
+        }
+#endif
 
         // Treat local boundaries for each component
 	    treatComponentBoundary(c, g_numComp, flagField, &procData, sendBuffer, readBuffer);
@@ -195,6 +223,13 @@ int main(int argc, char *argv[]){
     free(c[0].streamField);
     free(c[0].collideField);
     free(flagField);
+
+#ifdef UNITTEST
+    for (int i = 0; i < g_numComp; i++) {
+        free(massBefore[i]);
+        free(massAfter[i]);
+    }
+#endif
 
     for (int i = LEFT; i <= BACK; i++) {
     	//set to NULL in initializeBuffers if buffer is not allocated (due to non existing neighbour)
