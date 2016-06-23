@@ -48,7 +48,7 @@ zvelocity         0
 timesteps            2
 
 # timesteps between each plot
-timestepsPerPlotting 20
+timestepsPerPlotting 1
 
 # Domain decomposition
 # Number of processes per axis
