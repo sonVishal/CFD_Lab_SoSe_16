@@ -260,10 +260,11 @@ void treatPeriodicWall(double *const collideField, double *const sendBuffer, dou
 	const t_procData * const procData, const int procWall, const int opponentWall){
 
 	t_iterPara  iterPara;
-	int 		indexIn[5], indexOut[5], bufferSize, commRank;
+	// int indexIn[5];
+	int 		indexOut[5], bufferSize, commRank;
 
 	p_assignIndices(procWall,     indexOut);
-	p_assignIndices(opponentWall, indexIn);
+	// p_assignIndices(opponentWall, indexIn);
 
 	p_setBoundaryIterParameters(&iterPara, procData, procWall);
 
@@ -281,7 +282,7 @@ void treatPeriodicWall(double *const collideField, double *const sendBuffer, dou
 	MPI_Sendrecv(sendBuffer, bufferSize, MPI_DOUBLE, commRank, 1, readBuffer,
 		bufferSize, MPI_DOUBLE, commRank, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-	inject(readBuffer, collideField, &iterPara, procData, procWall, indexIn);
+	inject(readBuffer, collideField, &iterPara, procData, procWall, indexOut);
 }
 
 void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *const readBuffer,
@@ -289,10 +290,11 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 
 	t_iterParaEdge iterParaEdge;
 	//Note: in edge case only one index has to be copied
-	int indexOutEdge, indexInEdge, bufferSize, commRank;
+	// int indexInEdge;
+	int indexOutEdge, bufferSize, commRank;
 
 	indexOutEdge = p_assignSharedEdgeIndex(procEdge);
-	indexInEdge =  p_assignSharedEdgeIndex(opponentEdge);
+	// indexInEdge =  p_assignSharedEdgeIndex(opponentEdge);
 
 	//printf("RANK: %i: indexOutEdge = %i, indexInEdge = %i \n", procData->rank, procEdge, opponentEdge);
 	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, EXTRACT);
@@ -308,7 +310,7 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 			bufferSize, MPI_DOUBLE, commRank, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
 	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, INJECT);
-	extractInjectEdge(readBuffer, collideField, &iterParaEdge, procData, indexInEdge, INJECT);
+	extractInjectEdge(readBuffer, collideField, &iterParaEdge, procData, indexOutEdge, INJECT);
 }
 
 void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wall2, t_procData const*const procData){
