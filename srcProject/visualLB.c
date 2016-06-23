@@ -13,9 +13,9 @@
 // t            - Time at which output is to be stored
 // xlength      - Number of cells in one direction
 
-void writeVtsOutput(const double * const collideField,
-    const int * const flagField, const char * filename,
-    unsigned int t, int xlen, t_procData procData, int *procsPerAxis)
+void writeVtsOutput(const t_component * const c, int numComp,
+    const int * const flagField, const char * filename, unsigned int t,
+    int xlen, t_procData procData, int *procsPerAxis)
 {
     // Files related variables
     char pFileName[80];
@@ -44,57 +44,61 @@ void writeVtsOutput(const double * const collideField,
     writevtsPointCoordinates(fp,xlen,procData.xLength,myPos,procsPerAxis);
 
     fprintf(fp,"<CellData>\n");
-    fprintf(fp,"<DataArray type=\"Float32\" NumberOfComponents=\"3\" Name=\"Velocity\">\n");
 
-    int x, y, z;            // iteration variables
-    int idx;                // cell index
-    double cellDensity;     // cell density
+    for (int i = 0; i < numComp; i++) {
+        fprintf(fp,"<DataArray type=\"Float32\" NumberOfComponents=\"3\" Name=\"Velocity_C%d\">\n",i);
 
-    // cell average velocity
-    double cellVelocity[3] = {0.0,0.0,0.0};
+        int x, y, z;            // iteration variables
+        int idx;                // cell index
+        double cellDensity;     // cell density
 
-    // Temporary variables for (xlength+2)^2
-    int const xylen = (procData.xLength[0]+2)*(procData.xLength[1]+2);
+        // cell average velocity
+        double cellVelocity[3] = {0.0,0.0,0.0};
 
-    // Temporary variables for z and y offsets
-    int zOffset, yzOffset;
+        // Temporary variables for (xlength+2)^2
+        int const xylen = (procData.xLength[0]+2)*(procData.xLength[1]+2);
 
-    // Write cell average velcity the file
-    for(z = 1; z <= procData.xLength[2]; z++) {
-        zOffset = z*xylen;
-        for(y = 1; y <= procData.xLength[1]; y++) {
-            yzOffset = zOffset + y*(procData.xLength[0]+2);
-            for(x = 1; x <= procData.xLength[0]; x++) {
-                // Compute the base index for collideField
-                idx = Q*(yzOffset + x);
+        // Temporary variables for z and y offsets
+        int zOffset, yzOffset;
 
-                computeDensity(&collideField[idx], &cellDensity);
-                computeVelocity(&collideField[idx], cellDensity, &cellVelocity[0]);
+        // Write cell average velcity the file
+        for(z = 1; z <= procData.xLength[2]; z++) {
+            zOffset = z*xylen;
+            for(y = 1; y <= procData.xLength[1]; y++) {
+                yzOffset = zOffset + y*(procData.xLength[0]+2);
+                for(x = 1; x <= procData.xLength[0]; x++) {
+                    // Compute the base index for collideField
+                    idx = Q*(yzOffset + x);
 
-                // Write cell average velocities
-                fprintf(fp, "%f %f %f\n", cellVelocity[0],
-                cellVelocity[1], cellVelocity[2]);
+                    computeDensity(&c[i].collideField[idx], &cellDensity);
+                    computeVelocity(&c[i].collideField[idx], cellDensity, &cellVelocity[0]);
+
+                    // Write cell average velocities
+                    fprintf(fp, "%f %f %f\n", cellVelocity[0],
+                    cellVelocity[1], cellVelocity[2]);
+                }
             }
         }
-    }
-    fprintf(fp,"</DataArray>\n");
-    fprintf(fp,"<DataArray type=\"Float32\" NumberOfComponents=\"1\" Name=\"Density\">\n");
-    // Write cell average denisties the file
-    for(z = 1; z <= procData.xLength[2]; z++) {
-        zOffset = z*xylen;
-        for(y = 1; y <= procData.xLength[1]; y++) {
-            yzOffset = zOffset + y*(procData.xLength[0]+2);
-            for(x = 1; x <= procData.xLength[0]; x++) {
-                // Compute the base index for collideField
-                idx = Q*(yzOffset + x);
+        fprintf(fp,"</DataArray>\n");
+        fprintf(fp,"<DataArray type=\"Float32\" NumberOfComponents=\"1\" Name=\"Density_C%d\">\n",i);
+        // Write cell average denisties the file
+        for(z = 1; z <= procData.xLength[2]; z++) {
+            zOffset = z*xylen;
+            for(y = 1; y <= procData.xLength[1]; y++) {
+                yzOffset = zOffset + y*(procData.xLength[0]+2);
+                for(x = 1; x <= procData.xLength[0]; x++) {
+                    // Compute the base index for collideField
+                    idx = Q*(yzOffset + x);
 
-                computeDensity(&collideField[idx], &cellDensity);
-                // Write cell average velocities
-                fprintf(fp, "%f\n", cellDensity);
+                    computeDensity(&c[i].collideField[idx], &cellDensity);
+                    // Write cell average velocities
+                    fprintf(fp, "%f\n", cellDensity);
+                }
             }
         }
+        fprintf(fp,"</DataArray>\n");
     }
-    fprintf(fp,"</DataArray>\n");
+
     fprintf(fp,"</CellData>\n");
     fprintf(fp,"</Piece>\n");
     fprintf(fp,"</StructuredGrid>\n");
