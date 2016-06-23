@@ -106,8 +106,8 @@
 // }
 
 #define VARIABLE -1 //symbol that is used in context of indices. It indicates which index is variable.
-#define EXTRACT 1
-#define INJECT 0
+#define EXTRACT 0
+#define INJECT 1
 
 int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEdge const * const iterPara,
 		t_procData const * const procData, const int index, const int injectFlag){
@@ -146,10 +146,8 @@ int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEd
 		else
 			buffer[currentIndexBuff++] = collideField[currentIndexField+index];
 	}
-
 	return currentIndexBuff; //Will be used as bufferSize
 }
-
 
 void p_setBoundaryIterParameters(t_iterPara *const iterPara, t_procData const*const procData, const int direction){
 
@@ -227,6 +225,15 @@ void p_setEdgeIterParameters(t_iterParaEdge *const iterPara, t_procData const*co
 		assert(edge>=0 && edge<=11);
 	}
 	assert(((iterPara->x < 0) + (iterPara->y < 0) + (iterPara->z < 0)) == 1); //only one is VARIABLE
+
+	//TODO: (DL) delete when finalizing
+	// if(injectFlag == EXTRACT){
+	// 	printf("(EXTRACT) RANK: %i, x=%i, y=%i, z=%i, edge=%i \n", procData->rank, iterPara->x, iterPara->y, iterPara->z, edge);
+	// }else{
+	// 	printf("(INJECT) RANK: %i, x=%i, y=%i, z=%i, edge=%i \n", procData->rank, iterPara->x, iterPara->y, iterPara->z, edge);
+	// }
+
+
 }
 
 int p_assignSharedEdgeIndex(const int edge) {
@@ -291,9 +298,9 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 	indexOutEdge = p_assignSharedEdgeIndex(procEdge);
 	indexInEdge =  p_assignSharedEdgeIndex(opponentEdge);
 
-	printf("RANK: %i: indexOutEdge = %i, indexInEdge = %i \n", procData->rank, procEdge, opponentEdge);
+	//printf("RANK: %i: indexOutEdge = %i, indexInEdge = %i \n", procData->rank, procEdge, opponentEdge);
 
-	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, EXTRACT); //0 = extract
+	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, EXTRACT);
 
 	//using buffers from parallel boundaries
 	bufferSize = extractInjectEdge(sendBuffer, collideField, &iterParaEdge, procData, indexOutEdge, EXTRACT);
@@ -305,7 +312,7 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 	MPI_Sendrecv(sendBuffer, bufferSize, MPI_DOUBLE, commRank, 2, readBuffer,
 			bufferSize, MPI_DOUBLE, commRank, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, INJECT); //1 = inject
+	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, INJECT);
 	extractInjectEdge(readBuffer, collideField, &iterParaEdge, procData, indexInEdge, INJECT);
 }
 
