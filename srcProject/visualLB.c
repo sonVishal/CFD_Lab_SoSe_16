@@ -142,7 +142,7 @@ void writevtsPointCoordinates(FILE *fp, int xlen, int *xlength, int *myPos, int 
     fprintf(fp,"</Points>\n");
 }
 
-void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlen, int *procsPerAxis) {
+void p_writeCombinedPVTSFile(const int numComp, const char * filename, unsigned int t, int xlen, int *procsPerAxis) {
     // Files related variables
     char pFileName[80];
     FILE *fp = NULL;
@@ -166,8 +166,10 @@ void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlen, in
     fprintf(fp, "%s\n","<PDataArray NumberOfComponents=\"3\" type=\"UInt32\" />");
     fprintf(fp, "</PPoints>\n");
     fprintf(fp, "<PCellData>\n");
-    fprintf(fp, "<PDataArray type=\"Float32\" NumberOfComponents=\"3\" Name=\"Velocity\"/>\n");
-    fprintf(fp, "<PDataArray type=\"Float32\" NumberOfComponents=\"1\" Name=\"Density\"/>\n");
+    for (int i = 0; i < numComp; i++) {
+        fprintf(fp, "<PDataArray type=\"Float32\" NumberOfComponents=\"3\" Name=\"Velocity_C%d\"/>\n",i);
+        fprintf(fp, "<PDataArray type=\"Float32\" NumberOfComponents=\"1\" Name=\"Density_C%d\"/>\n",i);
+    }
     fprintf(fp, "</PCellData>\n");
 
     int baseLength[3] = {xlen/procsPerAxis[0], xlen/procsPerAxis[1], xlen/procsPerAxis[2]};

@@ -143,7 +143,7 @@ int main(int argc, char *argv[]){
     // Combine VTS file at t = 0
     // Only done by root
     if (procData.rank == 0) {
-        p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
+        p_writeCombinedPVTSFile(g_numComp, fName, t, xlength, procsPerAxis);
     }
 
     beginProcTime = MPI_Wtime();
@@ -171,7 +171,7 @@ int main(int argc, char *argv[]){
 	        writeVtsOutput(c,g_numComp,flagField,fName,t,xlength,procData,procsPerAxis);
             // Combine VTS file at t
             if (procData.rank == 0) {
-                p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
+                p_writeCombinedPVTSFile(g_numComp, fName, t, xlength, procsPerAxis);
             }
 	    }
     }

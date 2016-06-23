@@ -14,5 +14,5 @@ void writeVtsOutput(const t_component * const c, int numComp, const int * const 
 
 void writevtsPointCoordinates(FILE *fp, int xlen, int *xlength, int *myPos, int *procsPerAxis);
 
-void p_writeCombinedPVTSFile(const char * filename, unsigned int t, int xlength, int *procsPerAxis);
+void p_writeCombinedPVTSFile(const int numComp, const char * filename, unsigned int t, int xlength, int *procsPerAxis);
 #endif
