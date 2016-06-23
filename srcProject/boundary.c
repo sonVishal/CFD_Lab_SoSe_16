@@ -151,10 +151,10 @@ int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEd
 
 void p_setBoundaryIterParameters(t_iterPara *const iterPara, t_procData const*const procData, const int direction){
 
-	switch(direction/2){ //integer division to get the type of face (see enum in LBDefinitions.h)
-		iterPara->startOuter = 1;
-		iterPara->startInner = 1;
+	iterPara->startOuter = 1;
+	iterPara->startInner = 1;
 
+	switch(direction/2){ //integer division to get the type of face (see enum in LBDefinitions.h)
 	//---------------------------------------------
 	//outer = Z, inner = X, Y fixed
 	case 0:
@@ -272,15 +272,29 @@ void treatPeriodicWall(double *const collideField, double *const sendBuffer, dou
 	bufferSize = 5 * iterPara.endOuter * iterPara.endInner;
 
 	//TODO: extract and inject are from parallel.c - Discuss if we make them "common functions"
+	// printf("startInner=%i, startOuter=%i, endInner=%i, endOuter=%i \n",
+	// iterPara.startInner, iterPara.startOuter, iterPara.endInner, iterPara.endOuter);
+
 	extract(sendBuffer, collideField, &iterPara, procData, procWall, indexOut);
 
 	commRank = procData->periodicNeighbours[procWall];
 	assert(commRank >= 0);
 
+	// if(procData->rank == 1 && procWall == TOP){
+	// 	for(int i = 0; i < bufferSize; i++){
+	// 		printf("SEND: %f \n", sendBuffer[i]);
+	// 	}
+	// }
+
 	//tag is chosen to be 1 that it is different from parallel_boundary (0) and edges (2)
 	MPI_Sendrecv(sendBuffer, bufferSize, MPI_DOUBLE, commRank, 1, readBuffer,
 		bufferSize, MPI_DOUBLE, commRank, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
+	// if(procData->rank == 0 && procWall == BOTTOM){
+	// 	for(int i = 0; i < bufferSize; i++){
+	// 		printf("READ: %f \n", readBuffer[i]);
+	// 	}
+	// }
 	inject(readBuffer, collideField, &iterPara, procData, procWall, indexIn);
 }
 
@@ -313,10 +327,11 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 
 	p_setEdgeIterParameters(&iterParaEdge, procData, procEdge, INJECT);
 
-	if(procData->rank == 0){
-		printf("(INJECT) procData->rank=%i, procEdge=%i, opponentEdge=%i ",procData->rank, procEdge, opponentEdge);
-		printf("iterParaEdge.x=%i, iterParaEdge.y=%i, iterParaEdge.z=%i \n", iterParaEdge.x, iterParaEdge.y, iterParaEdge.z);
-	}
+	// if(procData->rank == 0){
+	// 	printf("(INJECT) procData->rank=%i, procEdge=%i, opponentEdge=%i ",procData->rank, procEdge, opponentEdge);
+	// 	printf("iterParaEdge.x=%i, iterParaEdge.y=%i, iterParaEdge.z=%i \n", iterParaEdge.x, iterParaEdge.y, iterParaEdge.z);
+	// }
+
 	extractInjectEdge(readBuffer, collideField, &iterParaEdge, procData, indexInEdge, INJECT);
 }
 
@@ -399,23 +414,27 @@ void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const proc
 	//z * (xlen*ylen) + y * (xlen) + x
 	for(int varIdx = 1; varIdx <= endIndex; ++varIdx){
 		if(iterParaEdgeIn1.x == VARIABLE){
-			cellOffsetIn1 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn1.z + iterParaEdgeIn1.y) + varIdx;
+			cellOffsetIn1  = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn1.z  + iterParaEdgeIn1.y) + varIdx;
 			cellOffsetOut1 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeOut1.z + iterParaEdgeOut1.y) + varIdx;
-			cellOffsetIn2 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn2.z + iterParaEdgeIn2.y) + varIdx;
+			cellOffsetIn2  = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn2.z  + iterParaEdgeIn2.y) + varIdx;
 			cellOffsetOut2 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeOut2.z + iterParaEdgeOut2.y) + varIdx;
 
 		}else if(iterParaEdgeIn1.y == VARIABLE){
-			cellOffsetIn1 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn1.z + varIdx) + iterParaEdgeIn1.x;
+			cellOffsetIn1  = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn1.z  + varIdx) + iterParaEdgeIn1.x;
 			cellOffsetOut1 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeOut1.z + varIdx) + iterParaEdgeOut1.x;
-			cellOffsetIn2 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn2.z + varIdx) + iterParaEdgeIn2.x;
+			cellOffsetIn2  = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn2.z  + varIdx) + iterParaEdgeIn2.x;
 			cellOffsetOut2 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeOut2.z + varIdx) + iterParaEdgeOut2.x;
 
 		}else{
-			cellOffsetIn1 = procData->xLength[0] * (procData->xLength[1] * varIdx + iterParaEdgeIn1.y) + iterParaEdgeIn1.x;
+			cellOffsetIn1  = procData->xLength[0] * (procData->xLength[1] * varIdx + iterParaEdgeIn1.y)  + iterParaEdgeIn1.x;
 			cellOffsetOut1 = procData->xLength[0] * (procData->xLength[1] * varIdx + iterParaEdgeOut1.y) + iterParaEdgeOut1.x;
-			cellOffsetIn2 = procData->xLength[0] * (procData->xLength[1] * varIdx + iterParaEdgeIn2.y) + iterParaEdgeIn2.x;
+			cellOffsetIn2  = procData->xLength[0] * (procData->xLength[1] * varIdx + iterParaEdgeIn2.y)  + iterParaEdgeIn2.x;
 			cellOffsetOut2 = procData->xLength[0] * (procData->xLength[1] * varIdx + iterParaEdgeOut2.y) + iterParaEdgeOut2.x;
 		}
+
+		// if(procData->rank == 0 && edge1 == 5){
+		// 	printf("%i \n", cellOffsetIn1);
+		// }
 
 		currentIndexFieldIn1 = Q*cellOffsetIn1;  currentIndexFieldOut1 = Q*cellOffsetOut1;
 		currentIndexFieldIn2 = Q*cellOffsetIn2;  currentIndexFieldOut2 = Q*cellOffsetOut2;
