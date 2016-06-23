@@ -194,7 +194,7 @@ void p_setEdgeIterParameters(t_iterParaEdge *const iterPara, t_procData const*co
 
 	switch(edge/4){ //integer division - 12 edges, 3 cases
 	case 0: //edges 0-3 (horizontal, bottom)
-		iterPara->z = 0;
+		iterPara->z = start;
 		if(edge == 0 || edge == 2){
 			iterPara->x = VARIABLE;
 			iterPara->y = (edge == 0) ? start : procData->xLength[1]+endOffset;
