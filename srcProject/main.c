@@ -167,6 +167,7 @@ int main(int argc, char *argv[]){
         // Swap the local fields for each component
         swapComponentFields(c, g_numComp);
 
+        // TODO: (VS) Make one function call and remove while submission
 #ifdef UNITTEST
         storeMassVector(c, g_numComp, massBefore, procData.xLength);
         computeGlobalMomentum(c, g_numComp, procData.xLength, momentumBefore);
