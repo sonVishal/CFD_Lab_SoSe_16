@@ -103,10 +103,14 @@ void initialiseFields(double *collideField, double *streamField, const t_procDat
                 // Compute the base index
                 idx = Q*(yzOffset + x);
                 for (int i = 0; i < Q; ++i) {
-                    // collideField[idx+i] = LATTICEWEIGHTS[i];
-                    // streamField[idx+i]  = LATTICEWEIGHTS[i];
-					collideField[idx+i] = (double)(thisProcData->rank+1)/100.0;
-                    streamField[idx+i]  = (double)(thisProcData->rank+1)/100.0;
+                    collideField[idx+i] = LATTICEWEIGHTS[i];
+                    streamField[idx+i]  = LATTICEWEIGHTS[i];
+
+					// TODO: (VS) Remove.
+					// This is good for debugging since we see different values
+					// in each subdomain.
+					// collideField[idx+i] = (double)(thisProcData->rank+1)/100.0;
+                    // streamField[idx+i]  = (double)(thisProcData->rank+1)/100.0;
                 }
             }
         }
