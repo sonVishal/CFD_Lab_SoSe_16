@@ -127,24 +127,23 @@ int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEd
 		endIndex = procData->xLength[2];
 	}
 
-	int currentIndexBuff = 0, currentIndexField = -1;
+	int currentIndexBuff = 0;
 
 	//z * (xlen*ylen) + y * (xlen) + x
 	for(int varIdx = 1; varIdx <= endIndex; ++varIdx){
 		if(iterPara->x == VARIABLE){
-			cellOffset = procData->xLength[0] * (procData->xLength[1] * iterPara->z + iterPara->y) + varIdx;
+			cellOffset = p_computeCellOffsetXYZ(varIdx, iterPara->y, iterPara->z, procData->xLength);
 		}else if(iterPara->y == VARIABLE){
-			cellOffset = procData->xLength[0] * (procData->xLength[1] * iterPara->z + varIdx) + iterPara->x;
+			cellOffset = p_computeCellOffsetXYZ(iterPara->x, varIdx, iterPara->z, procData->xLength);
 		}else{
 			assert(iterPara->z == VARIABLE);
-			cellOffset = procData->xLength[0] * (procData->xLength[1] * varIdx + iterPara->y) + iterPara->x;
+			cellOffset = p_computeCellOffsetXYZ(iterPara->x, iterPara->y, varIdx, procData->xLength);
 		}
 
-		currentIndexField = Q*cellOffset;
 		if(injectFlag)
-			collideField[currentIndexField+index] = buffer[currentIndexBuff++];
+			collideField[cellOffset+index] = buffer[currentIndexBuff++];
 		else
-			buffer[currentIndexBuff++] = collideField[currentIndexField+index];
+			buffer[currentIndexBuff++] = collideField[cellOffset+index];
 	}
 	return currentIndexBuff; //Will be used as bufferSize
 }
