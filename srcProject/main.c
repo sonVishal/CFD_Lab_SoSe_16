@@ -7,6 +7,7 @@
 #include "visualLB.h"
 #include "LBDefinitions.h"
 #include "helper.h"
+#include "common.h"
 #include "parallel.h"
 #include "unitTest.h"
 #include <stdio.h>
