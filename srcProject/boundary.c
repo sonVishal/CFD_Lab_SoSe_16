@@ -410,37 +410,32 @@ void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const proc
 	}
 
 	int cellOffsetIn1, cellOffsetOut1, cellOffsetIn2, cellOffsetOut2;
-	int currentIndexFieldIn1, currentIndexFieldOut1, currentIndexFieldIn2, currentIndexFieldOut2;
 	//z * (xlen*ylen) + y * (xlen) + x
 	for(int varIdx = 1; varIdx <= endIndex; ++varIdx){
 		if(iterParaEdgeIn1.x == VARIABLE){
-			cellOffsetIn1  = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeIn1.z  + iterParaEdgeIn1.y) + varIdx;
-			cellOffsetOut1 = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeOut1.z + iterParaEdgeOut1.y) + varIdx;
-			cellOffsetIn2  = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeIn2.z  + iterParaEdgeIn2.y) + varIdx;
-			cellOffsetOut2 = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeOut2.z + iterParaEdgeOut2.y) + varIdx;
+			cellOffsetIn1 	= p_computeCellOffsetXYZ(varIdx, iterParaEdgeIn1.y, iterParaEdgeIn1.z, procData->xLength);
+			cellOffsetOut1	= p_computeCellOffsetXYZ(varIdx, iterParaEdgeOut1.y, iterParaEdgeOut1.z, procData->xLength);
+			cellOffsetIn2 	= p_computeCellOffsetXYZ(varIdx, iterParaEdgeIn2.y, iterParaEdgeIn2.z, procData->xLength);
+			cellOffsetOut2 	= p_computeCellOffsetXYZ(varIdx, iterParaEdgeOut2.y, iterParaEdgeOut2.z, procData->xLength);
 
 		}else if(iterParaEdgeIn1.y == VARIABLE){
-			cellOffsetIn1  = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeIn1.z  + varIdx) + iterParaEdgeIn1.x;
-			cellOffsetOut1 = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeOut1.z + varIdx) + iterParaEdgeOut1.x;
-			cellOffsetIn2  = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeIn2.z  + varIdx) + iterParaEdgeIn2.x;
-			cellOffsetOut2 = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeOut2.z + varIdx) + iterParaEdgeOut2.x;
-
+			cellOffsetIn1 	= p_computeCellOffsetXYZ(iterParaEdgeIn1.x, varIdx, iterParaEdgeIn1.z, procData->xLength);
+			cellOffsetOut1	= p_computeCellOffsetXYZ(iterParaEdgeOut1.x, varIdx, iterParaEdgeOut1.z, procData->xLength);
+			cellOffsetIn2 	= p_computeCellOffsetXYZ(iterParaEdgeIn2.x, varIdx, iterParaEdgeIn2.z, procData->xLength);
+			cellOffsetOut2 	= p_computeCellOffsetXYZ(iterParaEdgeOut2.x, varIdx, iterParaEdgeOut2.z, procData->xLength);
 		}else{
-			cellOffsetIn1  = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * varIdx + iterParaEdgeIn1.y)  + iterParaEdgeIn1.x;
-			cellOffsetOut1 = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * varIdx + iterParaEdgeOut1.y) + iterParaEdgeOut1.x;
-			cellOffsetIn2  = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * varIdx + iterParaEdgeIn2.y)  + iterParaEdgeIn2.x;
-			cellOffsetOut2 = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * varIdx + iterParaEdgeOut2.y) + iterParaEdgeOut2.x;
+			cellOffsetIn1 	= p_computeCellOffsetXYZ(iterParaEdgeIn1.x, iterParaEdgeIn1.y, varIdx, procData->xLength);
+			cellOffsetOut1	= p_computeCellOffsetXYZ(iterParaEdgeOut1.x, iterParaEdgeOut1.y, varIdx, procData->xLength);
+			cellOffsetIn2 	= p_computeCellOffsetXYZ(iterParaEdgeIn2.x, iterParaEdgeIn2.y, varIdx, procData->xLength);
+			cellOffsetOut2 	= p_computeCellOffsetXYZ(iterParaEdgeOut2.x, iterParaEdgeOut2.y, varIdx, procData->xLength);
 		}
 
 		// if(procData->rank == 0 && edge1 == 5){
 		// 	printf("%i \n", cellOffsetIn1);
 		// }
 
-		currentIndexFieldIn1 = Q*cellOffsetIn1;  currentIndexFieldOut1 = Q*cellOffsetOut1;
-		currentIndexFieldIn2 = Q*cellOffsetIn2;  currentIndexFieldOut2 = Q*cellOffsetOut2;
-
-		collideField[currentIndexFieldIn1+index1] = collideField[currentIndexFieldOut2+index1];
-		collideField[currentIndexFieldIn2+index2] = collideField[currentIndexFieldOut1+index2];
+		collideField[cellOffsetIn1+index1] = collideField[cellOffsetOut2+index1];
+		collideField[cellOffsetIn2+index2] = collideField[cellOffsetOut1+index2];
 	}
 }
 
