@@ -100,7 +100,7 @@ int main(int argc, char *argv[]){
     // INFO printing
     if(procData.rank == 0)
     {
-#ifdef NDEBUG
+#ifndef NDEBUG
     	printf("INFO: The compiler directive NDEBUG is enabled. Faster execution time is gained, "
     			"at the cost of less correctness checks during runtime!\n");
 #else
@@ -121,7 +121,7 @@ int main(int argc, char *argv[]){
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
-#ifdef NDEBUG
+#ifndef NDEBUG
     double *massBefore[g_numComp];
     double *massAfter[g_numComp];
     double momentumBefore[3];
@@ -168,7 +168,7 @@ int main(int argc, char *argv[]){
         swapComponentFields(c, g_numComp);
 
         // TODO: (VS) Make one function call and remove while submission
-#ifdef NDEBUG
+#ifndef NDEBUG
         storeMassVector(c, g_numComp, massBefore, procData.xLength);
         computeGlobalMomentum(c, g_numComp, procData.xLength, momentumBefore);
 #endif
@@ -176,7 +176,7 @@ int main(int argc, char *argv[]){
         // Perform local collision
 	    doCollision(c, procData.xLength);
 
-#ifdef NDEBUG
+#ifndef NDEBUG
         storeMassVector(c, g_numComp, massAfter, procData.xLength);
         computeGlobalMomentum(c, g_numComp, procData.xLength, momentumAfter);
 
@@ -225,7 +225,7 @@ int main(int argc, char *argv[]){
     free(c[0].collideField);
     free(flagField);
 
-#ifdef NDEBUG
+#ifndef NDEBUG
     for (int i = 0; i < g_numComp; i++) {
         free(massBefore[i]);
         free(massAfter[i]);

@@ -25,9 +25,6 @@ debug: CFLAGS+=-O0 -g -enable-checking -v -da -Q
 debug: LDFLAGS+=-pg
 debug: clean $(EXECUTABLE)
 
-unit-test: CFLAGS+= -DUNITTEST
-unit-test: clean $(EXECUTABLE)
-
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
 
