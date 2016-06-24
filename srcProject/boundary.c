@@ -414,22 +414,22 @@ void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const proc
 	//z * (xlen*ylen) + y * (xlen) + x
 	for(int varIdx = 1; varIdx <= endIndex; ++varIdx){
 		if(iterParaEdgeIn1.x == VARIABLE){
-			cellOffsetIn1  = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn1.z  + iterParaEdgeIn1.y) + varIdx;
-			cellOffsetOut1 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeOut1.z + iterParaEdgeOut1.y) + varIdx;
-			cellOffsetIn2  = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn2.z  + iterParaEdgeIn2.y) + varIdx;
-			cellOffsetOut2 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeOut2.z + iterParaEdgeOut2.y) + varIdx;
+			cellOffsetIn1  = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeIn1.z  + iterParaEdgeIn1.y) + varIdx;
+			cellOffsetOut1 = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeOut1.z + iterParaEdgeOut1.y) + varIdx;
+			cellOffsetIn2  = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeIn2.z  + iterParaEdgeIn2.y) + varIdx;
+			cellOffsetOut2 = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeOut2.z + iterParaEdgeOut2.y) + varIdx;
 
 		}else if(iterParaEdgeIn1.y == VARIABLE){
-			cellOffsetIn1  = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn1.z  + varIdx) + iterParaEdgeIn1.x;
-			cellOffsetOut1 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeOut1.z + varIdx) + iterParaEdgeOut1.x;
-			cellOffsetIn2  = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeIn2.z  + varIdx) + iterParaEdgeIn2.x;
-			cellOffsetOut2 = procData->xLength[0] * (procData->xLength[1] * iterParaEdgeOut2.z + varIdx) + iterParaEdgeOut2.x;
+			cellOffsetIn1  = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeIn1.z  + varIdx) + iterParaEdgeIn1.x;
+			cellOffsetOut1 = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeOut1.z + varIdx) + iterParaEdgeOut1.x;
+			cellOffsetIn2  = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeIn2.z  + varIdx) + iterParaEdgeIn2.x;
+			cellOffsetOut2 = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * iterParaEdgeOut2.z + varIdx) + iterParaEdgeOut2.x;
 
 		}else{
-			cellOffsetIn1  = procData->xLength[0] * (procData->xLength[1] * varIdx + iterParaEdgeIn1.y)  + iterParaEdgeIn1.x;
-			cellOffsetOut1 = procData->xLength[0] * (procData->xLength[1] * varIdx + iterParaEdgeOut1.y) + iterParaEdgeOut1.x;
-			cellOffsetIn2  = procData->xLength[0] * (procData->xLength[1] * varIdx + iterParaEdgeIn2.y)  + iterParaEdgeIn2.x;
-			cellOffsetOut2 = procData->xLength[0] * (procData->xLength[1] * varIdx + iterParaEdgeOut2.y) + iterParaEdgeOut2.x;
+			cellOffsetIn1  = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * varIdx + iterParaEdgeIn1.y)  + iterParaEdgeIn1.x;
+			cellOffsetOut1 = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * varIdx + iterParaEdgeOut1.y) + iterParaEdgeOut1.x;
+			cellOffsetIn2  = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * varIdx + iterParaEdgeIn2.y)  + iterParaEdgeIn2.x;
+			cellOffsetOut2 = (procData->xLength[0]+2) * ((procData->xLength[1]+2) * varIdx + iterParaEdgeOut2.y) + iterParaEdgeOut2.x;
 		}
 
 		// if(procData->rank == 0 && edge1 == 5){
