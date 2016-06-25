@@ -63,7 +63,7 @@ int main(int argc, char *argv[]){
     }
 
     // Broadcast the data from rank 0 (root) to other processes
-    broadcastValues(&xlength, numComp, procData.rank, &tau, &molecularMass, &G, wallVelocity,
+    broadcastValues(&xlength, &numComp, procData.rank, &tau, &molecularMass, &G, wallVelocity,
         procsPerAxis, &timesteps, &timestepsPerPlotting);
 
     // TODO: Remove when done
@@ -114,12 +114,6 @@ int main(int argc, char *argv[]){
     // Free the temporary variables since the value was copied
     free(tau);
     free(molecularMass);
-    for (int i = 0; i < numComp; i++) {
-        free(G[i]);
-    }
-
-    finaliseMPI(&procData);
-    return 0;
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
@@ -227,6 +221,7 @@ int main(int argc, char *argv[]){
     for (int i = 0; i < numComp; i++) {
         free(c[i].streamField);
         free(c[i].collideField);
+        free(G[i]);
     }
     free(flagField);
 
