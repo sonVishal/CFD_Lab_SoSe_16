@@ -42,12 +42,12 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp],
 	for (int i = 0; i < numComp; i++) {
 		char tempName[20];
 		snprintf(tempName, 20, "tau%d",i);
-		p_read_double(*argv, tempName, &c[i].tau);
+		read_double(*argv, tempName, &c[i].tau);
 		snprintf(tempName, 20, "m%d",i);
-		p_read_double(*argv, tempName, &c[i].m);
+		read_double(*argv, tempName, &c[i].m);
 		for (int j = 0; j < numComp; j++) {
 			snprintf(tempName, 20, "G%d%d",i,j);
-			p_read_double(*argv, tempName, &G[i][j]);
+			read_double(*argv, tempName, &G[i][j]);
 		}
 	}
 
