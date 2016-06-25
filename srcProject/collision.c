@@ -40,7 +40,7 @@ void doCollision(t_component *c, const int numComp, double** G, int *xlength){
                 // Allocate memory to local cell parameters
                 //TODO: (TKS) remove tau array and input c into function instead.
                 double c_tau[numComp];              //Array which holds each tau value.
-                double c_density[numComp];          //Array with the densities for each component
+                double c_density[numComp];          //Array with the densities for each component in current cell
 
                 //TODO: (TKS) need to save number density in every cell to use it in the force function.
                 double c_numDensity[numComp];       //Array with the number densities for each component
