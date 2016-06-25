@@ -2,14 +2,14 @@
 #define _COMPUTECELLVALUES_H_
 #include "LBDefinitions.h"
 
-/** computes the density from the particle distribution functions stored at currentCell.
+/** computes the number density from the particle distribution functions stored at currentCell.
  *  currentCell thus denotes the address of the first particle distribution function of the
  *  respective cell. The result is stored in density.
  */
-void computeDensity(const double *const currentCell, double *density);
+void c_computeNumDensity(const double *const currentCell, double *numDensity);
 
 /** computes the velocity within currentCell and stores the result in velocity */
-void computeVelocity(const double *const currentCell, const double density,double *velocity);
+void c_computeVelocity(const double *const currentCell, const double *density,double *velocity);
 
 /** computes the equilibrium distributions for all particle distribution functions of one
  *  cell from density and velocity and stores the results in feq.

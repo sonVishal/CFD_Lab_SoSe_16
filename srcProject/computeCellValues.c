@@ -1,21 +1,28 @@
 #include "computeCellValues.h"
 
-/** computes the density from the particle distribution functions stored at
- *  currentCell. currentCell thus denotes the address of the first particle
- *  distribution function of the respective cell.
+//TODO: (TKS) Discuss convention that component specific functions hav c_ prefix
+
+
+/** computes the number density and density from the particle distribution 
+ * functions stored at  currentCell. currentCell thus denotes the address 
+ * of the first particle  distribution function of the respective cell.
  *  The result is stored in density.
  */
-void computeDensity(const double *const currentCell, double *density){
-    // Density is the sum of the distributions in the current lattice
+
+
+void c_computeNumDensity(const double *const currentCell, double *c_numDensity){
+    // Number density is the sum of the distributions in the current lattice
     int i;
-    *density = 0.0;
-	for (i = 0; i < Q; i++) {
-		 *density += currentCell[i];
-	}
+    *c_numDensity = 0.0;
+    for (i = 0; i < Q; i++) {
+		 *c_numDensity += currentCell[i];
+    }
 }
 
+
+//TODO: (TKS) Not changed yet
 /** computes the velocity within currentCell and stores the result in velocity */
-void computeVelocity(const double * const currentCell, const double density, double *velocity){
+void c_computeVelocity(const double * const currentCell, const double *density, double *velocity){
 
     // Velocity is the momentum divided by the density
     // Momentum is the sum of the product of lattice velocity with distribution
@@ -65,6 +72,7 @@ void computeVelocity(const double * const currentCell, const double density, dou
     velocity[2] /= density;
 }
 
+//TODO: (TKS) Not changed yet.
 /** computes the equilibrium distributions for all particle distribution
  *  functions of one cell from density and velocity and stores the results in feq.
  */
@@ -82,13 +90,13 @@ void computeFeq(const double density, const double * const velocity, double *feq
     double const uz = velocity[2];
 
     // Temporary variable for 1-(u.u)/(2*cs²)
-    double const u_u = 1-(ux*ux+uy*uy+uz*uz)/(2*cs_2);
+    /*double const u_u = 1-(ux*ux+uy*uy+uz*uz)/(2*cs_2);*/
 
     // Temporary variables for density*LATTICEWEIGHTS
     // There are only 3 different LATTTICEWEIGHTS
-    double const d1 = density*LATTICEWEIGHTS[0];
-    double const d2 = density*LATTICEWEIGHTS[2];
-    double const d3 = density*LATTICEWEIGHTS[9];
+    /*double const d1 = density*LATTICEWEIGHTS[0];*/
+    /*double const d2 = density*LATTICEWEIGHTS[2];*/
+    /*double const d3 = density*LATTICEWEIGHTS[9];*/
 
     // Semantics for the unrolled loop
     // int i;
@@ -103,24 +111,35 @@ void computeFeq(const double density, const double * const velocity, double *feq
 
     // Unroll loop
     // Faster even with -O3
-    feq[0]  = d1*(u_u + (-uy-uz)*(1/cs_2 + (-uy-uz)/cs_4_2));
-    feq[1]  = d1*(u_u + (-ux-uz)*(1/cs_2 + (-ux-uz)/cs_4_2));
-    feq[2]  = d2*(u_u + (-uz)*(1/cs_2 + (-uz)/cs_4_2));
-    feq[3]  = d1*(u_u + (ux-uz)*(1/cs_2 + (ux-uz)/cs_4_2));
-    feq[4]  = d1*(u_u + (uy-uz)*(1/cs_2 + (uy-uz)/cs_4_2));
-    feq[5]  = d1*(u_u + (-ux-uy)*(1/cs_2 + (-ux-uy)/cs_4_2));
-    feq[6]  = d2*(u_u + (-uy)*(1/cs_2 + (-uy)/cs_4_2));
-    feq[7]  = d1*(u_u + (ux-uy)*(1/cs_2 + (ux-uy)/cs_4_2));
-    feq[8]  = d2*(u_u + (-ux)*(1/cs_2 + (-ux)/cs_4_2));
-    feq[9]  = d3*(u_u);
-    feq[10] = d2*(u_u + (ux)*(1/cs_2 + (ux)/cs_4_2));
-    feq[11] = d1*(u_u + (-ux+uy)*(1/cs_2 + (-ux+uy)/cs_4_2));
-    feq[12] = d2*(u_u + (uy)*(1/cs_2 + (uy)/cs_4_2));
-    feq[13] = d1*(u_u + (ux+uy)*(1/cs_2 + (ux+uy)/cs_4_2));
-    feq[14] = d1*(u_u + (-uy+uz)*(1/cs_2 + (-uy+uz)/cs_4_2));
-    feq[15] = d1*(u_u + (-ux+uz)*(1/cs_2 + (-ux+uz)/cs_4_2));
-    feq[16] = d2*(u_u + (uz)*(1/cs_2 + (uz)/cs_4_2));
-    feq[17] = d1*(u_u + (ux+uz)*(1/cs_2 + (ux+uz)/cs_4_2));
-    feq[18] = d1*(u_u + (uy+uz)*(1/cs_2 + (uy+uz)/cs_4_2));
+    //feq[0]  = d1*(u_u + (-uy-uz)*(1/cs_2 + (-uy-uz)/cs_4_2));
+    //feq[1]  = d1*(u_u + (-ux-uz)*(1/cs_2 + (-ux-uz)/cs_4_2));
+    //feq[2]  = d2*(u_u + (-uz)*(1/cs_2 + (-uz)/cs_4_2));
+    //feq[3]  = d1*(u_u + (ux-uz)*(1/cs_2 + (ux-uz)/cs_4_2));
+    //feq[4]  = d1*(u_u + (uy-uz)*(1/cs_2 + (uy-uz)/cs_4_2));
+    //feq[5]  = d1*(u_u + (-ux-uy)*(1/cs_2 + (-ux-uy)/cs_4_2));
+    //feq[6]  = d2*(u_u + (-uy)*(1/cs_2 + (-uy)/cs_4_2));
+    //feq[7]  = d1*(u_u + (ux-uy)*(1/cs_2 + (ux-uy)/cs_4_2));
+    //feq[8]  = d2*(u_u + (-ux)*(1/cs_2 + (-ux)/cs_4_2));
+    //feq[9]  = d3*(u_u);
+    //feq[10] = d2*(u_u + (ux)*(1/cs_2 + (ux)/cs_4_2));
+    //feq[11] = d1*(u_u + (-ux+uy)*(1/cs_2 + (-ux+uy)/cs_4_2));
+    //feq[12] = d2*(u_u + (uy)*(1/cs_2 + (uy)/cs_4_2));
+    //feq[13] = d1*(u_u + (ux+uy)*(1/cs_2 + (ux+uy)/cs_4_2));
+    //feq[14] = d1*(u_u + (-uy+uz)*(1/cs_2 + (-uy+uz)/cs_4_2));
+    //feq[15] = d1*(u_u + (-ux+uz)*(1/cs_2 + (-ux+uz)/cs_4_2));
+    //feq[16] = d2*(u_u + (uz)*(1/cs_2 + (uz)/cs_4_2));
+    //feq[17] = d1*(u_u + (ux+uz)*(1/cs_2 + (ux+uz)/cs_4_2));
+    //feq[18] = d1*(u_u + (uy+uz)*(1/cs_2 + (uy+uz)/cs_4_2));
+    
+    //TODO: (TKS) Unroll the loop. Much easier to debug this.
+     int i;
+    
+     for (i = 0; i < Q; i++) {
+         double dotProd1 = ux*ux + uy*uy + uz*uz;
+         double dotProd2 = ux*LATTICEVELOCITIES[i][0]
+                         + uy*LATTICEVELOCITIES[i][1]
+                         + uz*LATTICEVELOCITIES[i][2];
+         feq[i] = LATTICEWEIGHTS[i]*(density)*(1 + dotProd2/cs_2 + dotProd2*dotProd2/cs_4_2 - dotProd1/(2*cs_2));
+     }
 
 }

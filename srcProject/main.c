@@ -170,7 +170,8 @@ int main(int argc, char *argv[]){
 #endif
 
         // Perform local collision
-	    doCollision(c, procData.xLength);
+      //TODO: (TKS) Make collision correct
+	    doCollision(c, numComp, procData.xLength);
 
 #ifndef NDEBUG
         storeMassVector(c, numComp, massAfter, procData.xLength);
