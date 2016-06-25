@@ -60,6 +60,8 @@ int main(int argc, char *argv[]){
     if (procData.rank == 0) {
         readParameters(&xlength, &numComp, &tau, &molecularMass, &G,
             wallVelocity, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
+    }else{
+        MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
     }
 
 
