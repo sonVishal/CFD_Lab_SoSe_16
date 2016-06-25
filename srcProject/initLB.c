@@ -1,8 +1,9 @@
 #include "initLB.h"
 
 // TODO: (VS) Remove velocity and reynolds number in final version from entire code
-int readParameters(int *xlength, double **tauComp, double **massComp, int *numComp, double *velocityWall, int *procsPerAxis,
-	int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
+int readParameters(int *xlength, int *numComp, double **tauComp, double **massComp, double ***G,
+	double *velocityWall, int *procsPerAxis, int *timesteps, int *timestepsPerPlotting,
+	int argc, char *argv[]){
 
 	if(argc != 2){
 		char msg[200];
@@ -27,12 +28,18 @@ int readParameters(int *xlength, double **tauComp, double **massComp, int *numCo
 	// 	 they will not be read due to the for loop
 	*tauComp = (double *) malloc((*numComp)*sizeof(double));
 	*massComp = (double *) malloc((*numComp)*sizeof(double));
+	*G = (double **) malloc((*numComp)*sizeof(double *));
 	for (int i = 0; i < *numComp; i++) {
 		char tempName[20];
 		snprintf(tempName, 20, "tau%d",i);
 		p_read_double(*argv, tempName, &tauComp[0][i]);
 		snprintf(tempName, 20, "m%d",i);
 		p_read_double(*argv, tempName, &massComp[0][i]);
+		G[0][i] = (double *) malloc((*numComp)*sizeof(double));
+		for (int j = 0; j < *numComp; j++) {
+			snprintf(tempName, 20, "G%d%d",i,j);
+			p_read_double(*argv, tempName, &G[0][i][j]);
+		}
 	}
 
     READ_DOUBLE(*argv, Re);

@@ -27,6 +27,7 @@ int main(int argc, char *argv[]){
     int numComp = 1;
     double *tau = NULL;
     double *molecularMass = NULL;
+    double **G = NULL;
 
     int t = 0;
     int timesteps;
@@ -57,7 +58,8 @@ int main(int argc, char *argv[]){
      * Only performed by the root and broadcasted*/
     //tau is calculated automatically from the reynoldsnumber
     if (procData.rank == 0) {
-        readParameters(&xlength, &tau, &molecularMass, &numComp, wallVelocity, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
+        readParameters(&xlength, &numComp, &tau, &molecularMass, &G,
+            wallVelocity, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
     }
 
     // Broadcast the data from rank 0 (root) to other processes
@@ -68,16 +70,22 @@ int main(int argc, char *argv[]){
     MPI_Bcast(&timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(procsPerAxis, 3, MPI_INT, 0, MPI_COMM_WORLD);
 
-    // Ensure that the numComp value is broadcasted before used
-    // MPI_Barrier(MPI_COMM_WORLD);
-
+    // Allocate memory for other procs before broadcast
     if (procData.rank != 0) {
         tau = (double *) malloc(numComp*sizeof(double));
         molecularMass = (double *) malloc(numComp*sizeof(double));
+        G = (double **) malloc(numComp*sizeof(double *));
+        for (int i = 0; i < numComp; i++) {
+            G[i] = (double *) malloc(numComp*sizeof(double));
+        }
     }
 
     MPI_Bcast(tau, numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(molecularMass, numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(G, numComp*numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+    finaliseMPI(&procData);
+    return 0;
 
     // Assign the wall velocity
     procData.wallVelocity[0] = wallVelocity[0];

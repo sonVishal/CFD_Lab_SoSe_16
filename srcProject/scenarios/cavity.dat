@@ -40,6 +40,12 @@ tau1               0.8
 m0              1.0
 m1              0.4
 
+# Interaction Matrix
+G00             0.01
+G01             0.02
+G10             0.03
+G11             0.04
+
 # Reynolds Number
 Re                    2
 
