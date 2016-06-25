@@ -36,7 +36,7 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int
 
 	// Read the tau and mass for each component
 	// * If mass and tau are provided for less number of components
-	//   p_read_double will give an error
+	//   read_double will give an error
 	// * If mass and tau are provided for more number of components
 	// 	 they will not be read due to the for loop
 	for (int i = 0; i < numComp; i++) {
