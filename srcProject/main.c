@@ -81,11 +81,6 @@ int main(int argc, char *argv[]){
     procData.wallVelocity[1] = wallVelocity[1];
     procData.wallVelocity[2] = wallVelocity[2];
 
-
-    //TODO: (TKS) REMOVE when proper initialization of psi
-    c[0].psi = psi1;
-    c[1].psi = psi2;
-
     // Abort if the number of processes given by user do not match with the dat file
     if (procData.numRanks != procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2]) {
         if (procData.rank == 0) {
