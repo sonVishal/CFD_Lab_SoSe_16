@@ -1,5 +1,3 @@
-
-
 #--------------------------------------------
 #                  GEOMETRY
 #--------------------------------------------
@@ -26,15 +24,21 @@
 #       / (X)
 #      v
 
-
-
-#
 # Size of mesh
 xlength              20
 
+# Number of components
+numComp              2
+
 # Relaxation time
 # In recent version calculated from the Reynolds number
-#tau                  1
+# tau                  1
+tau0               1
+tau1               0.8
+
+# Molecular mass
+m0              1.0
+m1              0.4
 
 # Reynolds Number
 Re                    2

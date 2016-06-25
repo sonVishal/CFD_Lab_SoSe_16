@@ -2,17 +2,6 @@
 #define _LBDEFINITIONS_H_
 #include "helper.h"
 
-//TODO: (TKS) Remove and read in form settingsfile instead
-//-----------------------------------
-//TEMPORARY -------------------------
-//-----------------------------------
-
-static const int g_numComp = 1;
-
-//-----------------------------------
-//-----------------------------------
-
-
 // Number of lattice directions
 static const int Q = 19;
 
@@ -67,6 +56,14 @@ enum CELLS {
     PERIODIC_BOUNDARY
 };
 
+// TODO: Argue if we need function pointers or simply do the following
+static inline double psi1(double numberDensity) {
+    return (1-exp(-numberDensity));
+}
+
+static inline double psi2(double numberDensity) {
+    return numberDensity;
+}
 
 
 //TODO: (DL) There can be "better" ways to number edges. At the moment the numbering is benefical for computing indices.

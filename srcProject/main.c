@@ -13,36 +13,20 @@
 #include <stdio.h>
 #include <mpi/mpi.h>
 
-
-//TODO: (TKS) Where should these swap functions be placed?
-//          * Make a common function file
-void swapComponentFields(t_component *c, int numComp){
-    for (int i = 0; i < numComp; ++i) {
-        double* swap = c[i].collideField;
-        c[i].collideField = c[i].streamField;
-        c[i].streamField = swap;
-    }
-}
+// TODO:(VS) Remove velocity and reynolds number stuff after testing
 
 int main(int argc, char *argv[]){
 
 	// Distribution function vectors
-    double *collideField    = NULL;
-    double *streamField     = NULL;
     int *flagField          = NULL;
-
-    //TODO: (TKS) Should read in number of components externally. For now having a global variable.
-    // Array of the components in our simulation
-    t_component c[g_numComp];
-
-    //TODO: Temporarily initialization of component, REMOVE when implementing multicomponent
-    c[0].collideField = collideField;
-    c[0].streamField  = streamField;
 
     // Simulation parameters
     int xlength = 0;
     t_procData procData;
     double wallVelocity[3];
+    int numComp = 1;
+    double *tau = NULL;
+    double *molecularMass = NULL;
 
     int t = 0;
     int timesteps;
@@ -73,21 +57,36 @@ int main(int argc, char *argv[]){
      * Only performed by the root and broadcasted*/
     //tau is calculated automatically from the reynoldsnumber
     if (procData.rank == 0) {
-        readParameters(&xlength, &c[0].tau, wallVelocity, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
+        readParameters(&xlength, &tau, &molecularMass, &numComp, wallVelocity, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
     }
 
     // Broadcast the data from rank 0 (root) to other processes
     MPI_Bcast(&xlength, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&c[0].tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(wallVelocity, 3, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&timesteps, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(procsPerAxis, 3, MPI_INT, 0, MPI_COMM_WORLD);
 
+    // Ensure that the numComp value is broadcasted before used
+    // MPI_Barrier(MPI_COMM_WORLD);
+
+    if (procData.rank != 0) {
+        tau = (double *) malloc(numComp*sizeof(double));
+        molecularMass = (double *) malloc(numComp*sizeof(double));
+    }
+
+    MPI_Bcast(tau, numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(molecularMass, numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
     // Assign the wall velocity
     procData.wallVelocity[0] = wallVelocity[0];
     procData.wallVelocity[1] = wallVelocity[1];
     procData.wallVelocity[2] = wallVelocity[2];
+
+    //TODO: (TKS) Should read in number of components externally. For now having a global variable.
+    // Array of the components in our simulation
+    t_component c[numComp];
 
     // Abort if the number of processes given by user do not match with the dat file
     if (procData.numRanks != procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2]) {
@@ -117,26 +116,34 @@ int main(int argc, char *argv[]){
 
     /*Allocate memory to pointers*/
     int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
-    c[0].collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
-    c[0].streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
+    for (int i = 0; i < numComp; i++) {
+        c[i].collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
+        c[i].streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
+        c[i].tau = tau[i];
+        c[i].m = molecularMass[i];
+    }
+
+    // Free the temporary variables since the value was copied
+    free(tau);
+    free(molecularMass);
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
 #ifndef NDEBUG
-    double *massBefore[g_numComp];
-    double *massAfter[g_numComp];
+    double *massBefore[numComp];
+    double *massAfter[numComp];
     double momentumBefore[3];
     double momentumAfter[3];
 
-    for (int i = 0; i < g_numComp; i++) {
+    for (int i = 0; i < numComp; i++) {
         massBefore[i] = (double *)  malloc(totalsize * sizeof( double ));
         massAfter[i] = (double *)  malloc(totalsize * sizeof( double ));
     }
 #endif
 
     // Initialise the fields for all components
-    initialiseComponents(c, g_numComp, flagField, &procData);
+    initialiseComponents(c, numComp, flagField, &procData);
 
     // Allocate memory to send and read buffers
     initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.neighbours, procData.bufferSize);
@@ -148,12 +155,12 @@ int main(int argc, char *argv[]){
 
     // // Write the VTK at t = 0
     printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
-    writeVtsOutput(c, g_numComp, flagField, fName, t, xlength, &procData, procsPerAxis);
+    writeVtsOutput(c, numComp, flagField, fName, t, xlength, &procData, procsPerAxis);
 
     // Combine VTS file at t = 0
     // Only done by root
     if (procData.rank == 0) {
-        p_writeCombinedPVTSFile(g_numComp, fName, t, xlength, procsPerAxis);
+        p_writeCombinedPVTSFile(numComp, fName, t, xlength, procsPerAxis);
     }
 
     beginProcTime = MPI_Wtime();
@@ -161,43 +168,43 @@ int main(int argc, char *argv[]){
     for(t = 1; t <= timesteps; t++){
 
         //do extraction , swap , injection for - left/right, top/bottom, front/back for each component
-        communicateComponents(sendBuffer, readBuffer, c, g_numComp, &procData);
+        communicateComponents(sendBuffer, readBuffer, c, numComp, &procData);
 
         // Perform local streaming for each component
-	    streamComponents(c, g_numComp, flagField, procData.xLength);
+	    streamComponents(c, numComp, flagField, procData.xLength);
 
         // Swap the local fields for each component
-        swapComponentFields(c, g_numComp);
+        swapComponentFields(c, numComp);
 
         // TODO: (VS) Make one function call and remove while submission
 #ifndef NDEBUG
-        storeMassVector(c, g_numComp, massBefore, procData.xLength);
-        computeGlobalMomentum(c, g_numComp, procData.xLength, momentumBefore);
+        storeMassVector(c, numComp, massBefore, procData.xLength);
+        computeGlobalMomentum(c, numComp, procData.xLength, momentumBefore);
 #endif
 
         // Perform local collision
 	    doCollision(c, procData.xLength);
 
 #ifndef NDEBUG
-        storeMassVector(c, g_numComp, massAfter, procData.xLength);
-        computeGlobalMomentum(c, g_numComp, procData.xLength, momentumAfter);
+        storeMassVector(c, numComp, massAfter, procData.xLength);
+        computeGlobalMomentum(c, numComp, procData.xLength, momentumAfter);
 
-        checkMassVector(massBefore, massAfter, procData.xLength, g_numComp, procData.rank);
+        checkMassVector(massBefore, massAfter, procData.xLength, numComp, procData.rank);
         if (procData.rank == 0) {
-            checkMomentum(momentumBefore, momentumAfter, g_numComp);
+            checkMomentum(momentumBefore, momentumAfter, numComp);
         }
 #endif
 
         // Treat local boundaries for each component
-	    treatComponentBoundary(c, g_numComp, flagField, &procData, sendBuffer, readBuffer);
+	    treatComponentBoundary(c, numComp, flagField, &procData, sendBuffer, readBuffer);
 
         // Print VTS files at given interval
 	    if (t%timestepsPerPlotting == 0){
             printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
-	        writeVtsOutput(c, g_numComp, flagField, fName, t, xlength, &procData, procsPerAxis);
+	        writeVtsOutput(c, numComp, flagField, fName, t, xlength, &procData, procsPerAxis);
             // Combine VTS file at t
             if (procData.rank == 0) {
-                p_writeCombinedPVTSFile(g_numComp, fName, t, xlength, procsPerAxis);
+                p_writeCombinedPVTSFile(numComp, fName, t, xlength, procsPerAxis);
             }
 	    }
     }
@@ -223,12 +230,14 @@ int main(int argc, char *argv[]){
     }
 
     //free allocated heap memory
-    free(c[0].streamField);
-    free(c[0].collideField);
+    for (int i = 0; i < numComp; i++) {
+        free(c[i].streamField);
+        free(c[i].collideField);
+    }
     free(flagField);
 
 #ifndef NDEBUG
-    for (int i = 0; i < g_numComp; i++) {
+    for (int i = 0; i < numComp; i++) {
         free(massBefore[i]);
         free(massAfter[i]);
     }

@@ -1,6 +1,7 @@
 #include "initLB.h"
 
-int readParameters(int *xlength, double *tau, double *velocityWall, int *procsPerAxis,
+// TODO: (VS) Remove velocity and reynolds number in final version from entire code
+int readParameters(int *xlength, double **tauComp, double **massComp, int *numComp, double *velocityWall, int *procsPerAxis,
 	int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
 
 	if(argc != 2){
@@ -17,6 +18,23 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *procsPe
 
     /* Read values from file given in argv */
     READ_INT(*argv, *xlength);
+	READ_INT(*argv, *numComp);
+
+	// Read the tau and mass for each component
+	// * If mass and tau are provided for less number of components
+	//   p_read_double will give an error
+	// * If mass and tau are provided for more number of components
+	// 	 they will not be read due to the for loop
+	*tauComp = (double *) malloc((*numComp)*sizeof(double));
+	*massComp = (double *) malloc((*numComp)*sizeof(double));
+	for (int i = 0; i < *numComp; i++) {
+		char tempName[20];
+		snprintf(tempName, 20, "tau%d",i);
+		p_read_double(*argv, tempName, &tauComp[0][i]);
+		snprintf(tempName, 20, "m%d",i);
+		p_read_double(*argv, tempName, &massComp[0][i]);
+	}
+
     READ_DOUBLE(*argv, Re);
 
     READ_DOUBLE(*argv, xvelocity);
@@ -40,10 +58,10 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *procsPe
 
     /*Calculates tau from the Reynolds number*/
     u_wall  = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity);
-    *tau    =  u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
+    // *tau    =  u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
     machNr  = u_wall/C_S;
 
-    printf("\nINFO: Calculated tau = %f \n", *tau);
+    // printf("\nINFO: Calculated tau = %f \n", *tau);
     printf("\nINFO: Wall speed = %f \n", u_wall);
     printf("\nINFO: Mach number = %f \n\n", machNr);
 
@@ -52,9 +70,9 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *procsPe
     	ERROR("Wall speed is supersonic (aborting)! \n");
     }
 
-    if(*tau<=0.5 || *tau>2){
-        ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
-    }
+    // if(*tau<=0.5 || *tau>2){
+    //     ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
+    // }
 
     /*We allow user defined mach number tolerance for Ma << 1 (default = 0.1)
       To change please look at LBDefinitions.h*/
