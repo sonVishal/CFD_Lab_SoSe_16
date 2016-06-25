@@ -6,6 +6,31 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 	MPI_Comm_rank(MPI_COMM_WORLD,rank);
 }
 
+void broadcastValues(int *xlength, int numComp, int rank, double **tauComp, double **massComp, double ***G,
+	double *velocityWall, int *procsPerAxis, int *timesteps, int *timestepsPerPlotting) {
+
+	MPI_Bcast(&xlength, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(velocityWall, 3, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&timesteps, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(procsPerAxis, 3, MPI_INT, 0, MPI_COMM_WORLD);
+
+    // Allocate memory for other procs before broadcast
+    if (rank != 0) {
+        *tauComp = (double *) malloc(numComp*sizeof(double));
+        *massComp = (double *) malloc(numComp*sizeof(double));
+        *G = (double **) malloc(numComp*sizeof(double *));
+        for (int i = 0; i < numComp; i++) {
+            G[0][i] = (double *) malloc(numComp*sizeof(double));
+        }
+    }
+
+    MPI_Bcast(tauComp[0], numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(massComp[0], numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(G[0], numComp*numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+}
+
 /*
 * Divides the entire domain into sub-domains. The function sets the processor specific data to determine the size
 * of the sub-domain and determines the neighbours.
@@ -97,7 +122,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const *
     // the max. possible shared walls are included (entire face), then we can reuse this buffer for all other directions?
 
 	//TODO: (DL) For now all buffers are initialized no matter if there is a neighbour or not - the buffers are also used in
-	// for periodic boundaries. 
+	// for periodic boundaries.
 
 
     // XZ inner domain (no edges included)

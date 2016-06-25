@@ -44,6 +44,10 @@ void domainDecompositionAndNeighbors(t_procData *const procData, const int xleng
 // Initialise the message passing interface
 void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]);
 
+// Broadcasts the values read by proc 0
+void broadcastValues(int *xlength, int numComp, int rank, double **tauComp, double **massComp, double ***G,
+	double *velocityWall, int *procsPerAxis, int *timesteps, int *timestepsPerPlotting);
+
 // Initialise the buffers
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const * const xlength,
 		int const * const neighbours, int procBufferSize[3]);

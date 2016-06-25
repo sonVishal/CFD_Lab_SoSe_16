@@ -62,32 +62,11 @@ int main(int argc, char *argv[]){
             wallVelocity, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
     }
 
-    // TODO: (VS) Probably better to do it in a function call
     // Broadcast the data from rank 0 (root) to other processes
-    MPI_Bcast(&xlength, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(wallVelocity, 3, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&timesteps, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(procsPerAxis, 3, MPI_INT, 0, MPI_COMM_WORLD);
+    broadcastValues(&xlength, numComp, procData.rank, &tau, &molecularMass, &G, wallVelocity,
+        procsPerAxis, &timesteps, &timestepsPerPlotting);
 
-    // Allocate memory for other procs before broadcast
-    if (procData.rank != 0) {
-        tau = (double *) malloc(numComp*sizeof(double));
-        molecularMass = (double *) malloc(numComp*sizeof(double));
-        G = (double **) malloc(numComp*sizeof(double *));
-        for (int i = 0; i < numComp; i++) {
-            G[i] = (double *) malloc(numComp*sizeof(double));
-        }
-    }
-
-    MPI_Bcast(tau, numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(molecularMass, numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(G, numComp*numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
-    finaliseMPI(&procData);
-    return 0;
-
+    // TODO: Remove when done
     // Assign the wall velocity
     procData.wallVelocity[0] = wallVelocity[0];
     procData.wallVelocity[1] = wallVelocity[1];
