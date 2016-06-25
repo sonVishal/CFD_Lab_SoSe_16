@@ -98,7 +98,6 @@ void computeVelocityNI(const int* numComp, const double *const c_density, const 
 //TODO: (TKS) Add const where appropriate
 //TODO: (TKS) Tidy up signature
 void computeForces(int currentCellIndex, t_component *c, const int *numComp, double **G, int * xlength, double *forces[3]){
-    //TODO: (TKS) Take into consideration only neighbours.
 
     int xlen2 = xlength[0]+2;
 	int ylen2 = xlength[1]+2;
@@ -112,6 +111,7 @@ void computeForces(int currentCellIndex, t_component *c, const int *numComp, dou
         for (int m = 0; m < *numComp; ++m) {
             
             //TODO: (TKS) Could unroll loop.
+            //TODO: WRONG, do not want numDensity streaming in, but the collected number density in each neighbout cell
             for (int i = 0; i < Q; i++) {
                 int nextCellIndex = 
                 currentCellIndex-LATTICEVELOCITIES[i][0]-
