@@ -34,9 +34,6 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp],
     /* Read values from file given in argv */
     READ_INT(*argv, *xlength);
 
-	//Broadcast it immediately so that all the others have it
-	MPI_Bcast(numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
 	// Read the tau and mass for each component
 	// * If mass and tau are provided for less number of components
 	//   p_read_double will give an error
