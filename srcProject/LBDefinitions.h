@@ -108,6 +108,7 @@ typedef struct {
     double* collideField;
     double  tau;
     double  m;
+    double (*psi)(double); //TODO: (TKS) Need to be initialized
 } t_component;
 
 /* Function for reverse index search for procs.
