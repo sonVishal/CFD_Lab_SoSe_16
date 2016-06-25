@@ -19,7 +19,7 @@ void computePostCollisionDistributions(double *currentCell, const double tau, co
 
 //TODO: (TKS) Adapt to multiple components
 // Perform collision for all inner cells
-void doCollision(t_component *c, const int numComp, double** G, int *xlength){
+void doCollision(t_component *c, const int numComp, double G[numComp][numComp], int *xlength){
 
 	// Define iteration indices
 	int cellidx, idx, x, y, z, n;
@@ -36,7 +36,7 @@ void doCollision(t_component *c, const int numComp, double** G, int *xlength){
 		for (y = 1; y <= xlength[1]; y++) { //y
 			yOffset = y*(xlength[0]+2);
 			for (x = 1; x <= xlength[0]; x++) { //x
-                
+
                 // Allocate memory to local cell parameters
                 //TODO: (TKS) remove tau array and input c into function instead.
                 double c_tau[numComp];              //Array which holds each tau value.
@@ -58,7 +58,7 @@ void doCollision(t_component *c, const int numComp, double** G, int *xlength){
                     double *currentCell = &c[n].collideField[idx];
 
                     // Compute the cell density and number density for each component
-                    //TODO: (TKS) need to compute number density in each neighbouring cell. 
+                    //TODO: (TKS) need to compute number density in each neighbouring cell.
                     c_computeNumDensity(currentCell, &c_numDensity[n]);
                     c_density[n] = c_numDensity[n]*c->m;
 
@@ -73,7 +73,7 @@ void doCollision(t_component *c, const int numComp, double** G, int *xlength){
                         //ERROR(msg);
                     //}
                     //#endif
-                
+
                     // Compute the cell velocity for current component
                     c_computeVelocity(currentCell, &c_density[numComp], &c_velocity[n], &c->m);
                 }
