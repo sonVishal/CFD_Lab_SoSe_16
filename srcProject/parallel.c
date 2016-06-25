@@ -6,31 +6,39 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 	MPI_Comm_rank(MPI_COMM_WORLD,rank);
 }
 
-void broadcastValues(int *xlength, int *numComp, int rank, double **tauComp, double **massComp, double ***G,
+void broadcastValues(int rank, int *xlength, t_component *c, double G[numComp][numComp],
 	double *velocityWall, int *procsPerAxis, int *timesteps, int *timestepsPerPlotting) {
 
 	MPI_Bcast(xlength, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(velocityWall, 3, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(timesteps, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(procsPerAxis, 3, MPI_INT, 0, MPI_COMM_WORLD);
+	MPI_Bcast(G, numComp*numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-    // Allocate memory for other procs before broadcast
-    if (rank != 0) {
-        *tauComp = (double *) malloc((*numComp)*sizeof(double));
-        *massComp = (double *) malloc((*numComp)*sizeof(double));
-        *G = (double **) malloc((*numComp)*sizeof(double *));
-        for (int i = 0; i < (*numComp); i++) {
-            G[0][i] = (double *) malloc((*numComp)*sizeof(double));
-        }
-    }
+	// Avoid this by creating a struct
+	// for (int i = 0; i < numComp; i++) {
+	// 	MPI_Bcast(&c[i].tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	// 	MPI_Bcast(&c[i].m, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	// }
 
-    MPI_Bcast(tauComp[0], (*numComp), MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(massComp[0], (*numComp), MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	for (int i = 0; i < (*numComp); i++) {
-        MPI_Bcast(G[0][i], (*numComp), MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    }
+	// Create a struct for broadcasting components
+	MPI_Datatype MPI_Component;
+    MPI_Datatype types[4] = {MPI_BYTE, MPI_BYTE, MPI_DOUBLE, MPI_DOUBLE};
+	int blocklengths[4] = {sizeof(double *), sizeof(double *), 1, 1};
+    MPI_Aint offsets[4];
+
+	offsets[0] = (size_t)(void *)&c[0].streamField - (size_t)(void *)&c[0];
+	offsets[1] = (size_t)(void *)&c[0].collideField - (size_t)(void *)&c[0];
+	offsets[2] = (size_t)(void *)&c[0].tau - (size_t)(void *)&c[0];
+	offsets[3] = (size_t)(void *)&c[0].m - (size_t)(void *)&c[0];
+
+    MPI_Type_create_struct(4, blocklengths, offsets, types, &MPI_Component);
+    MPI_Type_commit(&MPI_Component);
+
+	MPI_Bcast(c, numComp, MPI_Component, 0, MPI_COMM_WORLD);
+
+	MPI_Type_free(&MPI_Component);
 }
 
 /*

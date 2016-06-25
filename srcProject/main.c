@@ -24,10 +24,6 @@ int main(int argc, char *argv[]){
     int xlength = 0;
     t_procData procData;
     double wallVelocity[3];
-    int numComp = 1;
-    double *tau = NULL;
-    double *molecularMass = NULL;
-    double **G = NULL;
 
     int t = 0;
     int timesteps;
@@ -58,15 +54,24 @@ int main(int argc, char *argv[]){
      * Only performed by the root and broadcasted*/
     //tau is calculated automatically from the reynoldsnumber
     if (procData.rank == 0) {
-        readParameters(&xlength, &numComp, &tau, &molecularMass, &G,
-            wallVelocity, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
+        readNumComp(argc, &argv[1]);
     }else{
         MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
     }
 
+    // Array of the components in our simulation
+    t_component c[numComp];
+
+    // Interacting potential
+    double G[numComp][numComp];
+
+    if (procData.rank == 0) {
+        readParameters(&xlength, c, G, wallVelocity, procsPerAxis, &timesteps,
+            &timestepsPerPlotting, argc, &argv[1]);
+    }
 
     // Broadcast the data from rank 0 (root) to other processes
-    broadcastValues(&xlength, &numComp, procData.rank, &tau, &molecularMass, &G, wallVelocity,
+    broadcastValues(procData.rank, &xlength, c, G, wallVelocity,
         procsPerAxis, &timesteps, &timestepsPerPlotting);
 
     // TODO: Remove when done
@@ -75,8 +80,6 @@ int main(int argc, char *argv[]){
     procData.wallVelocity[1] = wallVelocity[1];
     procData.wallVelocity[2] = wallVelocity[2];
 
-    // Array of the components in our simulation
-    t_component c[numComp];
 
     //TODO: (TKS) REMOVE when proper initialization of psi
     c[0].psi = psi1;
@@ -113,13 +116,7 @@ int main(int argc, char *argv[]){
     for (int i = 0; i < numComp; i++) {
         c[i].collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
         c[i].streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
-        c[i].tau = tau[i];
-        c[i].m = molecularMass[i];
     }
-
-    // Free the temporary variables since the value was copied
-    free(tau);
-    free(molecularMass);
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
@@ -228,9 +225,7 @@ int main(int argc, char *argv[]){
     for (int i = 0; i < numComp; i++) {
         free(c[i].streamField);
         free(c[i].collideField);
-        free(G[i]); //lower level pointer
     }
-    free(G); // upper level pointer
     free(flagField);
 
 #ifndef NDEBUG

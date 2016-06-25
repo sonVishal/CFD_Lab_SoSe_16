@@ -1,7 +1,21 @@
 #include "initLB.h"
 
+void readNumComp(int argc, char *argv[]) {
+	if(argc != 2){
+		char msg[200];
+		snprintf(msg, 200, "There are %i arguments provided to the simulation. Only 1 argument "
+				"providing \nthe path+filename (of relative to working directory) of the scenario "
+				"is accepted!", argc-1);
+		ERROR(msg);
+	}
+
+	READ_INT(*argv, numComp);
+
+	MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
+}
+
 // TODO: (VS) Remove velocity and reynolds number in final version from entire code
-int readParameters(int *xlength, int *numComp, double **tauComp, double **massComp, double ***G,
+int readParameters(int *xlength, t_component *c, double G[numComp][numComp],
 	double *velocityWall, int *procsPerAxis, int *timesteps, int *timestepsPerPlotting,
 	int argc, char *argv[]){
 
@@ -19,7 +33,6 @@ int readParameters(int *xlength, int *numComp, double **tauComp, double **massCo
 
     /* Read values from file given in argv */
     READ_INT(*argv, *xlength);
-	READ_INT(*argv, *numComp);
 
 	//Broadcast it immediately so that all the others have it
 	MPI_Bcast(numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -29,19 +42,15 @@ int readParameters(int *xlength, int *numComp, double **tauComp, double **massCo
 	//   p_read_double will give an error
 	// * If mass and tau are provided for more number of components
 	// 	 they will not be read due to the for loop
-	*tauComp = (double *) malloc((*numComp)*sizeof(double));
-	*massComp = (double *) malloc((*numComp)*sizeof(double));
-	*G = (double **) malloc((*numComp)*sizeof(double *));
-	for (int i = 0; i < *numComp; i++) {
+	for (int i = 0; i < numComp; i++) {
 		char tempName[20];
 		snprintf(tempName, 20, "tau%d",i);
-		p_read_double(*argv, tempName, &tauComp[0][i]);
+		p_read_double(*argv, tempName, &c[i].tau);
 		snprintf(tempName, 20, "m%d",i);
-		p_read_double(*argv, tempName, &massComp[0][i]);
-		G[0][i] = (double *) malloc((*numComp)*sizeof(double));
-		for (int j = 0; j < *numComp; j++) {
+		p_read_double(*argv, tempName, &c[i].m);
+		for (int j = 0; j < numComp; j++) {
 			snprintf(tempName, 20, "G%d%d",i,j);
-			p_read_double(*argv, tempName, &G[0][i][j]);
+			p_read_double(*argv, tempName, &G[i][j]);
 		}
 	}
 

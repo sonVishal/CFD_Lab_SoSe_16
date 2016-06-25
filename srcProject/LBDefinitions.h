@@ -5,6 +5,9 @@
 // Number of lattice directions
 static const int Q = 19;
 
+// Number of components is a global variable
+int numComp;
+
 // Lattice velocity vectors
 static const int LATTICEVELOCITIES[19][3] = {
     {0,-1,-1}, {-1,0,-1}, {0,0,-1}, {1,0,-1}, {0,1,-1}, //[0-4]

@@ -4,13 +4,15 @@
 #include "helper.h"
 #include <mpi/mpi.h>
 #include <math.h>
+
+// Read the number of components
+void readNumComp(int argc, char *argv[]);
+
 /* reads the parameters for the lid driven cavity scenario from a config file */
 int readParameters(
     int *xlength,                       /* reads domain size. Parameter name: "xlength" */
-    int *numComp,                       /* number of components. Parameter name: "numComp" */
-    double **tau,                       /* relaxation parameter tau. Parameter name: "tau0,tau1,..." */
-    double **mass,                      /* molecular mass of each component. name: "m0, m1,..." */
-    double ***G,                        /* Matrix giving interaction. name: "G00, G01, G10, G11,..."*/
+    t_component *c,
+    double G[numComp][numComp],         /* Matrix giving interaction. name: "G00, G01, G10, G11,..."*/
     double *velocityWall,               /* velocity of the lid. Parameter name: "characteristicvelocity" */
     int *procsPerAxis,                  /* Number of sub divisions in x,y,z directions*/
     int *timesteps,                     /* number of timesteps. Parameter name: "timesteps" */
