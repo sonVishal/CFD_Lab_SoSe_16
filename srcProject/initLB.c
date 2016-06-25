@@ -21,6 +21,9 @@ int readParameters(int *xlength, int *numComp, double **tauComp, double **massCo
     READ_INT(*argv, *xlength);
 	READ_INT(*argv, *numComp);
 
+	//Broadcast it immediately so that all the others have it
+	MPI_Bcast(numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
 	// Read the tau and mass for each component
 	// * If mass and tau are provided for less number of components
 	//   p_read_double will give an error
@@ -100,6 +103,7 @@ int readParameters(int *xlength, int *numComp, double **tauComp, double **massCo
 	if (*xlength%iProc != 0 || *xlength%jProc != 0 || *xlength%kProc != 0) {
         printf("WARNING: The domain decomposition is not uniform. This might create load unbalances between processes.\n");
 	}
+
 
   return 0;
 }
