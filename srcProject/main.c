@@ -221,8 +221,9 @@ int main(int argc, char *argv[]){
     for (int i = 0; i < numComp; i++) {
         free(c[i].streamField);
         free(c[i].collideField);
-        free(G[i]);
+        free(G[i]); //lower level pointer
     }
+    free(G); // upper level pointer
     free(flagField);
 
 #ifndef NDEBUG
