@@ -56,7 +56,7 @@ enum CELLS {
     PERIODIC_BOUNDARY
 };
 
-// TODO: Argue if we need function pointers or simply do the following
+//TODO: (DL) not sure if a function pointer with inline works... we can test it out.
 static inline double psi1(double numberDensity) {
     return (1-exp(-numberDensity));
 }
@@ -66,7 +66,6 @@ static inline double psi2(double numberDensity) {
 }
 
 typedef double (*fctPtrPsi)(double);
-
 fctPtrPsi selectPsiFunction(int code){
     switch(code){
         case 1:

@@ -46,8 +46,16 @@ G01             0.02
 G10             0.03
 G11             0.04
 
+#Psi function
+#Select of the following implemented functions:
+#1: (1-exp(-numberDensity))
+#2: numberDensity
+psi1		1
+psi2		2
+
+
 # Reynolds Number
-Re                    2
+Re              2
 
 # Velocity of moving wall
 xvelocity         0.01
