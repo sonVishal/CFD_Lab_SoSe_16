@@ -97,7 +97,7 @@ void computeVelocityNI(const int* numComp, const double *const c_density, const 
 //
 //TODO: (TKS) Add const where appropriate
 //TODO: (TKS) Tidy up signature
-void computeForces(int currentCellIndex, t_component *c, const int *numComp, double *c_numDensity, double **G, int * xlength, double *forces[3]){
+void computeForces(int currentCellIndex, t_component *c, const int *numComp, double **G, int * xlength, double *forces[3]){
     //TODO: (TKS) Take into consideration only neighbours.
 
     int xlen2 = xlength[0]+2;
@@ -121,12 +121,10 @@ void computeForces(int currentCellIndex, t_component *c, const int *numComp, dou
                 int nextIndex = Q*nextCellIndex; //index of number density in direction i
                 numDensity = c[m].collideField[nextIndex]; //number density in direction i
 
-
                 forces[n][0] += G[n][m] * c[m].psi(numDensity) * LATTICEVELOCITIES[i][0];
                 forces[n][1] += G[n][m] * c[m].psi(numDensity) * LATTICEVELOCITIES[i][1];
                 forces[n][2] += G[n][m] * c[m].psi(numDensity) * LATTICEVELOCITIES[i][2];
              }
-
         }
 
         numDensity = c[n].collideField[currentCellIndex];
