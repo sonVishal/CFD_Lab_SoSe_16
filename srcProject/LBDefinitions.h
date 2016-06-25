@@ -65,6 +65,20 @@ static inline double psi2(double numberDensity) {
     return numberDensity;
 }
 
+typedef double (*fctPtrPsi)(double);
+
+fctPtrPsi selectPsiFunction(int code){
+    switch(code){
+        case 1:
+            return &psi1;
+        case 2:
+            return &psi2;
+        default:
+            ERROR("Function code for psi is invalid.");
+    }
+    return NULL;
+}
+
 
 //TODO: (DL) There can be "better" ways to number edges. At the moment the numbering is benefical for computing indices.
 // Numbering of edges of the domain:
