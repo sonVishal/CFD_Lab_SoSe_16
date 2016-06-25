@@ -112,7 +112,7 @@
 int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEdge const * const iterPara,
 		t_procData const * const procData, const int index, const int injectFlag){
 
-	assert(injectFlag == 0 || injectFlag == 1);
+	assert(injectFlag == EXTRACT || injectFlag == INJECT);
 
 	int endIndex, cellOffset;
 
@@ -273,7 +273,6 @@ void treatPeriodicWall(double *const collideField, double *const sendBuffer, dou
 	//TODO: extract and inject are from parallel.c - Discuss if we make them "common functions"
 	// printf("startInner=%i, startOuter=%i, endInner=%i, endOuter=%i \n",
 	// iterPara.startInner, iterPara.startOuter, iterPara.endInner, iterPara.endOuter);
-
 	extract(sendBuffer, collideField, &iterPara, procData, procWall, indexOut);
 
 	commRank = procData->periodicNeighbours[procWall];
@@ -330,7 +329,6 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 	// 	printf("(INJECT) procData->rank=%i, procEdge=%i, opponentEdge=%i ",procData->rank, procEdge, opponentEdge);
 	// 	printf("iterParaEdge.x=%i, iterParaEdge.y=%i, iterParaEdge.z=%i \n", iterParaEdge.x, iterParaEdge.y, iterParaEdge.z);
 	// }
-
 	extractInjectEdge(readBuffer, collideField, &iterParaEdge, procData, indexInEdge, INJECT);
 }
 
@@ -490,6 +488,7 @@ void treatBoundary(int const*const flagField, double *const collideField, const 
 		int firstNeighbour = procData->periodicEdgeNeighbours[edge1[idx]];
 		int secondNeighbour = procData->periodicEdgeNeighbours[edge2[idx]];
 
+		//TODO: (DL) make a better solution for buffer business
 		if(edge1[idx] == 0 || edge1[idx] == 2 || edge1[idx] == 4 || edge1[idx] == 5){
 			validSendBuffer = sendBuffer[LEFT];
 			validReadBuffer = readBuffer[LEFT];
