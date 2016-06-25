@@ -50,9 +50,7 @@ int main(int argc, char *argv[]){
     //Timing variables:
     double beginProcTime, endProcTime, beginSimTime, endSimTime;
 
-    /* Read parameters and check the bounds on tau
-     * Only performed by the root and broadcasted*/
-    //tau is calculated automatically from the reynoldsnumber
+
     if (procData.rank == 0) {
         readNumComp(argc, &argv[1]);
     }else{
@@ -65,6 +63,8 @@ int main(int argc, char *argv[]){
     // Interacting potential
     double G[numComp][numComp];
 
+    /* Read parameters and check the bounds on tau
+     * Only performed by the root and broadcasted*/
     if (procData.rank == 0) {
         readParameters(&xlength, c, G, wallVelocity, procsPerAxis, &timesteps,
             &timestepsPerPlotting, argc, &argv[1]);
