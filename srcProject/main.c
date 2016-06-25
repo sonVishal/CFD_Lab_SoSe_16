@@ -118,6 +118,9 @@ int main(int argc, char *argv[]){
         free(G[i]);
     }
 
+    finaliseMPI(&procData);
+    return 0;
+
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 

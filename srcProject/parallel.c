@@ -28,7 +28,9 @@ void broadcastValues(int *xlength, int numComp, int rank, double **tauComp, doub
 
     MPI_Bcast(tauComp[0], numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(massComp[0], numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(G[0], numComp*numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	for (int i = 0; i < numComp; i++) {
+        MPI_Bcast(G[0][i], numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    }
 }
 
 /*
