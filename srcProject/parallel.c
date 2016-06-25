@@ -7,7 +7,7 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 }
 
 void broadcastValues(int rank, int *xlength, t_component *c, double G[numComp][numComp],
-	double *velocityWall, int *procsPerAxis, int *timesteps, int *timestepsPerPlotting) {
+	int *psiFctCode, double *velocityWall, int *procsPerAxis, int *timesteps, int *timestepsPerPlotting) {
 
 	MPI_Bcast(xlength, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(velocityWall, 3, MPI_DOUBLE, 0, MPI_COMM_WORLD);
@@ -15,6 +15,11 @@ void broadcastValues(int rank, int *xlength, t_component *c, double G[numComp][n
     MPI_Bcast(timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(procsPerAxis, 3, MPI_INT, 0, MPI_COMM_WORLD);
 	MPI_Bcast(G, numComp*numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Bcast(psiFctCode, numComp, MPI_INT, 0, MPI_COMM_WORLD);
+
+	for(int i=0; i < numComp; ++i){
+		c[i].psi = selectPsiFunction(psiFctCode[i]);
+	}
 
 	// Avoid this by creating a struct
 	// for (int i = 0; i < numComp; i++) {

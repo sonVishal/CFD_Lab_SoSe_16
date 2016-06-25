@@ -62,16 +62,17 @@ int main(int argc, char *argv[]){
 
     // Interacting potential
     double G[numComp][numComp];
+    int psiFctCode[numComp];
 
     /* Read parameters and check the bounds on tau
      * Only performed by the root and broadcasted*/
     if (procData.rank == 0) {
-        readParameters(&xlength, c, G, wallVelocity, procsPerAxis, &timesteps,
+        readParameters(&xlength, c, G, psiFctCode, wallVelocity, procsPerAxis, &timesteps,
             &timestepsPerPlotting, argc, &argv[1]);
     }
 
     // Broadcast the data from rank 0 (root) to other processes
-    broadcastValues(procData.rank, &xlength, c, G, wallVelocity,
+    broadcastValues(procData.rank, &xlength, c, G, psiFctCode, wallVelocity,
         procsPerAxis, &timesteps, &timestepsPerPlotting);
 
     // TODO: Remove when done

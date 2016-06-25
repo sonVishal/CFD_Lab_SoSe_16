@@ -13,6 +13,7 @@ int readParameters(
     int *xlength,                       /* reads domain size. Parameter name: "xlength" */
     t_component *c,
     double G[numComp][numComp],         /* Matrix giving interaction. name: "G00, G01, G10, G11,..."*/
+    int *psiFctCode,                    /* array that provides the function codes that are used for selecting the function pointer*/
     double *velocityWall,               /* velocity of the lid. Parameter name: "characteristicvelocity" */
     int *procsPerAxis,                  /* Number of sub divisions in x,y,z directions*/
     int *timesteps,                     /* number of timesteps. Parameter name: "timesteps" */
