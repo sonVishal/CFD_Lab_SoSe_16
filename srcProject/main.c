@@ -64,6 +64,7 @@ int main(int argc, char *argv[]){
         MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
     }
 
+
     // Broadcast the data from rank 0 (root) to other processes
     broadcastValues(&xlength, &numComp, procData.rank, &tau, &molecularMass, &G, wallVelocity,
         procsPerAxis, &timesteps, &timestepsPerPlotting);
@@ -76,6 +77,10 @@ int main(int argc, char *argv[]){
 
     // Array of the components in our simulation
     t_component c[numComp];
+
+    //TODO: (TKS) REMOVE when proper initialization of psi
+    c[0].psi = psi1;
+    c[1].psi = psi2;
 
     // Abort if the number of processes given by user do not match with the dat file
     if (procData.numRanks != procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2]) {
@@ -173,7 +178,7 @@ int main(int argc, char *argv[]){
 
         // Perform local collision
       //TODO: (TKS) Make collision correct
-	    doCollision(c, numComp, procData.xLength);
+	    doCollision(c, numComp, G, procData.xLength);
 
 #ifndef NDEBUG
         storeMassVector(c, numComp, massAfter, procData.xLength);

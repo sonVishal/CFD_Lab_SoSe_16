@@ -13,5 +13,5 @@ void computePostCollisionDistributions(double *currentCell, const double tau, co
 /** carries out the whole local collision process. Computes density and velocity and
  *  equilibrium distributions. Carries out BGK update.
  */
-void doCollision(t_component *c1, int numComp, int *xlength);
+void doCollision(t_component *c1, int numComp, double **G, int *xlength);
 #endif

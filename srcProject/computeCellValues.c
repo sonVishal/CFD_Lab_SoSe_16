@@ -93,14 +93,26 @@ void computeVelocityNI(const int* numComp, const double *const c_density, const 
 }
 
 /*computes interacting forces between species*/
-
-void computeForces(const double *const currentCell, const int *numComp, double *forces){
+void computeForces(const double *const currentCell, t_component *c, const int *numComp, double *c_numDensity, double **G, double *forces){
     //TODO: (TKS) Take into consideration only neighbours.
+    //TODO: (TKS) Need G.
     
     for (int n = 0; n < *numComp; ++n){
-        
-    }
+        forces[n] = 0;
 
+        for (int m = 0; m < *numComp; ++m) {
+            
+             for (int i = 0; i < Q; i++) { //Iterate through all directions
+
+                 //TODO: (TKS) insert correct value into psi
+                 forces[n] += G[n][m] * c[m].psi(0.001);
+             }
+
+        }
+
+        //TODO: (TKS) insert correct value into psi
+        forces[n] *= c[n].psi(0.001);
+    }
 }
 
 /** computes the equilibrium distributions for all particle distribution
