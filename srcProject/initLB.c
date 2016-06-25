@@ -15,7 +15,7 @@ void readNumComp(int argc, char *argv[]) {
 }
 
 // TODO: (VS) Remove velocity and reynolds number in final version from entire code
-int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int *psiFctCode,
+int readParameters(int *xlength, t_component *c, double G[numComp][numComp],
 	double *velocityWall, int *procsPerAxis, int *timesteps, int *timestepsPerPlotting,
 	int argc, char *argv[]){
 
@@ -46,9 +46,6 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int
 
 		snprintf(tempName, 20, "m%d",i);
 		read_double(*argv, tempName, &c[i].m);
-
-		snprintf(tempName, 20, "psi%d",i);
-		read_int(*argv, tempName, &psiFctCode[i]);
 
 		for (int j = 0; j < numComp; j++) {
 			snprintf(tempName, 20, "G%d%d",i,j);
