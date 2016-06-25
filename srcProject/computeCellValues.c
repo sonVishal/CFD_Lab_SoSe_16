@@ -72,7 +72,25 @@ void c_computeVelocity(const double * const currentCell, const double * const de
     velocity[2] *= *mass/(*density);
 }
 
-//TODO: (TKS) Not changed yet.
+void computeVelocityNI(const int* numComp, const double *const c_density, const double * const c_velocity, const double *const c_tau, double* velocityNI){
+
+    double den = 0;
+    double nom[3] = {0,0,0};
+
+    for (int n = 0; n < *numComp; ++n) {
+       nom[0]+= c_density[n]*c_velocity[0]/c_tau[n];
+       nom[1]+= c_density[n]*c_velocity[1]/c_tau[n];
+       nom[2]+= c_density[n]*c_velocity[2]/c_tau[n];
+
+       den+= c_density[n]/c_tau[n];
+    }
+
+    velocityNI[0] = nom[0]/den;
+    velocityNI[1] = nom[1]/den;
+    velocityNI[2] = nom[2]/den;
+
+}
+
 /** computes the equilibrium distributions for all particle distribution
  *  functions of one cell from density and velocity and stores the results in feq.
  */

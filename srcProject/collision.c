@@ -38,16 +38,17 @@ void doCollision(t_component *c, const int numComp, int *xlength){
 			for (x = 1; x <= xlength[0]; x++) { //x
                 
                 // Allocate memory to local cell parameters
+                double c_tau[numComp];              //Array which holds each tau value. 
                 double c_density[numComp];          //Array with the densities for each component
                 double c_numDensity[numComp];       //Array with the number densities for each component
                 double c_velocity[numComp];         //Component velocity
                 double c_velocityEq[numComp][3];    //Array with the velocities for each component
 
                 double density;
-                double velocityNInteract[3]; //TODO (TKS) Better name
-                double feq[19];
+                double velocityNI[3];  // Total equilibrium velocity if there were no forces between species
+                double feq[19];        // Equilibrium distribution of number density
 
-                for (n=0; n < numComp; ++n){ //c //TODO: (TKS) Possible to optimize this loop nest. We now lose locality.
+                for (n=0; n < numComp; ++n){ //c //TODO: (TKS) Possible to optimize this loop nest. We now lose locality (?)
 
                     // Get the index of the first distribution in current component in the current cell
                     idx = Q*(zOffset + yOffset + x);
@@ -69,11 +70,15 @@ void doCollision(t_component *c, const int numComp, int *xlength){
                     //}
                     //#endif
                 
-                    // Compute the cell velocity
+                    // Compute the cell velocity for current component
                     c_computeVelocity(currentCell, &c_density[numComp], &c_velocity[n], &c->m);
                 }
 
+                computeVelocityNI(&numComp, c_density, c_velocity, c_tau, velocityNI);
+                //TODO: (TKS) Add forces.
+                //TODO: (TKS) Add equilibrium velocity.
 
+                //TODO: (TKS) Compute new equilibrium distribution.
                 // Compute the equilibrium distributions
                 computeFeq(density,velocity,feq);
 
