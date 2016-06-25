@@ -51,6 +51,9 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp],
 			snprintf(tempName, 20, "G%d%d",i,j);
 			read_double(*argv, tempName, &G[i][j]);
 		}
+
+		snprintf(tempName, 20, "psi%d", i);
+		read_int(*argv, tempName, &c[i].psiFctCode);
 	}
 
     READ_DOUBLE(*argv, Re);

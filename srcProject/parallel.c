@@ -24,16 +24,17 @@ void broadcastValues(int rank, int *xlength, t_component *c, double G[numComp][n
 
 	// Create a struct for broadcasting components
 	MPI_Datatype MPI_Component;
-    MPI_Datatype types[4] = {MPI_BYTE, MPI_BYTE, MPI_DOUBLE, MPI_DOUBLE};
-	int blocklengths[4] = {sizeof(double *), sizeof(double *), 1, 1};
-    MPI_Aint offsets[4];
+    MPI_Datatype types[5] = {MPI_BYTE, MPI_BYTE, MPI_DOUBLE, MPI_DOUBLE, MPI_INT};
+	int blocklengths[5] = {sizeof(double *), sizeof(double *), 1, 1, 1};
+    MPI_Aint offsets[5];
 
 	offsets[0] = (size_t)(void *)&c[0].streamField - (size_t)(void *)&c[0];
 	offsets[1] = (size_t)(void *)&c[0].collideField - (size_t)(void *)&c[0];
 	offsets[2] = (size_t)(void *)&c[0].tau - (size_t)(void *)&c[0];
 	offsets[3] = (size_t)(void *)&c[0].m - (size_t)(void *)&c[0];
+	offsets[4] = (size_t)(void *)&c[0].psiFctCode - (size_t)(void *)&c[0];
 
-    MPI_Type_create_struct(4, blocklengths, offsets, types, &MPI_Component);
+    MPI_Type_create_struct(5, blocklengths, offsets, types, &MPI_Component);
     MPI_Type_commit(&MPI_Component);
 
 	MPI_Bcast(c, numComp, MPI_Component, 0, MPI_COMM_WORLD);
