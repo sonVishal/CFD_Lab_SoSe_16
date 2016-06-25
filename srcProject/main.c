@@ -62,6 +62,7 @@ int main(int argc, char *argv[]){
             wallVelocity, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
     }
 
+    // TODO: (VS) Probably better to do it in a function call
     // Broadcast the data from rank 0 (root) to other processes
     MPI_Bcast(&xlength, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
