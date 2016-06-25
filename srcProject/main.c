@@ -114,6 +114,9 @@ int main(int argc, char *argv[]){
     // Free the temporary variables since the value was copied
     free(tau);
     free(molecularMass);
+    for (int i = 0; i < numComp; i++) {
+        free(G[i]);
+    }
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
