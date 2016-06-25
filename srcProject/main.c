@@ -72,7 +72,6 @@ int main(int argc, char *argv[]){
     procData.wallVelocity[1] = wallVelocity[1];
     procData.wallVelocity[2] = wallVelocity[2];
 
-    //TODO: (TKS) Should read in number of components externally. For now having a global variable.
     // Array of the components in our simulation
     t_component c[numComp];
 
