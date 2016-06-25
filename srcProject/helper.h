@@ -106,8 +106,6 @@ void  errhandler( int nLine, const char *szFile, const char *szString );
 void read_string( const char* szFilename, const char* szName, char*  sValue);
 void read_int   ( const char* szFilename, const char* szName, int*    nValue);
 void read_double( const char* szFilename, const char* szName, double*  Value);
-void p_read_double( const char* szFileName, const char* szVarName, double* pVariable);
-
 
 /**
  * Writing matrices to a file.
