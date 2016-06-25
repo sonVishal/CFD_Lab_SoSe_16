@@ -36,18 +36,18 @@ void doCollision(t_component *c, const int numComp, int *xlength){
 		for (y = 1; y <= xlength[1]; y++) { //y
 			yOffset = y*(xlength[0]+2);
 			for (x = 1; x <= xlength[0]; x++) { //x
-                //
-                    // Allocate memory to local cell parameters
-                    double c_density[numComp];          //Array with the densities for each component
-                    double c_numDensity[numComp];       //Array with the number densities for each component
-                    double c_velocity[numComp];         //Component velocity
-                    double c_velocityEq[numComp][3];    //Array with the velocities for each component
+                
+                // Allocate memory to local cell parameters
+                double c_density[numComp];          //Array with the densities for each component
+                double c_numDensity[numComp];       //Array with the number densities for each component
+                double c_velocity[numComp];         //Component velocity
+                double c_velocityEq[numComp][3];    //Array with the velocities for each component
 
-                    double density;
-                    double velocityNInteract[3]; //TODO (TKS) Better name
-                    double feq[19];
+                double density;
+                double velocityNInteract[3]; //TODO (TKS) Better name
+                double feq[19];
 
-                for (n=0; n < numComp; ++n){ //c //TODO: (TKS) Move this loop to maximize locality.
+                for (n=0; n < numComp; ++n){ //c //TODO: (TKS) Possible to optimize this loop nest. We now lose locality.
 
                     // Get the index of the first distribution in current component in the current cell
                     idx = Q*(zOffset + yOffset + x);
@@ -57,26 +57,28 @@ void doCollision(t_component *c, const int numComp, int *xlength){
                     c_computeNumDensity(currentCell, &c_numDensity[n]);
                     c_density[n] = c_numDensity[n]*c->m;
 
-                    #ifndef NDEBUG
-                    // We check if the density deviation is more than densityTol%
-                    // This value can be changed in LBDefinitions.h
-                    if(fabs(density-1) > densityTol){
-                        char msg[120];
-                        sprintf(msg, "A density value (%f) outside the given tolerance of %.2f %% was detected in cell: "
-                                "x=%i, y=%i, z=%i", density, (densityTol*100), x, y, z);
-                        ERROR(msg);
-                    }
-                    #endif
-
+                    //TODO: (TKS) Fix this test to encorporate multiple components
+                    //#ifndef NDEBUG
+                    //// We check if the density deviation is more than densityTol%
+                    //// This value can be changed in LBDefinitions.h
+                    //if(fabs(density-1) > densityTol){
+                        //char msg[120];
+                        //sprintf(msg, "A density value (%f) outside the given tolerance of %.2f %% was detected in cell: "
+                                //"x=%i, y=%i, z=%i", density, (densityTol*100), x, y, z);
+                        //ERROR(msg);
+                    //}
+                    //#endif
+                
                     // Compute the cell velocity
-                    c_computeVelocity(currentCell, &c_density[numComp], &c_velocity[n]);
-
-                    // Compute the equilibrium distributions
-                    computeFeq(density,velocity,feq);
-
-                    // Compute the post collision distributions
-                    computePostCollisionDistributions(currentCell,c[n]tau,feq);
+                    c_computeVelocity(currentCell, &c_density[numComp], &c_velocity[n], &c->m);
                 }
+
+
+                // Compute the equilibrium distributions
+                computeFeq(density,velocity,feq);
+
+                // Compute the post collision distributions
+                computePostCollisionDistributions(currentCell,c[n]tau,feq);
 			}
 		}
 	}

@@ -22,7 +22,7 @@ void c_computeNumDensity(const double *const currentCell, double *c_numDensity){
 
 //TODO: (TKS) Not changed yet
 /** computes the velocity within currentCell and stores the result in velocity */
-void c_computeVelocity(const double * const currentCell, const double *density, double *velocity){
+void c_computeVelocity(const double * const currentCell, const double * const density, double *velocity, const double * const mass){
 
     // Velocity is the momentum divided by the density
     // Momentum is the sum of the product of lattice velocity with distribution
@@ -66,10 +66,10 @@ void c_computeVelocity(const double * const currentCell, const double *density, 
     velocity[1] += currentCell[18];
     velocity[2] += currentCell[16]+currentCell[17]+currentCell[18];
 
-    // Divide by density
-    velocity[0] /= density;
-    velocity[1] /= density;
-    velocity[2] /= density;
+    // Divide by density and multiply by mass
+    velocity[0] *= *mass/(*density);
+    velocity[1] *= *mass/(*density);
+    velocity[2] *= *mass/(*density);
 }
 
 //TODO: (TKS) Not changed yet.

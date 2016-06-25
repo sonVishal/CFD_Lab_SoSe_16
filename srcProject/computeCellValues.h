@@ -9,7 +9,7 @@
 void c_computeNumDensity(const double *const currentCell, double *numDensity);
 
 /** computes the velocity within currentCell and stores the result in velocity */
-void c_computeVelocity(const double *const currentCell, const double *density,double *velocity);
+void c_computeVelocity(const double *const currentCell, const double *density,double *velocity, const double *mass);
 
 /** computes the equilibrium distributions for all particle distribution functions of one
  *  cell from density and velocity and stores the results in feq.
