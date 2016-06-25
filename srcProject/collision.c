@@ -22,7 +22,7 @@ void computePostCollisionDistributions(double *currentCell, const double tau, co
 void doCollision(t_component *c, const int numComp, double** G, int *xlength){
 
 	// Define iteration indices
-	int idx, x, y, z, n;
+	int cellidx, idx, x, y, z, n;
 
 	// Temporary variables for xlength^2
 	int const xylen = (xlength[0]+2)*(xlength[1]+2);

@@ -1,4 +1,5 @@
 #include "computeCellValues.h"
+#include "LBDefinitions.h"
 
 //TODO: (TKS) Discuss convention that component specific functions hav c_ prefix
 
@@ -93,25 +94,45 @@ void computeVelocityNI(const int* numComp, const double *const c_density, const 
 }
 
 /*computes interacting forces between species*/
-void computeForces(const double *const currentCell, t_component *c, const int *numComp, double *c_numDensity, double **G, double *forces){
+//
+//TODO: (TKS) Add const where appropriate
+//TODO: (TKS) Tidy up signature
+void computeForces(int currentCellIndex, t_component *c, const int *numComp, double *c_numDensity, double **G, int * xlength, double *forces[3]){
     //TODO: (TKS) Take into consideration only neighbours.
-    //TODO: (TKS) Need G.
+
+    int xlen2 = xlength[0]+2;
+	int ylen2 = xlength[1]+2;
+    int xylen = xlen2*ylen2;
+
+    double numDensity;
     
     for (int n = 0; n < *numComp; ++n){
         forces[n] = 0;
 
         for (int m = 0; m < *numComp; ++m) {
             
-             for (int i = 0; i < Q; i++) { //Iterate through all directions
+            //TODO: (TKS) Could unroll loop.
+            for (int i = 0; i < Q; i++) {
+                int nextCellIndex = 
+                currentCellIndex-LATTICEVELOCITIES[i][0]-
+                xlen2*LATTICEVELOCITIES[i][1]-
+                xylen*LATTICEVELOCITIES[i][2]; //index of cell in direction i
 
-                 //TODO: (TKS) insert correct value into psi
-                 forces[n] += G[n][m] * c[m].psi(0.001);
+                int nextIndex = Q*nextCellIndex; //index of number density in direction i
+                numDensity = c[m].collideField[nextIndex]; //number density in direction i
+
+
+                forces[n][0] += G[n][m] * c[m].psi(numDensity) * LATTICEVELOCITIES[i][0];
+                forces[n][1] += G[n][m] * c[m].psi(numDensity) * LATTICEVELOCITIES[i][1];
+                forces[n][2] += G[n][m] * c[m].psi(numDensity) * LATTICEVELOCITIES[i][2];
              }
 
         }
 
-        //TODO: (TKS) insert correct value into psi
-        forces[n] *= c[n].psi(0.001);
+        numDensity = c[n].collideField[currentCellIndex];
+        forces[n][0] *= c[n].psi(numDensity);
+        forces[n][1] *= c[n].psi(numDensity);
+        forces[n][2] *= c[n].psi(numDensity);
     }
 }
 
