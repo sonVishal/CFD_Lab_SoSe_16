@@ -72,6 +72,7 @@ void c_computeVelocity(const double * const currentCell, const double * const de
     velocity[2] *= *mass/(*density);
 }
 
+/*computes the total velociy as if there were no interacting forces*/
 void computeVelocityNI(const int* numComp, const double *const c_density, const double * const c_velocity, const double *const c_tau, double* velocityNI){
 
     double den = 0;
@@ -88,6 +89,17 @@ void computeVelocityNI(const int* numComp, const double *const c_density, const 
     velocityNI[0] = nom[0]/den;
     velocityNI[1] = nom[1]/den;
     velocityNI[2] = nom[2]/den;
+
+}
+
+/*computes interacting forces between species*/
+
+void computeForces(const double *const currentCell, const int *numComp, double *forces){
+    //TODO: (TKS) Take into consideration only neighbours.
+    
+    for (int n = 0; n < *numComp; ++n){
+        
+    }
 
 }
 
