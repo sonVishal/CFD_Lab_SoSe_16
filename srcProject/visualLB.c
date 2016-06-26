@@ -70,8 +70,8 @@ void writeVtsOutput(const t_component * const c, const int * const flagField,
                     // Compute the base index for collideField
                     idx = Q*(yzOffset + x);
 
-                    computeDensity(&c[i].collideField[idx], &cellDensity);
-                    computeVelocity(&c[i].collideField[idx], cellDensity, &cellVelocity[0]);
+                    c_computeNumDensity(&c[i].collideField[idx], &cellDensity);
+                    c_computeVelocity(&c[i].collideField[idx], &cellDensity, &cellVelocity[0], &c[i].m);
 
                     // Write cell average velocities
                     fprintf(fp, "%f %f %f\n", cellVelocity[0],
@@ -90,7 +90,7 @@ void writeVtsOutput(const t_component * const c, const int * const flagField,
                     // Compute the base index for collideField
                     idx = Q*(yzOffset + x);
 
-                    computeDensity(&c[i].collideField[idx], &cellDensity);
+                    c_computeNumDensity(&c[i].collideField[idx], &cellDensity);
                     // Write cell average velocities
                     fprintf(fp, "%f\n", cellDensity);
                 }

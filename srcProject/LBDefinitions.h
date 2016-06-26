@@ -200,8 +200,12 @@ static inline int p_computeCellOffset(const int outer, const int inner, const in
 	}
 }
 
-static inline int p_computeCellOffsetXYZ(const int x, const int y, const int z, const int * const xlength) {
+static inline int p_computeCellOffsetXYZ_Q(const int x, const int y, const int z, const int * const xlength) {
     return Q*(x+(y+z*(xlength[1]+2))*(xlength[0]+2));
+}
+
+static inline int p_computeCellOffsetXYZ(const int x, const int y, const int z, const int * const xlength) {
+    return x+(y+z*(xlength[1]+2))*(xlength[0]+2);
 }
 
 #endif

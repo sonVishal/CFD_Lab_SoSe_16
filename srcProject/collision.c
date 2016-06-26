@@ -2,7 +2,7 @@
 
 // Get the post collision cell distribution using BGK update rule
 // for the current cell
-void computePostCollisionDistributions(double *currentCell, const double tau, const double *const feq){
+void c_computePostCollisionDistributions(double *currentCell, const double tau, const double *const feq){
 	//double tau_val = *tau;
 	for ( int i = 0;  i< Q; ++i ) {
 		currentCell[i] = currentCell[i]  - (currentCell[i]  - feq[i])/(tau);
@@ -24,17 +24,11 @@ void doCollision(t_component *c, double G[numComp][numComp], int *xlength){
 	// Define iteration indices
 	int cellidx, idx, x, y, z, n;
 
-	// Temporary variables for xlength^2
-	int const xylen = (xlength[0]+2)*(xlength[1]+2);
-
-	// Temporary variables for z and y offsets
-	int zOffset, yOffset;
+	double *currentCell;
 
 	// Perform collision on all "inner" (FLUID) cells
 	for (z = 1; z <= xlength[2] ; z++) { //z
-		zOffset = z*xylen;
 		for (y = 1; y <= xlength[1]; y++) { //y
-			yOffset = y*(xlength[0]+2);
 			for (x = 1; x <= xlength[0]; x++) { //x
 
                 // Allocate memory to local cell parameters
@@ -46,48 +40,53 @@ void doCollision(t_component *c, double G[numComp][numComp], int *xlength){
                 double c_numDensity[numComp];       //Array with the number densities for each component
                 double c_velocity[numComp];         //Component velocity
                 double c_velocityEq[numComp][3];    //Array with the velocities for each component
+				double c_force[numComp][3];
 
-                double density;
-                double velocityNI[3];  // Total equilibrium velocity if there were no forces between species
+                double commonVelocity[3];  // Total equilibrium velocity if there were no forces between species
                 double feq[19];        // Equilibrium distribution of number density
 
-                for (n=0; n < numComp; ++n){ //c //TODO: (TKS) Possible to optimize this loop nest. We now lose locality (?)
+				cellidx = p_computeCellOffsetXYZ(x, y, z, xlength);
+				idx = Q*cellidx;
+
+                for (n = 0; n < numComp; ++n){ //c //TODO: (TKS) Possible to optimize this loop nest. We now lose locality (?)
 
                     // Get the index of the first distribution in current component in the current cell
-                    idx = Q*(zOffset + yOffset + x);
-                    double *currentCell = &c[n].collideField[idx];
+                    currentCell = &c[n].collideField[idx];
 
                     // Compute the cell density and number density for each component
                     //TODO: (TKS) need to compute number density in each neighbouring cell.
                     c_computeNumDensity(currentCell, &c_numDensity[n]);
-                    c_density[n] = c_numDensity[n]*c->m;
+                    c_density[n] = c_numDensity[n]*c[n].m;
 
-                    //TODO: (TKS) Fix this test to encorporate multiple components
-                    //#ifndef NDEBUG
-                    //// We check if the density deviation is more than densityTol%
-                    //// This value can be changed in LBDefinitions.h
-                    //if(fabs(density-1) > densityTol){
-                        //char msg[120];
-                        //sprintf(msg, "A density value (%f) outside the given tolerance of %.2f %% was detected in cell: "
-                                //"x=%i, y=%i, z=%i", density, (densityTol*100), x, y, z);
-                        //ERROR(msg);
-                    //}
-                    //#endif
-
+#ifndef NDEBUG
+                    // We check if the density deviation is more than densityTol%
+                    // This value can be changed in LBDefinitions.h
+                    if(fabs(c_density[n]-1) > densityTol){
+                        char msg[120];
+                        sprintf(msg, "A density value (%f) outside the given tolerance of %.2f %% was detected in cell: "
+                                "x=%i, y=%i, z=%i, in component %d", c_density[n], (densityTol*100), x, y, z, n);
+                        ERROR(msg);
+                    }
+#endif
                     // Compute the cell velocity for current component
-                    c_computeVelocity(currentCell, &c_density[numComp], &c_velocity[n], &c->m);
+                    c_computeVelocity(currentCell, &c_density[n], &c_velocity[n], &c[n].m);
                 }
 
-                computeVelocityNI(&numComp, c_density, c_velocity, c_tau, velocityNI);
-                //TODO: (TKS) Add forces.
-                //TODO: (TKS) Add equilibrium velocity.
+                computeCommonVelocity(c_density, c_velocity, c_tau, commonVelocity);
 
-                //TODO: (TKS) Compute new equilibrium distribution.
-                // Compute the equilibrium distributions
-                computeFeq(density,velocity,feq);
+				for (n = 0; n < numComp; n++) {
+					//Compute the force.
+					c_computeForces(cellidx, &c[n], G[n], xlength, c_force[n]);
 
-                // Compute the post collision distributions
-                computePostCollisionDistributions(currentCell,c[n]tau,feq);
+					//Compute the equilibrium velocity.
+					c_computeEqVelocity(&c[n], commonVelocity, c_density[n], c_force[n], c_velocityEq[n]);
+
+					// Compute the equilibrium distributions
+					c_computeFeq(c_density[n], c_velocityEq[n], feq);
+
+					// Compute the post collision distributions
+					c_computePostCollisionDistributions(currentCell, c[n].tau, feq);
+				}
 			}
 		}
 	}
