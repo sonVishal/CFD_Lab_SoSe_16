@@ -389,27 +389,27 @@ void p_assignIndices(const int face, int *const index) {
 
     switch (face) {
         case LEFT:     	// y = 0
-        index[0] = 0; index[1] = 5; index[2] = 6; index[3] = 7; index[4] = 14; index[5] = 9;
+        index[0] = 0; index[1] = 5; index[2] = 6; index[3] = 7; index[4] = 14; 
         break;
 
         case RIGHT:     // y = xlength[1]+1
-        index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18; index[5] = 9;
+        index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18; 
         break;
 
         case TOP: 		// z = xlength[2]+1
-        index[0] = 14; index[1] = 15; index[2] = 16; index[3] = 17; index[4] = 18; index[5] = 9;
+        index[0] = 14; index[1] = 15; index[2] = 16; index[3] = 17; index[4] = 18; 
         break;
 
         case BOTTOM: 	// z = 0
-        index[0] = 0; index[1] = 1; index[2] = 2; index[3] = 3; index[4] = 4; index[5] = 9;
+        index[0] = 0; index[1] = 1; index[2] = 2; index[3] = 3; index[4] = 4; 
         break;
 
         case FRONT:     // x = xlength[0]+1
-        index[0] = 3; index[1] = 7; index[2] = 10; index[3] = 13; index[4] = 17; index[5] = 9;
+        index[0] = 3; index[1] = 7; index[2] = 10; index[3] = 13; index[4] = 17; 
         break;
 
         case BACK:      // x = 0
-        index[0] = 1; index[1] = 5; index[2] = 8; index[3] =  11; index[4] = 15; index[5] = 9;
+        index[0] = 1; index[1] = 5; index[2] = 8; index[3] =  11; index[4] = 15; 
         break;
     }
 }

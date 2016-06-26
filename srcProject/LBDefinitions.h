@@ -13,7 +13,7 @@ int numComp;
 
 //TODO: (TKS) namechange?
 // Number of distributions + number density sent in communication.
-static const int nrDistSwap = 6;
+static const int nrDistSwap = 5;
 
 // Lattice velocity vectors
 static const int LATTICEVELOCITIES[19][3] = {
