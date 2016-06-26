@@ -312,10 +312,10 @@ void treatPeriodicWall(double *const collideField, double *const sendBuffer, dou
 	// }
 
 	if(densityFlag){
-		//TODO: (DL)
-		ERROR("Make inject reuseable, will be required in parallel.c and here");
+		const int indexIn = 9;
+		inject(readBuffer, collideField, &iterPara, procData, procWall, &indexIn, 1);
 	}else{
-		inject(readBuffer, collideField, &iterPara, procData, procWall, indexIn);
+		inject(readBuffer, collideField, &iterPara, procData, procWall, indexIn, nrDistSwap);
 	}
 }
 
@@ -468,7 +468,6 @@ void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const proc
 			collideField[cellOffsetIn1+index1] = collideField[cellOffsetOut2+index1];
 			collideField[cellOffsetIn2+index2] = collideField[cellOffsetOut1+index2];
 		}
-
 	}
 }
 

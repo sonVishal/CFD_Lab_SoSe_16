@@ -20,18 +20,18 @@ typedef struct{
 void communicateComponents(double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData);
 
 // Performs extract, swap and inject for all the directions
-void communicate(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData);
+void communicate(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData, const int densityFlag);
 
 // Exracts the collide field to the send buffer
 void extract( double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara, t_procData const * const procData,
               const int direction, int const * const index);
 
 // Swaps the data between neighbors
-void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, int direction);
+void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, int direction, const int bufferSize);
 
 // Copys the data from the read buffer to the collide field
 void inject(double const * const readBuffer, double* collideField, t_iterPara *const iterPara, t_procData const * const procData,
-            const int direction, int const * const index);
+            const int direction, int const * const index, const int indexLength);
 
 // Sets the iteration parameters
 void p_setCommIterationParameters(t_iterPara * const iterPara, t_procData const*const procData, const int direction);
