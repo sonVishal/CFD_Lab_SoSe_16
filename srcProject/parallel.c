@@ -135,7 +135,6 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const *
 	//TODO: (DL) For now all buffers are initialized no matter if there is a neighbour or not - the buffers are also used in
 	// for periodic boundaries.
 
-
     // XZ inner domain (no edges included)
     int bufferSize		= nrDistSwap*(xlength[0]*xlength[2]);
     procBufferSize[0] 	= bufferSize; //Valid for left and right
@@ -175,8 +174,6 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const *
 	sendBuffer[BACK] 	= (double *) malloc(bufferSize*db);
 	readBuffer[FRONT] 	= (double *) malloc(bufferSize*db);
 	readBuffer[BACK] 	= (double *) malloc(bufferSize*db);
-
-
 }
 
 /*
@@ -243,7 +240,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         /* Swap the distributions */
 		if(densityFlag){
 			//TODO: (DL) Note the division by nrDistSwap - maybe not so nice -- check if there is another way
-			swap(sendBuffer, readBuffer, procData, direction, procData->bufferSize[direction/2]/nrDistSwap);
+			swap(sendBuffer, readBuffer, procData, direction, (procData->bufferSize[direction/2])/nrDistSwap);
 		}else{
 			swap(sendBuffer, readBuffer, procData, direction, procData->bufferSize[direction/2]);
 		}
@@ -271,8 +268,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 				inject(readBuffer[face2], collideField, &iterPara2, procData, face2, index1, nrDist);
 			}
 		}
-
-    }
+	}
 }
 
 /*
@@ -304,17 +300,16 @@ void extract(double sendBuffer[], double const * const collideField, t_iterPara 
     }
 }
 
+//TODO: Should we integrate this in "extract" for consistency (handle via flag)?
 void extractDensity(double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara,
 	t_procData const * const procData, const int direction){
 
-	int x = iterPara->fixedValue;
-	int idx;
-	int bufferIdx = 0;
+	int idx, bufferIdx = 0;
 	double density;
+
 	for (int k = iterPara->startOuter; k <= iterPara->endOuter; k++) {
 		for (int j = iterPara->startInner; j <= iterPara->endInner; j++) {
-			idx = p_computeCellOffset(k, j, x, procData->xLength, direction);
-			idx *= Q;
+			idx = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
 			c_computeNumDensity(&collideField[idx], &density);
 			sendBuffer[bufferIdx++] = density;
 		}
@@ -379,7 +374,7 @@ void inject(double const * const readBuffer, double* collideField, t_iterPara *c
             assert(currentIndexField < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
             && currentIndexField >= 0);
 
-            for (int i = 0; i < indexLength; i++) {
+            for(int i = 0; i < indexLength; i++) {
                 //out of bound checks
                 assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
                 collideField[currentIndexField+index[i]] = readBuffer[currentIndexBuff++];
