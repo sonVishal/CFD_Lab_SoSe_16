@@ -19,7 +19,7 @@ void c_computePostCollisionDistributions(double *currentCell, const double tau, 
 
 //TODO: (TKS) Adapt to multiple components
 // Perform collision for all inner cells
-void doCollision(t_component *c, double G[numComp][numComp], int *xlength){
+void doCollision(t_component *c, const int * const flagField, double G[numComp][numComp], int *xlength){
 
 	// Define iteration indices
 	int cellidx, idx, x, y, z, n;
@@ -74,7 +74,7 @@ void doCollision(t_component *c, double G[numComp][numComp], int *xlength){
 
 				for (n = 0; n < numComp; n++) {
 					//Compute the force.
-					c_computeForces(cellidx, &c[n], G[n], xlength, c_force);
+					c_computeForces(cellidx, &c[n], flagField, G[n], xlength, c_force);
 
 					//Compute the equilibrium velocity.
 					c_computeEqVelocity(&c[n], commonVelocity, c_density[n], c_force, c_velocityEq);

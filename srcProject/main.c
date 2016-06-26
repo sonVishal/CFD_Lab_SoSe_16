@@ -160,7 +160,7 @@ int main(int argc, char *argv[]){
         beforeCollision(c, &procData);
 #endif
         // Perform local collision
-	    doCollision(c, G, procData.xLength);
+	    doCollision(c, flagField, G, procData.xLength);
 
 #ifndef NDEBUG
         afterCollision(c, &procData);

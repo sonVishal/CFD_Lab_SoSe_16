@@ -91,7 +91,7 @@ void computeCommonVelocity(const double *const c_density, const double * const c
 }
 
 /*computes interacting forces between species*/
-void c_computeForces(int currentCellIndex, const t_component *const c,
+void c_computeForces(int currentCellIndex, const t_component *const c, const int * const flagField,
     double G[numComp], int * xlength, double forces[3]){
 
     int xlen2 = xlength[0]+2;
@@ -116,7 +116,11 @@ void c_computeForces(int currentCellIndex, const t_component *const c,
             int nextIndex = Q*nextCellIndex; //index of number density in direction i
             // numDensity = c[m].collideField[nextIndex]; //number density in direction i
             // Compute the number density for component "m" at lattice site "nextIndex"
-            c_computeNumDensity(&c[m].collideField[nextIndex], &numDensity);
+            if (flagField[nextCellIndex] == FLUID) {
+                c_computeNumDensity(&c[m].collideField[nextIndex], &numDensity);
+            } else {
+                numDensity = c[m].collideField[nextIndex + 9];
+            }
 
             forces[0] += G[m] * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][0];
             forces[1] += G[m] * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][1];
