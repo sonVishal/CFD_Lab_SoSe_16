@@ -94,9 +94,6 @@ void computeCommonVelocity(const double *const c_density, const double * const c
 }
 
 /*computes interacting forces between species*/
-//
-//TODO: (TKS) Add const where appropriate
-//TODO: (TKS) Tidy up signature
 void c_computeForces(int currentCellIndex, const t_component *const c,
     double G[numComp], int * xlength, double forces[3]){
 
@@ -113,7 +110,7 @@ void c_computeForces(int currentCellIndex, const t_component *const c,
     for (int m = 0; m < numComp; ++m) {
 
         //TODO: (TKS) Could unroll loop.
-        //TODO: WRONG, do not want numDensity streaming in, but the collected number density in each neighbout cell
+        //TODO: (TKS) Find a way to save the number density (?)
         for (int i = 0; i < Q; i++) {
             int nextCellIndex = currentCellIndex-LATTICEVELOCITIES[i][0]
                                 - xlen2*LATTICEVELOCITIES[i][1]
@@ -149,6 +146,7 @@ void c_computeEqVelocity(const t_component * const c, const double * const commo
 /** computes the equilibrium distributions for all particle distribution
  *  functions of one cell from density and velocity and stores the results in feq.
  */
+//TODO: (TKS) Change this to multicomponent
 void c_computeFeq(const double density, const double * const velocity, double *feq){
 
     // Temporary variables for speed of sound squared and ^4

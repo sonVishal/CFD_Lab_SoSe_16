@@ -36,7 +36,6 @@ void doCollision(t_component *c, double G[numComp][numComp], int *xlength){
                 double c_tau[numComp];              //Array which holds each tau value.
                 double c_density[numComp];          //Array with the densities for each component in current cell
 
-                //TODO: (TKS) need to save number density in every cell to use it in the force function.
                 double c_numDensity[numComp];       //Array with the number densities for each component
                 double c_velocity[numComp];         //Component velocity
                 double c_velocityEq[3];    //Array with the velocities for each component
@@ -54,7 +53,6 @@ void doCollision(t_component *c, double G[numComp][numComp], int *xlength){
                     currentCell = &c[n].collideField[idx];
 
                     // Compute the cell density and number density for each component
-                    //TODO: (TKS) need to compute number density in each neighbouring cell.
                     c_computeNumDensity(currentCell, &c_numDensity[n]);
                     c_density[n] = c_numDensity[n]*c[n].m;
 
