@@ -149,7 +149,8 @@ int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEd
 
 		}else{
 			if(densityFlag){
-				buffer[currentIndexBuff++] = 99; //TODO: compute density
+				c_computeNumDensity(&collideField[cellOffset], &buffer[currentIndexBuff]);
+				currentIndexBuff++;
 			}else{
 				buffer[currentIndexBuff++] = collideField[cellOffset+index];
 			}
@@ -311,6 +312,7 @@ void treatPeriodicWall(double *const collideField, double *const sendBuffer, dou
 	// }
 
 	if(densityFlag){
+		//TODO: (DL)
 		ERROR("Make inject reuseable, will be required in parallel.c and here");
 	}else{
 		inject(readBuffer, collideField, &iterPara, procData, procWall, indexIn);
@@ -393,10 +395,12 @@ void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wa
 			&& currentIndexFieldOut2 >= 0);
 
 			if(densityFlag){
-				collideField[currentIndexFieldIn1+9] = 99; //TODO (DL) compute density
-				collideField[currentIndexFieldIn2+9] = 99;
+				//write the density to "In" form the cell "Out"
+				c_computeNumDensity(&collideField[currentIndexFieldOut2], &collideField[currentIndexFieldIn1+9]);
+				c_computeNumDensity(&collideField[currentIndexFieldOut1], &collideField[currentIndexFieldIn2+9]);
 			}else{
 				//Do copy operations:
+				//TODO: (DL) use variable instead of 5
 				for (int i = 0; i < 5; i++) {
 					collideField[currentIndexFieldIn1+index1[i]] = collideField[currentIndexFieldOut2+index1[i]];
 					collideField[currentIndexFieldIn2+index2[i]] = collideField[currentIndexFieldOut1+index2[i]];
@@ -458,8 +462,8 @@ void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const proc
 		}
 
 		if(densityFlag){
-			collideField[cellOffsetIn1+9] = 99; //TODO:(DL) compute the density...
-			collideField[cellOffsetIn2+9] = 99;
+			c_computeNumDensity(&collideField[cellOffsetOut2], &collideField[cellOffsetIn1+9]);
+			c_computeNumDensity(&collideField[cellOffsetOut1], &collideField[cellOffsetIn2+9]);
 		}else{
 			collideField[cellOffsetIn1+index1] = collideField[cellOffsetOut2+index1];
 			collideField[cellOffsetIn2+index2] = collideField[cellOffsetOut1+index2];
@@ -469,7 +473,8 @@ void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const proc
 }
 
 void treatComponentBoundary(t_component *c, int const*const flagField, t_procData const*const procData, double **sendBuffer, double **readBuffer, const int densityFlag){
-    for (int i = 0; i < numComp; ++i) {
+
+	for (int i = 0; i < numComp; ++i) {
         treatBoundary(flagField, c[i].collideField, procData, sendBuffer, readBuffer, densityFlag);
     }
 }
@@ -477,6 +482,7 @@ void treatComponentBoundary(t_component *c, int const*const flagField, t_procDat
 //TODO: (TKS) Remove flagField if not in use when finished
 //TODO: (DL) Update header with new functions if necessary.
 void treatBoundary(int const*const flagField, double *const collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer, const int densityFlag){
+	assert(densityFlag == 0 || densityFlag == 1);
 
 	// Handle of "real" boundaries:
 	// const int NO_NEIGHBOUR = -2; // equals the MPI_PROC_NULL = -2
@@ -549,80 +555,3 @@ void treatBoundary(int const*const flagField, double *const collideField, const 
 		}
 	}
 }
-
-
-//============================================================================
-//============================================================================
-//============================================================================
-
-// void communicateDensityBoundary(double **sendBuffer, double **readBuffer, double *const collideField, const t_procData * const procData){
-//
-// 	for(int wall=LEFT; wall<=BACK; wall+=2){ //see LBDefinitions for order of walls
-//
-// 		int firstNeighbour = procData->periodicNeighbours[wall];
-// 		int secondNeighbour = procData->periodicNeighbours[wall+1];
-//
-// 		if(firstNeighbour != MPI_PROC_NULL && secondNeighbour != MPI_PROC_NULL){
-// 			//Case when there is only one proc, then no communication is required
-//
-// 			//TODO: (DL) either generalize the function OR make a density corresponding one
-// 			// treatPeriodicWallNoComm(collideField, wall, wall+1, procData);
-// 		}
-// 		else{
-// 			if(firstNeighbour != MPI_PROC_NULL){
-// 				//TODO: (DL) either generalize the function OR make a density corresponding one
-// 				// treatPeriodicWall(collideField, sendBuffer[wall], readBuffer[wall],
-// 				// 	procData, wall, wall+1);
-// 			}
-//
-// 			if(secondNeighbour != MPI_PROC_NULL){
-// 				//TODO: (DL) either generalize the function OR make a density corresponding one
-// 				// treatPeriodicWall(collideField, sendBuffer[wall+1], readBuffer[wall+1],
-// 				// 	procData, wall+1, wall);
-// 			}
-// 		}
-// 	}
-//
-// 	static const int edge1[6] = {0,1,2,3,4,5};
-// 	static const int edge2[6] = {10,11,8,9,6,7}; //opposite edge to edge1; see numbering in LBDefinitions.h
-//
-// 	//TODO: (DL) this is not nice, think about alternatives. For now there is guaranteed enough space.
-// 	// double *validSendBuffer, *validReadBuffer;
-//
-// 	for(int idx = 0; idx < 6; ++idx){
-//
-// 		int firstNeighbour = procData->periodicEdgeNeighbours[edge1[idx]];
-// 		int secondNeighbour = procData->periodicEdgeNeighbours[edge2[idx]];
-//
-// 		//TODO: (DL) make a better solution for buffer business
-// 		// if(edge1[idx] == 0 || edge1[idx] == 2 || edge1[idx] == 4 || edge1[idx] == 5){
-// 		// 	validSendBuffer = sendBuffer[LEFT];
-// 		// 	validReadBuffer = readBuffer[LEFT];
-// 		// }else if(edge1[idx] == 1 || edge1[idx] == 3){
-// 		// 	validSendBuffer = sendBuffer[TOP];
-// 		// 	validReadBuffer = readBuffer[TOP];
-// 		// }else{
-// 		// 	validReadBuffer = NULL;
-// 		// 	validSendBuffer = NULL;
-// 		// 	ERROR("");
-// 		// }
-//
-// 		if(firstNeighbour != MPI_PROC_NULL && secondNeighbour != MPI_PROC_NULL){
-// 		//Case when there is only one proc, then no communication is required
-// 			//TODO: (DL) either generalize the function OR make a density corresponding one
-// 			// treatPeriodicEdgeNoComm(collideField, procData, edge1[idx], edge2[idx]);
-// 		}else{
-// 			if(firstNeighbour != MPI_PROC_NULL){
-// 				//TODO: (DL) either generalize the function OR make a density corresponding one
-// 				// treatPeriodicEdge(collideField, validSendBuffer, validReadBuffer,
-// 				// 	procData, edge1[idx], edge2[idx]);
-// 			}
-//
-// 			if(secondNeighbour != MPI_PROC_NULL){
-// 				//TODO: (DL) either generalize the function OR make a density corresponding one
-// 				// treatPeriodicEdge(collideField, validSendBuffer, validReadBuffer,
-// 				// 	procData, edge2[idx], edge1[idx]);
-// 			}
-// 		}
-// 	}
-// }
