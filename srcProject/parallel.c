@@ -1,4 +1,5 @@
 #include "parallel.h"
+#include "LBDefinitions.h"
 
 void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 	MPI_Init(&argc, &argv);
@@ -124,7 +125,6 @@ void domainDecompositionAndNeighbors(t_procData *const procData, const int xleng
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const * const xlength,
 	int const * const neighbours, int procBufferSize[3]) {
 
-    const int nrDistSwap = 5;
     const int db = sizeof(double); //double in bytes
 
     // TODO: (DL) Category memory optimization (not urgent):

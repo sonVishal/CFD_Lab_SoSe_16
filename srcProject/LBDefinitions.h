@@ -5,8 +5,15 @@
 // Number of lattice directions
 static const int Q = 19;
 
+// Dimensions
+static const int D = 3;
+
 // Number of components is a global variable
 int numComp;
+
+//TODO: (TKS) namechange?
+// Number of distributions + number density sent in communication.
+static const int nrDistSwap = 5;
 
 // Lattice velocity vectors
 static const int LATTICEVELOCITIES[19][3] = {
