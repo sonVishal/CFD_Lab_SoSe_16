@@ -167,7 +167,7 @@ int main(int argc, char *argv[]){
 #endif
 
         // Treat local boundaries for each component
-	    treatComponentBoundary(c, flagField, &procData, sendBuffer, readBuffer);
+	    treatComponentBoundary(c, flagField, &procData, sendBuffer, readBuffer, 0);
 
         // Print VTS files at given interval
 	    if (t%timestepsPerPlotting == 0){

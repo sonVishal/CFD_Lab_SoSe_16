@@ -431,7 +431,7 @@ void communicateDensityComponents(double** sendBuffer, double**readBuffer, t_com
 
 		//TODO:(DL) for now parallel and periodic part is separated (less risk of deadlocks etc.):
 		communicateDensityParallelWall(sendBuffer, readBuffer, c[i].collideField, procData);
-		communicateDensityBoundary(sendBuffer, readBuffer, c[i].collideField, procData);
+		treatBoundary(NULL, c[i].collideField, procData, sendBuffer, readBuffer, 1);
 	}
 }
 

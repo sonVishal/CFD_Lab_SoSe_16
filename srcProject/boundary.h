@@ -13,11 +13,9 @@ typedef struct{
 } t_iterParaEdge;
 
 /*Wrapper around tratBoundary to handle every component*/
-void treatComponentBoundary(t_component *c, int const * const flagField, const t_procData * const procData, double **sendBuffer, double **readBuffer);
+void treatComponentBoundary(t_component *c, int const * const flagField, const t_procData * const procData, double **sendBuffer, double **readBuffer, int densityFlag);
 
 /** handles the boundaries in our simulation setup */
-void treatBoundary(int const * const flagField, double *collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer);
-
-void communicateDensityBoundary(double **sendBuffer, double **readBuffer, double *const collideField, const t_procData * const procData);
+void treatBoundary(int const * const flagField, double *collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer, const int densityFlag);
 
 #endif
