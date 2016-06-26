@@ -39,8 +39,8 @@ void doCollision(t_component *c, double G[numComp][numComp], int *xlength){
                 //TODO: (TKS) need to save number density in every cell to use it in the force function.
                 double c_numDensity[numComp];       //Array with the number densities for each component
                 double c_velocity[numComp];         //Component velocity
-                double c_velocityEq[numComp][3];    //Array with the velocities for each component
-				double c_force[numComp][3];
+                double c_velocityEq[3];    //Array with the velocities for each component
+				double c_force[3];
 
                 double commonVelocity[3];  // Total equilibrium velocity if there were no forces between species
                 double feq[19];        // Equilibrium distribution of number density
@@ -76,13 +76,13 @@ void doCollision(t_component *c, double G[numComp][numComp], int *xlength){
 
 				for (n = 0; n < numComp; n++) {
 					//Compute the force.
-					c_computeForces(cellidx, &c[n], G[n], xlength, c_force[n]);
+					c_computeForces(cellidx, &c[n], G[n], xlength, c_force);
 
 					//Compute the equilibrium velocity.
-					c_computeEqVelocity(&c[n], commonVelocity, c_density[n], c_force[n], c_velocityEq[n]);
+					c_computeEqVelocity(&c[n], commonVelocity, c_density[n], c_force, c_velocityEq);
 
 					// Compute the equilibrium distributions
-					c_computeFeq(c_density[n], c_velocityEq[n], feq);
+					c_computeFeq(c_density[n], c_velocityEq, feq);
 
 					// Compute the post collision distributions
 					c_computePostCollisionDistributions(currentCell, c[n].tau, feq);
