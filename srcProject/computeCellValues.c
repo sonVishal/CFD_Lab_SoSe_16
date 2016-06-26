@@ -1,8 +1,6 @@
 #include "computeCellValues.h"
 #include "LBDefinitions.h"
 
-//TODO: (TKS) Discuss convention that component specific functions hav c_ prefix
-
 
 /** computes the number density and density from the particle distribution
  * functions stored at  currentCell. currentCell thus denotes the address
@@ -21,7 +19,6 @@ void c_computeNumDensity(const double *const currentCell, double *c_numDensity){
 }
 
 
-//TODO: (TKS) Not changed yet
 /** computes the velocity within currentCell and stores the result in velocity */
 void c_computeVelocity(const double * const currentCell, const double * const density, double *velocity, const double * const mass){
 

@@ -1,4 +1,5 @@
 #include "parallel.h"
+#include "LBDefinitions.h"
 
 void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 	MPI_Init(&argc, &argv);
@@ -124,7 +125,6 @@ void domainDecompositionAndNeighbors(t_procData *const procData, const int xleng
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const * const xlength,
 	int const * const neighbours, int procBufferSize[3]) {
 
-    const int nrDistSwap = 5;
     const int db = sizeof(double); //double in bytes
 
     // TODO: (DL) Category memory optimization (not urgent):
@@ -194,7 +194,7 @@ void communicateComponents(double** sendBuffer, double**readBuffer, t_component 
 void communicate(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData){
     //Run extract, swap, inject for all sides and cells.
 
-    int 		index1[5], index2[5];
+    int 		index1[nrDistSwap], index2[nrDistSwap];
     t_iterPara  iterPara1, iterPara2;
 
     // Iterate through directions (left/right, top/bottom, front/back)
@@ -208,6 +208,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         p_setCommIterationParameters(&iterPara2, procData, face2);
 
         /* Assign the indices for the 5 distributions that go out of the two faces of the current direction */
+        /* Also set set the last element to the index of the middle distribution to communicate the number density*/
         p_assignIndices(face1, index1);
         p_assignIndices(face2, index2);
 
@@ -251,7 +252,7 @@ void extract(double sendBuffer[], double const * const collideField, t_iterPara 
             assert(currentIndexField < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
             && currentIndexField >= 0);
 
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < nrDistSwap; i++) {
                 // Out of bounds check
                 assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
                 sendBuffer[currentIndexBuff++] = collideField[currentIndexField+index[i]];
@@ -319,7 +320,7 @@ void inject(double const * const readBuffer, double* collideField, t_iterPara *c
             assert(currentIndexField < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
             && currentIndexField >= 0);
 
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < nrDistSwap; i++) {
                 //out of bound checks
                 assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
                 collideField[currentIndexField+index[i]] = readBuffer[currentIndexBuff++];
@@ -388,27 +389,27 @@ void p_assignIndices(const int face, int *const index) {
 
     switch (face) {
         case LEFT:     	// y = 0
-        index[0] = 0; index[1] = 5; index[2] = 6; index[3] = 7; index[4] = 14;
+        index[0] = 0; index[1] = 5; index[2] = 6; index[3] = 7; index[4] = 14; 
         break;
 
         case RIGHT:     // y = xlength[1]+1
-        index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18;
+        index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18; 
         break;
 
         case TOP: 		// z = xlength[2]+1
-        index[0] = 14; index[1] = 15; index[2] = 16; index[3] = 17; index[4] = 18;
+        index[0] = 14; index[1] = 15; index[2] = 16; index[3] = 17; index[4] = 18; 
         break;
 
         case BOTTOM: 	// z = 0
-        index[0] = 0; index[1] = 1; index[2] = 2; index[3] = 3; index[4] = 4;
+        index[0] = 0; index[1] = 1; index[2] = 2; index[3] = 3; index[4] = 4; 
         break;
 
         case FRONT:     // x = xlength[0]+1
-        index[0] = 3; index[1] = 7; index[2] = 10; index[3] = 13; index[4] = 17;
+        index[0] = 3; index[1] = 7; index[2] = 10; index[3] = 13; index[4] = 17; 
         break;
 
         case BACK:      // x = 0
-        index[0] = 1; index[1] = 5; index[2] = 8; index[3] =  11; index[4] = 15;
+        index[0] = 1; index[1] = 5; index[2] = 8; index[3] =  11; index[4] = 15; 
         break;
     }
 }
