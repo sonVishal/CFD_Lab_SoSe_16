@@ -3,6 +3,8 @@
 //TODO: (DL) in case we do not need the boundaries NO_SLIP and MOVING_WALL then delete the code for clarity.
 //However, leave it as long as possible for testing and compare with previous scenarios.
 
+//TODO: (DL) reminder: delete all the printfs for debugging when finalizing
+
 /* Helper function that carries out the moving wall or bounce back condition, depending on flag 'type'.
  * The value in flagField corresponding to the current cell (current_cell_index) has to indicate a boundary
  * cell (flag 1 or 2), the value in flagField corresponding to neighboring cell (n_cell_index) has to
@@ -108,6 +110,7 @@
 #define VARIABLE -1 //symbol that is used in context of indices. It indicates which index is variable.
 #define EXTRACT 0
 #define INJECT 1
+//TODO: (DL) possible define "9" for middle distribution - reduce magic numbers..
 
 int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEdge const * const iterPara,
 		t_procData const * const procData, const int index, const int injectFlag, const int densityFlag){
@@ -267,7 +270,7 @@ int p_assignSharedEdgeIndex(const int edge) {
 }
 
 void treatPeriodicWall(double *const collideField, double *const sendBuffer, double *const readBuffer,
-	const t_procData * const procData, const int procWall, const int opponentWall, int densityFlag){
+	const t_procData * const procData, const int procWall, const int opponentWall, const int densityFlag){
 
 	t_iterPara  iterPara;
 	int 		indexIn[5], indexOut[5], bufferSize, commRank;
@@ -277,15 +280,11 @@ void treatPeriodicWall(double *const collideField, double *const sendBuffer, dou
 
 	p_setBoundaryIterParameters(&iterPara, procData, procWall);
 
-	//TODO: (DL) possibly safe this somewhere...
 	//always excluding shared edges (treat differently&separately)
-
 	bufferSize = densityFlag ? iterPara.endOuter * iterPara.endInner :  5 * iterPara.endOuter * iterPara.endInner;
 
-	//TODO: extract, extractDensity and inject are from parallel.c - Discuss if we make them "common functions"
 	// printf("startInner=%i, startOuter=%i, endInner=%i, endOuter=%i \n",
 	// iterPara.startInner, iterPara.startOuter, iterPara.endInner, iterPara.endOuter);
-
 	if(densityFlag){
 		extractDensity(sendBuffer, collideField, &iterPara, procData, procWall);
 	}else{
@@ -320,7 +319,7 @@ void treatPeriodicWall(double *const collideField, double *const sendBuffer, dou
 }
 
 void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *const readBuffer,
-	const t_procData * const procData, const int procEdge, const int opponentEdge, int densityFlag){
+	const t_procData * const procData, const int procEdge, const int opponentEdge, const int densityFlag){
 
 	t_iterParaEdge iterParaEdge;
 	//Note: in edge case only one index has to be copied
@@ -356,7 +355,7 @@ void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *c
 	extractInjectEdge(readBuffer, collideField, &iterParaEdge, procData, indexInEdge, INJECT, densityFlag);
 }
 
-void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wall2, t_procData const*const procData, int densityFlag){
+void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wall2, t_procData const*const procData, const int densityFlag){
 	t_iterPara  iterPara1 = {0}, iterPara2 = {0}; //default initialization to avoid "may be uninitialized" warning (=error)
 
 	int index1[5], index2[5];
@@ -400,8 +399,7 @@ void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wa
 				c_computeNumDensity(&collideField[currentIndexFieldOut1], &collideField[currentIndexFieldIn2+9]);
 			}else{
 				//Do copy operations:
-				//TODO: (DL) use variable instead of 5
-				for (int i = 0; i < 5; i++) {
+				for (int i = 0; i < nrDistSwap; i++) {
 					collideField[currentIndexFieldIn1+index1[i]] = collideField[currentIndexFieldOut2+index1[i]];
 					collideField[currentIndexFieldIn2+index2[i]] = collideField[currentIndexFieldOut1+index2[i]];
 				}
@@ -410,7 +408,7 @@ void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wa
 	}
 }
 
-void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const procData, const int edge1, const int edge2, int densityFlag){
+void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const procData, const int edge1, const int edge2, const int densityFlag){
 
 	int endIndex;
 	t_iterParaEdge iterParaEdgeIn1, iterParaEdgeOut1, iterParaEdgeIn2, iterParaEdgeOut2;
@@ -462,6 +460,7 @@ void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const proc
 		}
 
 		if(densityFlag){
+			//+9 is the distribution at the center (where we save the number density)
 			c_computeNumDensity(&collideField[cellOffsetOut2], &collideField[cellOffsetIn1+9]);
 			c_computeNumDensity(&collideField[cellOffsetOut1], &collideField[cellOffsetIn2+9]);
 		}else{
@@ -472,14 +471,12 @@ void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const proc
 }
 
 void treatComponentBoundary(t_component *c, int const*const flagField, t_procData const*const procData, double **sendBuffer, double **readBuffer, const int densityFlag){
-
 	for (int i = 0; i < numComp; ++i) {
         treatBoundary(flagField, c[i].collideField, procData, sendBuffer, readBuffer, densityFlag);
     }
 }
 
 //TODO: (TKS) Remove flagField if not in use when finished
-//TODO: (DL) Update header with new functions if necessary.
 void treatBoundary(int const*const flagField, double *const collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer, const int densityFlag){
 	assert(densityFlag == 0 || densityFlag == 1);
 
@@ -516,7 +513,6 @@ void treatBoundary(int const*const flagField, double *const collideField, const 
 
 	static const int edge1[6] = {0,1,2,3,4,5};
 	static const int edge2[6] = {10,11,8,9,6,7}; //opposite edge to edge1; see numbering in LBDefinitions.h
-
 	//TODO: (DL) this is not nice, think about alternatives. For now there is guaranteed enough space.
 	double *validSendBuffer, *validReadBuffer;
 
@@ -529,13 +525,10 @@ void treatBoundary(int const*const flagField, double *const collideField, const 
 		if(edge1[idx] == 0 || edge1[idx] == 2 || edge1[idx] == 4 || edge1[idx] == 5){
 			validSendBuffer = sendBuffer[LEFT];
 			validReadBuffer = readBuffer[LEFT];
-		}else if(edge1[idx] == 1 || edge1[idx] == 3){
+		}else{ //(edge1[idx] == 1 || edge1[idx] == 3){
+			assert(edge1[idx] == 1 || edge1[idx] == 3);
 			validSendBuffer = sendBuffer[TOP];
 			validReadBuffer = readBuffer[TOP];
-		}else{
-			validReadBuffer = NULL;
-			validSendBuffer = NULL;
-			ERROR("");
 		}
 
 		if(firstNeighbour != MPI_PROC_NULL && secondNeighbour != MPI_PROC_NULL){
