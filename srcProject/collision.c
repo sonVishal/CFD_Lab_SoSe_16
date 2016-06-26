@@ -85,7 +85,7 @@ void doCollision(t_component *c, double G[numComp][numComp], int *xlength){
 					c_computeFeq(c_density[n], c_velocityEq, feq);
 
 					// Compute the post collision distributions
-					c_computePostCollisionDistributions(currentCell, c[n].tau, feq);
+					c_computePostCollisionDistributions(&c[n].collideField[idx], c[n].tau, feq);
 				}
 			}
 		}
