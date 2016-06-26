@@ -1,4 +1,4 @@
-#include "boundary.h"
+	#include "boundary.h"
 
 //TODO: (DL) in case we do not need the boundaries NO_SLIP and MOVING_WALL then delete the code for clarity.
 //However, leave it as long as possible for testing and compare with previous scenarios.
@@ -436,7 +436,7 @@ void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const proc
 	}
 }
 
-void treatComponentBoundary(t_component *c,int numComp, int const*const flagField, t_procData const*const procData, double **sendBuffer, double **readBuffer){
+void treatComponentBoundary(t_component *c, int const*const flagField, t_procData const*const procData, double **sendBuffer, double **readBuffer){
     for (int i = 0; i < numComp; ++i) {
         treatBoundary(flagField, c[i].collideField, procData, sendBuffer, readBuffer);
     }

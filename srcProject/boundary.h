@@ -13,7 +13,7 @@ typedef struct{
 } t_iterParaEdge;
 
 /*Wrapper around tratBoundary to handle every component*/
-void treatComponentBoundary(t_component *c,int numComp, int const * const flagField, const t_procData * const procData, double **sendBuffer, double **readBuffer);
+void treatComponentBoundary(t_component *c, int const * const flagField, const t_procData * const procData, double **sendBuffer, double **readBuffer);
 
 /** handles the boundaries in our simulation setup */
 void treatBoundary(int const * const flagField, double *collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer);

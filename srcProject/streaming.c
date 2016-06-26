@@ -1,7 +1,7 @@
 #include "streaming.h"
 
 //TODO:(TKS) Make wrapper for several components
-void streamComponents(t_component* c, int numComp, int *flagField, int *xlength){
+void streamComponents(t_component* c, int *flagField, int *xlength){
     for (int i = 0; i < numComp; ++i) {
         doStreaming(c[i].streamField, c[i].collideField, flagField, xlength);
     }

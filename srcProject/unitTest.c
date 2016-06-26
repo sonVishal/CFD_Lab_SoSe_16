@@ -1,6 +1,6 @@
 #include "unitTest.h"
 
-void storeMassVector(const t_component * const c, const int numComp, double ** massVector,
+void storeMassVector(const t_component * const c, double ** massVector,
     const int * const xlength) {
     // Begin
     int idx;
@@ -17,7 +17,7 @@ void storeMassVector(const t_component * const c, const int numComp, double ** m
 }
 
 void checkMassVector(double *massVectorBefore[],double * massVectorAfter[], const int * const xlength,
-    const int numComp, const int rank) {
+    const int rank) {
     // Begin
     int idx;
     for (int i = 0; i < numComp; i++) {
@@ -60,7 +60,7 @@ void computeCellMomentum(const double * const currentCell, double *momentum) {
     momentum[2] += currentCell[16]+currentCell[17]+currentCell[18];
 }
 
-void computeGlobalMomentum(const t_component * const c, const int numComp,
+void computeGlobalMomentum(const t_component * const c,
     const int * const xlength, double * compMomentum){
     // Begin
     int idx;
@@ -85,8 +85,7 @@ void computeGlobalMomentum(const t_component * const c, const int numComp,
     MPI_Reduce(tempMomentum, compMomentum, 3, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 }
 
-void checkMomentum(const double * const momentumBefore, const double * const momentumAfter,
-    const int numComp) {
+void checkMomentum(const double * const momentumBefore, const double * const momentumAfter) {
     for (int i = 0; i < 3; i++) {
         if (fabs(momentumAfter[i]-momentumBefore[i]) > _TOL_) {
             printf("Global momentum not conserved\n");

@@ -129,7 +129,7 @@ int main(int argc, char *argv[]){
 #endif
 
     // Initialise the fields for all components
-    initialiseComponents(c, numComp, flagField, &procData);
+    initialiseComponents(c, flagField, &procData);
 
     // Allocate memory to send and read buffers
     initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.neighbours, procData.bufferSize);
@@ -141,12 +141,12 @@ int main(int argc, char *argv[]){
 
     // // Write the VTK at t = 0
     printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
-    writeVtsOutput(c, numComp, flagField, fName, t, xlength, &procData, procsPerAxis);
+    writeVtsOutput(c, flagField, fName, t, xlength, &procData, procsPerAxis);
 
     // Combine VTS file at t = 0
     // Only done by root
     if (procData.rank == 0) {
-        p_writeCombinedPVTSFile(numComp, fName, t, xlength, procsPerAxis);
+        p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
     }
 
     beginProcTime = MPI_Wtime();
@@ -154,44 +154,44 @@ int main(int argc, char *argv[]){
     for(t = 1; t <= timesteps; t++){
 
         //do extraction , swap , injection for - left/right, top/bottom, front/back for each component
-        communicateComponents(sendBuffer, readBuffer, c, numComp, &procData);
+        communicateComponents(sendBuffer, readBuffer, c, &procData);
 
         // Perform local streaming for each component
-	    streamComponents(c, numComp, flagField, procData.xLength);
+	    streamComponents(c, flagField, procData.xLength);
 
         // Swap the local fields for each component
-        swapComponentFields(c, numComp);
+        swapComponentFields(c);
 
         // TODO: (VS) Make one function call and remove while submission
 #ifndef NDEBUG
-        storeMassVector(c, numComp, massBefore, procData.xLength);
-        computeGlobalMomentum(c, numComp, procData.xLength, momentumBefore);
+        storeMassVector(c, massBefore, procData.xLength);
+        computeGlobalMomentum(c, procData.xLength, momentumBefore);
 #endif
 
         // Perform local collision
       //TODO: (TKS) Make collision correct
-	    doCollision(c, numComp, G, procData.xLength);
+	    doCollision(c, G, procData.xLength);
 
 #ifndef NDEBUG
-        storeMassVector(c, numComp, massAfter, procData.xLength);
-        computeGlobalMomentum(c, numComp, procData.xLength, momentumAfter);
+        storeMassVector(c, massAfter, procData.xLength);
+        computeGlobalMomentum(c, procData.xLength, momentumAfter);
 
-        checkMassVector(massBefore, massAfter, procData.xLength, numComp, procData.rank);
+        checkMassVector(massBefore, massAfter, procData.xLength, procData.rank);
         if (procData.rank == 0) {
-            checkMomentum(momentumBefore, momentumAfter, numComp);
+            checkMomentum(momentumBefore, momentumAfter);
         }
 #endif
 
         // Treat local boundaries for each component
-	    treatComponentBoundary(c, numComp, flagField, &procData, sendBuffer, readBuffer);
+	    treatComponentBoundary(c, flagField, &procData, sendBuffer, readBuffer);
 
         // Print VTS files at given interval
 	    if (t%timestepsPerPlotting == 0){
             printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
-	        writeVtsOutput(c, numComp, flagField, fName, t, xlength, &procData, procsPerAxis);
+	        writeVtsOutput(c, flagField, fName, t, xlength, &procData, procsPerAxis);
             // Combine VTS file at t
             if (procData.rank == 0) {
-                p_writeCombinedPVTSFile(numComp, fName, t, xlength, procsPerAxis);
+                p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
             }
 	    }
     }
