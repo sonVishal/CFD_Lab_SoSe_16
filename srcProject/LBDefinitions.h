@@ -46,7 +46,7 @@ static const double LATTICEWEIGHTS[19] = {
 
 // Tolerances
 static const double densityTol  = 0.03;
-static const double machNrTol   = 0.1;
+static const double machNrTol   = 0.1; //TODO: (DL) delete if not required.
 
 // Enum for send and read buffer directions
 enum WALLS {
@@ -68,16 +68,10 @@ enum CELLS {
 };
 
 //TODO: (DL) not sure if a function pointer with inline works... we can test it out.
-static inline double psi1(double numberDensity) {
-    return (1-exp(-numberDensity));
-}
-
-static inline double psi2(double numberDensity) {
-    return numberDensity;
-}
+static inline double psi1(double numberDensity){ return (1-exp(-numberDensity));}
+static inline double psi2(double numberDensity){ return numberDensity;}
 
 typedef double (*fctPtrPsi)(double);
-
 static const fctPtrPsi psiFctPointer[2] = {psi1, psi2};
 
 

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "helper.h"
+#include "boundary.h"
 #include "LBDefinitions.h"
 
 
@@ -63,5 +64,12 @@ void Programm_Sync(char *txt);
 
 /* all processes will produce a text output, be synchronized and finished */
 void Programm_Stop(char *txt);
+
+
+void communicateDensityComponents(double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData);
+
+void communicateDensityParallelWall(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData);
+
+void extractDensity(double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara, t_procData const * const procData, const int direction);
 
 #endif

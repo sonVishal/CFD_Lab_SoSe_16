@@ -517,3 +517,80 @@ void treatBoundary(int const*const flagField, double *const collideField, const 
 		}
 	}
 }
+
+
+//============================================================================
+//============================================================================
+//============================================================================
+
+void communicateDensityBoundary(double **sendBuffer, double **readBuffer, double *const collideField, const t_procData * const procData){
+
+	for(int wall=LEFT; wall<=BACK; wall+=2){ //see LBDefinitions for order of walls
+
+		int firstNeighbour = procData->periodicNeighbours[wall];
+		int secondNeighbour = procData->periodicNeighbours[wall+1];
+
+		if(firstNeighbour != MPI_PROC_NULL && secondNeighbour != MPI_PROC_NULL){
+			//Case when there is only one proc, then no communication is required
+
+			//TODO: (DL) either generalize the function OR make a density corresponding one
+			// treatPeriodicWallNoComm(collideField, wall, wall+1, procData);
+		}
+		else{
+			if(firstNeighbour != MPI_PROC_NULL){
+				//TODO: (DL) either generalize the function OR make a density corresponding one
+				// treatPeriodicWall(collideField, sendBuffer[wall], readBuffer[wall],
+				// 	procData, wall, wall+1);
+			}
+
+			if(secondNeighbour != MPI_PROC_NULL){
+				//TODO: (DL) either generalize the function OR make a density corresponding one
+				// treatPeriodicWall(collideField, sendBuffer[wall+1], readBuffer[wall+1],
+				// 	procData, wall+1, wall);
+			}
+		}
+	}
+
+	static const int edge1[6] = {0,1,2,3,4,5};
+	static const int edge2[6] = {10,11,8,9,6,7}; //opposite edge to edge1; see numbering in LBDefinitions.h
+
+	//TODO: (DL) this is not nice, think about alternatives. For now there is guaranteed enough space.
+	// double *validSendBuffer, *validReadBuffer;
+
+	for(int idx = 0; idx < 6; ++idx){
+
+		int firstNeighbour = procData->periodicEdgeNeighbours[edge1[idx]];
+		int secondNeighbour = procData->periodicEdgeNeighbours[edge2[idx]];
+
+		//TODO: (DL) make a better solution for buffer business
+		// if(edge1[idx] == 0 || edge1[idx] == 2 || edge1[idx] == 4 || edge1[idx] == 5){
+		// 	validSendBuffer = sendBuffer[LEFT];
+		// 	validReadBuffer = readBuffer[LEFT];
+		// }else if(edge1[idx] == 1 || edge1[idx] == 3){
+		// 	validSendBuffer = sendBuffer[TOP];
+		// 	validReadBuffer = readBuffer[TOP];
+		// }else{
+		// 	validReadBuffer = NULL;
+		// 	validSendBuffer = NULL;
+		// 	ERROR("");
+		// }
+
+		if(firstNeighbour != MPI_PROC_NULL && secondNeighbour != MPI_PROC_NULL){
+		//Case when there is only one proc, then no communication is required
+			//TODO: (DL) either generalize the function OR make a density corresponding one
+			// treatPeriodicEdgeNoComm(collideField, procData, edge1[idx], edge2[idx]);
+		}else{
+			if(firstNeighbour != MPI_PROC_NULL){
+				//TODO: (DL) either generalize the function OR make a density corresponding one
+				// treatPeriodicEdge(collideField, validSendBuffer, validReadBuffer,
+				// 	procData, edge1[idx], edge2[idx]);
+			}
+
+			if(secondNeighbour != MPI_PROC_NULL){
+				//TODO: (DL) either generalize the function OR make a density corresponding one
+				// treatPeriodicEdge(collideField, validSendBuffer, validReadBuffer,
+				// 	procData, edge2[idx], edge1[idx]);
+			}
+		}
+	}
+}

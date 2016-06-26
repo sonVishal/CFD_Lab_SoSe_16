@@ -18,4 +18,6 @@ void treatComponentBoundary(t_component *c, int const * const flagField, const t
 /** handles the boundaries in our simulation setup */
 void treatBoundary(int const * const flagField, double *collideField, const t_procData * const procData, double **sendBuffer, double **readBuffer);
 
+void communicateDensityBoundary(double **sendBuffer, double **readBuffer, double *const collideField, const t_procData * const procData);
+
 #endif

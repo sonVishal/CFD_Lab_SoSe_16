@@ -389,27 +389,27 @@ void p_assignIndices(const int face, int *const index) {
 
     switch (face) {
         case LEFT:     	// y = 0
-        index[0] = 0; index[1] = 5; index[2] = 6; index[3] = 7; index[4] = 14; 
+        index[0] = 0; index[1] = 5; index[2] = 6; index[3] = 7; index[4] = 14;
         break;
 
         case RIGHT:     // y = xlength[1]+1
-        index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18; 
+        index[0] = 4; index[1] = 11; index[2] = 12; index[3] = 13; index[4] = 18;
         break;
 
         case TOP: 		// z = xlength[2]+1
-        index[0] = 14; index[1] = 15; index[2] = 16; index[3] = 17; index[4] = 18; 
+        index[0] = 14; index[1] = 15; index[2] = 16; index[3] = 17; index[4] = 18;
         break;
 
         case BOTTOM: 	// z = 0
-        index[0] = 0; index[1] = 1; index[2] = 2; index[3] = 3; index[4] = 4; 
+        index[0] = 0; index[1] = 1; index[2] = 2; index[3] = 3; index[4] = 4;
         break;
 
         case FRONT:     // x = xlength[0]+1
-        index[0] = 3; index[1] = 7; index[2] = 10; index[3] = 13; index[4] = 17; 
+        index[0] = 3; index[1] = 7; index[2] = 10; index[3] = 13; index[4] = 17;
         break;
 
         case BACK:      // x = 0
-        index[0] = 1; index[1] = 5; index[2] = 8; index[3] =  11; index[4] = 15; 
+        index[0] = 1; index[1] = 5; index[2] = 8; index[3] =  11; index[4] = 15;
         break;
     }
 }
@@ -420,4 +420,68 @@ void finaliseMPI(t_procData const * const procData) {
     MPI_Barrier(MPI_COMM_WORLD);
     printf("Rank %i: FINISHED. \n", procData->rank);
     MPI_Finalize();
+}
+
+//============================================================================
+//============================================================================
+//============================================================================
+
+void communicateDensityComponents(double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData){
+	for (int i = 0; i < numComp; ++i) {
+
+		//TODO:(DL) for now parallel and periodic part is separated (less risk of deadlocks etc.):
+		communicateDensityParallelWall(sendBuffer, readBuffer, c[i].collideField, procData);
+		communicateDensityBoundary(sendBuffer, readBuffer, c[i].collideField, procData);
+	}
+}
+
+void communicateDensityParallelWall(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData){
+    //Run extract, swap, inject for all sides and cells.
+
+    // int 		index1[], index2[]; //TODO: (DL) not required
+    t_iterPara  iterPara1, iterPara2;
+
+    // Iterate through directions (left/right, top/bottom, front/back)
+    for (int direction = LEFT; direction <= BACK; direction+=2) {
+
+        const int face1 = direction;   //LEFT,  TOP,    FRONT
+        const int face2 = direction+1; //RIGHT, BOTTOM, BACK
+
+        /* Set iteration parameters for both faces of a direction */
+        p_setCommIterationParameters(&iterPara1, procData, face1);
+        p_setCommIterationParameters(&iterPara2, procData, face2);
+
+        /* Assign the indices for the 5 distributions that go out of the two faces of the current direction */
+        /* Also set set the last element to the index of the middle distribution to communicate the number density*/
+
+		//TODO: (DL) not required anymore... delete later
+		// p_assignIndices(face1, index1);
+        // p_assignIndices(face2, index2);
+
+        /* Extract the distributions from collideField to the send buffer */
+        if(procData->neighbours[face1] != MPI_PROC_NULL)
+			extractDensity(sendBuffer[face1], collideField, &iterPara1, procData, face1);
+
+        if(procData->neighbours[face2] != MPI_PROC_NULL)
+			extractDensity(sendBuffer[face2], collideField, &iterPara2, procData, face2);
+
+        /* Swap the densities */
+		//TODO: (DL) make buffersize as a parameter in the parameter
+        swap(sendBuffer, readBuffer, procData, direction);
+
+        /* Inject the densities from read buffer to collide field */
+
+		//TODO: (DL) I think we can reuse the inject function, NOTE: problem currently, inject uses nrDistSwap (=5) - make as parameter!
+		int index = 9;
+        if(procData->neighbours[face1] != MPI_PROC_NULL)
+            inject(readBuffer[face1], collideField, &iterPara1, procData, face1, &index);
+
+        if(procData->neighbours[face2] != MPI_PROC_NULL)
+            inject(readBuffer[face2], collideField, &iterPara2, procData, face2, &index);
+    }
+}
+
+void extractDensity(double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara, t_procData const * const procData,
+    const int direction){
+	ERROR("IMPLEMENT!!");
 }

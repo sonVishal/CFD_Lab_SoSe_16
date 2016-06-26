@@ -154,10 +154,11 @@ int main(int argc, char *argv[]){
         // Swap the local fields for each component
         swapComponentFields(c);
 
+        communicateDensityComponents(sendBuffer, readBuffer, c, &procData);
+
 #ifndef NDEBUG
         beforeCollision(c, &procData);
 #endif
-
         // Perform local collision
 	    doCollision(c, G, procData.xLength);
 
@@ -180,10 +181,11 @@ int main(int argc, char *argv[]){
     }
     endProcTime = MPI_Wtime();
 
-    //get earliest start and latest finish of processors
+
     if(procData.rank == 0)
         printf("\nINFO: Please open the WS4_combined.*.pvts file to view the combined result.\n");
 
+    //get earliest start and latest finish of processors
     MPI_Reduce(&beginProcTime, &beginSimTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
     MPI_Reduce(&endProcTime, &endSimTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
