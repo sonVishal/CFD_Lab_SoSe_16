@@ -4,8 +4,8 @@
 //TODO: (TKS) Discuss convention that component specific functions hav c_ prefix
 
 
-/** computes the number density and density from the particle distribution 
- * functions stored at  currentCell. currentCell thus denotes the address 
+/** computes the number density and density from the particle distribution
+ * functions stored at  currentCell. currentCell thus denotes the address
  * of the first particle  distribution function of the respective cell.
  *  The result is stored in density.
  */
@@ -74,70 +74,80 @@ void c_computeVelocity(const double * const currentCell, const double * const de
 }
 
 /*computes the total velociy as if there were no interacting forces*/
-void computeVelocityNI(const int* numComp, const double *const c_density, const double * const c_velocity, const double *const c_tau, double* velocityNI){
+void computeCommonVelocity(const double *const c_density, const double * const c_velocity, const double *const c_tau, double* velocityNI){
 
     double den = 0;
-    double nom[3] = {0,0,0};
+    double momentum[3] = {0,0,0};
 
-    for (int n = 0; n < *numComp; ++n) {
-       nom[0]+= c_density[n]*c_velocity[0]/c_tau[n];
-       nom[1]+= c_density[n]*c_velocity[1]/c_tau[n];
-       nom[2]+= c_density[n]*c_velocity[2]/c_tau[n];
+    for (int n = 0; n < numComp; ++n) {
+       momentum[0]+= c_density[n]*c_velocity[0]/c_tau[n];
+       momentum[1]+= c_density[n]*c_velocity[1]/c_tau[n];
+       momentum[2]+= c_density[n]*c_velocity[2]/c_tau[n];
 
        den+= c_density[n]/c_tau[n];
     }
 
-    velocityNI[0] = nom[0]/den;
-    velocityNI[1] = nom[1]/den;
-    velocityNI[2] = nom[2]/den;
+    velocityNI[0] = momentum[0]/den;
+    velocityNI[1] = momentum[1]/den;
+    velocityNI[2] = momentum[2]/den;
 
 }
 
 /*computes interacting forces between species*/
-//
-//TODO: (TKS) Add const where appropriate
-//TODO: (TKS) Tidy up signature
-void computeForces(int currentCellIndex, t_component *c, const int *numComp, double **G, int * xlength, double *forces[3]){
+void c_computeForces(int currentCellIndex, const t_component *const c,
+    double G[numComp], int * xlength, double forces[3]){
 
     int xlen2 = xlength[0]+2;
 	int ylen2 = xlength[1]+2;
     int xylen = xlen2*ylen2;
 
     double numDensity;
-    
-    for (int n = 0; n < *numComp; ++n){
-        forces[n] = 0;
 
-        for (int m = 0; m < *numComp; ++m) {
-            
-            //TODO: (TKS) Could unroll loop.
-            //TODO: WRONG, do not want numDensity streaming in, but the collected number density in each neighbout cell
-            for (int i = 0; i < Q; i++) {
-                int nextCellIndex = 
-                currentCellIndex-LATTICEVELOCITIES[i][0]-
-                xlen2*LATTICEVELOCITIES[i][1]-
-                xylen*LATTICEVELOCITIES[i][2]; //index of cell in direction i
+    forces[0] = 0.0;
+    forces[1] = 0.0;
+    forces[2] = 0.0;
 
-                int nextIndex = Q*nextCellIndex; //index of number density in direction i
-                numDensity = c[m].collideField[nextIndex]; //number density in direction i
+    for (int m = 0; m < numComp; ++m) {
 
-                forces[n][0] += G[n][m] * c[m].psi(numDensity) * LATTICEVELOCITIES[i][0];
-                forces[n][1] += G[n][m] * c[m].psi(numDensity) * LATTICEVELOCITIES[i][1];
-                forces[n][2] += G[n][m] * c[m].psi(numDensity) * LATTICEVELOCITIES[i][2];
-             }
-        }
+        //TODO: (TKS) Could unroll loop.
+        //TODO: (TKS) Find a way to save the number density (?)
+        for (int i = 0; i < Q; i++) {
+            int nextCellIndex = currentCellIndex-LATTICEVELOCITIES[i][0]
+                                - xlen2*LATTICEVELOCITIES[i][1]
+                                - xylen*LATTICEVELOCITIES[i][2]; //index of cell in direction i
 
-        numDensity = c[n].collideField[currentCellIndex];
-        forces[n][0] *= c[n].psi(numDensity);
-        forces[n][1] *= c[n].psi(numDensity);
-        forces[n][2] *= c[n].psi(numDensity);
+            int nextIndex = Q*nextCellIndex; //index of number density in direction i
+            // numDensity = c[m].collideField[nextIndex]; //number density in direction i
+            // Compute the number density for component "m" at lattice site "nextIndex"
+            c_computeNumDensity(&c[m].collideField[nextIndex], &numDensity);
+
+            forces[0] += G[m] * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][0];
+            forces[1] += G[m] * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][1];
+            forces[2] += G[m] * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][2];
+         }
     }
+
+    // numDensity = c[n].collideField[currentCellIndex];
+    c_computeNumDensity(&c->collideField[currentCellIndex], &numDensity);
+    forces[0] *= -psiFctPointer[c->psiFctCode](numDensity);
+    forces[1] *= -psiFctPointer[c->psiFctCode](numDensity);
+    forces[2] *= -psiFctPointer[c->psiFctCode](numDensity);
+}
+
+// Computes the equilibrium velocity for all components
+void c_computeEqVelocity(const t_component * const c, const double * const commonVelocity,
+    const double compDenstiy, const double * const compForce, double compEqVelocity[3]) {
+
+    compEqVelocity[0] = commonVelocity[0] + (c->tau/compDenstiy)*compForce[0];
+    compEqVelocity[1] = commonVelocity[1] + (c->tau/compDenstiy)*compForce[1];
+    compEqVelocity[2] = commonVelocity[2] + (c->tau/compDenstiy)*compForce[2];
 }
 
 /** computes the equilibrium distributions for all particle distribution
  *  functions of one cell from density and velocity and stores the results in feq.
  */
-void computeFeq(const double density, const double * const velocity, double *feq){
+//TODO: (TKS) Change this to multicomponent
+void c_computeFeq(const double density, const double * const velocity, double *feq){
 
     // Temporary variables for speed of sound squared and ^4
 	// Since it is called that often and having the most work, we made these static
@@ -191,10 +201,10 @@ void computeFeq(const double density, const double * const velocity, double *feq
     //feq[16] = d2*(u_u + (uz)*(1/cs_2 + (uz)/cs_4_2));
     //feq[17] = d1*(u_u + (ux+uz)*(1/cs_2 + (ux+uz)/cs_4_2));
     //feq[18] = d1*(u_u + (uy+uz)*(1/cs_2 + (uy+uz)/cs_4_2));
-    
+
     //TODO: (TKS) Unroll the loop. Much easier to debug this.
      int i;
-    
+
      for (i = 0; i < Q; i++) {
          double dotProd1 = ux*ux + uy*uy + uz*uz;
          double dotProd2 = ux*LATTICEVELOCITIES[i][0]

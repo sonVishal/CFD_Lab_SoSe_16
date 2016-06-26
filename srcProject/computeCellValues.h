@@ -12,14 +12,19 @@ void c_computeNumDensity(const double *const currentCell, double *numDensity);
 void c_computeVelocity(const double *const currentCell, const double *c_density,double *c_velocity, const double *c_mass);
 
 /*computes the total velociy as if there were no interacting forces*/
-void computeVelocityNI(const int *numComp, const double *const c_density, const double * const c_velocity, const double *const c_tau, double* velocityNI);
+void computeCommonVelocity(const double *const c_density, const double * const c_velocity, const double *const c_tau, double* velocityNI);
 
 /*computes interacting forces between species*/
-void computeForces(int currentCellIndex, t_component *c, const int *numComp, double **G, int * xlength, double *forces[3]);
+void c_computeForces(int currentCellIndex, const t_component *const c,
+    double G[numComp], int * xlength, double forces[3]);
+
+// Computes the equilibrium velocity for each component
+void c_computeEqVelocity(const t_component * const c, const double * const commonVelocity,
+    const double compDenstiy, const double * const compForce, double compEqVelocity[3]);
 
 /** computes the equilibrium distributions for all particle distribution functions of one
  *  cell from density and velocity and stores the results in feq.
  */
-void computeFeq(const double density, const double * const velocity, double *feq);
+void c_computeFeq(const double density, const double * const velocity, double *feq);
 
 #endif

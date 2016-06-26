@@ -157,7 +157,7 @@ void initialiseFields(double *collideField, double *streamField, const t_procDat
     }
 }
 
-void initialiseComponents(t_component *c, int numComp, int *flagField, const t_procData * const thisProcData) {
+void initialiseComponents(t_component *c, int *flagField, const t_procData * const thisProcData) {
 
 	// Initialize the collide and stream fields for each component
 	for (int i = 0; i < numComp; i++) {

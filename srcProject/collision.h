@@ -7,11 +7,11 @@
 /** computes the post-collision distribution functions according to the BGK update rule and
  *  stores the results again at the same position.
  */
-void computePostCollisionDistributions(double *currentCell, const double tau, const double * const feq);
+void c_computePostCollisionDistributions(double *currentCell, const double tau, const double * const feq);
 
 
 /** carries out the whole local collision process. Computes density and velocity and
  *  equilibrium distributions. Carries out BGK update.
  */
-void doCollision(t_component *c1, int numComp, double G[numComp][numComp], int *xlength);
+void doCollision(t_component *c1, double G[numComp][numComp], int *xlength);
 #endif

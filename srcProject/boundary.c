@@ -1,4 +1,4 @@
-#include "boundary.h"
+	#include "boundary.h"
 
 //TODO: (DL) in case we do not need the boundaries NO_SLIP and MOVING_WALL then delete the code for clarity.
 //However, leave it as long as possible for testing and compare with previous scenarios.
@@ -132,12 +132,12 @@ int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEd
 	//z * (xlen*ylen) + y * (xlen) + x
 	for(int varIdx = 1; varIdx <= endIndex; ++varIdx){
 		if(iterPara->x == VARIABLE){
-			cellOffset = p_computeCellOffsetXYZ(varIdx, iterPara->y, iterPara->z, procData->xLength);
+			cellOffset = p_computeCellOffsetXYZ_Q(varIdx, iterPara->y, iterPara->z, procData->xLength);
 		}else if(iterPara->y == VARIABLE){
-			cellOffset = p_computeCellOffsetXYZ(iterPara->x, varIdx, iterPara->z, procData->xLength);
+			cellOffset = p_computeCellOffsetXYZ_Q(iterPara->x, varIdx, iterPara->z, procData->xLength);
 		}else{
 			assert(iterPara->z == VARIABLE);
-			cellOffset = p_computeCellOffsetXYZ(iterPara->x, iterPara->y, varIdx, procData->xLength);
+			cellOffset = p_computeCellOffsetXYZ_Q(iterPara->x, iterPara->y, varIdx, procData->xLength);
 		}
 
 		if(injectFlag)
@@ -410,21 +410,21 @@ void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const proc
 	//z * (xlen*ylen) + y * (xlen) + x
 	for(int varIdx = 1; varIdx <= endIndex; ++varIdx){
 		if(iterParaEdgeIn1.x == VARIABLE){
-			cellOffsetIn1 	= p_computeCellOffsetXYZ(varIdx, iterParaEdgeIn1.y, iterParaEdgeIn1.z, procData->xLength);
-			cellOffsetOut1	= p_computeCellOffsetXYZ(varIdx, iterParaEdgeOut1.y, iterParaEdgeOut1.z, procData->xLength);
-			cellOffsetIn2 	= p_computeCellOffsetXYZ(varIdx, iterParaEdgeIn2.y, iterParaEdgeIn2.z, procData->xLength);
-			cellOffsetOut2 	= p_computeCellOffsetXYZ(varIdx, iterParaEdgeOut2.y, iterParaEdgeOut2.z, procData->xLength);
+			cellOffsetIn1 	= p_computeCellOffsetXYZ_Q(varIdx, iterParaEdgeIn1.y, iterParaEdgeIn1.z, procData->xLength);
+			cellOffsetOut1	= p_computeCellOffsetXYZ_Q(varIdx, iterParaEdgeOut1.y, iterParaEdgeOut1.z, procData->xLength);
+			cellOffsetIn2 	= p_computeCellOffsetXYZ_Q(varIdx, iterParaEdgeIn2.y, iterParaEdgeIn2.z, procData->xLength);
+			cellOffsetOut2 	= p_computeCellOffsetXYZ_Q(varIdx, iterParaEdgeOut2.y, iterParaEdgeOut2.z, procData->xLength);
 
 		}else if(iterParaEdgeIn1.y == VARIABLE){
-			cellOffsetIn1 	= p_computeCellOffsetXYZ(iterParaEdgeIn1.x, varIdx, iterParaEdgeIn1.z, procData->xLength);
-			cellOffsetOut1	= p_computeCellOffsetXYZ(iterParaEdgeOut1.x, varIdx, iterParaEdgeOut1.z, procData->xLength);
-			cellOffsetIn2 	= p_computeCellOffsetXYZ(iterParaEdgeIn2.x, varIdx, iterParaEdgeIn2.z, procData->xLength);
-			cellOffsetOut2 	= p_computeCellOffsetXYZ(iterParaEdgeOut2.x, varIdx, iterParaEdgeOut2.z, procData->xLength);
+			cellOffsetIn1 	= p_computeCellOffsetXYZ_Q(iterParaEdgeIn1.x, varIdx, iterParaEdgeIn1.z, procData->xLength);
+			cellOffsetOut1	= p_computeCellOffsetXYZ_Q(iterParaEdgeOut1.x, varIdx, iterParaEdgeOut1.z, procData->xLength);
+			cellOffsetIn2 	= p_computeCellOffsetXYZ_Q(iterParaEdgeIn2.x, varIdx, iterParaEdgeIn2.z, procData->xLength);
+			cellOffsetOut2 	= p_computeCellOffsetXYZ_Q(iterParaEdgeOut2.x, varIdx, iterParaEdgeOut2.z, procData->xLength);
 		}else{
-			cellOffsetIn1 	= p_computeCellOffsetXYZ(iterParaEdgeIn1.x, iterParaEdgeIn1.y, varIdx, procData->xLength);
-			cellOffsetOut1	= p_computeCellOffsetXYZ(iterParaEdgeOut1.x, iterParaEdgeOut1.y, varIdx, procData->xLength);
-			cellOffsetIn2 	= p_computeCellOffsetXYZ(iterParaEdgeIn2.x, iterParaEdgeIn2.y, varIdx, procData->xLength);
-			cellOffsetOut2 	= p_computeCellOffsetXYZ(iterParaEdgeOut2.x, iterParaEdgeOut2.y, varIdx, procData->xLength);
+			cellOffsetIn1 	= p_computeCellOffsetXYZ_Q(iterParaEdgeIn1.x, iterParaEdgeIn1.y, varIdx, procData->xLength);
+			cellOffsetOut1	= p_computeCellOffsetXYZ_Q(iterParaEdgeOut1.x, iterParaEdgeOut1.y, varIdx, procData->xLength);
+			cellOffsetIn2 	= p_computeCellOffsetXYZ_Q(iterParaEdgeIn2.x, iterParaEdgeIn2.y, varIdx, procData->xLength);
+			cellOffsetOut2 	= p_computeCellOffsetXYZ_Q(iterParaEdgeOut2.x, iterParaEdgeOut2.y, varIdx, procData->xLength);
 		}
 
 		// if(procData->rank == 0 && edge1 == 5){
@@ -436,7 +436,7 @@ void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const proc
 	}
 }
 
-void treatComponentBoundary(t_component *c,int numComp, int const*const flagField, t_procData const*const procData, double **sendBuffer, double **readBuffer){
+void treatComponentBoundary(t_component *c, int const*const flagField, t_procData const*const procData, double **sendBuffer, double **readBuffer){
     for (int i = 0; i < numComp; ++i) {
         treatBoundary(flagField, c[i].collideField, procData, sendBuffer, readBuffer);
     }

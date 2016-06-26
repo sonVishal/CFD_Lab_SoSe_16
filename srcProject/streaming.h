@@ -5,7 +5,7 @@
 #include "LBDefinitions.h"
 
 //Wrapper around doStreaming to stream numComp components
-void streamComponents(t_component* c, int numComp, int *flagField, int *xlength);
+void streamComponents(t_component* c, int *flagField, int *xlength);
 
 /** carries out the streaming step and writes the respective distribution functions from
  *  collideField to streamField.

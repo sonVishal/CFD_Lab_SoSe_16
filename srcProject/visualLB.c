@@ -13,9 +13,9 @@
 // t            - Time at which output is to be stored
 // xlength      - Number of cells in one direction
 
-void writeVtsOutput(const t_component * const c, const int numComp,
-    const int * const flagField, const char * filename, unsigned int t,
-    int xlen, const t_procData * const procData, const int * const procsPerAxis)
+void writeVtsOutput(const t_component * const c, const int * const flagField,
+    const char * filename, unsigned int t, int xlen,
+    const t_procData * const procData, const int * const procsPerAxis)
 {
     // Files related variables
     char pFileName[80];
@@ -70,8 +70,8 @@ void writeVtsOutput(const t_component * const c, const int numComp,
                     // Compute the base index for collideField
                     idx = Q*(yzOffset + x);
 
-                    computeDensity(&c[i].collideField[idx], &cellDensity);
-                    computeVelocity(&c[i].collideField[idx], cellDensity, &cellVelocity[0]);
+                    c_computeNumDensity(&c[i].collideField[idx], &cellDensity);
+                    c_computeVelocity(&c[i].collideField[idx], &cellDensity, &cellVelocity[0], &c[i].m);
 
                     // Write cell average velocities
                     fprintf(fp, "%f %f %f\n", cellVelocity[0],
@@ -90,7 +90,7 @@ void writeVtsOutput(const t_component * const c, const int numComp,
                     // Compute the base index for collideField
                     idx = Q*(yzOffset + x);
 
-                    computeDensity(&c[i].collideField[idx], &cellDensity);
+                    c_computeNumDensity(&c[i].collideField[idx], &cellDensity);
                     // Write cell average velocities
                     fprintf(fp, "%f\n", cellDensity);
                 }
@@ -143,8 +143,8 @@ void writevtsPointCoordinates(FILE * fp, const int xlen, const int * const xleng
     fprintf(fp,"</Points>\n");
 }
 
-void p_writeCombinedPVTSFile(const int numComp, const char * const filename,
-    const unsigned int t, const int xlen, const int * const procsPerAxis) {
+void p_writeCombinedPVTSFile(const char * const filename, const unsigned int t,
+    const int xlen, const int * const procsPerAxis) {
     // Files related variables
     char pFileName[80];
     FILE *fp = NULL;
