@@ -89,13 +89,11 @@ void afterCollision(const t_component * const c, t_procData const * const procDa
     }
 }
 
-void computeGlobalMomentum(const t_component * const c, const int * const xlength, double * compMomentum){
+void computeGlobalMomentum(const t_component *const c, const int *const xlength, double *compMomentum){
     // Begin
     int idx;
-    double tempMomentum[3];
-    tempMomentum[0] = 0.0;
-    tempMomentum[1] = 0.0;
-    tempMomentum[2] = 0.0;
+    double tempMomentum[3] = {0.0};
+
     for (int i = 0; i < numComp; i++) {
         for (int z = 1; z <= xlength[2]; z++) {
             for (int y = 1; y <= xlength[1]; y++) {
