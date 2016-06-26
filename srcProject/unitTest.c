@@ -7,6 +7,9 @@ double momentumAfter[3];
 
 
 void initializeUnitTest(const int totalSize){
+    massBefore = (double **) malloc(numComp * sizeof(double*));
+    massAfter = (double **) malloc(numComp * sizeof(double*));
+
     for (int i = 0; i < numComp; i++) {
         massBefore[i] = (double *)  malloc(totalSize * sizeof( double ));
         massAfter[i] = (double *)  malloc(totalSize * sizeof( double ));
