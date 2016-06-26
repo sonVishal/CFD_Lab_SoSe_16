@@ -71,7 +71,7 @@ static inline double psi2(double numberDensity) {
 
 typedef double (*fctPtrPsi)(double);
 
-fctPtrPsi psiFctPointer[2] = {psi1, psi2};
+static const fctPtrPsi psiFctPointer[2] = {psi1, psi2};
 
 
 //TODO: (DL) There can be "better" ways to number edges. At the moment the numbering is benefical for computing indices.
