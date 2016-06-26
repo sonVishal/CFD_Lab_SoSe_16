@@ -1,31 +1,42 @@
 #include "unitTest.h"
 
-void storeMassVector(const t_component * const c, const int numComp, double ** massVector,
-    const int * const xlength) {
+double **massBefore;
+double **massAfter;
+double momentumBefore[3];
+double momentumAfter[3];
+
+
+void initializeUnitTest(const int totalSize){
+    for (int i = 0; i < numComp; i++) {
+        massBefore[i] = (double *)  malloc(totalSize * sizeof( double ));
+        massAfter[i] = (double *)  malloc(totalSize * sizeof( double ));
+    }
+}
+
+void storeMassVector(const t_component * const c, const int * const xlength, double **massVector) {
     // Begin
     int idx;
     for (int i = 0; i < numComp; i++) {
         for (int z = 1; z <= xlength[2]; z++) {
             for (int y = 1; y <= xlength[1]; y++) {
                 for (int x = 1; x <= xlength[0]; x++) {
-                    idx = (z*xlength[1]+y)*xlength[0]+x;
-                    computeDensity(&c[i].collideField[Q*idx], &massVector[i][idx]);
+                    idx = p_computeCellOffsetXYZ(x, y, z, xlength);
+                    c_computeNumDensity(&c[i].collideField[Q*idx], &massVector[i][idx]);
                 }
             }
         }
     }
 }
 
-void checkMassVector(double *massVectorBefore[],double * massVectorAfter[], const int * const xlength,
-    const int numComp, const int rank) {
+void checkMassVector(const int * const xlength, const int rank) {
     // Begin
     int idx;
     for (int i = 0; i < numComp; i++) {
         for (int z = 1; z <= xlength[2]; z++) {
             for (int y = 1; y <= xlength[1]; y++) {
                 for (int x = 1; x <= xlength[0]; x++) {
-                    idx = (z*xlength[1]+y)*xlength[0]+x;
-                    if (fabs(massVectorAfter[i][idx] - massVectorBefore[i][idx]) > _TOL_) {
+                    idx = p_computeCellOffsetXYZ(x, y, z, xlength);
+                    if (fabs(massAfter[i][idx] - massBefore[i][idx]) > _TOL_) {
                         printf("Proc: %d, Mass not conserved in cell (%d,%d,%d)\n",rank,x,y,z);
                     }
                 }
@@ -60,8 +71,22 @@ void computeCellMomentum(const double * const currentCell, double *momentum) {
     momentum[2] += currentCell[16]+currentCell[17]+currentCell[18];
 }
 
-void computeGlobalMomentum(const t_component * const c, const int numComp,
-    const int * const xlength, double * compMomentum){
+void beforeCollision(const t_component * const c, t_procData const * const procData){
+    storeMassVector(c, procData->xLength, massBefore);
+    computeGlobalMomentum(c, procData->xLength, momentumBefore);
+}
+
+void afterCollision(const t_component * const c, t_procData const * const procData){
+    storeMassVector(c, procData->xLength, massAfter);
+    computeGlobalMomentum(c, procData->xLength, momentumAfter);
+
+    checkMassVector(procData->xLength, procData->rank);
+    if (procData->rank == 0) {
+        checkMomentum();
+    }
+}
+
+void computeGlobalMomentum(const t_component * const c, const int * const xlength, double * compMomentum){
     // Begin
     int idx;
     double tempMomentum[3];
@@ -72,9 +97,9 @@ void computeGlobalMomentum(const t_component * const c, const int numComp,
         for (int z = 1; z <= xlength[2]; z++) {
             for (int y = 1; y <= xlength[1]; y++) {
                 for (int x = 1; x <= xlength[0]; x++) {
-                    idx = (z*xlength[1]+y)*xlength[0]+x;
+                    idx = p_computeCellOffsetXYZ_Q(x, y, z, xlength);
                     double cellMomentum[3];
-                    computeCellMomentum(&c[i].collideField[Q*idx], cellMomentum);
+                    computeCellMomentum(&c[i].collideField[idx], cellMomentum);
                     tempMomentum[0] += c[i].m*cellMomentum[0];
                     tempMomentum[1] += c[i].m*cellMomentum[1];
                     tempMomentum[2] += c[i].m*cellMomentum[2];
@@ -85,11 +110,19 @@ void computeGlobalMomentum(const t_component * const c, const int numComp,
     MPI_Reduce(tempMomentum, compMomentum, 3, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 }
 
-void checkMomentum(const double * const momentumBefore, const double * const momentumAfter,
-    const int numComp) {
+void checkMomentum() {
     for (int i = 0; i < 3; i++) {
         if (fabs(momentumAfter[i]-momentumBefore[i]) > _TOL_) {
             printf("Global momentum not conserved\n");
         }
     }
+}
+
+void freeUnitTest(){
+    for (int i = 0; i < numComp; i++) {
+        free(massBefore[i]);
+        free(massAfter[i]);
+    }
+    free(massBefore);
+    free(massAfter);
 }

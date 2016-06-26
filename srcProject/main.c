@@ -117,15 +117,7 @@ int main(int argc, char *argv[]){
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
 #ifndef NDEBUG
-    double *massBefore[numComp];
-    double *massAfter[numComp];
-    double momentumBefore[3];
-    double momentumAfter[3];
-
-    for (int i = 0; i < numComp; i++) {
-        massBefore[i] = (double *)  malloc(totalsize * sizeof( double ));
-        massAfter[i] = (double *)  malloc(totalsize * sizeof( double ));
-    }
+    initializeUnitTest(totalsize);
 #endif
 
     // Initialise the fields for all components
@@ -162,24 +154,16 @@ int main(int argc, char *argv[]){
         // Swap the local fields for each component
         swapComponentFields(c, numComp);
 
-        // TODO: (VS) Make one function call and remove while submission
 #ifndef NDEBUG
-        storeMassVector(c, numComp, massBefore, procData.xLength);
-        computeGlobalMomentum(c, numComp, procData.xLength, momentumBefore);
+        beforeCollision(c, &procData);
 #endif
 
         // Perform local collision
       //TODO: (TKS) Make collision correct
-	    doCollision(c, numComp, G, procData.xLength);
+        doCollision(c, numComp, G, procData.xLength);
 
 #ifndef NDEBUG
-        storeMassVector(c, numComp, massAfter, procData.xLength);
-        computeGlobalMomentum(c, numComp, procData.xLength, momentumAfter);
-
-        checkMassVector(massBefore, massAfter, procData.xLength, numComp, procData.rank);
-        if (procData.rank == 0) {
-            checkMomentum(momentumBefore, momentumAfter, numComp);
-        }
+        afterCollision(c, &procData);
 #endif
 
         // Treat local boundaries for each component
@@ -224,14 +208,12 @@ int main(int argc, char *argv[]){
     free(flagField);
 
 #ifndef NDEBUG
-    for (int i = 0; i < numComp; i++) {
-        free(massBefore[i]);
-        free(massAfter[i]);
-    }
+    freeUnitTest();
 #endif
 
     for (int i = LEFT; i <= BACK; i++) {
     	//set to NULL in initializeBuffers if buffer is not allocated (due to non existing neighbour)
+        //TODO: (DL) at the moment we dont need this check, because all send/read buffers are allocated
         if(sendBuffer[i] != NULL) free(sendBuffer[i]);
         if(readBuffer[i] != NULL) free(readBuffer[i]);
     }
