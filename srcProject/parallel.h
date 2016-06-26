@@ -7,7 +7,7 @@
 #include "helper.h"
 #include "boundary.h"
 #include "LBDefinitions.h"
-
+#include "computeCellValues.h"
 
 /* struct that describes the iteration parameters in a certain direction */
 typedef struct{

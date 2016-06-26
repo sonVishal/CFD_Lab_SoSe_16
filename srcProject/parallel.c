@@ -483,5 +483,17 @@ void communicateDensityParallelWall(double** sendBuffer, double**readBuffer, dou
 
 void extractDensity(double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara, t_procData const * const procData,
     const int direction){
-	ERROR("IMPLEMENT!!");
+
+	int x = iterPara->fixedValue;
+	int idx;
+	int bufferIdx = 0;
+	double density;
+	for (int z = iterPara->startOuter; z <= iterPara->endOuter; z++) {
+		for (int y = iterPara->startInner; y <= iterPara->endInner; y++) {
+			idx = p_computeCellOffsetXYZ_Q(x, y, z, procData->xLength);
+			c_computeNumDensity(&collideField[idx], &density);
+			sendBuffer[bufferIdx++] = density;
+		}
+	}
+	// ERROR("IMPLEMENT!!");
 }
