@@ -490,7 +490,7 @@ void extractDensity(double sendBuffer[], double const * const collideField, t_it
 	double density;
 	for (int z = iterPara->startOuter; z <= iterPara->endOuter; z++) {
 		for (int y = iterPara->startInner; y <= iterPara->endInner; y++) {
-			idx = p_computeCellOffsetXYZ_Q(x, y, z, procData->xLength);
+			idx = p_computeCellOffset(z, y, x, procData->xLength, direction);
 			c_computeNumDensity(&collideField[idx], &density);
 			sendBuffer[bufferIdx++] = density;
 		}
