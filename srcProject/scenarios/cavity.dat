@@ -50,8 +50,8 @@ G11             0.04
 #Select of the following implemented functions:
 #0: (1-exp(-numberDensity))
 #1: numberDensity
-psi0		1
-psi1		2
+psi0		0
+psi1		1
 
 
 # Reynolds Number
