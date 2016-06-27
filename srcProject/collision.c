@@ -71,7 +71,7 @@ void doCollision(t_component *c, const int * const flagField, double G[numComp][
 
 				for (n = 0; n < numComp; n++) {
 					//Compute the force.
-					c_computeForces(cellidx, &c[n], flagField, G[n], xlength, c_force);
+					c_computeForces(cellidx, n, c, flagField, G[n], xlength, c_force);
 
 					//Compute the equilibrium velocity.
 					c_computeEqVelocity(&c[n], commonVelocity, c_density[n], c_force, c_velocityEq);

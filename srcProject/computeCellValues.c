@@ -89,7 +89,8 @@ void computeCommonVelocity(const double *const c_density, const double * const c
 }
 
 /*computes interacting forces between species*/
-void c_computeForces(int currentCellIndex, t_component const*const c, int const*const flagField,
+void c_computeForces(int currentCellIndex, const int currentCompIndex,
+    t_component const*const c, int const*const flagField,
     double G[numComp], int * xlength, double forces[3]){
 
     int xlen2 = xlength[0]+2;
@@ -105,11 +106,10 @@ void c_computeForces(int currentCellIndex, t_component const*const c, int const*
         //TODO: (TKS) Find a way to save the number density (?)
         for (int i = 0; i < Q; i++) {
 
-            /*TODO: (DL) is it correct to use "-" (minus) here? In the comments it says in direction "i", but with
-            * negative signs isn't it really direction "Q-1-i" ? */
-            int nextCellIndex = currentCellIndex-LATTICEVELOCITIES[i][0]
-                                - xlen2*LATTICEVELOCITIES[i][1]
-                                - xylen*LATTICEVELOCITIES[i][2]; //index of cell in direction i
+            // Go to the next cell index in the direction of lattice velocities
+            int nextCellIndex = currentCellIndex+LATTICEVELOCITIES[i][0]
+                                + xlen2*LATTICEVELOCITIES[i][1]
+                                + xylen*LATTICEVELOCITIES[i][2]; //index of cell in direction i
 
             int nextIndex = Q*nextCellIndex; //index of number density in direction i
             // numDensity = c[m].collideField[nextIndex]; //number density in direction i
@@ -129,14 +129,14 @@ void c_computeForces(int currentCellIndex, t_component const*const c, int const*
     }
 
     // numDensity = c[n].collideField[currentCellIndex];
-    c_computeNumDensity(&c->collideField[currentCellIndex], &numDensity);
+    c_computeNumDensity(&c[currentCompIndex].collideField[currentCellIndex], &numDensity);
 
     /*TODO: (DL) Here is a problem I think.
     * We pass to the function "&c[n] -> c". In the loop above we index c[m], we therefore asume that
     * we have &c[0] (only then we can index "m" without segfault). But this is not true. */
-    forces[0] *= -psiFctPointer[c->psiFctCode](numDensity);
-    forces[1] *= -psiFctPointer[c->psiFctCode](numDensity);
-    forces[2] *= -psiFctPointer[c->psiFctCode](numDensity);
+    forces[0] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
+    forces[1] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
+    forces[2] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
 }
 
 // Computes the equilibrium velocity for all components
