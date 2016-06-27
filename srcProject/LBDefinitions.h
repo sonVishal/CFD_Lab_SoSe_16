@@ -68,11 +68,11 @@ enum CELLS {
 };
 
 //TODO: (DL) not sure if a function pointer with inline works... we can test it out.
-static inline double psi1(double numberDensity){ return (1-exp(-numberDensity));}
-static inline double psi2(double numberDensity){ return numberDensity;}
+static inline double psi0(double numberDensity){ return (1-exp(-numberDensity));}
+static inline double psi1(double numberDensity){ return numberDensity;}
 
 typedef double (*fctPtrPsi)(double);
-static const fctPtrPsi psiFctPointer[2] = {psi1, psi2};
+static const fctPtrPsi psiFctPointer[2] = {psi0, psi1};
 
 
 //TODO: (DL) There can be "better" ways to number edges. At the moment the numbering is benefical for computing indices.
