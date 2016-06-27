@@ -192,7 +192,7 @@ void communicateDensityComponents(int const * const flagField,
 	for (int i = 0; i < numComp; ++i) {
 		//TODO:(DL) for now parallel and periodic part is separated (less risk of deadlocks etc.):
 		communicate(flagField, sendBuffer, readBuffer, c[i].collideField, procData, 1); //1 indicates that the density is handled
-		treatBoundary(NULL, c[i].collideField, procData, sendBuffer, readBuffer, 1);
+		treatBoundary(flagField, c[i].collideField, procData, sendBuffer, readBuffer, 1);
 	}
 }
 
