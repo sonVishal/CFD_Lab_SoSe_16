@@ -67,7 +67,6 @@ void doCollision(t_component *c, const int * const flagField, double G[numComp][
                     c_computeVelocity(currentCell, &c_density[n], &c_velocity[n], &c[n].m);
                 }
 
-				//TODO: (DL) PROBLEM: usage of c_tau, but it never set??
                 computeCommonVelocity(c_density, c_velocity, c, commonVelocity);
 
 				for (n = 0; n < numComp; n++) {
