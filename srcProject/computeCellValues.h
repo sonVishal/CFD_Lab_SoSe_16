@@ -9,7 +9,7 @@
 void c_computeNumDensity(const double *const currentCell, double *numDensity);
 
 /** computes the velocity within currentCell and stores the result in velocity */
-void c_computeVelocity(const double *const currentCell, const double *c_density,double *c_velocity, const double *c_mass);
+void c_computeVelocity(const double *const currentCell, const double *const c_density,double *c_velocity, const double *c_mass);
 
 /*computes the total velociy as if there were no interacting forces*/
 void computeCommonVelocity(const double *const c_density, const double * const c_velocity, const double *const c_tau, double* velocityNI);

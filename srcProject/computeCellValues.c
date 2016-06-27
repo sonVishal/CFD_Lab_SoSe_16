@@ -11,16 +11,15 @@
 
 void c_computeNumDensity(const double *const currentCell, double *c_numDensity){
     // Number density is the sum of the distributions in the current lattice
-    int i;
     *c_numDensity = 0.0;
-    for (i = 0; i < Q; i++) {
+    for (int i = 0; i < Q; i++) {
 		 *c_numDensity += currentCell[i];
     }
 }
 
 
 /** computes the velocity within currentCell and stores the result in velocity */
-void c_computeVelocity(const double * const currentCell, const double * const density, double *velocity, const double * const mass){
+void c_computeVelocity(double const*const currentCell, double const*const density, double *const velocity, double const*const mass){
 
     // Velocity is the momentum divided by the density
     // Momentum is the sum of the product of lattice velocity with distribution
@@ -87,11 +86,10 @@ void computeCommonVelocity(const double *const c_density, const double * const c
     velocityNI[0] = momentum[0]/den;
     velocityNI[1] = momentum[1]/den;
     velocityNI[2] = momentum[2]/den;
-
 }
 
 /*computes interacting forces between species*/
-void c_computeForces(int currentCellIndex, const t_component *const c, const int * const flagField,
+void c_computeForces(int currentCellIndex, t_component const*const c, int const*const flagField,
     double G[numComp], int * xlength, double forces[3]){
 
     int xlen2 = xlength[0]+2;
@@ -99,16 +97,16 @@ void c_computeForces(int currentCellIndex, const t_component *const c, const int
     int xylen = xlen2*ylen2;
 
     double numDensity;
-
-    forces[0] = 0.0;
-    forces[1] = 0.0;
-    forces[2] = 0.0;
+    forces[0] = 0.0; forces[1] = 0.0; forces[2] = 0.0;
 
     for (int m = 0; m < numComp; ++m) {
 
         //TODO: (TKS) Could unroll loop.
         //TODO: (TKS) Find a way to save the number density (?)
         for (int i = 0; i < Q; i++) {
+
+            /*TODO: (DL) is it correct to use "-" (minus) here? In the comments it says in direction "i", but with
+            * negative signs isn't it really direction "Q-1-i" ? */
             int nextCellIndex = currentCellIndex-LATTICEVELOCITIES[i][0]
                                 - xlen2*LATTICEVELOCITIES[i][1]
                                 - xylen*LATTICEVELOCITIES[i][2]; //index of cell in direction i
@@ -116,12 +114,14 @@ void c_computeForces(int currentCellIndex, const t_component *const c, const int
             int nextIndex = Q*nextCellIndex; //index of number density in direction i
             // numDensity = c[m].collideField[nextIndex]; //number density in direction i
             // Compute the number density for component "m" at lattice site "nextIndex"
-            if (flagField[nextCellIndex] == FLUID) {
+
+            if(flagField[nextCellIndex] == FLUID){
                 c_computeNumDensity(&c[m].collideField[nextIndex], &numDensity);
-            } else {
+            }else{ //PARALLEL_BOUNDARY or PERIODIC_BOUNDARY
                 numDensity = c[m].collideField[nextIndex + 9];
             }
 
+            //Shan&Doolen eq. 4 (PDF page 5)
             forces[0] += G[m] * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][0];
             forces[1] += G[m] * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][1];
             forces[2] += G[m] * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][2];
@@ -130,18 +130,22 @@ void c_computeForces(int currentCellIndex, const t_component *const c, const int
 
     // numDensity = c[n].collideField[currentCellIndex];
     c_computeNumDensity(&c->collideField[currentCellIndex], &numDensity);
+
+    /*TODO: (DL) Here is a problem I think.
+    * We pass to the function "&c[n] -> c". In the loop above we index c[m], we therefore asume that
+    * we have &c[0] (only then we can index "m" without segfault). But this is not true. */
     forces[0] *= -psiFctPointer[c->psiFctCode](numDensity);
     forces[1] *= -psiFctPointer[c->psiFctCode](numDensity);
     forces[2] *= -psiFctPointer[c->psiFctCode](numDensity);
 }
 
 // Computes the equilibrium velocity for all components
-void c_computeEqVelocity(const t_component * const c, const double * const commonVelocity,
-    const double compDenstiy, const double * const compForce, double compEqVelocity[3]) {
+void c_computeEqVelocity(t_component const*const c, double const*const commonVelocity,
+    const double compDensity, double const*const compForce, double compEqVelocity[3]) {
 
-    compEqVelocity[0] = commonVelocity[0] + (c->tau/compDenstiy)*compForce[0];
-    compEqVelocity[1] = commonVelocity[1] + (c->tau/compDenstiy)*compForce[1];
-    compEqVelocity[2] = commonVelocity[2] + (c->tau/compDenstiy)*compForce[2];
+    compEqVelocity[0] = commonVelocity[0] + (c->tau/compDensity)*compForce[0];
+    compEqVelocity[1] = commonVelocity[1] + (c->tau/compDensity)*compForce[1];
+    compEqVelocity[2] = commonVelocity[2] + (c->tau/compDensity)*compForce[2];
 }
 
 /** computes the equilibrium distributions for all particle distribution
@@ -160,6 +164,15 @@ void c_computeFeq(const double density, const double * const velocity, double *f
     double const ux = velocity[0];
     double const uy = velocity[1];
     double const uz = velocity[2];
+
+    //TODO: (TKS) Unroll the loop. Much easier to debug this.
+    for (int i = 0; i < Q; i++) {
+        double dotProd1 = ux*ux + uy*uy + uz*uz;
+        double dotProd2 = ux*LATTICEVELOCITIES[i][0]
+                          + uy*LATTICEVELOCITIES[i][1]
+                          + uz*LATTICEVELOCITIES[i][2];
+        feq[i] = LATTICEWEIGHTS[i]*(density)*(1 + dotProd2/cs_2 + dotProd2*dotProd2/cs_4_2 - dotProd1/(2*cs_2));
+    }
 
     // Temporary variable for 1-(u.u)/(2*cs²)
     /*double const u_u = 1-(ux*ux+uy*uy+uz*uz)/(2*cs_2);*/
@@ -202,16 +215,4 @@ void c_computeFeq(const double density, const double * const velocity, double *f
     //feq[16] = d2*(u_u + (uz)*(1/cs_2 + (uz)/cs_4_2));
     //feq[17] = d1*(u_u + (ux+uz)*(1/cs_2 + (ux+uz)/cs_4_2));
     //feq[18] = d1*(u_u + (uy+uz)*(1/cs_2 + (uy+uz)/cs_4_2));
-
-    //TODO: (TKS) Unroll the loop. Much easier to debug this.
-     int i;
-
-     for (i = 0; i < Q; i++) {
-         double dotProd1 = ux*ux + uy*uy + uz*uz;
-         double dotProd2 = ux*LATTICEVELOCITIES[i][0]
-                         + uy*LATTICEVELOCITIES[i][1]
-                         + uz*LATTICEVELOCITIES[i][2];
-         feq[i] = LATTICEWEIGHTS[i]*(density)*(1 + dotProd2/cs_2 + dotProd2*dotProd2/cs_4_2 - dotProd1/(2*cs_2));
-     }
-
 }

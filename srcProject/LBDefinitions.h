@@ -61,8 +61,8 @@ enum WALLS {
 // Enum for cell type
 enum CELLS {
     FLUID,
-    NO_SLIP,
-    MOVING_WALL,
+    NO_SLIP,        //TODO: (DL) Deprecated
+    MOVING_WALL,    //TODO: (DL) Deprecated
     PARALLEL_BOUNDARY,
     PERIODIC_BOUNDARY
 };

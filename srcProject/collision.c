@@ -5,7 +5,7 @@
 void c_computePostCollisionDistributions(double *currentCell, const double tau, const double *const feq){
 	//double tau_val = *tau;
 	for ( int i = 0;  i< Q; ++i ) {
-		currentCell[i] = currentCell[i]  - (currentCell[i]  - feq[i])/(tau);
+		currentCell[i] = currentCell[i] - (currentCell[i] - feq[i])/(tau);
 
 #ifndef NDEBUG
 		if(currentCell[i]<0){
@@ -57,8 +57,7 @@ void doCollision(t_component *c, const int * const flagField, double G[numComp][
                     c_density[n] = c_numDensity[n]*c[n].m;
 
 #ifndef NDEBUG
-                    // We check if the density deviation is more than densityTol%
-                    // This value can be changed in LBDefinitions.h
+                    // We check if the density deviation is more than densityTol% This value can be changed in LBDefinitions.h
                     if(fabs(c_density[n]-1) > densityTol){
                         char msg[120];
                         sprintf(msg, "A density value (%f) outside the given tolerance of %.2f %% was detected in cell: "
@@ -70,6 +69,7 @@ void doCollision(t_component *c, const int * const flagField, double G[numComp][
                     c_computeVelocity(currentCell, &c_density[n], &c_velocity[n], &c[n].m);
                 }
 
+				//TODO: (DL) PROBLEM: usage of c_tau, but it never set??
                 computeCommonVelocity(c_density, c_velocity, c_tau, commonVelocity);
 
 				for (n = 0; n < numComp; n++) {

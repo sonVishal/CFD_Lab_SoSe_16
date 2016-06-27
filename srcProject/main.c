@@ -18,12 +18,13 @@
 int main(int argc, char *argv[]){
 
 	// Distribution function vectors
-    int *flagField          = NULL;
+    int *flagField = NULL;
 
     // Simulation parameters
     int xlength = 0;
     t_procData procData;
-    double wallVelocity[3];
+
+    double wallVelocity[3]; //TODO:(DL) deprecated
 
     int t = 0;
     int timesteps;
@@ -45,7 +46,7 @@ int main(int argc, char *argv[]){
 
     // File printing parameters
     char fName[80];
-    snprintf(fName, 80, "pv_files/WS4_rank");
+    snprintf(fName, 80, "pv_files/project_rank");
 
     //Timing variables:
     double beginProcTime, endProcTime, beginSimTime, endSimTime;
@@ -64,23 +65,25 @@ int main(int argc, char *argv[]){
     double G[numComp][numComp];
 
     /* Read parameters and check the bounds on tau
-     * Only performed by the root and broadcasted*/
+     * Only performed by the root and then broadcasted in 'broadcastValues'*/
     if (procData.rank == 0) {
         readParameters(&xlength, c, G, wallVelocity, procsPerAxis, &timesteps,
             &timestepsPerPlotting, argc, &argv[1]);
     }
 
     // Broadcast the data from rank 0 (root) to other processes
+    //TODO: (DL) maybe initialize also procData in here (collideField & streamField) & validity tests
     broadcastValues(procData.rank, &xlength, c, G, wallVelocity,
         procsPerAxis, &timesteps, &timestepsPerPlotting);
 
-    // TODO: Remove when done
     // Assign the wall velocity
+    // TODO: (DL) deprecated
     procData.wallVelocity[0] = wallVelocity[0];
     procData.wallVelocity[1] = wallVelocity[1];
     procData.wallVelocity[2] = wallVelocity[2];
 
     // Abort if the number of processes given by user do not match with the dat file
+    //TODO: (DL) could we get this somewhere else than main?
     if (procData.numRanks != procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2]) {
         if (procData.rank == 0) {
             printf("ERROR: The number of processes assigned in the dat file, %d, "
@@ -101,6 +104,9 @@ int main(int argc, char *argv[]){
 				"correctness are carried out at the cost of execution speed!\n"
 				"      Use \"make speed\" for a faster execution time.\n");
 #endif
+        // INFO Printing
+        printf("\nINFO: Storing cell data in VTS files.\n      Please use the"
+        " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
     }
 
     // Domain decomposition & setting up neighbors
@@ -114,7 +120,7 @@ int main(int argc, char *argv[]){
     }
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
-    flagField     = (int *)  calloc(totalsize, sizeof( int ));
+    flagField = (int *) calloc(totalsize, sizeof( int ));
 
 #ifndef NDEBUG
     initializeUnitTest(totalsize);
@@ -126,12 +132,7 @@ int main(int argc, char *argv[]){
     // Allocate memory to send and read buffers
     initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.neighbours, procData.bufferSize);
 
-    // INFO Printing
-    if(procData.rank == 0)
-        printf("\nINFO: Storing cell data in VTS files.\n      Please use the"
-        " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
-
-    // // Write the VTK at t = 0
+    //Write the VTK at t = 0
     printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
     writeVtsOutput(c, flagField, fName, t, xlength, &procData, procsPerAxis);
 
@@ -181,7 +182,6 @@ int main(int argc, char *argv[]){
     }
     endProcTime = MPI_Wtime();
 
-
     if(procData.rank == 0)
         printf("\nINFO: Please open the WS4_combined.*.pvts file to view the combined result.\n");
 
@@ -216,7 +216,7 @@ int main(int argc, char *argv[]){
     }
 
     #ifndef NDEBUG
-        freeUnitTest();
+    freeUnitTest();
     #endif
 
     finaliseMPI(&procData);
