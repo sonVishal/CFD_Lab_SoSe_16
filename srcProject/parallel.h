@@ -17,10 +17,12 @@ typedef struct{
 } t_iterPara;
 
 // Wrapper around communicate function to communicate each component
-void communicateComponents(double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData);
+void communicateComponents(int const * const flagField,
+    double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData);
 
 // Performs extract, swap and inject for all the directions
-void communicate(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData, const int densityFlag);
+void communicate(int const * const flagField,
+    double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData, const int densityFlag);
 
 // Exracts the collide field to the send buffer
 void extract( double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara, t_procData const * const procData,
@@ -66,10 +68,12 @@ void Programm_Sync(char *txt);
 void Programm_Stop(char *txt);
 
 
-void communicateDensityComponents(double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData);
+void communicateDensityComponents(int const * const flagField,
+    double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData);
 
 void communicateDensityParallelWall(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData);
 
-void extractDensity(double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara, t_procData const * const procData, const int direction);
+void extractDensity(int const * const flagField,
+    double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara, t_procData const * const procData, const int direction);
 
 #endif

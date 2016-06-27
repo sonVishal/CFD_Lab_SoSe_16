@@ -148,7 +148,7 @@ int main(int argc, char *argv[]){
     for(t = 1; t <= timesteps; t++){
 
         //do extraction , swap , injection for - left/right, top/bottom, front/back for each component
-        communicateComponents(sendBuffer, readBuffer, c, &procData);
+        communicateComponents(flagField, sendBuffer, readBuffer, c, &procData);
 
         // Perform local streaming for each component
 	    streamComponents(c, flagField, procData.xLength);
@@ -156,7 +156,7 @@ int main(int argc, char *argv[]){
         // Swap the local fields for each component
         swapComponentFields(c);
 
-        communicateDensityComponents(sendBuffer, readBuffer, c, &procData);
+        communicateDensityComponents(flagField,sendBuffer, readBuffer, c, &procData);
 
 #ifndef NDEBUG
         beforeCollision(c, &procData);

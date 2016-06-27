@@ -22,7 +22,9 @@ void treatBoundary(int const * const flagField, double *collideField, const t_pr
 void treatPeriodicEdgeNoComm(double *collideField, const t_procData * const procData, const int edge1, const int edge2, const int densityFlag);
 void treatPeriodicWallNoComm(double *collideField, const int wall1, const int wall2, t_procData const*const procData, const int densityFlag);
 void treatPeriodicEdge(double *collideField, double *const sendBuffer, double *const readBuffer, const t_procData * const procData, const int procEdge, const int opponentEdge, const int densityFlag);
-void treatPeriodicWall(double *const collideField, double *const sendBuffer, double *const readBuffer, const t_procData * const procData, const int procWall, const int opponentWall, const int densityFlag);
+void treatPeriodicWall(int const * const flagField,
+    double *const collideField, double *const sendBuffer, double *const readBuffer,
+    const t_procData * const procData, const int procWall, const int opponentWall, const int densityFlag);
 int p_assignSharedEdgeIndex(const int edge);
 void p_setEdgeIterParameters(t_iterParaEdge *const iterPara, t_procData const*const procData, const int edge, const int injectFlag);
 

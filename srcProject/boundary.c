@@ -269,7 +269,7 @@ int p_assignSharedEdgeIndex(const int edge) {
 	return indices[edge];
 }
 
-void treatPeriodicWall(double *const collideField, double *const sendBuffer, double *const readBuffer,
+void treatPeriodicWall(int const * const flagField, double *const collideField, double *const sendBuffer, double *const readBuffer,
 	const t_procData * const procData, const int procWall, const int opponentWall, const int densityFlag){
 
 	t_iterPara  iterPara;
@@ -286,7 +286,7 @@ void treatPeriodicWall(double *const collideField, double *const sendBuffer, dou
 	// printf("startInner=%i, startOuter=%i, endInner=%i, endOuter=%i \n",
 	// iterPara.startInner, iterPara.startOuter, iterPara.endInner, iterPara.endOuter);
 	if(densityFlag){
-		extractDensity(sendBuffer, collideField, &iterPara, procData, procWall);
+		extractDensity(flagField, sendBuffer, collideField, &iterPara, procData, procWall);
 	}else{
 		extract(sendBuffer, collideField, &iterPara, procData, procWall, indexOut);
 	}
@@ -500,12 +500,12 @@ void treatBoundary(int const*const flagField, double *const collideField, const 
 		}
 		else{
 			if(firstNeighbour != MPI_PROC_NULL){
-				treatPeriodicWall(collideField, sendBuffer[wall], readBuffer[wall],
+				treatPeriodicWall(flagField,collideField, sendBuffer[wall], readBuffer[wall],
 					procData, wall, wall+1, densityFlag);
 			}
 
 			if(secondNeighbour != MPI_PROC_NULL){
-				treatPeriodicWall(collideField, sendBuffer[wall+1], readBuffer[wall+1],
+				treatPeriodicWall(flagField,collideField, sendBuffer[wall+1], readBuffer[wall+1],
 					procData, wall+1, wall, densityFlag);
 			}
 		}

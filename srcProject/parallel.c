@@ -179,17 +179,19 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const *
 /*
 * Wrapper around communicate to communicate each component
 */
-void communicateComponents(double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData){
+void communicateComponents(int const * const flagField,
+	double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData){
     for (int i = 0; i < numComp; ++i) {
 		//TODO: (DL) maybe define variables for 0/1 for densityFlag
-        communicate(sendBuffer, readBuffer, c[i].collideField, procData, 0); //0 indicates that the boundary is handled
+        communicate(flagField, sendBuffer, readBuffer, c[i].collideField, procData, 0); //0 indicates that the boundary is handled
     }
 }
 
-void communicateDensityComponents(double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData){
+void communicateDensityComponents(int const * const flagField,
+	double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData){
 	for (int i = 0; i < numComp; ++i) {
 		//TODO:(DL) for now parallel and periodic part is separated (less risk of deadlocks etc.):
-		communicate(sendBuffer, readBuffer, c[i].collideField, procData, 1); //1 indicates that the density is handled
+		communicate(flagField, sendBuffer, readBuffer, c[i].collideField, procData, 1); //1 indicates that the density is handled
 		treatBoundary(NULL, c[i].collideField, procData, sendBuffer, readBuffer, 1);
 	}
 }
@@ -197,7 +199,8 @@ void communicateDensityComponents(double** sendBuffer, double**readBuffer, t_com
 /*
 * Main algorithm to carry out the communication between the processes.
 */
-void communicate(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData, const int densityFlag){
+void communicate(int const * const flagField,
+	double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData, const int densityFlag){
     //Run extract, swap, inject for all sides and cells.
 	int nrDist = densityFlag ? 1 : nrDistSwap; //only one indice is handled when density is written
     int 		index1[nrDist], index2[nrDist];
@@ -223,7 +226,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         /* Extract the distributions from collideField to the send buffer */
         if(procData->neighbours[face1] != MPI_PROC_NULL){
 			if(densityFlag){
-				extractDensity(sendBuffer[face1], collideField, &iterPara1, procData, face1);
+				extractDensity(flagField,sendBuffer[face1], collideField, &iterPara1, procData, face1);
 			}else{
 				extract(sendBuffer[face1], collideField, &iterPara1, procData, face1, index1);
 			}
@@ -231,7 +234,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 
         if(procData->neighbours[face2] != MPI_PROC_NULL){
 			if(densityFlag){
-				extractDensity(sendBuffer[face2], collideField, &iterPara2, procData, face2);
+				extractDensity(flagField,sendBuffer[face2], collideField, &iterPara2, procData, face2);
 			}else{
 				extract(sendBuffer[face2], collideField, &iterPara2, procData, face2, index2);
 			}
@@ -300,17 +303,22 @@ void extract(double sendBuffer[], double const * const collideField, t_iterPara 
     }
 }
 
-//TODO: Should we integrate this in "extract" for consistency (handle via flag)?
-void extractDensity(double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara,
+void extractDensity(int const * const flagField,
+	double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara,
 	t_procData const * const procData, const int direction){
 
-	int idx, bufferIdx = 0;
+	int flagIdx, cellIdx, bufferIdx = 0;
 	double density;
 
 	for (int k = iterPara->startOuter; k <= iterPara->endOuter; k++) {
 		for (int j = iterPara->startInner; j <= iterPara->endInner; j++) {
-			idx = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
-			c_computeNumDensity(&collideField[idx], &density);
+			flagIdx = p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
+			cellIdx = Q*flagIdx;
+			if (flagField[flagIdx] == FLUID) {
+				c_computeNumDensity(&collideField[cellIdx], &density);
+			} else {
+				density = collideField[cellIdx+9];
+			}
 			sendBuffer[bufferIdx++] = density;
 		}
 	}
