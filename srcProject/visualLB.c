@@ -150,7 +150,7 @@ void p_writeCombinedPVTSFile(const char * const filename, const unsigned int t,
     FILE *fp = NULL;
 
     // Create the file with time information in the name
-    sprintf(pFileName, "%s.%i.pvts", "pv_files/WS4_combined",t);
+    sprintf(pFileName, "%s.%i.pvts", "pv_files/project_combined",t);
     fp  = fopen(pFileName, "w");
 
     // Check if files were opened or not
