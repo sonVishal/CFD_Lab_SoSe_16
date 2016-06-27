@@ -145,10 +145,9 @@ void c_computeEqVelocity(t_component const*const c, double const*const commonVel
     compEqVelocity[2] = commonVelocity[2] + (c->tau/compDensity)*compForce[2];
 }
 
-/** computes the equilibrium distributions for all particle distribution
+/** computes the equilibrium distributions for all particle distribution in a component
  *  functions of one cell from density and velocity and stores the results in feq.
  */
-//TODO: (TKS) Change this to multicomponent
 void c_computeFeq(const double density, const double * const velocity, double *feq){
 
     // Temporary variables for speed of sound squared and ^4
