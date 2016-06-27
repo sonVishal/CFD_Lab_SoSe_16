@@ -91,7 +91,7 @@ void computeCommonVelocity(const double *const c_density, const double * const c
 /*computes interacting forces between species*/
 void c_computeForces(int currentCellIndex, const int currentCompIndex,
     t_component const*const c, int const*const flagField,
-    double G[numComp], int * xlength, double forces[3]){
+    double const*const G, int * xlength, double forces[3]){
 
     int xlen2 = xlength[0]+2;
 	int ylen2 = xlength[1]+2;

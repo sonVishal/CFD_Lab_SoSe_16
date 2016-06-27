@@ -17,7 +17,7 @@ void computeCommonVelocity(const double *const c_density, const double * const c
 /*computes interacting forces between species*/
 void c_computeForces(int currentCellIndex, const int currentCompIndex,
     const t_component *const c, const int * const flagField,
-    double G[numComp], int * xlength, double forces[3]);
+    double const*const G, int * xlength, double forces[3]);
 
 // Computes the equilibrium velocity for each component
 void c_computeEqVelocity(const t_component * const c, const double * const commonVelocity,
