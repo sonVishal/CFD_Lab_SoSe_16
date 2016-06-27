@@ -70,17 +70,17 @@ void c_computeVelocity(double const*const currentCell, double const*const densit
 }
 
 /*computes the total velociy as if there were no interacting forces*/
-void computeCommonVelocity(const double *const c_density, const double * const c_velocity, const double *const c_tau, double* velocityNI){
+void computeCommonVelocity(const double *const c_density, const double * const c_velocity, t_component *c, double* velocityNI){
 
     double den = 0;
     double momentum[3] = {0,0,0};
 
     for (int n = 0; n < numComp; ++n) {
-       momentum[0]+= c_density[n]*c_velocity[0]/c_tau[n];
-       momentum[1]+= c_density[n]*c_velocity[1]/c_tau[n];
-       momentum[2]+= c_density[n]*c_velocity[2]/c_tau[n];
+       momentum[0]+= c_density[n]*c_velocity[0]/c[n].tau;
+       momentum[1]+= c_density[n]*c_velocity[1]/c[n].tau;
+       momentum[2]+= c_density[n]*c_velocity[2]/c[n].tau;
 
-       den+= c_density[n]/c_tau[n];
+       den+= c_density[n]/c[n].tau;
     }
 
     velocityNI[0] = momentum[0]/den;

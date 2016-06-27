@@ -32,8 +32,6 @@ void doCollision(t_component *c, const int * const flagField, double G[numComp][
 			for (x = 1; x <= xlength[0]; x++) { //x
 
                 // Allocate memory to local cell parameters
-                //TODO: (TKS) remove tau array and input c into function instead.
-                double c_tau[numComp];              //Array which holds each tau value.
                 double c_density[numComp];          //Array with the densities for each component in current cell
 
                 double c_numDensity[numComp];       //Array with the number densities for each component
@@ -70,7 +68,7 @@ void doCollision(t_component *c, const int * const flagField, double G[numComp][
                 }
 
 				//TODO: (DL) PROBLEM: usage of c_tau, but it never set??
-                computeCommonVelocity(c_density, c_velocity, c_tau, commonVelocity);
+                computeCommonVelocity(c_density, c_velocity, c, commonVelocity);
 
 				for (n = 0; n < numComp; n++) {
 					//Compute the force.
