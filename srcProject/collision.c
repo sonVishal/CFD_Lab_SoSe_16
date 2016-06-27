@@ -40,7 +40,7 @@ void doCollision(t_component *c, const int * const flagField, double G[numComp][
 				double c_force[3];
 
                 double commonVelocity[3];  // Total equilibrium velocity if there were no forces between species
-                double feq[numComp][19];        // Equilibrium distribution of number density
+                double feq[19];        // Equilibrium distribution of number density
 
 				cellidx = p_computeCellOffsetXYZ(x, y, z, xlength);
 				fieldidx = Q*cellidx;
@@ -77,10 +77,10 @@ void doCollision(t_component *c, const int * const flagField, double G[numComp][
 					c_computeEqVelocity(&c[n], commonVelocity, c_density[n], c_force, c_velocityEq);
 
 					// Compute the equilibrium distributions
-					c_computeFeq(c_density[n], c_velocityEq, feq[n]);
+					c_computeFeq(c_density[n], c_velocityEq, feq);
 
 					// Compute the post collision distributions
-					c_computePostCollisionDistributions(&c[n].collideField[fieldidx], c[n].tau, feq[n]);
+					c_computePostCollisionDistributions(&c[n].collideField[fieldidx], c[n].tau, feq);
 				}
 			}
 		}
