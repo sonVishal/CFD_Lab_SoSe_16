@@ -131,9 +131,6 @@ void c_computeForces(int currentCellIndex, const int currentCompIndex,
     // numDensity = c[n].collideField[currentCellIndex];
     c_computeNumDensity(&c[currentCompIndex].collideField[currentCellIndex], &numDensity);
 
-    /*TODO: (DL) Here is a problem I think.
-    * We pass to the function "&c[n] -> c". In the loop above we index c[m], we therefore asume that
-    * we have &c[0] (only then we can index "m" without segfault). But this is not true. */
     forces[0] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
     forces[1] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
     forces[2] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
