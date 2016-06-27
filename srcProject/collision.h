@@ -3,6 +3,7 @@
 #include "computeCellValues.h"
 #include "LBDefinitions.h"
 #include "helper.h"
+#include "mpi/mpi.h"
 
 /** computes the post-collision distribution functions according to the BGK update rule and
  *  stores the results again at the same position.

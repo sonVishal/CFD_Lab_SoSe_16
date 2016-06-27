@@ -22,7 +22,7 @@ void c_computePostCollisionDistributions(double *currentCell, const double tau, 
 void doCollision(t_component *c, const int * const flagField, double G[numComp][numComp], int *xlength){
 
 	// Define iteration indices
-	int cellidx, idx, x, y, z, n;
+	int cellidx, fieldidx, x, y, z, n;
 
 	double *currentCell;
 
@@ -45,12 +45,12 @@ void doCollision(t_component *c, const int * const flagField, double G[numComp][
                 double feq[19];        // Equilibrium distribution of number density
 
 				cellidx = p_computeCellOffsetXYZ(x, y, z, xlength);
-				idx = Q*cellidx;
+				fieldidx = Q*cellidx;
 
                 for (n = 0; n < numComp; ++n){ //c //TODO: (TKS) Possible to optimize this loop nest. We now lose locality (?)
 
                     // Get the index of the first distribution in current component in the current cell
-                    currentCell = &c[n].collideField[idx];
+                    currentCell = &c[n].collideField[fieldidx];
 
                     // Compute the cell density and number density for each component
                     c_computeNumDensity(currentCell, &c_numDensity[n]);
@@ -83,7 +83,7 @@ void doCollision(t_component *c, const int * const flagField, double G[numComp][
 					c_computeFeq(c_density[n], c_velocityEq, feq);
 
 					// Compute the post collision distributions
-					c_computePostCollisionDistributions(&c[n].collideField[idx], c[n].tau, feq);
+					c_computePostCollisionDistributions(&c[n].collideField[fieldidx], c[n].tau, feq);
 				}
 			}
 		}
