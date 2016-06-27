@@ -53,6 +53,10 @@ G11             0.04
 psi0		0
 psi1		1
 
+#TODO: 
+d00         1
+d01         1
+
 
 # Reynolds Number
 Re              2

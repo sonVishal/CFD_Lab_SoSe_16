@@ -117,7 +117,9 @@ typedef struct {
     double* collideField;
     double  tau;
     double  m;
+    double  d0;
     int psiFctCode;
+    
 } t_component;
 
 /* Function for reverse index search for procs.
