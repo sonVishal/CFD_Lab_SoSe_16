@@ -13,7 +13,8 @@
 #include <stdio.h>
 #include <mpi/mpi.h>
 
-// TODO:(VS) Remove velocity and reynolds number stuff after testing
+// TODO:(VS)   Remove velocity and reynolds number stuff after testing
+// TODO: (TKS) Go through all ifndef/ifdef.
 
 int main(int argc, char *argv[]){
 
@@ -96,7 +97,7 @@ int main(int argc, char *argv[]){
     // INFO printing
     if(procData.rank == 0)
     {
-#ifndef NDEBUG
+#ifdef NDEBUG
     	printf("INFO: The compiler directive NDEBUG is enabled. Faster execution time is gained, "
     			"at the cost of less correctness checks during runtime!\n");
 #else
