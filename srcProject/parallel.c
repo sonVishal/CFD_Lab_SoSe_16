@@ -190,7 +190,7 @@ void communicateDensityComponents(double** sendBuffer, double**readBuffer, t_com
 	for (int i = 0; i < numComp; ++i) {
 		//TODO:(DL) for now parallel and periodic part is separated (less risk of deadlocks etc.):
 		communicate(sendBuffer, readBuffer, c[i].collideField, procData, 1); //1 indicates that the density is handled
-		// treatBoundary(NULL, c[i].collideField, procData, sendBuffer, readBuffer, 1);
+		treatBoundary(NULL, c[i].collideField, procData, sendBuffer, readBuffer, 1);
 	}
 }
 
