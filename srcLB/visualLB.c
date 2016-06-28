@@ -16,37 +16,23 @@
 // t            - Time at which output is to be stored
 // xlength      - Number of cells in one direction
 
-void writeVtkOutput(const double * const collideField,
+void writeVtkOutput(const t_component * const c,
     const int * const flagField, const char * filename,
     unsigned int t, int xlength)
 {
     // Files related variables
     char pFileName[80];
-    char pTempFile[80];
-    FILE *tmp = NULL;
     FILE *fp = NULL;
-
-    // temporary variable for concatenation
-    char ch;
 
     // Create the file with time information in the name
     sprintf(pFileName, "%s.%i.vtk", filename, t);
-    sprintf(pTempFile, "temp.vtk");
     fp  = fopen(pFileName, "w");
-    tmp = fopen(pTempFile, "w");
 
     // Check if files were opened or not
     if(fp == NULL)
     {
         char szBuff[80];
         sprintf(szBuff, "Failed to open %s", pFileName);
-        ERROR(szBuff);
-        return;
-    }
-    if(tmp == NULL)
-    {
-        char szBuff[80];
-        sprintf(szBuff, "Failed to open %s", pTempFile);
         ERROR(szBuff);
         return;
     }
@@ -71,75 +57,56 @@ void writeVtkOutput(const double * const collideField,
     int zOffset, yzOffset;
 
     // Open two files and concatenate them at the end
+    for (int i = 0; i < 2; i++) {
+        // Write cell velocity to the vtk file
+        fprintf(fp,"\nCELL_DATA %d \n", xlength*xlength*xlength);
+        fprintf(fp, "\nVECTORS velocity_c%d float\n",i);
+        for(z = 1; z <= xlength; z++) {
+            zOffset = z*xlen2;
+            for(y = 1; y <= xlength; y++) {
+                yzOffset = zOffset + y*(xlength+2);
+                for(x = 1; x <= xlength; x++) {
+                    // Compute the base index for collideField
+                    idx = Q*(yzOffset + x);
 
-    // Write cell velocity to the vtk file
-    fprintf(fp,"\nCELL_DATA %d \n", xlength*xlength*xlength);
-    fprintf(fp, "\nVECTORS velocity float\n");
+                    computeDensity(&c[i].collideField[idx], &cellDensity);
+                    computeVelocity(&c[i].collideField[idx], &cellDensity, &cellVelocity[0]);
 
-    // Write cell average density to a temporary vtk file
-    fprintf(tmp, "SCALARS density float 1 \n");
-    fprintf(tmp, "LOOKUP_TABLE default \n");
-    for(z = 1; z <= xlength; z++) {
-        zOffset = z*xlen2;
-        for(y = 1; y <= xlength; y++) {
-            yzOffset = zOffset + y*(xlength+2);
-            for(x = 1; x <= xlength; x++) {
-                // Compute the base index for collideField
-                idx = Q*(yzOffset + x);
+                    // Write cell average velocities
+                    fprintf(fp, "%f %f %f\n", cellVelocity[0],
+                    cellVelocity[1], cellVelocity[2]);
 
-                computeDensity(&collideField[idx], &cellDensity);
-                computeVelocity(&collideField[idx], &cellDensity, &cellVelocity[0]);
+                    // Write the cell density
+                    fprintf(fp, "%f\n", cellDensity);
+                }
+            }
+        }
 
-                // Write cell average velocities
-                fprintf(fp, "%f %f %f\n", cellVelocity[0],
-                cellVelocity[1], cellVelocity[2]);
+        // Write cell average density to a temporary vtk file
+        fprintf(fp, "SCALARS density_c%d float 1 \n",i);
+        fprintf(fp, "LOOKUP_TABLE default \n");
+        for(z = 1; z <= xlength; z++) {
+            zOffset = z*xlen2;
+            for(y = 1; y <= xlength; y++) {
+                yzOffset = zOffset + y*(xlength+2);
+                for(x = 1; x <= xlength; x++) {
+                    // Compute the base index for collideField
+                    idx = Q*(yzOffset + x);
 
-                // Write the cell density
-                fprintf(tmp, "%f\n", cellDensity);
+                    computeDensity(&c[i].collideField[idx], &cellDensity);
+
+                    // Write the cell density
+                    fprintf(fp, "%f\n", cellDensity);
+                }
             }
         }
     }
-
-    // Close file
-    if(fclose(tmp))
-    {
-        char szBuff[80];
-        sprintf(szBuff, "Failed to close %s", pTempFile);
-        ERROR(szBuff);
-    }
-
-    // Open for reading
-    tmp = fopen(pTempFile, "r");
-    if(tmp == NULL)
-    {
-        char szBuff[80];
-        sprintf(szBuff, "Failed to open %s", pTempFile);
-        ERROR(szBuff);
-        return;
-    }
-
-    // Concatenate the two files
-    while((ch = fgetc(tmp)) != EOF)
-        fputc(ch,fp);
 
     // Close files
     if(fclose(fp))
     {
         char szBuff[80];
         sprintf(szBuff, "Failed to close %s", pFileName);
-        ERROR(szBuff);
-    }
-    if(fclose(tmp))
-    {
-        char szBuff[80];
-        sprintf(szBuff, "Failed to close %s", pTempFile);
-        ERROR(szBuff);
-    }
-
-    // Delete the temporary file
-    if (remove(pTempFile)) {
-        char szBuff[80];
-        sprintf(szBuff, "Failed to delete %s", pTempFile);
         ERROR(szBuff);
     }
 }

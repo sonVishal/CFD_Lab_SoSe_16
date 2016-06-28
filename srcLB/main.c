@@ -72,23 +72,25 @@ int main(int argc, char *argv[]){
 
     // Write the VTK at t = 0
     printf("INFO: write vtk file at time t = %d \n", t);
-    writeVtkOutput(collideField,flagField,fName,t,xlength);
+    writeVtkOutput(c,flagField,fName,t,xlength);
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
 	    double *swap = NULL;
-	    doStreaming(collideField,streamField,flagField,xlength);
+	    doStreaming(c,flagField,xlength);
 
-	    swap = collideField;
-	    collideField = streamField;
-	    streamField = swap;
+        for (int i = 0; i < 2; i++) {
+            swap = c[i].collideField;
+            c[i].collideField = c[i].streamField;
+            c[i].streamField = swap;
+        }
 
 	    doCollision(collideField,flagField,&tau,xlength);
 	    treatBoundary(collideField,flagField,velocityWall,xlength);
 
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);
-	        writeVtkOutput(collideField,flagField,fName,t,xlength);
+	        writeVtkOutput(c,flagField,fName,t,xlength);
 	    }
     }
     end_timing = clock();
