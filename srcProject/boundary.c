@@ -173,7 +173,7 @@ void p_setBoundaryIterParameters(t_iterPara *const iterPara, t_procData const*co
 	case 0:
 		iterPara->endOuter   = procData->xLength[2]+1;
 		iterPara->endInner   = procData->xLength[0]+1;
-		iterPara->fixedValue = (direction == LEFT) ? 0 : procData->xLength[1]+1;
+		iterPara->fixedValue = (direction == LEFT) ? 1 : procData->xLength[1];
 		break;
 
 	//---------------------------------------------
@@ -181,7 +181,7 @@ void p_setBoundaryIterParameters(t_iterPara *const iterPara, t_procData const*co
 	case 1:
 		iterPara->endOuter   = procData->xLength[1]+1;
 		iterPara->endInner   = procData->xLength[0]+1;
-		iterPara->fixedValue = (direction == BOTTOM) ? 0 : procData->xLength[2]+1;
+		iterPara->fixedValue = (direction == BOTTOM) ? 1 : procData->xLength[2];
 		break;
 
 	//---------------------------------------------
@@ -189,7 +189,7 @@ void p_setBoundaryIterParameters(t_iterPara *const iterPara, t_procData const*co
 	case 2:
 		iterPara->endOuter   = procData->xLength[2]+1;
 		iterPara->endInner   = procData->xLength[1]+1;
-		iterPara->fixedValue = (direction == BACK) ? 0 : procData->xLength[0]+1;
+		iterPara->fixedValue = (direction == BACK) ? 1 : procData->xLength[0];
 		break;
 
 	default:
