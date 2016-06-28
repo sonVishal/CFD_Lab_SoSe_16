@@ -164,31 +164,31 @@ int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEd
 
 void p_setBoundaryIterParameters(t_iterPara *const iterPara, t_procData const*const procData, const int direction){
 
-	iterPara->startOuter = 1;
-	iterPara->startInner = 1;
+	iterPara->startOuter = 0;
+	iterPara->startInner = 0;
 
 	switch(direction/2){ //integer division to get the type of face (see enum in LBDefinitions.h)
 	//---------------------------------------------
 	//outer = Z, inner = X, Y fixed
 	case 0:
-		iterPara->endOuter   = procData->xLength[2];
-		iterPara->endInner   = procData->xLength[0];
+		iterPara->endOuter   = procData->xLength[2]+1;
+		iterPara->endInner   = procData->xLength[0]+1;
 		iterPara->fixedValue = (direction == LEFT) ? 1 : procData->xLength[1];
 		break;
 
 	//---------------------------------------------
 	//outer = Y, inner = X, Z fixed
 	case 1:
-		iterPara->endOuter   = procData->xLength[1];
-		iterPara->endInner   = procData->xLength[0];
+		iterPara->endOuter   = procData->xLength[1]+1;
+		iterPara->endInner   = procData->xLength[0]+1;
 		iterPara->fixedValue = (direction == BOTTOM) ? 1 : procData->xLength[2];
 		break;
 
 	//---------------------------------------------
 	//outer = Z, inner = Y, X fixed
 	case 2:
-		iterPara->endOuter   = procData->xLength[2];
-		iterPara->endInner   = procData->xLength[1];
+		iterPara->endOuter   = procData->xLength[2]+1;
+		iterPara->endInner   = procData->xLength[1]+1;
 		iterPara->fixedValue = (direction == BACK) ? 1 : procData->xLength[0];
 		break;
 
@@ -281,7 +281,7 @@ void treatPeriodicWall(int const * const flagField, double *const collideField, 
 	p_setBoundaryIterParameters(&iterPara, procData, procWall);
 
 	//always excluding shared edges (treat differently&separately)
-	bufferSize = densityFlag ? iterPara.endOuter * iterPara.endInner :  5 * iterPara.endOuter * iterPara.endInner;
+	bufferSize = densityFlag ? (iterPara.endOuter+1) * (iterPara.endInner+1) :  5 * (iterPara.endOuter+1) * (iterPara.endInner+1);
 
 	// printf("startInner=%i, startOuter=%i, endInner=%i, endOuter=%i \n",
 	// iterPara.startInner, iterPara.startOuter, iterPara.endInner, iterPara.endOuter);
