@@ -56,10 +56,10 @@ void writeVtkOutput(const t_component * const c,
     // Temporary variables for z and y offsets
     int zOffset, yzOffset;
 
+    fprintf(fp,"\nCELL_DATA %d \n", xlength*xlength*xlength);
     // Open two files and concatenate them at the end
     for (int i = 0; i < 2; i++) {
         // Write cell velocity to the vtk file
-        fprintf(fp,"\nCELL_DATA %d \n", xlength*xlength*xlength);
         fprintf(fp, "\nVECTORS velocity_c%d float\n",i);
         for(z = 1; z <= xlength; z++) {
             zOffset = z*xlen2;
@@ -75,9 +75,6 @@ void writeVtkOutput(const t_component * const c,
                     // Write cell average velocities
                     fprintf(fp, "%f %f %f\n", cellVelocity[0],
                     cellVelocity[1], cellVelocity[2]);
-
-                    // Write the cell density
-                    fprintf(fp, "%f\n", cellDensity);
                 }
             }
         }

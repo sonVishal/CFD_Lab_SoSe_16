@@ -65,7 +65,7 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
     /* initialize collideField and streamField */
     int x,y,z;
 
-    for (int i = 0; i < 2; i++) {
+    for (int k = 0; k < 2; k++) {
         for ( z = 0; z <= xlength+1; ++z) {
             zOffset = z*xlen2;
             for ( y = 0; y <= xlength+1; ++y) {
@@ -74,8 +74,8 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                     // Compute the base index
                     idx = Q*(yzOffset + x);
                     for (int i = 0; i < Q; ++i) {
-                        c[i].collideField[idx+i] = LATTICEWEIGHTS[i];
-                        c[i].streamField[idx+i]  = LATTICEWEIGHTS[i];
+                        c[k].collideField[idx+i] = LATTICEWEIGHTS[i];
+                        c[k].streamField[idx+i]  = LATTICEWEIGHTS[i];
                     }
                 }
             }
