@@ -6,7 +6,7 @@
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
 CC	Makefile	/^CC=gcc$/;"	m
 CFLAGS	Makefile	/^CFLAGS=-Werror -pedantic -Wall -std=c99 #-O0 -g -pg -enable-checking -v -da -Q$/;"	m
-C_S	LBDefinitions.h	63;"	d
+C_S	LBDefinitions.h	64;"	d
 DUMPOUT	helper.h	296;"	d
 DUMP_DOUBLE	helper.h	388;"	d
 DUMP_DOUBLE_TO_FILE	helper.h	549;"	d
@@ -100,13 +100,13 @@ read_string	helper.c	/^void read_string( const char* szFileName, const char* szV
 streamField	LBDefinitions.h	/^    double* streamField;$/;"	m	struct:__anon1
 t_component	LBDefinitions.h	/^} t_component;$/;"	t	typeref:struct:__anon1
 tau	LBDefinitions.h	/^    double  tau;$/;"	m	struct:__anon1
-treatBoundary	boundary.c	/^void treatBoundary(double *collideField, int* flagField, const double * const wallVelocity, int xlength){$/;"	f
-w1	LBDefinitions.h	16;"	d
-w1	LBDefinitions.h	28;"	d
-w2	LBDefinitions.h	17;"	d
-w2	LBDefinitions.h	29;"	d
-w3	LBDefinitions.h	18;"	d
-w3	LBDefinitions.h	30;"	d
+treatBoundary	boundary.c	/^void treatBoundary(t_component *c, int* flagField, const double * const wallVelocity, int xlength){$/;"	f
+w1	LBDefinitions.h	17;"	d
+w1	LBDefinitions.h	29;"	d
+w2	LBDefinitions.h	18;"	d
+w2	LBDefinitions.h	30;"	d
+w3	LBDefinitions.h	19;"	d
+w3	LBDefinitions.h	31;"	d
 writeVtkOutput	visualLB.c	/^void writeVtkOutput(const t_component * const c,$/;"	f
 write_matrix	helper.c	/^void write_matrix( const char* szFileName,     \/* filename *\/$/;"	f
 writevtkHeader	visualLB.c	/^void writevtkHeader(FILE *fp, int xlength)$/;"	f

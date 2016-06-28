@@ -18,7 +18,7 @@ int main(int argc, char *argv[]){
     c[0].m = 1.0;
     c[0].psiFctCode = 0;
 
-    c[1].tau = 0.7;
+    c[1].tau = 0.8;
     c[1].m = 2.0;
     c[1].psiFctCode = 1;
 
@@ -85,8 +85,9 @@ int main(int argc, char *argv[]){
             c[i].streamField = swap;
         }
 
-	    doCollision(collideField,flagField,&tau,xlength);
-	    treatBoundary(collideField,flagField,velocityWall,xlength);
+	    doCollision(c[0].collideField,flagField,&c[0].tau,xlength);
+        doCollision(c[1].collideField,flagField,&c[1].tau,xlength);
+	    treatBoundary(c,flagField,velocityWall,xlength);
 
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);
@@ -103,8 +104,10 @@ int main(int argc, char *argv[]){
     printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
     		(totalsize/(1000000*time_spent))*timesteps);
 
-    free(streamField);
-    free(collideField);
+    for (int i = 0; i < 2; i++) {
+        free(c[i].streamField);
+        free(c[i].collideField);
+    }
     free(flagField);
 
     return 0;

@@ -1,8 +1,4 @@
-#include <stdio.h>
 #include "boundary.h"
-#include "helper.h"
-#include "LBDefinitions.h"
-#include "computeCellValues.h"
 
 /* Enum that gives a distinction of the walls with respective to the fixed value of (x,y,z) */
 enum WALLS{E_XFIXED, E_YFIXED, E_ZFIXED};
@@ -135,8 +131,10 @@ void p_setWallBoundaries(double *collideField, const int * const flagField,
 	p_treatSingleWall(collideField, flagField, xlength+1, wallVelocity, xlength, wallIdx);
 }
 
-void treatBoundary(double *collideField, int* flagField, const double * const wallVelocity, int xlength){
-	p_setWallBoundaries(collideField, flagField, wallVelocity, xlength, E_XFIXED);
-	p_setWallBoundaries(collideField, flagField, wallVelocity, xlength, E_YFIXED);
-	p_setWallBoundaries(collideField, flagField, wallVelocity, xlength, E_ZFIXED);
+void treatBoundary(t_component *c, int* flagField, const double * const wallVelocity, int xlength){
+	for (int i = 0; i < 2; i++) {
+		p_setWallBoundaries(c[i].collideField, flagField, wallVelocity, xlength, E_XFIXED);
+		p_setWallBoundaries(c[i].collideField, flagField, wallVelocity, xlength, E_YFIXED);
+		p_setWallBoundaries(c[i].collideField, flagField, wallVelocity, xlength, E_ZFIXED);
+	}
 }

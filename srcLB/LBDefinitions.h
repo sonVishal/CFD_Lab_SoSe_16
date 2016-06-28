@@ -1,5 +1,6 @@
 #ifndef _LBDEFINITIONS_H_
 #define _LBDEFINITIONS_H_
+#include <math.h>
 
 // Number of lattice directions
 static const int Q = 19;
