@@ -7,7 +7,7 @@
  *  currentCell thus denotes the address of the first particle distribution function of the
  *  respective cell. The result is stored in density.
  */
-void computeDensity(const double *const currentCell, double *density);
+void computeNumDensity(const double *const currentCell, double *density);
 
 /** computes the velocity within currentCell and stores the result in velocity */
 void computeVelocity(const double *const currentCell, const double * const density,double *velocity);
@@ -16,5 +16,11 @@ void computeVelocity(const double *const currentCell, const double * const densi
  *  cell from density and velocity and stores the results in feq.
  */
 void computeFeq(const double * const density, const double * const velocity, double *feq);
+
+void computeCommonVelocity(const double *const c_density, const double c_velocity[2][3], t_component *c, double* commonVel);
+
+void computeForce(const int currentCellIndex, const int currentCompIndex,
+    const t_component *const c, const int * const flagField,
+    double const*const G, int xlength, double forces[3]);
 
 #endif

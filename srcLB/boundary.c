@@ -17,7 +17,7 @@ void p_setBounceBack(double *collideField, const double * const wallVelocity,
 	}else if(type == 2){ 	//moving wall
 
 		double density = 0;
-		computeDensity(&collideField[n_cell_index], &density);
+		computeNumDensity(&collideField[n_cell_index], &density);
 
 		double dot_uwall_c = wallVelocity[0]*c[0]+wallVelocity[1]*c[1]+wallVelocity[2]*c[2];
 		double weight = LATTICEWEIGHTS[i];

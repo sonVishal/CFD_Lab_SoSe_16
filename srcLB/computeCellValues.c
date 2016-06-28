@@ -5,7 +5,7 @@
  *  distribution function of the respective cell.
  *  The result is stored in density.
  */
-void computeDensity(const double *const currentCell, double *density){
+void computeNumDensity(const double *const currentCell, double *density){
     // Density is the sum of the distributions in the current lattice
     int i;
     *density = 0.0;
@@ -123,4 +123,67 @@ void computeFeq(const double * const density, const double * const velocity, dou
     feq[17] = d1*(u_u + (ux+uz)*(1/cs_2 + (ux+uz)/cs_4_2));
     feq[18] = d1*(u_u + (uy+uz)*(1/cs_2 + (uy+uz)/cs_4_2));
 
+}
+
+void computeCommonVelocity(const double *const c_density, const double c_velocity[2][3], t_component *c, double* commonVel){
+    double den = 0;
+    double momentum[3] = {0,0,0};
+
+    for (int n = 0; n < 2; ++n) {
+       momentum[0]+= c_density[n]*c_velocity[n][0]/c[n].tau;
+       momentum[1]+= c_density[n]*c_velocity[n][1]/c[n].tau;
+       momentum[2]+= c_density[n]*c_velocity[n][2]/c[n].tau;
+
+       den+= c_density[n]/c[n].tau;
+    }
+
+    commonVel[0] = momentum[0]/den;
+    commonVel[1] = momentum[1]/den;
+    commonVel[2] = momentum[2]/den;
+}
+
+void computeForce(const int currentCellIndex, const int currentCompIndex,
+    const t_component *const c, const int * const flagField,
+    double const*const G, int xlength, double forces[3]) {
+
+    int xlen2 = xlength+2;
+    int xlen2sq = xlen2*xlen2;
+
+    double numDensity;
+    forces[0] = 0.0; forces[1] = 0.0; forces[2] = 0.0;
+
+    for (int m = 0; m < 2; ++m) {
+
+        //TODO: (TKS) Could unroll loop.
+        //TODO: (TKS) Find a way to save the number density (?)
+        for (int i = 0; i < Q; i++) {
+
+            // Go to the next cell index in the direction of lattice velocities
+            int nextCellIndex = currentCellIndex+LATTICEVELOCITIES[i][0]
+                                + xlen2*LATTICEVELOCITIES[i][1]
+                                + xlen2sq*LATTICEVELOCITIES[i][2]; //index of cell in direction i
+
+            int nextIndex = Q*nextCellIndex; //index of number density in direction i
+            // numDensity = c[m].collideField[nextIndex]; //number density in direction i
+            // Compute the number density for component "m" at lattice site "nextIndex"
+
+            if(flagField[nextCellIndex] == FLUID){
+                computeNumDensity(&c[m].collideField[nextIndex], &numDensity);
+            }else{ //PARALLEL_BOUNDARY or PERIODIC_BOUNDARY
+                numDensity = c[m].collideField[nextIndex + 9];
+            }
+
+            //Shan&Doolen eq. 4 (PDF page 5)
+            forces[0] += G[m] * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][0];
+            forces[1] += G[m] * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][1];
+            forces[2] += G[m] * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][2];
+         }
+    }
+
+    // numDensity = c[n].collideField[currentCellIndex];
+    computeNumDensity(&c[currentCompIndex].collideField[currentCellIndex], &numDensity);
+
+    forces[0] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
+    forces[1] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
+    forces[2] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
 }

@@ -22,6 +22,8 @@ int main(int argc, char *argv[]){
     c[1].m = 2.0;
     c[1].psiFctCode = 1;
 
+    double G[2][2] = {{0.01,0.04},{0.04,0.02}};
+
     int *flagField = NULL;
 
     // Simulation parameters
@@ -85,8 +87,8 @@ int main(int argc, char *argv[]){
             c[i].streamField = swap;
         }
 
-	    doCollision(c[0].collideField,flagField,&c[0].tau,xlength);
-        doCollision(c[1].collideField,flagField,&c[1].tau,xlength);
+	    doCollision(c,G,flagField,xlength);
+
 	    treatBoundary(c,flagField,velocityWall,xlength);
 
 	    if (t%timestepsPerPlotting == 0){

@@ -53,13 +53,15 @@ _STREAMING_H_	streaming.h	2;"	d
 _VISUALLB_H_	visualLB.h	6;"	d
 __HELPER_H__	helper.h	2;"	d
 collideField	LBDefinitions.h	/^    double* collideField;$/;"	m	struct:__anon1
-computeDensity	computeCellValues.c	/^void computeDensity(const double *const currentCell, double *density){$/;"	f
+computeCommonVelocity	computeCellValues.c	/^void computeCommonVelocity(const double *const c_density, const double c_velocity[2][3], t_component *c, double* commonVel){$/;"	f
 computeFeq	computeCellValues.c	/^void computeFeq(const double * const density, const double * const velocity, double *feq){$/;"	f
+computeForce	computeCellValues.c	/^void computeForce(const int currentCellIndex, const int currentCompIndex,$/;"	f
+computeNumDensity	computeCellValues.c	/^void computeNumDensity(const double *const currentCell, double *density){$/;"	f
 computePostCollisionDistributions	collision.c	/^void computePostCollisionDistributions(double *currentCell, const double * const tau, const double *const feq){$/;"	f
 computeVelocity	computeCellValues.c	/^void computeVelocity(const double * const currentCell, const double * const density, double *velocity){$/;"	f
 d0	LBDefinitions.h	/^    double  d0;$/;"	m	struct:__anon1
 densityTol	LBDefinitions.h	/^static const double densityTol  = 0.03;$/;"	v
-doCollision	collision.c	/^void doCollision(double *collideField, int *flagField,const double * const tau, int xlength){$/;"	f
+doCollision	collision.c	/^void doCollision(t_component *c, double G[2][2], int *flagField, int xlength){$/;"	f
 doStreaming	streaming.c	/^void doStreaming(t_component *c,int *flagField,int xlength){$/;"	f
 errhandler	helper.c	/^void errhandler( int nLine, const char *szFile, const char *szString )$/;"	f
 fctPtrPsi	LBDefinitions.h	/^typedef double (*fctPtrPsi)(double);$/;"	t
