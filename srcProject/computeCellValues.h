@@ -12,7 +12,7 @@ void c_computeNumDensity(const double *const currentCell, double *numDensity);
 void c_computeVelocity(const double *const currentCell, const double *const c_density,double *c_velocity, const double *c_mass);
 
 /*computes the total velociy as if there were no interacting forces*/
-void computeCommonVelocity(const double *const c_density, const double * const c_velocity, t_component *c, double* velocityNI);
+void computeCommonVelocity(const double *const c_density, const double c_velocity[numComp][3], t_component *c, double* velocityNI);
 
 /*computes interacting forces between species*/
 void c_computeForces(int currentCellIndex, const int currentCompIndex,

@@ -35,7 +35,7 @@ void doCollision(t_component *c, const int * const flagField, double G[numComp][
                 double c_density[numComp];          //Array with the densities for each component in current cell
 
                 double c_numDensity[numComp];       //Array with the number densities for each component
-                double c_velocity[numComp];         //Component velocity
+                double c_velocity[numComp][3];         //Component velocity
                 double c_velocityEq[3];    //Array with the velocities for each component
 				double c_force[3];
 
@@ -64,10 +64,10 @@ void doCollision(t_component *c, const int * const flagField, double G[numComp][
                     }
 #endif
                     // Compute the cell velocity for current component
-                    c_computeVelocity(currentCell, &c_density[n], &c_velocity[n], &c[n].m);
+                    c_computeVelocity(currentCell, &c_density[n], c_velocity[n], &c[n].m);
                 }
 
-                computeCommonVelocity(c_density, c_velocity, c, commonVelocity);
+                computeCommonVelocity(c_density, (const double (*)[3]) (c_velocity), c, commonVelocity);
 
 				for (n = 0; n < numComp; n++) {
 					//Compute the force.
