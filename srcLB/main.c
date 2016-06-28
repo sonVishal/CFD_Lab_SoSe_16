@@ -12,8 +12,16 @@
 int main(int argc, char *argv[]){
 
     // Distribution function vectors
-    double *collideField    =NULL;
-    double *streamField     =NULL;
+    t_component c[2];
+
+    c[0].tau = 1.0;
+    c[0].m = 1.0;
+    c[0].psiFctCode = 0;
+
+    c[1].tau = 1.0;
+    c[1].m = 1.0;
+    c[1].psiFctCode = 0;
+
     int *flagField          =NULL;
 
     // Simulation parameters
@@ -47,8 +55,11 @@ int main(int argc, char *argv[]){
 
     /*Allocate memory to pointers*/
     int totalsize = (xlength+2)*(xlength+2)*(xlength+2);
-    collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
-    streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
+    c[0].collideField = (double *)  malloc(Q*totalsize * sizeof( double ));
+    c[0].streamField = (double *)  malloc(Q*totalsize * sizeof( double ));
+
+    c[1].collideField = (double *)  malloc(Q*totalsize * sizeof( double ));
+    c[1].streamField = (double *)  malloc(Q*totalsize * sizeof( double ));
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));

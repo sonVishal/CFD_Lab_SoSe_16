@@ -29,6 +29,29 @@ static const double LATTICEWEIGHTS[19] = {
 #undef w2
 #undef w3
 
+typedef struct {
+    double* streamField;
+    double* collideField;
+    double  tau;
+    double  m;
+    double  d0;
+    int psiFctCode;
+} t_component;
+
+static inline double psi0(double numberDensity){ return (1-exp(-numberDensity));}
+static inline double psi1(double numberDensity){ return numberDensity;}
+
+typedef double (*fctPtrPsi)(double);
+static const fctPtrPsi psiFctPointer[2] = {psi0, psi1};
+
+static inline int p_computeCellOffsetXYZ_Q(const int x, const int y, const int z, const int * const xlength) {
+    return Q*(x+(y+z*(xlength[1]+2))*(xlength[0]+2));
+}
+
+static inline int p_computeCellOffsetXYZ(const int x, const int y, const int z, const int * const xlength) {
+    return x+(y+z*(xlength[1]+2))*(xlength[0]+2);
+}
+
 // Speed of sound
 #define C_S ((double)0.57735026918962576) // double cast to guarantee type safety
 
