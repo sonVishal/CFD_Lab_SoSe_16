@@ -281,7 +281,7 @@ void treatPeriodicWall(int const * const flagField, double *const collideField, 
 	p_setBoundaryIterParameters(&iterPara, procData, procWall);
 
 	//always excluding shared edges (treat differently&separately)
-	bufferSize = densityFlag ? iterPara.endOuter * iterPara.endInner :  5 * iterPara.endOuter * iterPara.endInner;
+	bufferSize = densityFlag ? (iterPara.endOuter+1) * (iterPara.endInner+1) :  5 * (iterPara.endOuter+1) * (iterPara.endInner+1);
 
 	// printf("startInner=%i, startOuter=%i, endInner=%i, endOuter=%i \n",
 	// iterPara.startInner, iterPara.startOuter, iterPara.endInner, iterPara.endOuter);
