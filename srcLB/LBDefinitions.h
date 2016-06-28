@@ -45,12 +45,12 @@ static inline double psi1(double numberDensity){ return numberDensity;}
 typedef double (*fctPtrPsi)(double);
 static const fctPtrPsi psiFctPointer[2] = {psi0, psi1};
 
-static inline int p_computeCellOffsetXYZ_Q(const int x, const int y, const int z, const int * const xlength) {
-    return Q*(x+(y+z*(xlength[1]+2))*(xlength[0]+2));
+static inline int p_computeCellOffsetXYZ_Q(const int x, const int y, const int z, const int xlength) {
+    return Q*(x+(y+z*(xlength+2))*(xlength+2));
 }
 
-static inline int p_computeCellOffsetXYZ(const int x, const int y, const int z, const int * const xlength) {
-    return x+(y+z*(xlength[1]+2))*(xlength[0]+2);
+static inline int p_computeCellOffsetXYZ(const int x, const int y, const int z, const int xlength) {
+    return x+(y+z*(xlength+2))*(xlength+2);
 }
 
 enum {

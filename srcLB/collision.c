@@ -22,25 +22,18 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 void doCollision(t_component *c, double G[2][2], int *flagField, int xlength){
 
 	// Define iteration indices
-	int idx, x, y, z;
-
-	// Temporary variables for xlength^2
-	int const xlen2 = (xlength+2)*(xlength+2);
-
-	// Temporary variables for z and y offsets
-	int zOffset, yOffset;
+	int cellIdx, fieldIdx, x, y, z;
 
 	// Perform collision on all "inner" (FLUID) cells
 	for (z = 1; z <= xlength ; z++) {
-		zOffset = z*xlen2;
 		for (y = 1; y <= xlength; y++) {
-			yOffset = y*(xlength+2);
 			for (x = 1; x <= xlength; x++) {
 
 				// Get the index of the first distribution
 				// in the current cell
-				idx = Q*(zOffset + yOffset + x);
-				double *currentCell = &c[0].collideField[idx];
+				fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
+				cellIdx = Q*fieldIdx;
+				double *currentCell = &c[0].collideField[cellIdx];
 
 				// Allocate memory to local cell parameters
 				double numDensity[2];
@@ -57,10 +50,10 @@ void doCollision(t_component *c, double G[2][2], int *flagField, int xlength){
 					#ifndef NO_CHECKS
 					// We check if the numDensity deviation is more than densityTol%
 					// This value can be changed in LBDefinitions.h
-					if(fabs(density[k]-1) > densityTol){
+					if(fabs(numDensity[k]-1) > densityTol){
 						char msg[120];
-						sprintf(msg, "A density value (%f) outside the given tolerance of %.2f %% was detected in cell: "
-						"x=%i, y=%i, z=%i", density[k], (densityTol*100), x, y, z);
+						sprintf(msg, "A numDensity value (%f) outside the given tolerance of %.2f %% was detected in cell: "
+						"x=%i, y=%i, z=%i", numDensity[k], (densityTol*100), x, y, z);
 						ERROR(msg);
 					}
 					#endif
@@ -71,11 +64,11 @@ void doCollision(t_component *c, double G[2][2], int *flagField, int xlength){
 				computeCommonVelocity(density, velocity, c, commonVel);
 
 				for (int k = 0; k < 2; k++) {
-					computeForce(zOffset + yOffset + x, k, c, flagField, G[k], xlength, force);
-					// force[0] = 0.0; force[1] = 0.0; force[2] = 0.0;
+					computeForce(fieldIdx, k, c, flagField, G[k], xlength, force);
+					force[0] = 0.0; force[1] = 0.0; force[2] = 0.0;
 					computeEqVelocity(&c[k], commonVel, density[k], force, eqVel);
 
-					computeFeq(&density[k],eqVel,feq);
+					computeFeq(&numDensity[k],eqVel,feq);
 
 					computePostCollisionDistributions(currentCell,&c[k].tau,feq);
 				}

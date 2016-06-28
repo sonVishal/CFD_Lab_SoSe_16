@@ -126,8 +126,8 @@ void computeFeq(const double * const density, const double * const velocity, dou
 }
 
 void computeCommonVelocity(const double *const c_density, double c_velocity[2][3], t_component *c, double* commonVel){
-    double den = 0;
-    double momentum[3] = {0,0,0};
+    double den = 0.0;
+    double momentum[3] = {0.0,0.0,0.0};
 
     for (int n = 0; n < 2; ++n) {
        momentum[0]+= c_density[n]*c_velocity[n][0]/c[n].tau;
@@ -152,10 +152,8 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
     double numDensity;
     forces[0] = 0.0; forces[1] = 0.0; forces[2] = 0.0;
 
-    for (int m = 0; m < 2; ++m) {
+    for (int m = 0; m < 2; m++) {
 
-        //TODO: (TKS) Could unroll loop.
-        //TODO: (TKS) Find a way to save the number density (?)
         for (int i = 0; i < Q; i++) {
 
             // Go to the next cell index in the direction of lattice velocities
@@ -169,7 +167,7 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
 
             if(flagField[nextCellIndex] == FLUID){
                 computeNumDensity(&c[m].collideField[nextIndex], &numDensity);
-            }else{ //PARALLEL_BOUNDARY or PERIODIC_BOUNDARY
+            }else{  // TODO
                 numDensity = c[m].collideField[nextIndex + 9];
             }
 

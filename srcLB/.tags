@@ -84,8 +84,8 @@ max	helper.c	/^int max( int a, int b)$/;"	f
 min	helper.c	/^int min( int a, int b)$/;"	f
 min_int	helper.c	/^int min_int( const int n1, const int n2 )$/;"	f
 p_computeCellOffset	boundary.c	/^int p_computeCellOffset(const int outer, const int inner, const int fixedValue, const int xlength, const int wallIdx){$/;"	f
-p_computeCellOffsetXYZ	LBDefinitions.h	/^static inline int p_computeCellOffsetXYZ(const int x, const int y, const int z, const int * const xlength) {$/;"	f
-p_computeCellOffsetXYZ_Q	LBDefinitions.h	/^static inline int p_computeCellOffsetXYZ_Q(const int x, const int y, const int z, const int * const xlength) {$/;"	f
+p_computeCellOffsetXYZ	LBDefinitions.h	/^static inline int p_computeCellOffsetXYZ(const int x, const int y, const int z, const int xlength) {$/;"	f
+p_computeCellOffsetXYZ_Q	LBDefinitions.h	/^static inline int p_computeCellOffsetXYZ_Q(const int x, const int y, const int z, const int xlength) {$/;"	f
 p_computeNeighborCellOffset	boundary.c	/^int p_computeNeighborCellOffset(int outer, int inner, int fixedValue,$/;"	f
 p_setBounceBack	boundary.c	/^void p_setBounceBack(double *collideField, const double * const wallVelocity,$/;"	f
 p_setWallBoundaries	boundary.c	/^void p_setWallBoundaries(double *collideField, const int * const flagField,$/;"	f
