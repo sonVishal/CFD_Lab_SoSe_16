@@ -43,8 +43,8 @@ m1              0.4
 # Interaction Matrix
 G00             0.01
 G01             0.02
-G10             0.03
-G11             0.04
+G10             0.02
+G11             0.01
 
 #Psi function
 #Select of the following implemented functions:
