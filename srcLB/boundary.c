@@ -138,3 +138,19 @@ void treatBoundary(t_component *c, int* flagField, const double * const wallVelo
 		p_setWallBoundaries(c[i].collideField, flagField, wallVelocity, xlength, E_ZFIXED);
 	}
 }
+
+// This will be useful for computing otherSideIdx
+// nbhR = (myRank+1)%numRanks;
+// nbhL = (myRank-1+numRanks)%numRanks;
+void treatWallPeriodic(double * collideField, int direction) {
+	int startOuter=0, startInner=0, endOuter=0, endInner=0, fixedValue=0, index[5]={0,0,0,0,0};
+	for (int k = startOuter; k <= endOuter; k++) {
+		for (int j = startInner; j <= endInner; j++) {
+			int idx = k*j*fixedValue;
+			int otherSideIdx = idx;
+			for (int i = 0; i < 5; i++) {
+				collideField[idx+index[i]] = collideField[otherSideIdx+index[i]];
+			}
+		}
+	}
+}

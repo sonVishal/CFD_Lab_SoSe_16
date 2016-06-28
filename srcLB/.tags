@@ -104,6 +104,7 @@ streamField	LBDefinitions.h	/^    double* streamField;$/;"	m	struct:__anon1
 t_component	LBDefinitions.h	/^} t_component;$/;"	t	typeref:struct:__anon1
 tau	LBDefinitions.h	/^    double  tau;$/;"	m	struct:__anon1
 treatBoundary	boundary.c	/^void treatBoundary(t_component *c, int* flagField, const double * const wallVelocity, int xlength){$/;"	f
+treatWallPeriodic	boundary.c	/^void treatWallPeriodic(double * collideField, int direction) {$/;"	f
 w1	LBDefinitions.h	17;"	d
 w1	LBDefinitions.h	29;"	d
 w2	LBDefinitions.h	18;"	d
