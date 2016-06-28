@@ -10,6 +10,7 @@
 #include "common.h"
 #include "parallel.h"
 #include "unitTest.h"
+#include "debug.h"
 #include <stdio.h>
 #include <mpi/mpi.h>
 
@@ -136,11 +137,13 @@ int main(int argc, char *argv[]){
     //Write the VTK at t = 0
     printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
     writeVtsOutput(c, flagField, fName, t, xlength, &procData, procsPerAxis);
+    writeVtsOutputDebug(c, flagField, "pv_files/Debug", t, xlength, &procData, procsPerAxis);
 
     // Combine VTS file at t = 0
     // Only done by root
     if (procData.rank == 0) {
         p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
+        p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
     }
 
     beginProcTime = MPI_Wtime();
@@ -175,9 +178,11 @@ int main(int argc, char *argv[]){
 	    if (t%timestepsPerPlotting == 0){
             printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
 	        writeVtsOutput(c, flagField, fName, t, xlength, &procData, procsPerAxis);
+            writeVtsOutputDebug(c, flagField, "pv_files/Debug", t, xlength, &procData, procsPerAxis);
             // Combine VTS file at t
             if (procData.rank == 0) {
                 p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
+                p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
             }
 	    }
     }

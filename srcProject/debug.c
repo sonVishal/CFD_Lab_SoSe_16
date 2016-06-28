@@ -157,21 +157,22 @@ void writeVtsOutputDebug(const t_component * const c, const int * const flagFiel
 
     fprintf(fp,"<CellData>\n");
 
+	int x, y, z;            // iteration variables
+	int idx;                // cell index
+	double cellDensity;     // cell density
+
+	// Temporary variables for (xlength+2)^2
+	int const xylen = (procData->xLength[0]+2)*(procData->xLength[1]+2);
+
+	// Temporary variables for z and y offsets
+	int zOffset, yzOffset;
+
+
     for (int i = 0; i < numComp; i++) {
         fprintf(fp,"<DataArray type=\"Float32\" NumberOfComponents=\"3\" Name=\"Velocity_C%d\">\n",i);
 
-        int x, y, z;            // iteration variables
-        int idx;                // cell index
-        double cellDensity;     // cell density
-
         // cell average velocity
         double cellVelocity[3] = {0.0,0.0,0.0};
-
-        // Temporary variables for (xlength+2)^2
-        int const xylen = (procData->xLength[0]+2)*(procData->xLength[1]+2);
-
-        // Temporary variables for z and y offsets
-        int zOffset, yzOffset;
 
         // Write cell average velcity the file
         for(z = 0; z <= procData->xLength[2]+1; z++) {
@@ -210,6 +211,21 @@ void writeVtsOutputDebug(const t_component * const c, const int * const flagFiel
         }
         fprintf(fp,"</DataArray>\n");
     }
+
+	fprintf(fp,"<DataArray type=\"Int32\" NumberOfComponents=\"1\" Name=\"FlagField\">\n");
+	// Write cell average denisties the file
+	for(z = 0; z <= procData->xLength[2]+1; z++) {
+		zOffset = z*xylen;
+		for(y = 0; y <= procData->xLength[1]+1; y++) {
+			yzOffset = zOffset + y*(procData->xLength[0]+2);
+			for(x = 0; x <= procData->xLength[0]+1; x++) {
+				// Compute the base index for collideField
+				idx = yzOffset + x;
+				fprintf(fp, "%d\n", flagField[idx]);
+			}
+		}
+	}
+	fprintf(fp,"</DataArray>\n");
 
     fprintf(fp,"</CellData>\n");
     fprintf(fp,"</Piece>\n");
@@ -275,7 +291,7 @@ void p_writeCombinedPVTSFileDebug(const char * const filename, const unsigned in
     }
 
     fprintf(fp, "<VTKFile type=\"PStructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n");
-    fprintf(fp, "<PStructuredGrid WholeExtent=\"0 %d 0 %d 0 %d\" GhostLevel=\"1\">\n",xlen,xlen,xlen);
+    fprintf(fp, "<PStructuredGrid WholeExtent=\"0 %d 0 %d 0 %d\" GhostLevel=\"1\">\n",xlen+2*(procsPerAxis[0]),xlen+2*(procsPerAxis[1]),xlen+2*(procsPerAxis[2]));
     fprintf(fp, "<PPoints>\n");
     fprintf(fp, "%s\n","<PDataArray NumberOfComponents=\"3\" type=\"UInt32\" />");
     fprintf(fp, "</PPoints>\n");
@@ -284,6 +300,7 @@ void p_writeCombinedPVTSFileDebug(const char * const filename, const unsigned in
         fprintf(fp, "<PDataArray type=\"Float32\" NumberOfComponents=\"3\" Name=\"Velocity_C%d\"/>\n",i);
         fprintf(fp, "<PDataArray type=\"Float32\" NumberOfComponents=\"1\" Name=\"Density_C%d\"/>\n",i);
     }
+	fprintf(fp,"<PDataArray type=\"Int32\" NumberOfComponents=\"1\" Name=\"FlagField\"/>\n");
     fprintf(fp, "</PCellData>\n");
 
     int baseLength[3] = {xlen/procsPerAxis[0], xlen/procsPerAxis[1], xlen/procsPerAxis[2]};
