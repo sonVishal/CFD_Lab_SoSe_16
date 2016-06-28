@@ -77,7 +77,7 @@ void doCollision(t_component *c, const int * const flagField, double G[numComp][
 					c_computeEqVelocity(&c[n], commonVelocity, c_density[n], c_force, c_velocityEq);
 
 					// Compute the equilibrium distributions
-					c_computeFeq(c_density[n], c_velocityEq, feq);
+					c_computeFeq(c_numDensity[n], c_velocityEq, feq);
 
 					// Compute the post collision distributions
 					c_computePostCollisionDistributions(&c[n].collideField[fieldidx], c[n].tau, feq);
