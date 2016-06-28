@@ -125,7 +125,7 @@ void computeFeq(const double * const density, const double * const velocity, dou
 
 }
 
-void computeCommonVelocity(const double *const c_density, const double c_velocity[2][3], t_component *c, double* commonVel){
+void computeCommonVelocity(const double *const c_density, double c_velocity[2][3], t_component *c, double* commonVel){
     double den = 0;
     double momentum[3] = {0,0,0};
 
@@ -186,4 +186,11 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
     forces[0] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
     forces[1] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
     forces[2] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
+}
+
+void computeEqVelocity(t_component const*const c, double const*const commonVelocity, const double compDensity, double const*const compForce, double compEqVelocity[3]) {
+
+    compEqVelocity[0] = commonVelocity[0] + (c->tau/compDensity)*compForce[0];
+    compEqVelocity[1] = commonVelocity[1] + (c->tau/compDensity)*compForce[1];
+    compEqVelocity[2] = commonVelocity[2] + (c->tau/compDensity)*compForce[2];
 }

@@ -53,7 +53,8 @@ _STREAMING_H_	streaming.h	2;"	d
 _VISUALLB_H_	visualLB.h	6;"	d
 __HELPER_H__	helper.h	2;"	d
 collideField	LBDefinitions.h	/^    double* collideField;$/;"	m	struct:__anon1
-computeCommonVelocity	computeCellValues.c	/^void computeCommonVelocity(const double *const c_density, const double c_velocity[2][3], t_component *c, double* commonVel){$/;"	f
+computeCommonVelocity	computeCellValues.c	/^void computeCommonVelocity(const double *const c_density, double c_velocity[2][3], t_component *c, double* commonVel){$/;"	f
+computeEqVelocity	computeCellValues.c	/^void computeEqVelocity(t_component const*const c, double const*const commonVelocity, const double compDensity, double const*const compForce, double compEqVelocity[3]) {$/;"	f
 computeFeq	computeCellValues.c	/^void computeFeq(const double * const density, const double * const velocity, double *feq){$/;"	f
 computeForce	computeCellValues.c	/^void computeForce(const int currentCellIndex, const int currentCompIndex,$/;"	f
 computeNumDensity	computeCellValues.c	/^void computeNumDensity(const double *const currentCell, double *density){$/;"	f

@@ -47,6 +47,7 @@ void doCollision(t_component *c, double G[2][2], int *flagField, int xlength){
 				double density[2];
 				double velocity[2][3];
 				double commonVel[3];
+				double eqVel[3];
 				double force[3];
 				double feq[19];
 				for (int k = 0; k < 2; k++) {
@@ -71,12 +72,12 @@ void doCollision(t_component *c, double G[2][2], int *flagField, int xlength){
 
 				for (int k = 0; k < 2; k++) {
 					computeForce(zOffset + yOffset + x, k, c, flagField, G[k], xlength, force);
+					// force[0] = 0.0; force[1] = 0.0; force[2] = 0.0;
+					computeEqVelocity(&c[k], commonVel, density[k], force, eqVel);
 
-					computeEqVelocity();
+					computeFeq(&density[k],eqVel,feq);
 
-					computeFeq(&numDensity,velocity,feq);
-
-					computePostCollisionDistributions(currentCell,&c[0].tau,feq);
+					computePostCollisionDistributions(currentCell,&c[k].tau,feq);
 				}
 			}
 		}
