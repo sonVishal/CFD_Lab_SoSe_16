@@ -1,7 +1,4 @@
-#include <math.h>
 #include "initLB.h"
-#include "LBDefinitions.h"
-#include "helper.h"
 
 int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
 
@@ -48,15 +45,14 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
         snprintf(buffer, 80, "Mach number is larger than %f (aborting)! \n",machNrTol);
     	ERROR(buffer);
     }
-    
+
   return 0;
 }
 
-void initialiseFields(double *collideField, double *streamField, int *flagField, int xlength){
+void initialiseFields(t_component * c, int *flagField, int xlength){
 
     /*Setting initial distributions*/
     //f_i(x,0) = f^eq(1,0,0) = w_i
-
     // current cell index
     int idx;
 
@@ -68,21 +64,23 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
     /* initialize collideField and streamField */
     int x,y,z;
-    for ( z = 0; z <= xlength+1; ++z) {
-        zOffset = z*xlen2;
-        for ( y = 0; y <= xlength+1; ++y) {
-            yzOffset = y*(xlength+2) + zOffset;
-            for ( x = 0; x <= xlength+1; ++x) {
-                // Compute the base index
-                idx = Q*(yzOffset + x);
-                for (int i = 0; i < Q; ++i) {
-                    collideField[idx+i] = LATTICEWEIGHTS[i];
-                    streamField[idx+i]  = LATTICEWEIGHTS[i];
+
+    for (int i = 0; i < 2; i++) {
+        for ( z = 0; z <= xlength+1; ++z) {
+            zOffset = z*xlen2;
+            for ( y = 0; y <= xlength+1; ++y) {
+                yzOffset = y*(xlength+2) + zOffset;
+                for ( x = 0; x <= xlength+1; ++x) {
+                    // Compute the base index
+                    idx = Q*(yzOffset + x);
+                    for (int i = 0; i < Q; ++i) {
+                        c[i].collideField[idx+i] = LATTICEWEIGHTS[i];
+                        c[i].streamField[idx+i]  = LATTICEWEIGHTS[i];
+                    }
                 }
             }
         }
     }
-
 
     /*Looping over boundary of flagFields*/
     //All points set to zero at memory allocation (using calloc)

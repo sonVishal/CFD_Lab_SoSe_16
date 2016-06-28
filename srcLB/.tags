@@ -6,7 +6,7 @@
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
 CC	Makefile	/^CC=gcc$/;"	m
 CFLAGS	Makefile	/^CFLAGS=-Werror -pedantic -Wall -std=c99 #-O0 -g -pg -enable-checking -v -da -Q$/;"	m
-C_S	LBDefinitions.h	56;"	d
+C_S	LBDefinitions.h	63;"	d
 DUMPOUT	helper.h	296;"	d
 DUMP_DOUBLE	helper.h	388;"	d
 DUMP_DOUBLE_TO_FILE	helper.h	549;"	d
@@ -24,12 +24,16 @@ EXECUTABLE	Makefile	/^EXECUTABLE=lbsim$/;"	m
 E_XFIXED	boundary.c	/^enum WALLS{E_XFIXED, E_YFIXED, E_ZFIXED};$/;"	e	enum:WALLS	file:
 E_YFIXED	boundary.c	/^enum WALLS{E_XFIXED, E_YFIXED, E_ZFIXED};$/;"	e	enum:WALLS	file:
 E_ZFIXED	boundary.c	/^enum WALLS{E_XFIXED, E_YFIXED, E_ZFIXED};$/;"	e	enum:WALLS	file:
+FLUID	LBDefinitions.h	/^    FLUID,$/;"	e	enum:__anon2
 FREE_ARG	helper.h	17;"	d
 LATTICEVELOCITIES	LBDefinitions.h	/^static const int LATTICEVELOCITIES[19][3] = {$/;"	v
 LATTICEWEIGHTS	LBDefinitions.h	/^static const double LATTICEWEIGHTS[19] = {$/;"	v
 LDFLAGS	Makefile	/^LDFLAGS= -lm #-pg$/;"	m
 MAX_LINE_LENGTH	helper.h	22;"	d
+MOVING_WALL	LBDefinitions.h	/^    MOVING_WALL,$/;"	e	enum:__anon2
+NO_SLIP	LBDefinitions.h	/^    NO_SLIP,$/;"	e	enum:__anon2
 OBJECTS	Makefile	/^OBJECTS=$(SOURCES:.c=.o)$/;"	m
+PERIODIC	LBDefinitions.h	/^    PERIODIC$/;"	e	enum:__anon2
 PI	helper.h	14;"	d
 Q	LBDefinitions.h	/^static const int Q = 19;$/;"	v
 READ_DOUBLE	helper.h	89;"	d
@@ -67,7 +71,7 @@ free_matrix	helper.c	/^void free_matrix( double **m, int nrl, int nrh, int ncl, 
 imatrix	helper.c	/^int **imatrix( int nrl, int nrh, int ncl, int nch )$/;"	f
 init_imatrix	helper.c	/^void init_imatrix( int **m, int nrl, int nrh, int ncl, int nch, int a)$/;"	f
 init_matrix	helper.c	/^void init_matrix( double **m, int nrl, int nrh, int ncl, int nch, double a)$/;"	f
-initialiseFields	initLB.c	/^void initialiseFields(double *collideField, double *streamField, int *flagField, int xlength){$/;"	f
+initialiseFields	initLB.c	/^void initialiseFields(t_component * c, int *flagField, int xlength){$/;"	f
 last_timer_reset	helper.c	/^clock_t last_timer_reset;$/;"	v
 m	LBDefinitions.h	/^    double  m;$/;"	m	struct:__anon1
 machNrTol	LBDefinitions.h	/^static const double machNrTol   = 0.1;$/;"	v

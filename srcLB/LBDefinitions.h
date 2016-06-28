@@ -52,6 +52,13 @@ static inline int p_computeCellOffsetXYZ(const int x, const int y, const int z, 
     return x+(y+z*(xlength[1]+2))*(xlength[0]+2);
 }
 
+enum {
+    FLUID,
+    MOVING_WALL,
+    NO_SLIP,
+    PERIODIC
+};
+
 // Speed of sound
 #define C_S ((double)0.57735026918962576) // double cast to guarantee type safety
 

@@ -1,6 +1,8 @@
 #ifndef _INITLB_H_
 #define _INITLB_H_
 #include "helper.h"
+#include "LBDefinitions.h"
+#include <math.h>
 
 
 /* reads the parameters for the lid driven cavity scenario from a config file */
@@ -16,6 +18,6 @@ int readParameters(
 
 
 /* initialises the particle distribution functions and the flagfield */
-void initialiseFields(double *collideField, double *streamField,int *flagField, int xlength);
+void initialiseFields(t_component * c,int *flagField, int xlength);
 
 #endif

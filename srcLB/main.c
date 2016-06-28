@@ -18,11 +18,11 @@ int main(int argc, char *argv[]){
     c[0].m = 1.0;
     c[0].psiFctCode = 0;
 
-    c[1].tau = 1.0;
-    c[1].m = 1.0;
-    c[1].psiFctCode = 0;
+    c[1].tau = 0.7;
+    c[1].m = 2.0;
+    c[1].psiFctCode = 1;
 
-    int *flagField          =NULL;
+    int *flagField = NULL;
 
     // Simulation parameters
     int xlength;
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]){
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     // Initialize all the fields
-    initialiseFields(collideField, streamField, flagField, xlength);
+    initialiseFields(c, flagField, xlength);
 
     printf("\nINFO: Storing cell data in VTK files.\n      Please use the"
     " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
