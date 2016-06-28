@@ -10,12 +10,17 @@
 #include <stdlib.h>
 #include <mpi/mpi.h>
 #include "LBDefinitions.h"
+#include "computeCellValues.h"
 
-void writeVtkOutputDebug(const double * const collideField, const int * const flagField, const char * filename, unsigned int t, t_procData procData, int *procsPerAxis);
+void writeVtsOutputDebug(const t_component * const c, const int * const flagField,
+    const char * filename, unsigned int t, int xlen,
+    const t_procData * const procData, const int * const procsPerAxis);
 
-void writevtkPointCoordinatesDebug(FILE *fp, int *xlength, int *myPos);
+void writevtsPointCoordinatesDebug(FILE * fp, const int xlen, const int * const xlength,
+    const int * const myPos, const int * const procsPerAxis);
 
-void p_writeCombinedPVTSFileDebug(const char * filename, unsigned int t, int xlength, int *procsPerAxis);
+void p_writeCombinedPVTSFileDebug(const char * const filename, const unsigned int t,
+    const int xlen, const int * const procsPerAxis);
 
 void writeCollideFieldDebug(char *filename, double* collideField, int size);
 
