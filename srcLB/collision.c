@@ -33,7 +33,6 @@ void doCollision(t_component *c, double G[2][2], int *flagField, int xlength){
 				// in the current cell
 				fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
 				cellIdx = Q*fieldIdx;
-				double *currentCell = &c[0].collideField[cellIdx];
 
 				// Allocate memory to local cell parameters
 				double numDensity[2];
@@ -45,6 +44,7 @@ void doCollision(t_component *c, double G[2][2], int *flagField, int xlength){
 				double feq[19];
 				for (int k = 0; k < 2; k++) {
 					// Compute the cell numDensity
+					double *currentCell = &c[k].collideField[cellIdx];
 					computeNumDensity(currentCell, &numDensity[k]);
 					density[k] = c[k].m*numDensity[k];
 					#ifndef NO_CHECKS
@@ -65,11 +65,12 @@ void doCollision(t_component *c, double G[2][2], int *flagField, int xlength){
 
 				for (int k = 0; k < 2; k++) {
 					computeForce(fieldIdx, k, c, flagField, G[k], xlength, force);
-					force[0] = 0.0; force[1] = 0.0; force[2] = 0.0;
+					// force[0] = 0.0; force[1] = 0.0; force[2] = 0.0;
 					computeEqVelocity(&c[k], commonVel, density[k], force, eqVel);
 
 					computeFeq(&numDensity[k],eqVel,feq);
 
+					double *currentCell = &c[k].collideField[cellIdx];
 					computePostCollisionDistributions(currentCell,&c[k].tau,feq);
 				}
 			}

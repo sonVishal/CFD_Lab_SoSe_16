@@ -18,11 +18,11 @@ int main(int argc, char *argv[]){
     c[0].m = 1.0;
     c[0].psiFctCode = 0;
 
-    c[1].tau = 1.0;
-    c[1].m = 1.0;
-    c[1].psiFctCode = 0;
+    c[1].tau = 0.7;
+    c[1].m = 2.0;
+    c[1].psiFctCode = 1;
 
-    double G[2][2] = {{0.01,0.04},{0.04,0.01}};
+    double G[2][2] = {{0.01,0.04},{0.04,0.02}};
 
     int *flagField = NULL;
 
