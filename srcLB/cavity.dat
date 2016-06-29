@@ -1,5 +1,5 @@
 # Size of mesh
-xlength              10
+xlength              20
 
 # Relaxation time
 # In recent version calculated from the Reynolds number
@@ -14,7 +14,7 @@ yvelocity         0
 zvelocity         0
 
 # Number of timesteps
-timesteps            200
+timesteps            2000
 
 # timesteps between each plot
 timestepsPerPlotting 20
