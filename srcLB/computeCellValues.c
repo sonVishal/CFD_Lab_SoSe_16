@@ -129,7 +129,7 @@ void computeCommonVelocity(const double *const c_density, double c_velocity[2][3
     double den = 0.0;
     double momentum[3] = {0.0,0.0,0.0};
 
-    for (int n = 0; n < 2; ++n) {
+    for (int n = 0; n < NUMCOMP; ++n) {
        momentum[0]+= c_density[n]*c_velocity[n][0]/c[n].tau;
        momentum[1]+= c_density[n]*c_velocity[n][1]/c[n].tau;
        momentum[2]+= c_density[n]*c_velocity[n][2]/c[n].tau;
@@ -152,7 +152,7 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
     double numDensity;
     forces[0] = 0.0; forces[1] = 0.0; forces[2] = 0.0;
 
-    for (int m = 0; m < 2; m++) {
+    for (int m = 0; m < NUMCOMP; m++) {
 
         for (int i = 0; i < Q; i++) {
 

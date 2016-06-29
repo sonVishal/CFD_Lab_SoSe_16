@@ -12,17 +12,18 @@
 int main(int argc, char *argv[]){
 
     // Distribution function vectors
-    t_component c[2];
+    t_component c[NUMCOMP];
 
     c[0].tau = 1.0;
-    c[0].m = 1.0;
+    c[0].m = 2.0;
     c[0].psiFctCode = 0;
 
-    c[1].tau = 0.7;
-    c[1].m = 2.0;
-    c[1].psiFctCode = 1;
+    // c[1].tau = 0.7;
+    // c[1].m = 2.0;
+    // c[1].psiFctCode = 1;
 
-    double G[2][2] = {{0.01,0.04},{0.04,0.02}};
+    // double G[2][2] = {{0.01,0.04},{0.04,0.02}};
+    double G[1][1] = {{-0.04}};
 
     int *flagField = NULL;
 
@@ -57,11 +58,10 @@ int main(int argc, char *argv[]){
 
     /*Allocate memory to pointers*/
     int totalsize = (xlength+2)*(xlength+2)*(xlength+2);
-    c[0].collideField = (double *)  malloc(Q*totalsize * sizeof( double ));
-    c[0].streamField = (double *)  malloc(Q*totalsize * sizeof( double ));
-
-    c[1].collideField = (double *)  malloc(Q*totalsize * sizeof( double ));
-    c[1].streamField = (double *)  malloc(Q*totalsize * sizeof( double ));
+    for (int i = 0; i < NUMCOMP; i++) {
+        c[i].collideField = (double *)  malloc(Q*totalsize * sizeof( double ));
+        c[i].streamField = (double *)  malloc(Q*totalsize * sizeof( double ));
+    }
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]){
 	    double *swap = NULL;
 	    doStreaming(c,flagField,xlength);
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < NUMCOMP; i++) {
             swap = c[i].collideField;
             c[i].collideField = c[i].streamField;
             c[i].streamField = swap;
@@ -109,7 +109,7 @@ int main(int argc, char *argv[]){
     printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
     		(totalsize/(1000000*time_spent))*timesteps);
 
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < NUMCOMP; i++) {
         free(c[i].streamField);
         free(c[i].collideField);
     }

@@ -19,7 +19,7 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 }
 
 // Perform collision for all inner cells
-void doCollision(t_component *c, double G[2][2], int *flagField, int xlength){
+void doCollision(t_component *c, double G[NUMCOMP][NUMCOMP], int *flagField, int xlength){
 
 	// Define iteration indices
 	int cellIdx, fieldIdx, x, y, z;
@@ -42,7 +42,7 @@ void doCollision(t_component *c, double G[2][2], int *flagField, int xlength){
 				double eqVel[3];
 				double force[3];
 				double feq[19];
-				for (int k = 0; k < 2; k++) {
+				for (int k = 0; k < NUMCOMP; k++) {
 					// Compute the cell numDensity
 					double *currentCell = &c[k].collideField[cellIdx];
 					computeNumDensity(currentCell, &numDensity[k]);
@@ -50,7 +50,7 @@ void doCollision(t_component *c, double G[2][2], int *flagField, int xlength){
 					#ifndef NO_CHECKS
 					// We check if the numDensity deviation is more than densityTol%
 					// This value can be changed in LBDefinitions.h
-					if(fabs(numDensity[k]-1) > densityTol){
+					if(numDensity[k] < densityTol){
 						char msg[120];
 						sprintf(msg, "A numDensity value (%f) outside the given tolerance of %.2f %% was detected in cell: "
 						"x=%i, y=%i, z=%i", numDensity[k], (densityTol*100), x, y, z);
@@ -63,7 +63,7 @@ void doCollision(t_component *c, double G[2][2], int *flagField, int xlength){
 
 				computeCommonVelocity(density, velocity, c, commonVel);
 
-				for (int k = 0; k < 2; k++) {
+				for (int k = 0; k < NUMCOMP; k++) {
 					computeForce(fieldIdx, k, c, flagField, G[k], xlength, force);
 					// force[0] = 0.0; force[1] = 0.0; force[2] = 0.0;
 					computeEqVelocity(&c[k], commonVel, density[k], force, eqVel);

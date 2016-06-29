@@ -132,7 +132,7 @@ void p_setWallBoundaries(double *collideField, const int * const flagField,
 }
 
 void treatBoundary(t_component *c, int* flagField, const double * const wallVelocity, int xlength){
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < NUMCOMP; i++) {
 		treatWallPeriodic(c[i].collideField, LEFT, xlength);
 		treatWallPeriodic(c[i].collideField, RIGHT, xlength);
 		treatWallPeriodic(c[i].collideField, TOP, xlength);

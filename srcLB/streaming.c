@@ -20,7 +20,7 @@ void doStreaming(t_component *c,int *flagField,int xlength){
 
 	int nextCellIndex, currentCellIndex;
 
-	for (int k = 0; k < 2; k++) {
+	for (int k = 0; k < NUMCOMP; k++) {
 	// Inner loop unrolling
 	// Faster even with -O3
 	// Up to 2 seconds with xlength = 30

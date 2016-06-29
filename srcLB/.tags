@@ -8,7 +8,7 @@ BACK	LBDefinitions.h	/^    BACK$/;"	e	enum:__anon3
 BOTTOM	LBDefinitions.h	/^    BOTTOM,$/;"	e	enum:__anon3
 CC	Makefile	/^CC=gcc$/;"	m
 CFLAGS	Makefile	/^CFLAGS=-Werror -pedantic -Wall -std=c99 #-O0 -g -pg -enable-checking -v -da -Q$/;"	m
-C_S	LBDefinitions.h	73;"	d
+C_S	LBDefinitions.h	75;"	d
 DUMPOUT	helper.h	296;"	d
 DUMP_DOUBLE	helper.h	388;"	d
 DUMP_DOUBLE_TO_FILE	helper.h	549;"	d
@@ -36,6 +36,7 @@ LEFT	LBDefinitions.h	/^    LEFT,$/;"	e	enum:__anon3
 MAX_LINE_LENGTH	helper.h	22;"	d
 MOVING_WALL	LBDefinitions.h	/^    MOVING_WALL,$/;"	e	enum:__anon2
 NO_SLIP	LBDefinitions.h	/^    NO_SLIP,$/;"	e	enum:__anon2
+NUMCOMP	LBDefinitions.h	8;"	d
 OBJECTS	Makefile	/^OBJECTS=$(SOURCES:.c=.o)$/;"	m
 PERIODIC	LBDefinitions.h	/^    PERIODIC$/;"	e	enum:__anon2
 PI	helper.h	14;"	d
@@ -69,7 +70,7 @@ computePostCollisionDistributions	collision.c	/^void computePostCollisionDistrib
 computeVelocity	computeCellValues.c	/^void computeVelocity(const double * const currentCell, const double * const density, double *velocity){$/;"	f
 d0	LBDefinitions.h	/^    double  d0;$/;"	m	struct:__anon1
 densityTol	LBDefinitions.h	/^static const double densityTol  = 0.03;$/;"	v
-doCollision	collision.c	/^void doCollision(t_component *c, double G[2][2], int *flagField, int xlength){$/;"	f
+doCollision	collision.c	/^void doCollision(t_component *c, double G[NUMCOMP][NUMCOMP], int *flagField, int xlength){$/;"	f
 doStreaming	streaming.c	/^void doStreaming(t_component *c,int *flagField,int xlength){$/;"	f
 errhandler	helper.c	/^void errhandler( int nLine, const char *szFile, const char *szString )$/;"	f
 fctPtrPsi	LBDefinitions.h	/^typedef double (*fctPtrPsi)(double);$/;"	t
@@ -112,12 +113,12 @@ t_component	LBDefinitions.h	/^} t_component;$/;"	t	typeref:struct:__anon1
 tau	LBDefinitions.h	/^    double  tau;$/;"	m	struct:__anon1
 treatBoundary	boundary.c	/^void treatBoundary(t_component *c, int* flagField, const double * const wallVelocity, int xlength){$/;"	f
 treatWallPeriodic	boundary.c	/^void treatWallPeriodic(double * collideField, int direction, int xlength) {$/;"	f
-w1	LBDefinitions.h	17;"	d
-w1	LBDefinitions.h	29;"	d
-w2	LBDefinitions.h	18;"	d
-w2	LBDefinitions.h	30;"	d
-w3	LBDefinitions.h	19;"	d
-w3	LBDefinitions.h	31;"	d
+w1	LBDefinitions.h	19;"	d
+w1	LBDefinitions.h	31;"	d
+w2	LBDefinitions.h	20;"	d
+w2	LBDefinitions.h	32;"	d
+w3	LBDefinitions.h	21;"	d
+w3	LBDefinitions.h	33;"	d
 writeVtkOutput	visualLB.c	/^void writeVtkOutput(const t_component * const c,$/;"	f
 writeVtkOutputDebug	visualLB.c	/^void writeVtkOutputDebug(const t_component * const c,$/;"	f
 write_matrix	helper.c	/^void write_matrix( const char* szFileName,     \/* filename *\/$/;"	f

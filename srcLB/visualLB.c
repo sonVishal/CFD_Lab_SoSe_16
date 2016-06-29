@@ -58,7 +58,7 @@ void writeVtkOutput(const t_component * const c,
 
     fprintf(fp,"\nCELL_DATA %d \n", xlength*xlength*xlength);
     // Open two files and concatenate them at the end
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < NUMCOMP; i++) {
         // Write cell velocity to the vtk file
         fprintf(fp, "\nVECTORS velocity_c%d float\n",i);
         for(z = 1; z <= xlength; z++) {
@@ -218,7 +218,7 @@ void writeVtkOutputDebug(const t_component * const c,
 
     fprintf(fp,"\nCELL_DATA %d \n", (xlength+2)*(xlength+2)*(xlength+2));
     // Open two files and concatenate them at the end
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < NUMCOMP; i++) {
         // Write cell velocity to the vtk file
         fprintf(fp, "\nVECTORS velocity_c%d float\n",i);
         for(z = 0; z <= xlength+1; z++) {
