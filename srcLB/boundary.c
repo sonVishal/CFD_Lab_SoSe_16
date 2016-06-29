@@ -132,25 +132,111 @@ void p_setWallBoundaries(double *collideField, const int * const flagField,
 }
 
 void treatBoundary(t_component *c, int* flagField, const double * const wallVelocity, int xlength){
-	for (int i = 0; i < 2; i++) {
-		p_setWallBoundaries(c[i].collideField, flagField, wallVelocity, xlength, E_XFIXED);
-		p_setWallBoundaries(c[i].collideField, flagField, wallVelocity, xlength, E_YFIXED);
-		p_setWallBoundaries(c[i].collideField, flagField, wallVelocity, xlength, E_ZFIXED);
+	for (int i = 0; i < 1; i++) {
+		treatWallPeriodic(c[i].collideField, LEFT, xlength);
+		treatWallPeriodic(c[i].collideField, RIGHT, xlength);
+		treatWallPeriodic(c[i].collideField, TOP, xlength);
+		treatWallPeriodic(c[i].collideField, BOTTOM, xlength);
+		treatWallPeriodic(c[i].collideField, FRONT, xlength);
+		treatWallPeriodic(c[i].collideField, BACK, xlength);
+		// p_setWallBoundaries(c[i].collideField, flagField, wallVelocity, xlength, E_XFIXED);
+		// p_setWallBoundaries(c[i].collideField, flagField, wallVelocity, xlength, E_YFIXED);
+		// p_setWallBoundaries(c[i].collideField, flagField, wallVelocity, xlength, E_ZFIXED);
 	}
 }
 
 // This will be useful for computing otherSideIdx
 // nbhR = (myRank+1)%numRanks;
 // nbhL = (myRank-1+numRanks)%numRanks;
-void treatWallPeriodic(double * collideField, int direction) {
-	int startOuter=0, startInner=0, endOuter=0, endInner=0, fixedValue=0, index[5]={0,0,0,0,0};
+void treatWallPeriodic(double * collideField, int direction, int xlength) {
+	int startOuter=0, startInner=0, endOuter=0, endInner=0, fixedValueIdx=0, fixedValueOtherIdx=0;
+	switch (direction) {
+		case LEFT:
+			// z
+			startOuter = 1; endOuter = xlength;
+			// x
+			startInner = 1; endInner = xlength;
+			// y
+			fixedValueIdx = 1;
+			fixedValueOtherIdx = xlength+1;
+			break;
+		case RIGHT:
+			// z
+			startOuter = 1; endOuter = xlength;
+			// x
+			startInner = 1; endInner = xlength;
+			// y
+			fixedValueIdx = xlength;
+			fixedValueOtherIdx = 0;
+			break;
+		case TOP:
+			// y
+			startOuter = 0; endOuter = xlength+1;
+			// x
+			startInner = 1; endInner = xlength;
+			// z
+			fixedValueIdx = xlength;
+			fixedValueOtherIdx = 0;
+			break;
+		case BOTTOM:
+			// y
+			startOuter = 0; endOuter = xlength+1;
+			// x
+			startInner = 1; endInner = xlength;
+			// z
+			fixedValueIdx = 1;
+			fixedValueOtherIdx = xlength+1;
+			break;
+		case FRONT:
+			// z
+			startOuter = 0; endOuter = xlength+1;
+			// y
+			startInner = 0; endInner = xlength+1;
+			// x
+			fixedValueIdx = xlength;
+			fixedValueOtherIdx = 0;
+			break;
+		case BACK:
+			// z
+			startOuter = 0; endOuter = xlength+1;
+			// y
+			startInner = 0; endInner = xlength+1;
+			// x
+			fixedValueIdx = 1;
+			fixedValueOtherIdx = xlength+1;
+			break;
+		default:
+			ERROR("NO!");
+			break;
+	}
 	for (int k = startOuter; k <= endOuter; k++) {
 		for (int j = startInner; j <= endInner; j++) {
-			int idx = k*j*fixedValue;
-			int otherSideIdx = idx;
-			for (int i = 0; i < 5; i++) {
-				collideField[idx+index[i]] = collideField[otherSideIdx+index[i]];
+			int idx = Q*computeCellOffset(k, j, fixedValueIdx, direction, xlength);
+			int otherSideIdx = Q*computeCellOffset(k, j, fixedValueOtherIdx, direction, xlength);
+			for (int i = 0; i < Q; i++) {
+				collideField[otherSideIdx+i] = collideField[idx+i];
 			}
 		}
+	}
+}
+
+int computeCellOffset(const int outer, const int inner, const int fixed, const int dir, const int xlength) {
+	switch (dir) {
+		case LEFT:
+			return p_computeCellOffsetXYZ(inner, fixed, outer, xlength);
+		case RIGHT:
+			return p_computeCellOffsetXYZ(inner, fixed, outer, xlength);
+		case TOP:
+			return p_computeCellOffsetXYZ(inner, outer,fixed, xlength);
+		case BOTTOM:
+			return p_computeCellOffsetXYZ(inner, outer,fixed, xlength);
+		case FRONT:
+			return p_computeCellOffsetXYZ(fixed, inner, outer,xlength);
+		case BACK:
+			return p_computeCellOffsetXYZ(fixed, inner, outer,xlength);
+		default:
+			return -1;
+			ERROR("NO!");
+			break;
 	}
 }

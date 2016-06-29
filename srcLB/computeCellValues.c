@@ -165,11 +165,11 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
             // numDensity = c[m].collideField[nextIndex]; //number density in direction i
             // Compute the number density for component "m" at lattice site "nextIndex"
 
-            if(flagField[nextCellIndex] == FLUID){
-                computeNumDensity(&c[m].collideField[nextIndex], &numDensity);
-            }else{  // TODO
-                numDensity = c[m].collideField[nextIndex + 9];
-            }
+            computeNumDensity(&c[m].collideField[nextIndex], &numDensity);
+            // if(flagField[nextCellIndex] == FLUID){
+            // }else{  // TODO
+            //     numDensity = c[m].collideField[nextIndex + 9];
+            // }
 
             //Shan&Doolen eq. 4 (PDF page 5)
             forces[0] += G[m] * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][0];

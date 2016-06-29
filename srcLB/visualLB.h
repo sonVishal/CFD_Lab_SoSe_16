@@ -15,4 +15,8 @@ void writevtkPointCoordinates(FILE *fp, int xlength);
 
 void writevtkHeader(FILE *fp, int xlength);
 
+void writeVtkOutputDebug(const t_component * const c,
+    const int * const flagField, const char * filename,
+    unsigned int t, int xlength);
+
 #endif

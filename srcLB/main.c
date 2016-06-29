@@ -75,6 +75,7 @@ int main(int argc, char *argv[]){
     // Write the VTK at t = 0
     printf("INFO: write vtk file at time t = %d \n", t);
     writeVtkOutput(c,flagField,fName,t,xlength);
+    writeVtkOutputDebug(c,flagField,fName,t,xlength);
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
@@ -86,6 +87,7 @@ int main(int argc, char *argv[]){
             c[i].collideField = c[i].streamField;
             c[i].streamField = swap;
         }
+        treatBoundary(c,flagField,velocityWall,xlength);
 
 	    doCollision(c,G,flagField,xlength);
 
@@ -94,6 +96,7 @@ int main(int argc, char *argv[]){
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);
 	        writeVtkOutput(c,flagField,fName,t,xlength);
+            writeVtkOutputDebug(c,flagField,fName,t,xlength);
 	    }
     }
     end_timing = clock();

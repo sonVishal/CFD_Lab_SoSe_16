@@ -60,6 +60,15 @@ enum {
     PERIODIC
 };
 
+enum {
+    LEFT,
+    RIGHT,
+    TOP,
+    BOTTOM,
+    FRONT,
+    BACK
+};
+
 // Speed of sound
 #define C_S ((double)0.57735026918962576) // double cast to guarantee type safety
 

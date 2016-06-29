@@ -4,9 +4,11 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+BACK	LBDefinitions.h	/^    BACK$/;"	e	enum:__anon3
+BOTTOM	LBDefinitions.h	/^    BOTTOM,$/;"	e	enum:__anon3
 CC	Makefile	/^CC=gcc$/;"	m
 CFLAGS	Makefile	/^CFLAGS=-Werror -pedantic -Wall -std=c99 #-O0 -g -pg -enable-checking -v -da -Q$/;"	m
-C_S	LBDefinitions.h	64;"	d
+C_S	LBDefinitions.h	73;"	d
 DUMPOUT	helper.h	296;"	d
 DUMP_DOUBLE	helper.h	388;"	d
 DUMP_DOUBLE_TO_FILE	helper.h	549;"	d
@@ -26,9 +28,11 @@ E_YFIXED	boundary.c	/^enum WALLS{E_XFIXED, E_YFIXED, E_ZFIXED};$/;"	e	enum:WALLS
 E_ZFIXED	boundary.c	/^enum WALLS{E_XFIXED, E_YFIXED, E_ZFIXED};$/;"	e	enum:WALLS	file:
 FLUID	LBDefinitions.h	/^    FLUID,$/;"	e	enum:__anon2
 FREE_ARG	helper.h	17;"	d
+FRONT	LBDefinitions.h	/^    FRONT,$/;"	e	enum:__anon3
 LATTICEVELOCITIES	LBDefinitions.h	/^static const int LATTICEVELOCITIES[19][3] = {$/;"	v
 LATTICEWEIGHTS	LBDefinitions.h	/^static const double LATTICEWEIGHTS[19] = {$/;"	v
 LDFLAGS	Makefile	/^LDFLAGS= -lm #-pg$/;"	m
+LEFT	LBDefinitions.h	/^    LEFT,$/;"	e	enum:__anon3
 MAX_LINE_LENGTH	helper.h	22;"	d
 MOVING_WALL	LBDefinitions.h	/^    MOVING_WALL,$/;"	e	enum:__anon2
 NO_SLIP	LBDefinitions.h	/^    NO_SLIP,$/;"	e	enum:__anon2
@@ -41,7 +45,9 @@ READ_ERROR	helper.c	72;"	d	file:
 READ_INT	helper.h	77;"	d
 READ_STRING	helper.h	101;"	d
 RESET_TIMER	helper.h	434;"	d
+RIGHT	LBDefinitions.h	/^    RIGHT,$/;"	e	enum:__anon3
 SOURCES	Makefile	/^SOURCES=initLB.c visualLB.c boundary.c collision.c streaming.c computeCellValues.c main.c helper.c$/;"	m
+TOP	LBDefinitions.h	/^    TOP,$/;"	e	enum:__anon3
 WALLS	boundary.c	/^enum WALLS{E_XFIXED, E_YFIXED, E_ZFIXED};$/;"	g	file:
 _BOUNDARY_H_	boundary.h	2;"	d
 _COLLISION_H_	collision.h	2;"	d
@@ -53,6 +59,7 @@ _STREAMING_H_	streaming.h	2;"	d
 _VISUALLB_H_	visualLB.h	6;"	d
 __HELPER_H__	helper.h	2;"	d
 collideField	LBDefinitions.h	/^    double* collideField;$/;"	m	struct:__anon1
+computeCellOffset	boundary.c	/^int computeCellOffset(const int outer, const int inner, const int fixed, const int dir, const int xlength) {$/;"	f
 computeCommonVelocity	computeCellValues.c	/^void computeCommonVelocity(const double *const c_density, double c_velocity[2][3], t_component *c, double* commonVel){$/;"	f
 computeEqVelocity	computeCellValues.c	/^void computeEqVelocity(t_component const*const c, double const*const commonVelocity, const double compDensity, double const*const compForce, double compEqVelocity[3]) {$/;"	f
 computeFeq	computeCellValues.c	/^void computeFeq(const double * const density, const double * const velocity, double *feq){$/;"	f
@@ -104,7 +111,7 @@ streamField	LBDefinitions.h	/^    double* streamField;$/;"	m	struct:__anon1
 t_component	LBDefinitions.h	/^} t_component;$/;"	t	typeref:struct:__anon1
 tau	LBDefinitions.h	/^    double  tau;$/;"	m	struct:__anon1
 treatBoundary	boundary.c	/^void treatBoundary(t_component *c, int* flagField, const double * const wallVelocity, int xlength){$/;"	f
-treatWallPeriodic	boundary.c	/^void treatWallPeriodic(double * collideField, int direction) {$/;"	f
+treatWallPeriodic	boundary.c	/^void treatWallPeriodic(double * collideField, int direction, int xlength) {$/;"	f
 w1	LBDefinitions.h	17;"	d
 w1	LBDefinitions.h	29;"	d
 w2	LBDefinitions.h	18;"	d
@@ -112,6 +119,9 @@ w2	LBDefinitions.h	30;"	d
 w3	LBDefinitions.h	19;"	d
 w3	LBDefinitions.h	31;"	d
 writeVtkOutput	visualLB.c	/^void writeVtkOutput(const t_component * const c,$/;"	f
+writeVtkOutputDebug	visualLB.c	/^void writeVtkOutputDebug(const t_component * const c,$/;"	f
 write_matrix	helper.c	/^void write_matrix( const char* szFileName,     \/* filename *\/$/;"	f
 writevtkHeader	visualLB.c	/^void writevtkHeader(FILE *fp, int xlength)$/;"	f
+writevtkHeaderDebug	visualLB.c	/^void writevtkHeaderDebug(FILE *fp, int xlength)$/;"	f
 writevtkPointCoordinates	visualLB.c	/^void writevtkPointCoordinates(FILE *fp, int xlength) {$/;"	f
+writevtkPointCoordinatesDebug	visualLB.c	/^void writevtkPointCoordinatesDebug(FILE *fp, int xlength) {$/;"	f

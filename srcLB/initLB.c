@@ -82,6 +82,55 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
         }
     }
 
+
+    // NOTE: For debug
+    // for (z = 1; z <= xlength; z++) {
+    //     zOffset = z*xlen2;
+    //     for (x = 1; x <= xlength; x++) {
+    //         idx = Q*(zOffset + 1*(xlength+2) + x);
+    //         for (int i = 0; i < Q; i++) {
+    //             c[0].collideField[idx+i] = 1;
+    //             c[0].streamField[idx+i] = 1;
+    //         }
+    //         idx = Q*(zOffset + (xlength)*(xlength+2) + x);
+    //         for (int i = 0; i < Q; i++) {
+    //             c[0].collideField[idx+i] = 2;
+    //             c[0].streamField[idx+i] = 2;
+    //         }
+    //     }
+    // }
+    //
+    // for (z = 1; z <= xlength; z++) {
+    //     zOffset = z*xlen2;
+    //     for (y = 1; y <= xlength; y++) {
+    //         idx = Q*(zOffset + y*(xlength+2) + 1);
+    //         for (int i = 0; i < Q; i++) {
+    //             c[0].collideField[idx+i] = 3;
+    //             c[0].streamField[idx+i] = 3;
+    //         }
+    //         idx = Q*(zOffset + y*(xlength+2) + xlength);
+    //         for (int i = 0; i < Q; i++) {
+    //             c[0].collideField[idx+i] = 4;
+    //             c[0].streamField[idx+i] = 4;
+    //         }
+    //     }
+    // }
+    //
+    // for (y = 1; y <= xlength; y++) {
+    //     for (x = 1; x <= xlength; x++) {
+    //         idx = Q*(xlen2 + y*(xlength+2) + x);
+    //         for (int i = 0; i < Q; i++) {
+    //             c[0].collideField[idx+i] = 5;
+    //             c[0].streamField[idx+i] = 5;
+    //         }
+    //         idx = Q*(xlen2*(xlength) + y*(xlength+2) + x);
+    //         for (int i = 0; i < Q; i++) {
+    //             c[0].collideField[idx+i] = 6;
+    //             c[0].streamField[idx+i] = 6;
+    //         }
+    //     }
+    // }
+
     /*Looping over boundary of flagFields*/
     //All points set to zero at memory allocation (using calloc)
 
