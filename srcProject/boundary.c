@@ -110,7 +110,36 @@
 #define VARIABLE -1 //symbol that is used in context of indices. It indicates which index is variable.
 #define EXTRACT 0
 #define INJECT 1
-//TODO: (DL) possible define "9" for middle distribution - reduce magic numbers..
+//TODO: (DL) possible define "9" for middle distribution - reduce magic numbers...
+
+//TODO: (DL) Bug:
+//As for the wall we take the entire wall for density. This is problematic, because if shared edges.
+//At the moment the domain boundary edges should be treated correctly. However, the trouble comes with
+//the subdomain shared edges...
+//We need a special treatment for these (sub-domain) edges...
+
+// |	*                            *   |
+// |	*                            *   |
+// |	*                          Z *   |
+// |	******************************   |
+// |_____________________________________|
+//
+// ______________________________________
+// |O                                    |
+// |   ******************************    |
+// |   * X                          *    |
+// |   *                            *    |
+// |   *                            *    |
+// |   *                            *    |
+
+// Cell X needs the density of cell Z (though own streamfield boundary cell O).
+// However, this communication is not yet done.
+
+//The question is: Can we archive this with the already available SendRecvs or do need more?
+
+
+
+
 
 int extractInjectEdge(double buffer[], double * const collideField, t_iterParaEdge const * const iterPara,
 		t_procData const * const procData, const int index, const int injectFlag, const int densityFlag){
