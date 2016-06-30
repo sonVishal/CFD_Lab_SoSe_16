@@ -494,7 +494,7 @@ void treatBoundary(int const*const flagField, double *const collideField, const 
 		int firstNeighbour = procData->periodicNeighbours[wall];
 		int secondNeighbour = procData->periodicNeighbours[wall+1];
 
-		if(firstNeighbour != MPI_PROC_NULL && secondNeighbour != MPI_PROC_NULL){
+		if(firstNeighbour == MPI_PROC_NULL && secondNeighbour == MPI_PROC_NULL){
 			//Case when there is only one proc, then no communication is required
 			treatPeriodicWallNoComm(collideField, wall, wall+1, procData, densityFlag);
 		}
@@ -531,7 +531,7 @@ void treatBoundary(int const*const flagField, double *const collideField, const 
 			validReadBuffer = readBuffer[TOP];
 		}
 
-		if(firstNeighbour != MPI_PROC_NULL && secondNeighbour != MPI_PROC_NULL){
+		if(firstNeighbour == MPI_PROC_NULL && secondNeighbour == MPI_PROC_NULL){
 			//Case when there is only one proc, then no communication is required
 			treatPeriodicEdgeNoComm(collideField, procData, edge1[idx], edge2[idx], densityFlag);
 		}else{
