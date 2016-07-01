@@ -100,7 +100,7 @@ p_setWallBoundaries	boundary.c	/^void p_setWallBoundaries(double *collideField, 
 p_treatSingleWall	boundary.c	/^void p_treatSingleWall(double *collideField, const int * const flagField,$/;"	f
 psi0	LBDefinitions.h	/^static inline double psi0(double numberDensity){ return (1-exp(-numberDensity));}$/;"	f
 psi1	LBDefinitions.h	/^static inline double psi1(double numberDensity){ return numberDensity;}$/;"	f
-psi2	LBDefinitions.h	/^static inline double psi2(double numberDensity){ return 4.0;}$/;"	f
+psi2	LBDefinitions.h	/^static inline double psi2(double numberDensity){ return 4.0*exp(-200.0\/numberDensity);}$/;"	f
 psiFctCode	LBDefinitions.h	/^    int psiFctCode;$/;"	m	struct:__anon1
 psiFctPointer	LBDefinitions.h	/^static const fctPtrPsi psiFctPointer[3] = {psi0, psi1, psi2};$/;"	v
 readParameters	initLB.c	/^int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){$/;"	f

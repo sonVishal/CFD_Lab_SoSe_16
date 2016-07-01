@@ -43,7 +43,7 @@ typedef struct {
 
 static inline double psi0(double numberDensity){ return (1-exp(-numberDensity));}
 static inline double psi1(double numberDensity){ return numberDensity;}
-static inline double psi2(double numberDensity){ return 4.0;}
+static inline double psi2(double numberDensity){ return 4.0*exp(-200.0/numberDensity);}
 
 typedef double (*fctPtrPsi)(double);
 static const fctPtrPsi psiFctPointer[3] = {psi0, psi1, psi2};
