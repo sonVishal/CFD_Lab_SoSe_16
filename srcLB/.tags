@@ -8,7 +8,7 @@ BACK	LBDefinitions.h	/^    BACK$/;"	e	enum:__anon3
 BOTTOM	LBDefinitions.h	/^    BOTTOM,$/;"	e	enum:__anon3
 CC	Makefile	/^CC=gcc$/;"	m
 CFLAGS	Makefile	/^CFLAGS=-Werror -pedantic -Wall -std=c99 #-O0 -g -pg -enable-checking -v -da -Q$/;"	m
-C_S	LBDefinitions.h	75;"	d
+C_S	LBDefinitions.h	76;"	d
 DUMPOUT	helper.h	296;"	d
 DUMP_DOUBLE	helper.h	388;"	d
 DUMP_DOUBLE_TO_FILE	helper.h	549;"	d
@@ -100,8 +100,9 @@ p_setWallBoundaries	boundary.c	/^void p_setWallBoundaries(double *collideField, 
 p_treatSingleWall	boundary.c	/^void p_treatSingleWall(double *collideField, const int * const flagField,$/;"	f
 psi0	LBDefinitions.h	/^static inline double psi0(double numberDensity){ return (1-exp(-numberDensity));}$/;"	f
 psi1	LBDefinitions.h	/^static inline double psi1(double numberDensity){ return numberDensity;}$/;"	f
+psi2	LBDefinitions.h	/^static inline double psi2(double numberDensity){ return 4.0;}$/;"	f
 psiFctCode	LBDefinitions.h	/^    int psiFctCode;$/;"	m	struct:__anon1
-psiFctPointer	LBDefinitions.h	/^static const fctPtrPsi psiFctPointer[2] = {psi0, psi1};$/;"	v
+psiFctPointer	LBDefinitions.h	/^static const fctPtrPsi psiFctPointer[3] = {psi0, psi1, psi2};$/;"	v
 readParameters	initLB.c	/^int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){$/;"	f
 read_double	helper.c	/^void read_double( const char* szFileName, const char* szVarName, double* pVariable)$/;"	f
 read_int	helper.c	/^void read_int( const char* szFileName, const char* szVarName, int* pVariable)$/;"	f

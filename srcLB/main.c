@@ -15,15 +15,15 @@ int main(int argc, char *argv[]){
     t_component c[NUMCOMP];
 
     c[0].tau = 1.0;
-    c[0].m = 2.0;
-    c[0].psiFctCode = 0;
+    c[0].m = 1.0;
+    c[0].psiFctCode = 2;
 
     // c[1].tau = 0.7;
     // c[1].m = 2.0;
     // c[1].psiFctCode = 1;
 
     // double G[2][2] = {{0.01,0.04},{0.04,0.02}};
-    double G[1][1] = {{-0.04}};
+    double G[1][1] = {{-120}};
 
     int *flagField = NULL;
 
@@ -75,7 +75,9 @@ int main(int argc, char *argv[]){
     // Write the VTK at t = 0
     printf("INFO: write vtk file at time t = %d \n", t);
     writeVtkOutput(c,flagField,fName,t,xlength);
-    writeVtkOutputDebug(c,flagField,fName,t,xlength);
+    // writeVtkOutputDebug(c,flagField,fName,t,xlength);
+
+    tau = 1.0;
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
@@ -96,8 +98,9 @@ int main(int argc, char *argv[]){
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);
 	        writeVtkOutput(c,flagField,fName,t,xlength);
-            writeVtkOutputDebug(c,flagField,fName,t,xlength);
+            // writeVtkOutputDebug(c,flagField,fName,t,xlength);
 	    }
+        printf("Time t = %d done\n",t);
     }
     end_timing = clock();
     time_spent = (double)(end_timing - begin_timing) / CLOCKS_PER_SEC;
