@@ -64,7 +64,7 @@ void doCollision(t_component *c, double G[NUMCOMP][NUMCOMP], int *flagField, int
 				computeCommonVelocity(density, velocity, c, commonVel);
 
 				for (int k = 0; k < NUMCOMP; k++) {
-					computeForce(fieldIdx, k, c, flagField, G[k], xlength, force);
+					computeForce(x,y,z, k, c, flagField, G[k], xlength, force);
 					// force[0] = 0.0; force[1] = 0.0; force[2] = 0.0;
 					computeEqVelocity(&c[k], commonVel, density[k], force, eqVel);
 

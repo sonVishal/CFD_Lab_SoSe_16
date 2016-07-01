@@ -19,7 +19,7 @@ void computeFeq(const double * const density, const double * const velocity, dou
 
 void computeCommonVelocity(const double *const c_density, double c_velocity[2][3], t_component *c, double* commonVel);
 
-void computeForce(const int currentCellIndex, const int currentCompIndex,
+void computeForce(const int x, const int y, const int z, const int currentCompIndex,
     const t_component *const c, const int * const flagField,
     double const*const G, int xlength, double forces[3]);
 

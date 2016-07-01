@@ -43,9 +43,10 @@ typedef struct {
 
 static inline double psi0(double numberDensity){ return (1-exp(-numberDensity));}
 static inline double psi1(double numberDensity){ return numberDensity;}
+static inline double psi2(double numberDensity){ return 0.02;}
 
 typedef double (*fctPtrPsi)(double);
-static const fctPtrPsi psiFctPointer[2] = {psi0, psi1};
+static const fctPtrPsi psiFctPointer[3] = {psi0, psi1, psi2};
 
 static inline int p_computeCellOffsetXYZ_Q(const int x, const int y, const int z, const int xlength) {
     return Q*(x+(y+z*(xlength+2))*(xlength+2));

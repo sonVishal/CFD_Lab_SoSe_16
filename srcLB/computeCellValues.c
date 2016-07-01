@@ -142,30 +142,37 @@ void computeCommonVelocity(const double *const c_density, double c_velocity[2][3
     commonVel[2] = momentum[2]/den;
 }
 
-void computeForce(const int currentCellIndex, const int currentCompIndex,
+void computeForce(const int x, const int y, const int z, const int currentCompIndex,
     const t_component *const c, const int * const flagField,
     double const*const G, int xlength, double forces[3]) {
 
-    int xlen2 = xlength+2;
-    int xlen2sq = xlen2*xlen2;
-
     double numDensity;
     forces[0] = 0.0; forces[1] = 0.0; forces[2] = 0.0;
+
+    const int currentCellIndex = p_computeCellOffsetXYZ_Q(x, y, z, xlength);
 
     for (int m = 0; m < NUMCOMP; m++) {
 
         for (int i = 0; i < Q; i++) {
 
             // Go to the next cell index in the direction of lattice velocities
-            int nextCellIndex = currentCellIndex+LATTICEVELOCITIES[i][0]
-                                + xlen2*LATTICEVELOCITIES[i][1]
-                                + xlen2sq*LATTICEVELOCITIES[i][2]; //index of cell in direction i
-
-            int nextIndex = Q*nextCellIndex; //index of number density in direction i
+            int nextPoint[3];
+            nextPoint[0] = (x+LATTICEVELOCITIES[i][0] <= xlength) ? x+LATTICEVELOCITIES[i][0]:1;
+            nextPoint[0] = (x+LATTICEVELOCITIES[i][0] >= 0) ? x+LATTICEVELOCITIES[i][0]:xlength;
+            nextPoint[1] = (y+LATTICEVELOCITIES[i][1] <= xlength) ? y+LATTICEVELOCITIES[i][1]:1;
+            nextPoint[1] = (y+LATTICEVELOCITIES[i][1] >= 0) ? y+LATTICEVELOCITIES[i][1]:xlength;
+            nextPoint[2] = (z+LATTICEVELOCITIES[i][2] <= xlength) ? z+LATTICEVELOCITIES[i][2]:1;
+            nextPoint[2] = (z+LATTICEVELOCITIES[i][2] >= 0) ? z+LATTICEVELOCITIES[i][2]:xlength;
+            int nextCellIndex = p_computeCellOffsetXYZ_Q(nextPoint[0], nextPoint[1], nextPoint[2], xlength);
+            // int nextCellIndex = currentCellIndex+LATTICEVELOCITIES[i][0]
+            //                     + xlen2*LATTICEVELOCITIES[i][1]
+            //                     + xlen2sq*LATTICEVELOCITIES[i][2]; //index of cell in direction i
+            //
+            // int nextIndex = Q*nextCellIndex; //index of number density in direction i
             // numDensity = c[m].collideField[nextIndex]; //number density in direction i
             // Compute the number density for component "m" at lattice site "nextIndex"
 
-            computeNumDensity(&c[m].collideField[nextIndex], &numDensity);
+            computeNumDensity(&c[m].collideField[nextCellIndex], &numDensity);
             // if(flagField[nextCellIndex] == FLUID){
             // }else{  // TODO
             //     numDensity = c[m].collideField[nextIndex + 9];
