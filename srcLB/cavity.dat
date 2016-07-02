@@ -9,7 +9,7 @@ xlength              200
 Re                    20
 
 # Velocity of moving wall
-xvelocity         0
+xvelocity         0.01
 yvelocity         0
 zvelocity         0
 

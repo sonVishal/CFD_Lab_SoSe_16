@@ -6,7 +6,8 @@
 static const int Q = 19;
 
 // reference density
-static const int refDensity = 200;
+static const int rhoRef = 200;
+static const int rho0   = 1;
 
 #define NUMCOMP 1
 
@@ -45,9 +46,9 @@ typedef struct {
 } t_component;
 
 //TODO: For now assuming that mass = 1. The input density if mass changes.
-static inline double psi0(double numberDensity){ return refDensity*(1-exp(-numberDensity/refDensity));}
+static inline double psi0(double numberDensity){ return rho0*(1-exp(-numberDensity/rho0));}
 static inline double psi1(double numberDensity){ return numberDensity;}
-static inline double psi2(double numberDensity){ return 4.0*exp(-refDensity/numberDensity);}
+static inline double psi2(double numberDensity){ return 4.0*exp(-rho0/numberDensity);}
 
 typedef double (*fctPtrPsi)(double);
 static const fctPtrPsi psiFctPointer[3] = {psi0, psi1, psi2};
