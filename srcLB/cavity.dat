@@ -9,12 +9,12 @@ xlength              200
 Re                    20
 
 # Velocity of moving wall
-xvelocity         0.01
+xvelocity         0
 yvelocity         0
 zvelocity         0
 
 # Number of timesteps
-timesteps            200
+timesteps            20
 
 # timesteps between each plot
-timestepsPerPlotting 100
+timestepsPerPlotting 10

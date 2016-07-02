@@ -44,7 +44,8 @@ typedef struct {
     int psiFctCode;
 } t_component;
 
-static inline double psi0(double numberDensity){ return (1-exp(-numberDensity));}
+//TODO: For now assuming that mass = 1. The input density if mass changes.
+static inline double psi0(double numberDensity){ return refDensity*(1-exp(-numberDensity/refDensity));}
 static inline double psi1(double numberDensity){ return numberDensity;}
 static inline double psi2(double numberDensity){ return 4.0*exp(-refDensity/numberDensity);}
 
