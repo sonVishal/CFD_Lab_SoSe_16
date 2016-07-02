@@ -70,6 +70,9 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
     //Intermediate values to calculate feq for a random density.
     double v[3] = {0,0,0};          //Assume no initial velocity
 
+    //TODO: (TKS) Maybe set the percentage 0.01 as a variable we can choose instead.
+    double rhoVar = 0.01*rhoRef;    //How much initial difference is allowed in density-
+
     int x,y,z;
     srand(1);
     for (int k = 0; k < NUMCOMP; k++) {
@@ -85,7 +88,9 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                     idx = Q*(yzOffset + x);
                     double feq[19];
                     //TODO: (TKS) Need to do componentwise if we introduce several components.
-                    double rho = rhoRef + ((double)rand()/(double)RAND_MAX);
+                    
+                    //Set the initial density to a random offsett to rhoRef
+                    double rho = rhoRef - 0.5*rhoVar + rhoVar*((double)rand()/(double)RAND_MAX);
                     computeFeq(&rho, v, feq);
                     for (int i = 0; i < Q; ++i) {
                         c[k].collideField[idx+i] = feq[i];
