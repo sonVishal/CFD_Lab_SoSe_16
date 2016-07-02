@@ -35,9 +35,9 @@ void doCollision(t_component *c, double G[NUMCOMP][NUMCOMP], int *flagField, int
 				cellIdx = Q*fieldIdx;
 
 				// Allocate memory to local cell parameters
-				double numDensity[2];
-				double density[2];
-				double velocity[2][3];
+				double numDensity[NUMCOMP];
+				double density[NUMCOMP];
+				double velocity[NUMCOMP][3];
 				double commonVel[3];
 				double eqVel[3];
 				double force[3];
@@ -72,8 +72,27 @@ void doCollision(t_component *c, double G[NUMCOMP][NUMCOMP], int *flagField, int
 
 					computeFeq(&numDensity[k],eqVel,feq);
 
+					// Store the feq in stream field since it won't be used right now
+					for (int i = 0; i < Q; i++) {
+						c[k].streamField[cellIdx+i] = feq[i];
+					}
+				}
+			}
+		}
+	}
+
+	// Perform collision on all "inner" (FLUID) cells
+	for (z = 1; z <= xlength ; z++) {
+		for (y = 1; y <= xlength; y++) {
+			for (x = 1; x <= xlength; x++) {
+				// Get the index of the first distribution
+				// in the current cell
+				fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
+				cellIdx = Q*fieldIdx;
+				for (int k = 0; k < NUMCOMP; k++) {
+					// Compute the cell numDensity
 					double *currentCell = &c[k].collideField[cellIdx];
-					computePostCollisionDistributions(currentCell,&c[k].tau,feq);
+					computePostCollisionDistributions(currentCell,&c[k].tau,&c[k].streamField[cellIdx]);
 				}
 			}
 		}
