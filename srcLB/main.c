@@ -61,6 +61,10 @@ int main(int argc, char *argv[]){
     for (int i = 0; i < NUMCOMP; i++) {
         c[i].collideField = (double *)  malloc(Q*totalsize * sizeof( double ));
         c[i].streamField = (double *)  malloc(Q*totalsize * sizeof( double ));
+        c[i].eqVel = (double **) malloc(3*totalsize*sizeof(double*));
+        for (int j = 0; j < 3; j++) {
+            c[i].eqVel[j] = (double *)  malloc(totalsize * sizeof( double ));
+        }
     }
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
@@ -115,6 +119,10 @@ int main(int argc, char *argv[]){
     for (int i = 0; i < NUMCOMP; i++) {
         free(c[i].streamField);
         free(c[i].collideField);
+        for (int j = 0; j < 3; j++) {
+            free(c[i].eqVel[j]);
+        }
+        free(c[i].eqVel);
     }
     free(flagField);
 
