@@ -1,3 +1,10 @@
+*.tags
+*.tags1
+/Project/
+/srcMPI/
+/srcProject/
+/worksheet3/
+
 
 # vim created files
 *.swp
