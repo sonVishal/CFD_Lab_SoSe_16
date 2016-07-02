@@ -1,5 +1,5 @@
 # Size of mesh
-xlength              200
+xlength              100
 
 # Relaxation time
 # In recent version calculated from the Reynolds number

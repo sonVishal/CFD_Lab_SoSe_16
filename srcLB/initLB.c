@@ -52,7 +52,6 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
 }
 
 void initialiseFields(t_component * c, int *flagField, int xlength){
-    printf("startt init\n");
 
     /*Setting initial distributions*/
     //f_i(x,0) = f^eq(1,0,0) = w_i
@@ -75,7 +74,6 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
 
     int x,y,z;
     srand(1);
-    printf("init loop 1\n");
     for (int k = 0; k < NUMCOMP; k++) {
         for ( z = 0; z <= xlength+1; ++z) {
             if (z == xlength/2) {
