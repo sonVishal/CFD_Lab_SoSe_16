@@ -47,6 +47,7 @@ void doCollision(t_component *c, double G[NUMCOMP][NUMCOMP], int *flagField, int
 					double *currentCell = &c[k].collideField[cellIdx];
 					computeNumDensity(currentCell, &numDensity[k]);
 					density[k] = c[k].m*numDensity[k];
+
 					#ifndef NO_CHECKS
 					// We check if the numDensity deviation is more than densityTol%
 					// This value can be changed in LBDefinitions.h
@@ -57,6 +58,7 @@ void doCollision(t_component *c, double G[NUMCOMP][NUMCOMP], int *flagField, int
 						ERROR(msg);
 					}
 					#endif
+
 					// Compute the cell velocity
 					computeVelocity(currentCell, &numDensity[k], velocity[k]);
 				}

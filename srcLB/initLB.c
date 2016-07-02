@@ -1,4 +1,5 @@
 #include "initLB.h"
+#include "LBDefinitions.h"
 
 int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
 
@@ -78,7 +79,7 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                     // Compute the base index
                     idx = Q*(yzOffset + x);
                     
-                    double randDensity = 200 + ((double)rand()/(double)RAND_MAX);
+                    double randDensity = refDensity + ((double)rand()/(double)RAND_MAX);
                     for (int i = 0; i < Q; ++i) {
                         c[k].collideField[idx+i] = randDensity* LATTICEWEIGHTS[i];
                         c[k].streamField[idx+i]  = randDensity*LATTICEWEIGHTS[i];
