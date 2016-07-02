@@ -171,10 +171,20 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
             //     numDensity = c[m].collideField[nextIndex + 9];
             // }
 
+            double G_cur;
+            if(LATTICEWEIGHTS[i] == w2){ // 1/18
+                G_cur = G[m];
+            }else if(LATTICEWEIGHTS[i] == w3){ // 1/36
+                G_cur = G[m]/2;
+            }else{
+                assert(i == 9);
+                G_cur = 0;
+            }
+
             //Shan&Doolen eq. 4 (PDF page 5)
-            forces[0] += G[m] * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][0];
-            forces[1] += G[m] * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][1];
-            forces[2] += G[m] * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][2];
+            forces[0] += G_cur * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][0];
+            forces[1] += G_cur * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][1];
+            forces[2] += G_cur * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][2];
          }
     }
 

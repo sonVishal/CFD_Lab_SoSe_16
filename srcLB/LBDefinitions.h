@@ -32,9 +32,6 @@ static const double LATTICEWEIGHTS[19] = {
     w3, w2, w3, w3
 };
 
-#undef w1
-#undef w2
-#undef w3
 
 typedef struct {
     double* streamField;
