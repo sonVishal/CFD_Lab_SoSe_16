@@ -157,6 +157,9 @@ void communicateDensityComponents(int const * const flagField,
 	}
 }
 
+
+// TODO: (VS) Combine the communicate and communicate density 
+
 /*
  * Main algorithm to carry out the communication between the processes.
  */
