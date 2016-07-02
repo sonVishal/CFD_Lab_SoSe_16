@@ -77,9 +77,10 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                 for ( x = 0; x <= xlength+1; ++x) {
                     // Compute the base index
                     idx = Q*(yzOffset + x);
+                    double randScaleFactor = ((double)rand()/(double)RAND_MAX);
                     for (int i = 0; i < Q; ++i) {
-                        c[k].collideField[idx+i] = 200*LATTICEWEIGHTS[i] + ((double)rand()/(double)RAND_MAX)/Q;
-                        c[k].streamField[idx+i]  = 200*LATTICEWEIGHTS[i] + ((double)rand()/(double)RAND_MAX)/Q;
+                        c[k].collideField[idx+i] = 200*LATTICEWEIGHTS[i]*randScaleFactor;
+                        c[k].streamField[idx+i]  = 200*LATTICEWEIGHTS[i]*randScaleFactor;
                     }
                 }
             }
