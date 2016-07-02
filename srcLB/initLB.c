@@ -68,8 +68,6 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
     /* initialize collideField and streamField */
 
     //Intermediate values to calculate feq for a random density.
-    int gridSize = xlen2*xlen2sq;   //Amount of cells in the grid
-    double rho[NUMCOMP][gridSize];  //Density in each cell
     double v[3] = {0,0,0};          //Assume no initial velocity
 
     int x,y,z;
@@ -85,23 +83,10 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                 for ( x = 0; x <= xlength+1; ++x) {
                     // Compute the base index
                     idx = Q*(yzOffset + x);
-                    rho[k][idx] = rhoRef + ((double)rand()/(double)RAND_MAX);
-                }
-            }
-        }
-    }
-
-    for (int k = 0; k < NUMCOMP; k++) {
-        for ( z = 0; z <= xlength+1; ++z) {
-            zOffset = z*xlen2sq;
-            for ( y = 0; y <= xlength+1; ++y) {
-                yzOffset = y*(xlength+2) + zOffset;
-                for ( x = 0; x <= xlength+1; ++x) {
-                    // Compute the base index
-                    idx = Q*(yzOffset + x);
-                    
                     double feq[19];
-                    computeFeq(rho[idx], v, feq);
+                    //TODO: (TKS) Need to do componentwise if we introduce several components.
+                    double rho = rhoRef + ((double)rand()/(double)RAND_MAX);
+                    computeFeq(&rho, v, feq);
                     for (int i = 0; i < Q; ++i) {
                         c[k].collideField[idx+i] = feq[i];
                         c[k].streamField[idx+i]  = feq[i];
