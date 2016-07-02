@@ -70,6 +70,9 @@ enum CELLS {
 //TODO: (DL) not sure if a function pointer with inline works... we can test it out.
 static inline double psi0(double numberDensity){ return (1-exp(-numberDensity));}
 static inline double psi1(double numberDensity){ return numberDensity;}
+
+// TODO: (VS) Fix this
+// Used this value for testing with the local code since nothing blows up
 static inline double psi2(double numberDensity){ return 4.0;}
 
 typedef double (*fctPtrPsi)(double);
