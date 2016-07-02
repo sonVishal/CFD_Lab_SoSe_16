@@ -1,6 +1,5 @@
 #ifndef _MAIN_C_
 #define _MAIN_C_
-#include "boundary.h"
 #include "collision.h"
 #include "initLB.h"
 #include "streaming.h"
@@ -124,10 +123,12 @@ int main(int argc, char *argv[]){
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField = (int *) calloc(totalsize, sizeof( int ));
 
-#ifndef NDEBUG
-    initializeUnitTest(totalsize);
-#endif
+// #ifndef NDEBUG
+//     initializeUnitTest(totalsize);
+// #endif
 
+    // Use a different seed for different procs to avoid same random numbers
+    srand(procData.rank*(procData.rank+1)+1);
     // Initialise the fields for all components
     initialiseComponents(c, flagField, &procData);
 
@@ -137,13 +138,13 @@ int main(int argc, char *argv[]){
     //Write the VTK at t = 0
     printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
     writeVtsOutput(c, flagField, fName, t, xlength, &procData, procsPerAxis);
-    writeVtsOutputDebug(c, flagField, "pv_files/Debug", t, xlength, &procData, procsPerAxis);
+    // writeVtsOutputDebug(c, flagField, "pv_files/Debug", t, xlength, &procData, procsPerAxis);
 
     // Combine VTS file at t = 0
     // Only done by root
     if (procData.rank == 0) {
         p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
-        p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
+        // p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
     }
 
     beginProcTime = MPI_Wtime();
@@ -159,32 +160,33 @@ int main(int argc, char *argv[]){
         // Swap the local fields for each component
         swapComponentFields(c);
 
-        communicateDensityComponents(flagField,sendBuffer, readBuffer, c, &procData);
+        communicateDensityComponents(flagField, sendBuffer, readBuffer, c, &procData);
 
-#ifndef NDEBUG
-        beforeCollision(c, &procData);
-#endif
+// #ifndef NDEBUG
+//         beforeCollision(c, &procData);
+// #endif
         // Perform local collision
 	    doCollision(c, flagField, G, procData.xLength);
 
-#ifndef NDEBUG
-        afterCollision(c, &procData);
-#endif
+// #ifndef NDEBUG
+//         afterCollision(c, &procData);
+// #endif
 
         // Treat local boundaries for each component
-	    treatComponentBoundary(c, flagField, &procData, sendBuffer, readBuffer, 0);
+	    // treatComponentBoundary(c, flagField, &procData, sendBuffer, readBuffer, 0);
 
         // Print VTS files at given interval
 	    if (t%timestepsPerPlotting == 0){
             printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
 	        writeVtsOutput(c, flagField, fName, t, xlength, &procData, procsPerAxis);
-            writeVtsOutputDebug(c, flagField, "pv_files/Debug", t, xlength, &procData, procsPerAxis);
+            // writeVtsOutputDebug(c, flagField, "pv_files/Debug", t, xlength, &procData, procsPerAxis);
             // Combine VTS file at t
             if (procData.rank == 0) {
                 p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
-                p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
+                // p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
             }
 	    }
+        printf("R %d Time t = %d done\n",procData.rank, t);
     }
     endProcTime = MPI_Wtime();
 
@@ -221,9 +223,9 @@ int main(int argc, char *argv[]){
         if(readBuffer[i] != NULL) free(readBuffer[i]);
     }
 
-    #ifndef NDEBUG
-    freeUnitTest();
-    #endif
+    // #ifndef NDEBUG
+    // freeUnitTest();
+    // #endif
 
     finaliseMPI(&procData);
     return 0;

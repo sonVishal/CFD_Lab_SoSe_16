@@ -53,10 +53,10 @@ void doCollision(t_component *c, const int * const flagField, double G[numComp][
                     // Compute the cell density and number density for each component
                     c_computeNumDensity(currentCell, &c_numDensity[n]);
                     c_density[n] = c_numDensity[n]*c[n].m;
-
+					
 #ifndef NDEBUG
                     // We check if the density deviation is more than densityTol% This value can be changed in LBDefinitions.h
-                    if(fabs(c_density[n]-1) > densityTol){
+                    if(c_density[n] < densityTol){
                         char msg[120];
                         sprintf(msg, "A density value (%f) outside the given tolerance of %.2f %% was detected in cell: "
                                 "x=%i, y=%i, z=%i, in component %d", c_density[n], (densityTol*100), x, y, z, n);

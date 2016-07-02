@@ -50,9 +50,6 @@ void broadcastValues(int rank, int *xlength, t_component *c, double G[numComp][n
 void domainDecompositionAndNeighbors(t_procData *const procData, const int xlength, int const * const procsPerAxis) {
 
 	#define M_NBGH procData->neighbours
-	#define M_PDICNBGH procData->periodicNeighbours
-	#define M_EDGENBGH procData->periodicEdgeNeighbours
-	#define M_ISEDGE(N1, N2) M_NBGH[N1] == MPI_PROC_NULL && M_NBGH[N2] == MPI_PROC_NULL
 
 	int procPos[3] = {0,0,0};
 	// Get the position of the process based on its rank
@@ -68,54 +65,19 @@ void domainDecompositionAndNeighbors(t_procData *const procData, const int xleng
 
 	/* Set neighbours for parallel boundaries */
 	/* Decide whether it is a ghost boundary (= MPI_PROC_NULL) or a parallel boundary (assign rank of neighbor) */
-	M_NBGH[LEFT]   = (procPos[1] == 0) 				   ? MPI_PROC_NULL : procData->rank-procsPerAxis[0];
-	M_NBGH[RIGHT]  = (procPos[1] == procsPerAxis[1]-1) ? MPI_PROC_NULL : procData->rank+procsPerAxis[0];
+    procData->neighbours[LEFT]	 = procPos[0] + (procPos[1]-1+procsPerAxis[1])%procsPerAxis[1]*procsPerAxis[0] + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
+    procData->neighbours[RIGHT]	 = procPos[0] + (procPos[1]+1)%procsPerAxis[1]*procsPerAxis[0] + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
+    procData->neighbours[TOP]	 = procPos[0] + procPos[1]*procsPerAxis[0] + (procPos[2]+1)%procsPerAxis[2]*procsPerAxis[0]*procsPerAxis[1];
+    procData->neighbours[BOTTOM] = procPos[0] + procPos[1]*procsPerAxis[0] + (procPos[2]-1+procsPerAxis[2])%procsPerAxis[2]*procsPerAxis[0]*procsPerAxis[1];
+    procData->neighbours[FRONT]	 = (procPos[0]+1)%procsPerAxis[0] + procPos[1]*procsPerAxis[0] + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
+    procData->neighbours[BACK]	 = (procPos[0]-1+procsPerAxis[0])%procsPerAxis[0] + procPos[1]*procsPerAxis[0] + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
 
-	M_NBGH[BACK]   = (procPos[0] == 0) 				   ? MPI_PROC_NULL : procData->rank-1;
-	M_NBGH[FRONT]  = (procPos[0] == procsPerAxis[0]-1) ? MPI_PROC_NULL : procData->rank+1;
-
-	M_NBGH[BOTTOM] = (procPos[2] == 0) 				   ? MPI_PROC_NULL : procData->rank-procsPerAxis[1]*procsPerAxis[0];
-	M_NBGH[TOP]    = (procPos[2] == procsPerAxis[2]-1) ? MPI_PROC_NULL : procData->rank+procsPerAxis[1]*procsPerAxis[0];
-
-	/* Set neighbours for periodic boundaries */
-	M_PDICNBGH[LEFT]   = M_NBGH[LEFT]==MPI_PROC_NULL  ? procData->rank+procsPerAxis[0]*(procsPerAxis[1]-1) : MPI_PROC_NULL;
-	M_PDICNBGH[RIGHT]  = M_NBGH[RIGHT]==MPI_PROC_NULL ? procData->rank-procsPerAxis[0]*(procsPerAxis[1]-1) : MPI_PROC_NULL;
-
-	M_PDICNBGH[BACK]   = M_NBGH[BACK]==MPI_PROC_NULL  ? procData->rank+(procsPerAxis[0]-1) : MPI_PROC_NULL;
-	M_PDICNBGH[FRONT]  = M_NBGH[FRONT]==MPI_PROC_NULL ? procData->rank-(procsPerAxis[0]-1) : MPI_PROC_NULL;
-
-	M_PDICNBGH[BOTTOM] = M_NBGH[BOTTOM]==MPI_PROC_NULL ? procData->rank+procsPerAxis[0]*procsPerAxis[1]*(procsPerAxis[2]-1) : MPI_PROC_NULL;
-	M_PDICNBGH[TOP]    = M_NBGH[TOP]==MPI_PROC_NULL    ? procData->rank-procsPerAxis[0]*procsPerAxis[1]*(procsPerAxis[2]-1) : MPI_PROC_NULL;
-
-	/* Set neighbours for shared edges */
-	M_EDGENBGH[0] = M_ISEDGE(LEFT, BOTTOM)  ? M_PDICNBGH[BOTTOM]+procsPerAxis[0]*(procsPerAxis[1]-1): MPI_PROC_NULL;
-	M_EDGENBGH[1] = M_ISEDGE(FRONT, BOTTOM) ? M_PDICNBGH[BOTTOM]-(procsPerAxis[0]-1): MPI_PROC_NULL;
-	M_EDGENBGH[2] = M_ISEDGE(RIGHT, BOTTOM) ? M_PDICNBGH[BOTTOM]-(procsPerAxis[0]*(procsPerAxis[1]-1)) : MPI_PROC_NULL;
-	M_EDGENBGH[3] = M_ISEDGE(BACK, BOTTOM)  ? M_PDICNBGH[BOTTOM]+(procsPerAxis[0]-1): MPI_PROC_NULL;
-
-	M_EDGENBGH[4] = M_ISEDGE(BACK, LEFT)    ? M_PDICNBGH[LEFT]+(procsPerAxis[0]-1): MPI_PROC_NULL;
-	M_EDGENBGH[5] = M_ISEDGE(LEFT, FRONT)   ? M_PDICNBGH[LEFT]-(procsPerAxis[0]-1): MPI_PROC_NULL;
-	M_EDGENBGH[6] = M_ISEDGE(FRONT, RIGHT)  ? M_PDICNBGH[RIGHT]-(procsPerAxis[0]-1): MPI_PROC_NULL;
-	M_EDGENBGH[7] = M_ISEDGE(RIGHT, BACK)   ? M_PDICNBGH[RIGHT]+(procsPerAxis[0]-1): MPI_PROC_NULL;
-
-	M_EDGENBGH[8] = M_ISEDGE(TOP, LEFT)     ? M_PDICNBGH[TOP]+(procsPerAxis[0]*(procsPerAxis[1]-1)): MPI_PROC_NULL;
-	M_EDGENBGH[9] = M_ISEDGE(TOP, FRONT)    ? M_PDICNBGH[TOP]-(procsPerAxis[0]-1): MPI_PROC_NULL;
-	M_EDGENBGH[10] = M_ISEDGE(TOP, RIGHT)   ? M_PDICNBGH[TOP]-(procsPerAxis[0]*(procsPerAxis[1]-1)): MPI_PROC_NULL;
-	M_EDGENBGH[11] = M_ISEDGE(TOP, BACK)    ? M_PDICNBGH[TOP]+(procsPerAxis[0]-1): MPI_PROC_NULL;
-
-	//TODO:(DL) Delete when finalizing. But leave for debugging.
-	// printf("PER VALUES:");
-	// for(int i = 0; i < 6; i++){
-	// 	printf("%i ", M_PDICNBGH[i]);
-	// }
-	// printf("\n");
-
-	// printf("EDGE VALUES:");
-	// for(int i = 0; i < 12; i++){
-	// 	printf("%i ", M_EDGENBGH[i]);
-	// }
-	// printf("\n");
-
+	// If self neighbor then set neighbor to MPI_PROC_NULL
+	for (int i = 0; i < 6; i++) {
+		if (procData->neighbours[i] == procData->rank) {
+			procData->neighbours[i] = MPI_PROC_NULL;
+		}
+	}
 }
 
 /*
@@ -136,7 +98,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const *
 	// for periodic boundaries.
 
     // XZ inner domain (no edges included)
-    int bufferSize		= nrDistSwap*((xlength[0]+2)*(xlength[2]+2));
+    int bufferSize		= nrDistSwap*(xlength[0]*(xlength[2]+2));
     procBufferSize[0] 	= bufferSize; //Valid for left and right
     // sendBuffer[LEFT] 	= (neighbours[LEFT]  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
     // sendBuffer[RIGHT] 	= (neighbours[RIGHT] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
@@ -150,7 +112,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const *
 
 
     // XY plane including edges at the boundary to left/right
-    bufferSize 			= nrDistSwap*((xlength[0]+2)*(xlength[1]+2));
+    bufferSize 			= nrDistSwap*(xlength[0]*(xlength[1]+2));
     procBufferSize[1] 	= bufferSize; //Valid for top and bottom
     // sendBuffer[TOP] 	= (neighbours[TOP] 	  != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
     // sendBuffer[BOTTOM] 	= (neighbours[BOTTOM] != MPI_PROC_NULL)?(double *) malloc(bufferSize*db):NULL;
@@ -183,7 +145,7 @@ void communicateComponents(int const * const flagField,
 	double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData){
     for (int i = 0; i < numComp; ++i) {
 		//TODO: (DL) maybe define variables for 0/1 for densityFlag
-        communicate(flagField, sendBuffer, readBuffer, c[i].collideField, procData, 0); //0 indicates that the boundary is handled
+        communicate(sendBuffer, readBuffer, c[i].collideField, procData); //0 indicates that the boundary is handled
     }
 }
 
@@ -191,94 +153,60 @@ void communicateDensityComponents(int const * const flagField,
 	double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData){
 	for (int i = 0; i < numComp; ++i) {
 		//TODO:(DL) for now parallel and periodic part is separated (less risk of deadlocks etc.):
-		communicate(flagField, sendBuffer, readBuffer, c[i].collideField, procData, 1); //1 indicates that the density is handled
-		treatBoundary(flagField, c[i].collideField, procData, sendBuffer, readBuffer, 1);
+		communicateDensity(sendBuffer, readBuffer, c[i].collideField, flagField, procData);
 	}
 }
 
 /*
-* Main algorithm to carry out the communication between the processes.
-*/
-void communicate(int const * const flagField,
-	double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData, const int densityFlag){
+ * Main algorithm to carry out the communication between the processes.
+ */
+void communicate(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData){
     //Run extract, swap, inject for all sides and cells.
-	int nrDist = densityFlag ? 1 : nrDistSwap; //only one indice is handled when density is written
-    int 		index1[nrDist], index2[nrDist];
 
+    int 		index1[5], index2[5];
     t_iterPara  iterPara1, iterPara2;
 
-    // Iterate through directions (left/right, top/bottom, front/back)
+	// Iterate through directions (left/right, top/bottom, front/back)
     for (int direction = LEFT; direction <= BACK; direction+=2) {
 
-        const int face1 = direction;   //LEFT,  TOP,    FRONT
-        const int face2 = direction+1; //RIGHT, BOTTOM, BACK
+    	const int face1 = direction;   //LEFT,  TOP,    FRONT
+    	const int face2 = direction+1; //RIGHT, BOTTOM, BACK
 
-        /* Set iteration parameters for both faces of a direction */
+		/* Set iteration parameters for both faces of a direction */
         p_setCommIterationParameters(&iterPara1, procData, face1);
         p_setCommIterationParameters(&iterPara2, procData, face2);
 
-        /* Assign the indices for the 5 distributions that go out of the two faces of the current direction */
-		if( ! densityFlag ){
-			p_assignIndices(face1, index1);
-	        p_assignIndices(face2, index2);
+		/* Assign the indices for the 5 distributions that go out of the two faces of the current direction */
+        p_assignIndices(face1, index1);
+        p_assignIndices(face2, index2);
+
+		/* Extract the distributions from collideField to the send buffer */
+        if(procData->neighbours[face1] != MPI_PROC_NULL && procData->neighbours[face2] != MPI_PROC_NULL) {
+			extract(sendBuffer[face1], collideField, &iterPara1, procData, face1, index1);
+			extract(sendBuffer[face2], collideField, &iterPara2, procData, face2, index2);
 		}
 
-        /* Extract the distributions from collideField to the send buffer */
-        if(procData->neighbours[face1] != MPI_PROC_NULL){
-			if(densityFlag){
-				extractDensity(flagField,sendBuffer[face1], collideField, &iterPara1, procData, face1);
-			}else{
-				extract(sendBuffer[face1], collideField, &iterPara1, procData, face1, index1);
-			}
-		}
+		/* Swap the distributions */
+        swap(sendBuffer, readBuffer, procData, direction);
 
-        if(procData->neighbours[face2] != MPI_PROC_NULL){
-			if(densityFlag){
-				extractDensity(flagField,sendBuffer[face2], collideField, &iterPara2, procData, face2);
-			}else{
-				extract(sendBuffer[face2], collideField, &iterPara2, procData, face2, index2);
-			}
-		}
-
-        /* Swap the distributions */
-		if(densityFlag){
-			//TODO: (DL) Note the division by nrDistSwap - maybe not so nice -- check if there is another way
-			swap(sendBuffer, readBuffer, procData, direction, (procData->bufferSize[direction/2])/nrDistSwap);
-		}else{
-			swap(sendBuffer, readBuffer, procData, direction, procData->bufferSize[direction/2]);
-		}
-
-        /* Inject the distributions from read buffer to collide field */
+		/* Inject the distributions from read buffer to collide field */
         //NOTE: opposite index get injected from the readBuffer
-        if(procData->neighbours[face1] != MPI_PROC_NULL){
-			if(densityFlag){
-				const int indexIn = 9; //index in the center, will be used to store the density
-				assert(nrDist == 1);
-				inject(readBuffer[face1], collideField, &iterPara1, procData, face1, &indexIn, nrDist);
-			}else{
-				assert(nrDist == nrDistSwap);
-				inject(readBuffer[face1], collideField, &iterPara1, procData, face1, index2, nrDist);
-			}
+        if(procData->neighbours[face1] != MPI_PROC_NULL && procData->neighbours[face2] != MPI_PROC_NULL) {
+			inject(readBuffer[face1], collideField, &iterPara1, procData, face1, index2);
+			inject(readBuffer[face2], collideField, &iterPara2, procData, face2, index1);
 		}
 
-        if(procData->neighbours[face2] != MPI_PROC_NULL){
-			if(densityFlag){
-				const int indexIn = 9; //index in the center, will be used to store the density
-				assert(nrDist == 1);
-				inject(readBuffer[face2], collideField, &iterPara2, procData, face2, &indexIn, nrDist);
-			}else{
-				assert(nrDist == nrDistSwap);
-				inject(readBuffer[face2], collideField, &iterPara2, procData, face2, index1, nrDist);
-			}
+		if (procData->neighbours[face1] == MPI_PROC_NULL && procData->neighbours[face2] == MPI_PROC_NULL) {
+			swapNoComm(collideField, &iterPara1, &iterPara2, procData, direction, index1, index2);
 		}
-	}
+    }
 }
 
 /*
-* Copy distributions into sendBuffer.
-*/
+ * Copy distributions into sendBuffer.
+ */
 void extract(double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara, t_procData const * const procData,
-    const int direction, int const * const index){
+             const int direction, int const * const index){
 
     int currentIndexField = -1;//initially invalid assignment
     int currentIndexBuff  = 0; //simple counter
@@ -290,72 +218,56 @@ void extract(double sendBuffer[], double const * const collideField, t_iterPara 
 
             currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
 
-            // Out of bounds check
+			// Out of bounds check
             assert(currentIndexField < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
-            && currentIndexField >= 0);
+            		&& currentIndexField >= 0);
 
-            for (int i = 0; i < nrDistSwap; i++) {
-                // Out of bounds check
-                assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
+            for (int i = 0; i < 5; i++) {
+				// Out of bounds check
+				assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
                 sendBuffer[currentIndexBuff++] = collideField[currentIndexField+index[i]];
             }
         }
     }
+
 }
 
-void extractDensity(int const * const flagField,
-	double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara,
-	t_procData const * const procData, const int direction){
+/*
+ * Swap distributions with neighboring processes.
+ */
+void swap(double** sendBuffer, double** readBuffer, t_procData const * const procData, const int direction){
 
-	int flagIdx, cellIdx, bufferIdx = 0;
-	double density;
+    //temp variables for readabillity.
+	const int bufferSize = procData->bufferSize[direction/2];
+    const int proc1 = procData->neighbours[direction];
+    const int proc2 = procData->neighbours[direction+1];
 
-	for (int k = iterPara->startOuter; k <= iterPara->endOuter; k++) {
-		for (int j = iterPara->startInner; j <= iterPara->endInner; j++) {
-			flagIdx = p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
-			cellIdx = Q*flagIdx;
-			if (flagField[flagIdx] == FLUID) {
-				c_computeNumDensity(&collideField[cellIdx], &density);
-			} else {
-				density = collideField[cellIdx+9];
-			}
-			sendBuffer[bufferIdx++] = density;
+    //MPI Sendrecv API
+	//int MPI_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+    //                 int dest, int sendtag, void *recvbuf, int recvcount,
+    //                 MPI_Datatype recvtype, int source, int recvtag,
+    //                 MPI_Comm comm, MPI_Status *status)
+    //Send proc1 receive proc1
+	if (proc1 != MPI_PROC_NULL && proc2 != MPI_PROC_NULL) {
+		if(procData->neighbours[direction] < procData->rank){
+			MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[direction],
+				bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
+				bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		} else {
+			MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
+				bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[direction],
+				bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}
 }
 
 /*
-* Swap distributions with neighboring processes.
-*/
-void swap(double** sendBuffer, double** readBuffer, t_procData const * const procData, const int direction, const int bufferSize){
-
-    //temp variables for readabillity.
-    const int proc1 = procData->neighbours[direction];
-    const int proc2 = procData->neighbours[direction+1];
-
-    //MPI Sendrecv API
-    //int MPI_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-    //                 int dest, int sendtag, void *recvbuf, int recvcount,
-    //                 MPI_Datatype recvtype, int source, int recvtag,
-    //                 MPI_Comm comm, MPI_Status *status)
-    //Send proc1 receive proc1
-    if(procData->neighbours[direction] != MPI_PROC_NULL){
-        MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[direction],
-            bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    }
-
-    //Send proc2 receive proc2
-    if(procData->neighbours[direction+1] != MPI_PROC_NULL){
-        MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
-            bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    }
-}
-
-/*
-* Copy read buffer into ghost layer of collideField.
-*/
-void inject(double const * const readBuffer, double* collideField, t_iterPara *const iterPara, t_procData const * const procData,
-    const int direction, int const * const index, const int indexLength){
+ * Copy read buffer into ghost layer of collideField.
+ */
+void inject(double const * const readBuffer, double* collideField, t_iterPara const * const iterPara, t_procData const * const procData,
+            const int direction, int const * const index){
 
     int currentIndexField = -1; //initially assign to invalid
     int currentIndexBuff = 0;
@@ -369,27 +281,234 @@ void inject(double const * const readBuffer, double* collideField, t_iterPara *c
     //        case BACK:   iterPara->fixedValue--; break;
     //    }
     static int shiftFixedValue[6] = {-1, 1, 1, -1, 1, -1}; //static to allocate/assign only once
-    iterPara->fixedValue += shiftFixedValue[direction]; //change value also in outer scope okay, because not needed afterwards
+    int newFixedValue = iterPara->fixedValue + shiftFixedValue[direction]; //change value also in outer scope okay, because not needed afterwards
 
     //k - corresponds to the 'outer' value when computing the offset
     for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
         //j - corresponds to the 'inner' value
         for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
 
-            currentIndexField  = Q*p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
+            currentIndexField  = Q*p_computeCellOffset(k, j, newFixedValue, procData->xLength, direction);
 
             //out of bound checks
             assert(currentIndexField < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
-            && currentIndexField >= 0);
+            		&& currentIndexField >= 0);
 
-            for(int i = 0; i < indexLength; i++) {
-                //out of bound checks
-                assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
+            for (int i = 0; i < 5; i++) {
+				//out of bound checks
+				assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
                 collideField[currentIndexField+index[i]] = readBuffer[currentIndexBuff++];
             }
         }
     }
 }
+
+void swapNoComm(double* collideField, t_iterPara const * const iterPara1,t_iterPara const * const iterPara2,
+	t_procData const * const procData, const int direction, int const * const index1, int const * const index2) {
+	int fromFixedValue1, toFixedValue1, fromFixedValue2, toFixedValue2;
+	if (iterPara1->fixedValue == 1) {
+		fromFixedValue1 = iterPara1->fixedValue;
+		toFixedValue1 = iterPara2->fixedValue+1;
+		fromFixedValue2 = iterPara2->fixedValue;
+		toFixedValue2 = iterPara1->fixedValue-1;
+	} else {
+		fromFixedValue1 = iterPara1->fixedValue;
+		toFixedValue1 = iterPara2->fixedValue-1;
+		fromFixedValue2 = iterPara2->fixedValue;
+		toFixedValue2 = iterPara1->fixedValue+1;
+	}
+	for (int k = iterPara1->startOuter; k <= iterPara1->endOuter; k++) {
+		for (int j = iterPara1->startInner; j <= iterPara1->endInner; j++) {
+			int fromIdx1 = Q*p_computeCellOffset(k, j, fromFixedValue1, procData->xLength, direction);
+			int toIdx1 = Q*p_computeCellOffset(k, j, toFixedValue1, procData->xLength, direction);
+			int fromIdx2 = Q*p_computeCellOffset(k, j, fromFixedValue2, procData->xLength, direction);
+			int toIdx2 = Q*p_computeCellOffset(k, j, toFixedValue2, procData->xLength, direction);
+			for (int i = 0; i < 5; i++) {
+				collideField[toIdx1+index1[i]] = collideField[fromIdx1+index1[i]];
+				collideField[toIdx2+index2[i]] = collideField[fromIdx2+index2[i]];
+			}
+		}
+	}
+}
+
+void communicateDensity(double** sendBuffer, double**readBuffer, double* collideField,
+	const int * const flagField, t_procData const * const procData) {
+	// Begin
+    t_iterPara  iterPara1, iterPara2;
+
+	// Iterate through directions (left/right, top/bottom, front/back)
+    for (int direction = LEFT; direction <= BACK; direction+=2) {
+
+    	const int face1 = direction;   //LEFT,  TOP,    FRONT
+    	const int face2 = direction+1; //RIGHT, BOTTOM, BACK
+
+		/* Set iteration parameters for both faces of a direction */
+        p_setCommIterationParameters(&iterPara1, procData, face1);
+        p_setCommIterationParameters(&iterPara2, procData, face2);
+
+		int bufferSize1 = 0, bufferSize2 = 0;
+
+		/* Extract the distributions from collideField to the send buffer */
+        if(procData->neighbours[face1] != MPI_PROC_NULL && procData->neighbours[face2] != MPI_PROC_NULL) {
+			bufferSize1 = extractDensity(sendBuffer[face1], collideField, flagField, &iterPara1, procData, face1);
+			bufferSize2 = extractDensity(sendBuffer[face2], collideField, flagField, &iterPara2, procData, face2);
+		}
+
+		/* Swap the distributions */
+        swapDensity(sendBuffer, readBuffer, procData, direction, bufferSize1, bufferSize2);
+
+		int injectSize1, injectSize2;
+		/* Inject the distributions from read buffer to collide field */
+        //NOTE: opposite index get injected from the readBuffer
+        if(procData->neighbours[face1] != MPI_PROC_NULL && procData->neighbours[face2] != MPI_PROC_NULL) {
+			injectSize1 = injectDensity(readBuffer[face1], collideField, flagField, &iterPara1, procData, face1);
+			injectSize2 = injectDensity(readBuffer[face2], collideField, flagField, &iterPara2, procData, face2);
+			assert(injectSize1 == bufferSize1 && injectSize2 == bufferSize2);
+			injectSize1 += injectSize2;
+		}
+
+		if (procData->neighbours[face1] == MPI_PROC_NULL && procData->neighbours[face2] == MPI_PROC_NULL) {
+			swapNoCommDensity(collideField, flagField, &iterPara1, &iterPara2, procData, direction);
+		}
+    }
+}
+
+int extractDensity(double sendBuffer[], double const * const collideField, const int * const flagField,
+	t_iterPara const * const iterPara, t_procData const * const procData, const int direction) {
+	// Begin
+	int currentIndexField = -1;//initially invalid assignment
+	int currentFlagIndex = -1;
+    int currentIndexBuff  = 0; //simple counter
+
+    //k - corresponds to the 'outer' value when computing the offset
+    for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
+        //j - corresponds to the 'inner' value
+        for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
+
+			currentFlagIndex = p_computeCellOffset(k, j, iterPara->fixedValue, procData->xLength, direction);
+            currentIndexField  = Q*currentFlagIndex;
+
+			// Out of bounds check
+            assert(currentIndexField < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
+            		&& currentIndexField >= 0);
+
+			double density;
+			if (flagField[currentFlagIndex] == FLUID) {
+				c_computeNumDensity(&collideField[currentIndexField], &density);
+			} else {
+				assert(direction != LEFT && direction != RIGHT);
+				density =  collideField[currentIndexField+9];
+			}
+			sendBuffer[currentIndexBuff++] = density;
+        }
+    }
+	return currentIndexBuff;
+}
+
+void swapDensity(double** sendBuffer, double** readBuffer, t_procData const * const procData,
+	const int direction, const int bufferSize1, const int bufferSize2){
+
+    //temp variables for readabillity.
+    const int proc1 = procData->neighbours[direction];
+    const int proc2 = procData->neighbours[direction+1];
+
+    //MPI Sendrecv API
+	//int MPI_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+    //                 int dest, int sendtag, void *recvbuf, int recvcount,
+    //                 MPI_Datatype recvtype, int source, int recvtag,
+    //                 MPI_Comm comm, MPI_Status *status)
+    //Send proc1 receive proc1
+	if (proc1 != MPI_PROC_NULL && proc2 != MPI_PROC_NULL) {
+		assert(bufferSize1 != 0 && bufferSize2 != 0);
+		if(procData->neighbours[direction] < procData->rank){
+			MPI_Sendrecv(sendBuffer[direction], bufferSize1 , MPI_DOUBLE, proc1, 0, readBuffer[direction],
+				bufferSize1, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			MPI_Sendrecv(sendBuffer[direction+1], bufferSize2 , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
+				bufferSize2, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		} else {
+			MPI_Sendrecv(sendBuffer[direction+1], bufferSize2 , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
+				bufferSize2, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			MPI_Sendrecv(sendBuffer[direction], bufferSize1, MPI_DOUBLE, proc1, 0, readBuffer[direction],
+				bufferSize1, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		}
+	}
+}
+
+int injectDensity(double const * const readBuffer, double* collideField, const int * const flagField,
+	t_iterPara const * const iterPara, t_procData const * const procData, const int direction){
+
+    int currentIndexField = -1; //initially assign to invalid
+	int currentFlagIndex = -1;
+    int currentIndexBuff = 0;
+
+    //    switch (direction){
+    //        case LEFT:   iterPara->fixedValue--; break;
+    //        case RIGHT:  iterPara->fixedValue++; break;
+    //        case TOP:    iterPara->fixedValue++; break;
+    //        case BOTTOM: iterPara->fixedValue--; break;
+    //        case FRONT:  iterPara->fixedValue++; break;
+    //        case BACK:   iterPara->fixedValue--; break;
+    //    }
+    static int shiftFixedValue[6] = {-1, 1, 1, -1, 1, -1}; //static to allocate/assign only once
+    int newFixedValue = iterPara->fixedValue + shiftFixedValue[direction]; //change value also in outer scope okay, because not needed afterwards
+
+    //k - corresponds to the 'outer' value when computing the offset
+    for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
+        //j - corresponds to the 'inner' value
+        for(int j = iterPara->startInner; j <= iterPara->endInner; ++j){
+			currentFlagIndex = p_computeCellOffset(k, j, newFixedValue, procData->xLength, direction);
+            currentIndexField  = Q*currentFlagIndex;
+
+            //out of bound checks
+            assert(currentIndexField < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
+            		&& currentIndexField >= 0);
+
+			assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
+			assert(flagField[currentFlagIndex] != FLUID);
+            collideField[currentIndexField+9] = readBuffer[currentIndexBuff++];
+        }
+    }
+	return currentIndexBuff;
+}
+
+void swapNoCommDensity(double* collideField, const int * const flagField,
+	t_iterPara const * const iterPara1,t_iterPara const * const iterPara2,
+	t_procData const * const procData, const int direction) {
+	int fromFixedValue1, toFixedValue1, fromFixedValue2, toFixedValue2;
+	if (iterPara1->fixedValue == 1) {
+		fromFixedValue1 = iterPara1->fixedValue;
+		toFixedValue1 = iterPara2->fixedValue+1;
+		fromFixedValue2 = iterPara2->fixedValue;
+		toFixedValue2 = iterPara1->fixedValue-1;
+	} else {
+		fromFixedValue1 = iterPara1->fixedValue;
+		toFixedValue1 = iterPara2->fixedValue-1;
+		fromFixedValue2 = iterPara2->fixedValue;
+		toFixedValue2 = iterPara1->fixedValue+1;
+	}
+	for (int k = iterPara1->startOuter; k <= iterPara1->endOuter; k++) {
+		for (int j = iterPara1->startInner; j <= iterPara1->endInner; j++) {
+			int fromIdx1 = p_computeCellOffset(k, j, fromFixedValue1, procData->xLength, direction);
+			int toIdx1 = Q*p_computeCellOffset(k, j, toFixedValue1, procData->xLength, direction);
+			int fromIdx2 = p_computeCellOffset(k, j, fromFixedValue2, procData->xLength, direction);
+			int toIdx2 = Q*p_computeCellOffset(k, j, toFixedValue2, procData->xLength, direction);
+			double density1, density2;
+			if (flagField[fromIdx1] == FLUID) {
+				c_computeNumDensity(&collideField[fromIdx1*Q], &density1);
+			} else {
+				density1 = collideField[fromIdx1*Q+9];
+			}
+			if (flagField[fromIdx2] == FLUID) {
+				c_computeNumDensity(&collideField[fromIdx2*Q], &density2);
+			} else {
+				density2 = collideField[fromIdx2*Q+9];
+			}
+			collideField[toIdx1+9] = density1;
+			collideField[toIdx2+9] = density2;
+		}
+	}
+}
+
 
 /* Function to assign iteration parameters for communication.
 *
@@ -421,8 +540,8 @@ void p_setCommIterationParameters(t_iterPara * const iterPara, t_procData const*
         case 1:
         //A real boundary cell should never be included in the iteration.
         //-> Test for real boundary (MPI_PROC_NULL), and set start index accordingly
-        iterPara->startOuter = (procData->neighbours[LEFT]  == MPI_PROC_NULL) ? 1:0;
-        iterPara->endOuter   = (procData->neighbours[RIGHT] == MPI_PROC_NULL) ? procData->xLength[1] : procData->xLength[1]+1;
+        iterPara->startOuter = 0;
+        iterPara->endOuter   = procData->xLength[1]+1;
         iterPara->startInner = 1;
         iterPara->endInner   = procData->xLength[0];
         iterPara->fixedValue = (direction == BOTTOM) ? 1 : procData->xLength[2];
@@ -434,10 +553,10 @@ void p_setCommIterationParameters(t_iterPara * const iterPara, t_procData const*
         case 2:
         //A real boundary cell should never be included in the iteration.
         //-> Test for real boundary (MPI_PROC_NULL), and set start index accordingly
-        iterPara->startOuter = (procData->neighbours[BOTTOM] == MPI_PROC_NULL) ? 1:0;
-        iterPara->endOuter   = (procData->neighbours[TOP]    == MPI_PROC_NULL) ? procData->xLength[2] : procData->xLength[2]+1;
-        iterPara->startInner = (procData->neighbours[LEFT]   == MPI_PROC_NULL) ? 1:0;
-        iterPara->endInner   = (procData->neighbours[RIGHT]  == MPI_PROC_NULL) ? procData->xLength[1] : procData->xLength[1]+1;
+        iterPara->startOuter = 0;
+        iterPara->endOuter   = procData->xLength[2]+1;
+        iterPara->startInner = 0;
+        iterPara->endInner   = procData->xLength[1]+1;
         iterPara->fixedValue = (direction == BACK) ? 1 : procData->xLength[0];
         break;
 

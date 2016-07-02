@@ -1,5 +1,5 @@
 # Include files
-SOURCES=initLB.c visualLB.c boundary.c collision.c streaming.c computeCellValues.c parallel.c helper.c unitTest.c common.c debug.c main.c
+SOURCES=initLB.c visualLB.c collision.c streaming.c computeCellValues.c parallel.c helper.c unitTest.c common.c debug.c main.c
 
 # Compiler
 # --------
@@ -14,7 +14,7 @@ LDFLAGS= -lm
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=lbsim
 
-all: CFLAGS+= -O0
+all: CFLAGS+= -O3
 all: clean $(EXECUTABLE) ; @echo "\nINFO:Use make speed for a faster code without checks."
 
 speed: CFLAGS+= -DNDEBUG -O3

@@ -70,9 +70,10 @@ enum CELLS {
 //TODO: (DL) not sure if a function pointer with inline works... we can test it out.
 static inline double psi0(double numberDensity){ return (1-exp(-numberDensity));}
 static inline double psi1(double numberDensity){ return numberDensity;}
+static inline double psi2(double numberDensity){ return 4.0;}
 
 typedef double (*fctPtrPsi)(double);
-static const fctPtrPsi psiFctPointer[2] = {psi0, psi1};
+static const fctPtrPsi psiFctPointer[3] = {psi0, psi1, psi2};
 
 
 //TODO: (DL) There can be "better" ways to number edges. At the moment the numbering is benefical for computing indices.
@@ -119,7 +120,7 @@ typedef struct {
     double  m;
     double  d0;
     int psiFctCode;
-    
+
 } t_component;
 
 /* Function for reverse index search for procs.

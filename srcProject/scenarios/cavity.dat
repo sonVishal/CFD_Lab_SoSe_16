@@ -25,33 +25,33 @@
 #      v
 
 # Size of mesh
-xlength              10
+xlength              200
 
 # Number of components
-numComp              2
+numComp              1
 
 # Relaxation time
 # In recent version calculated from the Reynolds number
 # tau                  1
 tau0               1
-tau1               0.8
+#tau1               0.8
 
 # Molecular mass
 m0              1.0
-m1              0.4
+#m1              0.4
 
 # Interaction Matrix
-G00             0.01
-G01             0.02
-G10             0.02
-G11             0.04
+G00             -120.0
+#G01             0.02
+#G10             0.02
+#G11             0.04
 
 #Psi function
 #Select of the following implemented functions:
 #0: (1-exp(-numberDensity))
 #1: numberDensity
-psi0		0
-psi1		1
+psi0		2
+#psi1		1
 
 #TODO:
 d00         1
@@ -67,10 +67,10 @@ yvelocity         0
 zvelocity         0
 
 # Number of timesteps
-timesteps            2
+timesteps            200
 
 # timesteps between each plot
-timestepsPerPlotting 1
+timestepsPerPlotting 100
 
 # Domain decomposition
 # Number of subdivisions per axis

@@ -146,8 +146,8 @@ void initialiseFields(double *collideField, double *streamField, const t_procDat
                 // Compute the base index
                 idx = Q*(yzOffset + x);
                 for (int i = 0; i < Q; ++i) {
-                    collideField[idx+i] = LATTICEWEIGHTS[i];//*(1+(double)rand()/(double)RAND_MAX/100);
-                    streamField[idx+i]  = LATTICEWEIGHTS[i];//*(1+(double)rand()/(double)RAND_MAX/100);
+                    collideField[idx+i] = 200*LATTICEWEIGHTS[i] + (double)rand()/(double)RAND_MAX/Q;//*(1+(double)rand()/(double)RAND_MAX/100);
+                    streamField[idx+i]  = 200*LATTICEWEIGHTS[i] + (double)rand()/(double)RAND_MAX/Q;//*(1+(double)rand()/(double)RAND_MAX/100);
 
 					// TODO: (VS) Remove.
 					// This is good for debugging since we see different values
