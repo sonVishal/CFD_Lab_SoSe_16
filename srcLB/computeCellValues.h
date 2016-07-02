@@ -1,4 +1,5 @@
 #include "LBDefinitions.h"
+#include "assert.h"
 
 #ifndef _COMPUTECELLVALUES_H_
 #define _COMPUTECELLVALUES_H_
