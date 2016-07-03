@@ -36,12 +36,12 @@ void computeDensityAndVelocity(t_component *c, int xlength){
                 for(int k = 0; k < NUMCOMP; ++k){
                     int fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
                     int cellIdx = Q*fieldIdx;
-                    double *currentCell = &c[k].collideField[cellIdx];
+                    double *currentCell = &c[k].streamField[cellIdx];
 
                     //TODO: this has to be done component wise..., actually velocity, density and force have to be saved in the component struct
                     for(int k = 0; k < NUMCOMP; ++k){
                         computeNumDensity(currentCell, &c[k].rho[fieldIdx]);
-                        computeVelocity(currentCell, c[k].velocity[fieldIdx], &c[k].rho[fieldIdx]);
+                        computeVelocity(currentCell, &c[k].rho[fieldIdx], c[k].velocity[fieldIdx]);
                     }
 
                 }
