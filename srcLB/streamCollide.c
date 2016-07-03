@@ -38,7 +38,7 @@ void updateFeq(t_component *c, const int *xlength){
 
 	int cellIdx, fieldIdx;
     //TODO: fix components in main
-    for(int k  = 1; k < NUMCOMP; ++k){
+    for(int k  = 0; k < NUMCOMP; ++k){
         for (int z = 1; z <= *xlength ; z++) {
             for (int y = 1; y <= *xlength; y++) {
                 for (int x = 1; x <= *xlength; x++) {
@@ -53,12 +53,12 @@ void updateFeq(t_component *c, const int *xlength){
 
                     //computeFeq(&c[k].rho[fieldIdx], c[k].velocity[fieldIdx], &c[k].feq[cellIdx]);
 					for (int i = 0; i < Q; i++) {
-                        double edotu =  LATTICEVELOCITIES[i][0]*ux + 
-                                        LATTICEVELOCITIES[i][1]*uy + 
+                        double edotu =  LATTICEVELOCITIES[i][0]*ux +
+                                        LATTICEVELOCITIES[i][1]*uy +
                                         LATTICEVELOCITIES[i][2]*uz;
 
                         c[k].feq[cellIdx + i] = LATTICEWEIGHTS[i] * c[k].rho[fieldIdx]
-                                                      * (1 + 3*edotu + 4.5*edotu*edotu - 1.5*udotu);
+                                                      * (1 + 3.*edotu + 4.5*edotu*edotu - 1.5*udotu);
 						assert(c[k].feq[cellIdx+i] > 0.0);
 					}
 

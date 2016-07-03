@@ -20,8 +20,8 @@ static const int LATTICEVELOCITIES[19][3] = {
 };
 
 // Temporary variables for Lattice weights
-#define w1 12.0/36.0  /* if ||c_i|| = 0 */
-#define w2 2.0/36.0   /* if ||c_i|| = 1 */
+#define w1 1.0/3.0  /* if ||c_i|| = 0 */
+#define w2 1.0/18.0   /* if ||c_i|| = 1 */
 #define w3 1.0/36.0   /* if ||c_i|| = sqrt(2) */
 
 // Lattice weights
