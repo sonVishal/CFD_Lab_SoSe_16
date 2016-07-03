@@ -352,22 +352,21 @@
 
 //                      0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18
 //                      |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-        double ex[] = { 0, 1,-1, 0, 0, 0, 0, 1,-1, 1,-1, 1,-1, 1,-1, 0, 0, 0, 0};
-        double ey[] = { 0, 0, 0, 1,-1, 0, 0, 1, 1,-1,-1, 0, 0, 0, 0, 1,-1, 1,-1};
-        double ez[] = { 0, 0, 0, 0, 0, 1,-1, 0, 0, 0, 0, 1, 1,-1,-1, 1, 1,-1,-1};
+        double ex[] = { 0,-1, 0, 1, 0,-1, 0, 1,-1, 0, 1,-1, 0, 1, 0,-1, 0, 1, 0};
+        double ey[] = {-1, 0, 0, 0, 1,-1,-1,-1, 0, 0, 0, 1, 1, 1,-1, 0, 0, 0, 1};
+        double ez[] = {-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1};
 
-//      weight factors for the various directions
+        //      weight factors for the various directions
 
-        double wt[] = {1./3., 1./18., 1./18., 1./18., 1./18., 1./18., 1./18.,
-                              1./36., 1./36., 1./36., 1./36., 1./36., 1./36.,
-                              1./36., 1./36., 1./36., 1./36., 1./36., 1./36., };
+        double wt[] = {1./36., 1./36., 1./18., 1./36., 1./36., 1./36., 1./18.,
+                              1./36., 1./18., 1./3., 1./18., 1./36., 1./18.,
+                              1./36., 1./36., 1./36., 1./18., 1./36., 1./36., };
 
-//      cohesive force along various lattice directions
-
-        double G11[] = {0, GEE11, GEE11, GEE11, GEE11, GEE11, GEE11,
-                           GEE11/2, GEE11/2, GEE11/2, GEE11/2,
-                           GEE11/2, GEE11/2, GEE11/2, GEE11/2,
-                           GEE11/2, GEE11/2, GEE11/2, GEE11/2};
+        //      cohesive force along various lattice directions
+        double G11[] = {GEE11/2, GEE11/2, GEE11, GEE11/2, GEE11/2, GEE11/2, GEE11,
+                           GEE11/2, GEE11, 0.0, GEE11,
+                           GEE11/2, GEE11, GEE11/2, GEE11/2,
+                           GEE11/2, GEE11, GEE11/2, GEE11/2};
 
 //      define buffers
 
@@ -404,7 +403,13 @@
         {
           time++; // increment lattice time
 
+          std::cout << "t = " << time << " F 2 @ (2,2,2) " << f[19*(2+2*NX+2*NX*NY)+2] << std::endl;
+          std::cout << "t = " << time << " F_new 2 @ (2,2,2) " << f_new[19*(2+2*NX+2*NX*NY)+2] << std::endl;
+          std::cout << "t = " << time << " F_eq 2 @ (2,2,2) " << f_eq[19*(2+2*NX+2*NX*NY)+2] << std::endl;
           streaming(NX, NY, NZ, ex, ey, ez, tau, f, f_new, f_eq);
+          std::cout << "t = " << time << " F 2 @ (2,2,2) " << f[19*(2+2*NX+2*NX*NY)+2] << std::endl;
+          std::cout << "t = " << time << " F_new 2 @ (2,2,2) " << f_new[19*(2+2*NX+2*NX*NY)+2] << std::endl;
+          std::cout << "t = " << time << " F_eq 2 @ (2,2,2) " << f_eq[19*(2+2*NX+2*NX*NY)+2] << std::endl;
 
           calc_dPdt(NX, NY, NZ, ex, ey, ez, G11, rho, dPdt_x, dPdt_y, dPdt_z);
 
