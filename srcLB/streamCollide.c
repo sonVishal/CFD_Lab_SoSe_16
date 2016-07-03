@@ -2,7 +2,7 @@
 
 
 
-void streamCollide(int xlength, double* streamField, double* collideField, double* feq, int* flagField){
+void streamCollide(t_component *c, int xlength, double* feq, int* flagField){
 
 	// Define iteration indices
 	int cellIdx, fieldIdx;
@@ -18,13 +18,11 @@ void streamCollide(int xlength, double* streamField, double* collideField, doubl
 				cellIdx = Q*fieldIdx;
 
                 for (int i = 0; i < Q; ++i) {
-					//TODO: Check if the order is correct
-
 					// f_new[f_index_end] = f[f_index_beg]
 					//                    - (f[f_index_beg] - f_eq[f_index_beg])
 					//                    / tau;
-					double tau = 1.0;
-			        collideField[cellIdx+Q-i-1] = streamField[cellIdx+i] - (streamField[cellIdx+i] - feq[cellIdx+i]) / tau;
+					//TODO: Check if this is correct:
+					c->collideField[cellIdx+Q-i-1] = c->streamField[cellIdx+i] - (c->streamField[cellIdx+i] - feq[cellIdx+i])/c->tau;
                 }
             }
         }

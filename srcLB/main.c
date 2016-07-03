@@ -3,14 +3,12 @@
 
 #include "boundary.h"
 #include "collision.h"
-#include "streamCollide.h"
 #include "initLB.h"
 #include "streaming.h"
 #include "visualLB.h"
 #include "LBDefinitions.h"
 #include <time.h>
 #include "unitTest.h"
-
 
 //TODO: (TKS) temporarily have the streamingcollide func here.
 //      * Should rename stream and collidefield
@@ -69,10 +67,6 @@ int main(int argc, char *argv[]){
         c[i].rho = (double *)  malloc(totalsize * sizeof( double ));
     }
 
-    double velocity[totalsize][3];
-    double force[totalsize][3];
-
-
     //TODO: Beware! feq has changed to be of size Q*totalsize.
     feq = (double *)  malloc(Q*totalsize * sizeof( double ));
 
@@ -82,7 +76,9 @@ int main(int argc, char *argv[]){
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     // Initialize all the fields
+    printf("init fields\n");
     initialiseFields(c, flagField,feq, xlength);
+    printf("init fields done\n");
 
     //return 0;
 
@@ -99,7 +95,6 @@ int main(int argc, char *argv[]){
     begin_timing = clock();
 
 
-
     //TODO: Wih reference to the ref solution the steps needed to restructure are:
     // Also think of that ref did not use ghost layers.
     //
@@ -111,27 +106,22 @@ int main(int argc, char *argv[]){
     // calc_dPdt             --> computeForce
     // updateDensityVelocity --> computeDensity + computeVelocity
     // updateFeq             --> computeFeq
-    // use c[0].rho as density for now.
-    
+
     // treatBoundary inserted where the BC is treated.
-
-
 
     for(t = 1; t <= timesteps; t++){
 
         treatBoundary(c,flagField,velocityWall,xlength, 1);
 
-        //TODO: Finish this func.
-        streamCollide(xlength, c[0].streamField, c[0].collideField, feq, flagField);
+        //TODO: need to include
+        streamCollide(&c[0], xlength, feq, flagField);
 
         //TODO: compute force
-        
+
         //TODO: compute density
         //TODO: compute velocity
         //TODO: compute feq
         //TODO: streamField = collideField
-
-
 
 
 	    if (t%timestepsPerPlotting == 0){
