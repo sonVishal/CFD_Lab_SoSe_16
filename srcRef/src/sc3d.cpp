@@ -420,6 +420,7 @@
           std::cout << "t = " << time << " F_eq 2 @ (2,2,2) " << std::setprecision(7) << f_eq[19*cell+dist] << std::endl;
 
           calc_dPdt(NX, NY, NZ, ex, ey, ez, G11, rho, dPdt_x, dPdt_y, dPdt_z);
+          std::cout << "t = " << time << " Force x,y,z @ (2,2,2) " << std::setprecision(7) << dPdt_x[cell] << std::endl;
 
           updateDensityAndVelocity(NX, NY, NZ, ex, ey, ez, wt, tau,
                                    rho, u, v, w, dPdt_x, dPdt_y, dPdt_z, f);

@@ -70,6 +70,9 @@ void doCollision(t_component *c, double G[NUMCOMP][NUMCOMP], int *flagField, int
 				for (int k = 0; k < NUMCOMP; k++) {
 					computeForce(fieldIdx, k, c, flagField, G[k], xlength, force);
 					// force[0] = 0.0; force[1] = 0.0; force[2] = 0.0;
+					if (x == 2 && y == 2 && z == 2) {
+						printf("Force x @(2,2,2) %.8f\n",force[0]);
+					}
 					computeEqVelocity(&c[k], commonVel, density[k], force, eqVel);
 
 					computeFeq(&numDensity[k],eqVel,feq);
