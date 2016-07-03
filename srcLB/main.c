@@ -8,6 +8,7 @@
 #include "visualLB.h"
 #include "LBDefinitions.h"
 #include <time.h>
+#include "unitTest.h"
 
 int main(int argc, char *argv[]){
 
@@ -62,6 +63,7 @@ int main(int argc, char *argv[]){
         c[i].collideField = (double *)  malloc(Q*totalsize * sizeof( double ));
         c[i].streamField = (double *)  malloc(Q*totalsize * sizeof( double ));
     }
+    initializeUnitTest(totalsize);
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
@@ -91,7 +93,9 @@ int main(int argc, char *argv[]){
         }
         treatBoundary(c,flagField,velocityWall,xlength);
 
+        beforeCollision(c, xlength); //unit tests
 	    doCollision(c,G,flagField,xlength);
+        beforeCollision(c, xlength); //unit tests
 
 	    treatBoundary(c,flagField,velocityWall,xlength);
 

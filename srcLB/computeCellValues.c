@@ -65,7 +65,7 @@ void computeVelocity(const double * const currentCell, const double * const dens
     velocity[2] /= (*density);
 }
 
-/** computes the equilibrium distributions for all particle distribution
+/*  Computes the equilibrium distributions for all particle distribution
  *  functions of one cell from density and velocity and stores the results in feq.
  */
 void computeFeq(const double * const density, const double * const velocity, double *feq){
@@ -87,8 +87,11 @@ void computeFeq(const double * const density, const double * const velocity, dou
     // Temporary variables for density*LATTICEWEIGHTS
     // There are only 3 different LATTTICEWEIGHTS
     double const d1 = (*density)*LATTICEWEIGHTS[0];
+    assert(d1 == w3 * (*density));
     double const d2 = (*density)*LATTICEWEIGHTS[2];
+    assert(d2 == w2 * (*density));
     double const d3 = (*density)*LATTICEWEIGHTS[9];
+    assert(d3 == w1 * (*density));
 
     // Semantics for the unrolled loop
     // int i;
@@ -174,8 +177,10 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
             double G_cur;
             if(LATTICEWEIGHTS[i] == w2){ // 1/18
                 G_cur = G[m];
+                assert(G_cur == -0.27);
             }else if(LATTICEWEIGHTS[i] == w3){ // 1/36
                 G_cur = G[m]/2;
+                assert(G_cur == -0.27/2);
             }else{
                 assert(i == 9);
                 G_cur = 0;
@@ -198,6 +203,7 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
 
 void computeEqVelocity(t_component const*const c, double const*const commonVelocity, const double compDensity, double const*const compForce, double compEqVelocity[3]) {
 
+    assert(c->tau == 1.0);
     compEqVelocity[0] = commonVelocity[0] + (c->tau/compDensity)*compForce[0];
     compEqVelocity[1] = commonVelocity[1] + (c->tau/compDensity)*compForce[1];
     compEqVelocity[2] = commonVelocity[2] + (c->tau/compDensity)*compForce[2];

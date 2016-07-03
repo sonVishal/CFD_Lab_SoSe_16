@@ -88,9 +88,10 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                     idx = Q*(yzOffset + x);
                     double feq[19];
                     //TODO: (TKS) Need to do componentwise if we introduce several components.
-                    
+
                     //Set the initial density to a random offsett to rhoRef
                     double rho = rhoRef - 0.5*rhoVar + rhoVar*((double)rand()/(double)RAND_MAX);
+
                     computeFeq(&rho, v, feq);
                     for (int i = 0; i < Q; ++i) {
                         c[k].collideField[idx+i] = feq[i];

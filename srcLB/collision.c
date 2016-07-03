@@ -65,6 +65,8 @@ void doCollision(t_component *c, double G[NUMCOMP][NUMCOMP], int *flagField, int
 
 				computeCommonVelocity(density, velocity, c, commonVel);
 
+				assert(commonVel[0] == velocity[0][0] && commonVel[1] == velocity[0][1] && commonVel[2] == velocity[0][2]);
+
 				for (int k = 0; k < NUMCOMP; k++) {
 					computeForce(fieldIdx, k, c, flagField, G[k], xlength, force);
 					// force[0] = 0.0; force[1] = 0.0; force[2] = 0.0;
