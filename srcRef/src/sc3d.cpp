@@ -17,9 +17,9 @@
 
 //    writes data to output files using XDMF + HDF5 format
 
-      extern void writeMesh(const int      NX, 
-                            const int      NY, 
-                            const int      NZ, 
+      extern void writeMesh(const int      NX,
+                            const int      NY,
+                            const int      NZ,
                             const int      time,
                             const double*  rho);
 
@@ -42,7 +42,7 @@
       {
 //      initialize random seed
 
-        srand (time(NULL));
+        srand(5);
 
 //      initialize density and velocity
 
@@ -106,7 +106,7 @@
                 int iflow = i + ex[id];
                 int jflow = j + ey[id];
                 int kflow = k + ez[id];
-       
+
                 // periodic B.C.
                 if(iflow == -1) iflow = NX-2;
                 if(jflow == -1) jflow = NY-2;
@@ -116,12 +116,12 @@
                 if(kflow == NZ-1) kflow = 0;
 
                 int Nflow = iflow + NX*jflow + NX*NY*kflow;
-                int f_index_beg = 19*N + id; 
+                int f_index_beg = 19*N + id;
                 int f_index_end = 19*Nflow + id;
-        
+
                 f_new[f_index_end] = f[f_index_beg]
                                    - (f[f_index_beg] - f_eq[f_index_beg])
-                                   / tau;                      
+                                   / tau;
               }
             }
           }
@@ -143,14 +143,14 @@
             {
               int N = i + NX*j + NX*NY*k;
               double Gsumx = 0.;
-              double Gsumy = 0.;                                                                            
-              double Gsumz = 0.;                                                                            
+              double Gsumy = 0.;
+              double Gsumz = 0.;
               for(int id = 0; id < 19; id++)
               {
                 int iflow = i + ex[id];
                 int jflow = j + ey[id];
                 int kflow = k + ez[id];
-              
+
                 // periodic B.C.
                 if(iflow == -1) iflow = NX-2;
                 if(jflow == -1) jflow = NY-2;
@@ -158,11 +158,11 @@
                 if(iflow == NX-1) iflow = 0;
                 if(jflow == NY-1) jflow = 0;
                 if(kflow == NZ-1) kflow = 0;
-            
+
                 int Nflow = iflow + NX*jflow + NX*NY*kflow;
 
                 double strength = psi(rho[N]) * psi(rho[Nflow]) * G11[id];
-            
+
                 Gsumx += strength * ex[id];
                 Gsumy += strength * ey[id];
                 Gsumz += strength * ez[id];
@@ -186,9 +186,9 @@
       {
         // update density and velocity
         for(int k = 0; k < NZ-1; k++)
-        {  
+        {
           for(int j = 0; j < NY-1; j++)
-          {  
+          {
             for(int i = 0; i < NX-1; i++)
             {
               int N = i + NX*j + NX*NY*k;
@@ -197,7 +197,7 @@
               double fey_sum = 0;
               double fez_sum = 0;
               for(int id = 0; id < 19; id++)
-              {  
+              {
                 f_sum += f[19*N + id];
                 fex_sum += f[19*N + id]*ex[id];
                 fey_sum += f[19*N + id]*ey[id];
@@ -282,14 +282,14 @@
 
       void updateEquilibrium(const int NX, const int NY, const int NZ,
                              double* ex, double* ey, double* ez, double* wt,
-                             const double* rho, 
+                             const double* rho,
                              const double* u, const double* v, const double* w,
                              double* f_eq)
       {
         for(int k = 0; k < NZ-1; k++)
-        {  
+        {
           for(int j = 0; j < NY-1; j++)
-          {  
+          {
             for(int i = 0; i < NX-1; i++)
             {
               int N = i + NX*j + NX*NY*k;
@@ -298,7 +298,7 @@
               {
                 int index_f = 19*N + id;
                 double edotu = ex[id]*u[N] + ey[id]*v[N] + ez[id]*w[N];
-                f_eq[index_f] = wt[id] * rho[N] 
+                f_eq[index_f] = wt[id] * rho[N]
                               * (1 + 3*edotu
                                    + 4.5*edotu*edotu - 1.5*udotu);
               }
@@ -369,8 +369,8 @@
 
 //      initialize fields
 
-        initialize(NX, NY, NZ, rhoAvg, 
-                   &ex[0], &ey[0], &ez[0], &wt[0], 
+        initialize(NX, NY, NZ, rhoAvg,
+                   &ex[0], &ey[0], &ez[0], &wt[0],
                    rho, u, v, w, f, f_new, f_eq);
 
 //      time integration
@@ -393,7 +393,7 @@
 
           calc_dPdt(NX, NY, NZ, ex, ey, ez, G11, rho, dPdt_x, dPdt_y, dPdt_z);
 
-          updateDensityAndVelocity(NX, NY, NZ, ex, ey, ez, wt, tau, 
+          updateDensityAndVelocity(NX, NY, NZ, ex, ey, ez, wt, tau,
                                    rho, u, v, w, dPdt_x, dPdt_y, dPdt_z, f);
 
           updateEquilibrium(NX, NY, NZ, ex, ey, ez, wt, rho, u, v, w, f_eq);
@@ -407,7 +407,7 @@
 
 //        write output data using (XDMF+HDF5)
 
-          if(time%10 == 0) 
+          if(time%10 == 0)
           {
             writeMesh(NX, NY, NZ, time, rho);
           }
@@ -416,8 +416,8 @@
 
           tN = clock() - t0;
 
-//        std::cout << " lattice time steps per second = " 
-//                  << (float) CLOCKS_PER_SEC * time / (float) tN 
+//        std::cout << " lattice time steps per second = "
+//                  << (float) CLOCKS_PER_SEC * time / (float) tN
 //                  << std::endl;
         }
 
