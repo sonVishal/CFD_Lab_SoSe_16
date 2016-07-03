@@ -16,12 +16,12 @@ void streamCollide(t_component *c, int xlength, int* flagField){
 
 				for(int k = 0; k < NUMCOMP; ++k){
 	                for (int i = 0; i < Q; ++i) {
-
 						// f_new[f_index_end] = f[f_index_beg]
 						//                    - (f[f_index_beg] - f_eq[f_index_beg])
 						//                    / tau;
 						//TODO: Check if this is correct:
-						c->collideField[cellIdx+Q-i-1] = c->streamField[cellIdx+i] - (c->streamField[cellIdx+i] - c[k].feq[cellIdx+i])/c->tau;
+						assert(c[k].tau == 1.0);
+						c[k].collideField[cellIdx+Q-i-1] = c[k].streamField[cellIdx+i] - (c[k].streamField[cellIdx+i] - c[k].feq[cellIdx+i])/c[k].tau;
 	                }
 				}
 
