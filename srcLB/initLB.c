@@ -100,6 +100,7 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                     for (int i = 0; i < Q; ++i) {
                         c[k].collideField[idx+i] = feq[i];
                         c[k].streamField[idx+i]  = feq[i];
+                        printf("%f\n",feq[i]);
                     }
                 }
             }

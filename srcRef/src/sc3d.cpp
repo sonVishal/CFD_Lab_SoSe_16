@@ -90,6 +90,7 @@
                                    + 4.5*edotu*edotu - 1.5*udotu);
                 f[index_f] = f_eq[index_f];
                 f_new[index_f] = f_eq[index_f];
+                std::cout << f_eq[index_f] << std::endl;
               }
             }
           }
@@ -328,19 +329,19 @@
       {
 //      lattice size
 
-        const int NX = 64;         // number of lattice points along X
-        const int NY = 64;         // number of lattice points along Y
-        const int NZ = 64;         // number of lattice points along Z
+        const int NX = 5;         // number of lattice points along X
+        const int NY = 5;         // number of lattice points along Y
+        const int NZ = 5;         // number of lattice points along Z
 
         // domain size in lattice units
         // grid spacing is unity along X and Y
 
-        const double xmin = 0;
-        const double xmax = NX-1;
-        const double ymin = 0;
-        const double ymax = NY-1;
-        const double zmin = 0;
-        const double zmax = NZ-1;
+        // const double xmin = 0;
+        // const double xmax = NX-1;
+        // const double ymin = 0;
+        // const double ymax = NY-1;
+        // const double zmin = 0;
+        // const double zmax = NZ-1;
 
 //      LBM parameters
 
@@ -386,6 +387,8 @@
         initialize(NX, NY, NZ, rhoAvg,
                    &ex[0], &ey[0], &ez[0], &wt[0],
                    rho, u, v, w, f, f_new, f_eq);
+
+        return 0;
 
 //      time integration
 

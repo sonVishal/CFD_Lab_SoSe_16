@@ -71,6 +71,8 @@ int main(int argc, char *argv[]){
     // Initialize all the fields
     initialiseFields(c, flagField, xlength);
 
+    return 0;
+
     printf("\nINFO: Storing cell data in VTK files.\n      Please use the"
     " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
 
