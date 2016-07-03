@@ -10,6 +10,32 @@
 #include <time.h>
 #include "unitTest.h"
 
+
+//TODO: (TKS) temporarily have the streamingcollide func here.
+
+void streamCollide(int xlength, double* streamField, double* collideField, double* feq, int* flagField){
+
+	// Define iteration indices
+	//int cellIdx, fieldIdx;
+
+	// Perform collision on all "inner" (FLUID) cells
+	for (int z = 1; z <= xlength ; z++) {
+		for (int y = 1; y <= xlength; y++) {
+			for (int x = 1; x <= xlength; x++) {
+
+				// Get the index of the first distribution
+				// in the current cell
+				//fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
+				//cellIdx = Q*fieldIdx;
+            }
+        }
+    }
+
+
+
+
+}
+
 int main(int argc, char *argv[]){
 
     // Distribution function vectors
@@ -24,9 +50,10 @@ int main(int argc, char *argv[]){
     // c[1].psiFctCode = 1;
 
     // double G[2][2] = {{0.01,0.04},{0.04,0.02}};
-    double G[1][1] = {{-0.27}};
+    //double G[1][1] = {{-0.27}};
 
     int *flagField = NULL;
+    double *feq = NULL;
 
     // Simulation parameters
     int xlength;
@@ -64,13 +91,19 @@ int main(int argc, char *argv[]){
         c[i].streamField = (double *)  malloc(Q*totalsize * sizeof( double ));
         c[i].rho = (double *)  malloc(totalsize * sizeof( double ));
     }
+
+    //TODO: Beware! feq has changed to be of size Q*totalsize.
+    feq = (double *)  malloc(Q*totalsize * sizeof( double ));
+
     initializeUnitTest(totalsize);
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     // Initialize all the fields
-    initialiseFields(c, flagField, xlength);
+    printf("init fields\n");
+    initialiseFields(c, flagField,feq, xlength);
+    printf("init fields done\n");
 
     //return 0;
 
@@ -90,6 +123,8 @@ int main(int argc, char *argv[]){
 
     //TODO: Wih reference to the ref solution the steps needed to restructure are:
     // Also think of that ref did not use ghost layers.
+    //
+    // Keeping the names for now to not change notation for now.
     // f     --> stream
     // f_new --> collide
     // swap  --> moved to the end.
@@ -103,6 +138,8 @@ int main(int argc, char *argv[]){
 
 
     for(t = 1; t <= timesteps; t++){
+
+        streamCollide(xlength, c[0].streamField, c[0].collideField, feq, flagField);
 
 
 	    if (t%timestepsPerPlotting == 0){

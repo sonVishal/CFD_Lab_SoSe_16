@@ -51,7 +51,7 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
   return 0;
 }
 
-void initialiseFields(t_component * c, int *flagField, int xlength){
+void initialiseFields(t_component * c, int *flagField, double *feq, int xlength){
 
     /*Setting initial distributions*/
     //f_i(x,0) = f^eq(1,0,0) = w_i
@@ -84,7 +84,7 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                     // Compute the base index
                     cellIdx = (yzOffset + x);
                     idx = Q*cellIdx;
-                    double feq[19];
+                    double feq_tmp[19]; //TODO: (TKS) Should remove this and operate directly on feq;
                     //TODO: (TKS) Need to do componentwise if we introduce several components.
 
                     //Set the initial density to a random offsett to rhoRef
@@ -97,10 +97,11 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                     //     idx++;
                     // }
 
-                    computeFeq(&c[k].rho[cellIdx], v, feq);
+                    computeFeq(&c[k].rho[cellIdx], v, feq_tmp);
                     for (int i = 0; i < Q; ++i) {
-                        c[k].collideField[idx+i] = feq[i];
-                        c[k].streamField[idx+i]  = feq[i];
+                        c[k].collideField[idx+i] = feq_tmp[i];
+                        c[k].streamField[idx+i]  = feq_tmp[i];
+                        feq[idx +i] = feq_tmp[i];
                         printf("%f\n",feq[i]);
                     }
                 }
