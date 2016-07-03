@@ -84,6 +84,8 @@ int main(int argc, char *argv[]){
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
 	    double *swap = NULL;
+        // Get the periodic distributions before streaming since we do not initialize the ghost layers
+        treatBoundary(c,flagField,velocityWall,xlength);
 	    doStreaming(c,flagField,xlength);
 
         for (int i = 0; i < NUMCOMP; i++) {
@@ -96,8 +98,6 @@ int main(int argc, char *argv[]){
         beforeCollision(c, xlength); //unit tests
 	    doCollision(c,G,flagField,xlength);
         beforeCollision(c, xlength); //unit tests
-
-	    treatBoundary(c,flagField,velocityWall,xlength);
 
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);
