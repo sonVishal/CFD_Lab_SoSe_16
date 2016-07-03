@@ -401,7 +401,7 @@
 
 //      time integration loop
 
-        while(time < 1)
+        while(time < 3)
         {
 
 

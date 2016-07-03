@@ -110,15 +110,13 @@ int main(int argc, char *argv[]){
 
     // treatBoundary inserted where the BC is treated.
 
-    double *swap = NULL;
-    for(t = 1; t <= 1; t++){
+    for(t = 1; t <= 3; t++){
 
         treatBoundary(c,velocityWall,xlength);
 
         //TODO: need to include
         streamCollide(c, xlength, flagField);
         printf("collideField 10 @ (41,12,13) %.11f\n",c[0].collideField[Q*(41+12*(xlength+2)+13*(xlength+2)*(xlength+2))+10]);
-
 
         // int x = 2;
         // int y= 2;
@@ -144,10 +142,8 @@ int main(int argc, char *argv[]){
         printf("F_eq 10 @ (41,12,13) %.11f\n",c[0].feq[Q*(41+12*(xlength+2)+13*(xlength+2)*(xlength+2))+10]);
 
         //TODO: streamField = collideField
-        for (int k = 0; k < totalsize; ++k) {
-            swap = c[k].collideField;
-            c[k].collideField = c[k].streamField;
-            c[k].streamField = swap;
+        for (int k = 0; k < Q*totalsize; ++k) {
+            c[0].streamField[k] = c[0].collideField[k];
         }
 
 	    if (t%timestepsPerPlotting == 0){
