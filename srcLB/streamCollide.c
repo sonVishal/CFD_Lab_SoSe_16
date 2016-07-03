@@ -2,7 +2,7 @@
 #include "computeCellValues.h"
 
 
-void streamCollide(t_component *c, int xlength, double* feq, int* flagField){
+void streamCollide(t_component *c, int xlength, int* flagField){
 
 	// Define iteration indices
 	int cellIdx, fieldIdx;
@@ -21,7 +21,7 @@ void streamCollide(t_component *c, int xlength, double* feq, int* flagField){
 						//                    - (f[f_index_beg] - f_eq[f_index_beg])
 						//                    / tau;
 						//TODO: Check if this is correct:
-						c->collideField[cellIdx+Q-i-1] = c->streamField[cellIdx+i] - (c->streamField[cellIdx+i] - feq[cellIdx+i])/c->tau;
+						c->collideField[cellIdx+Q-i-1] = c->streamField[cellIdx+i] - (c->streamField[cellIdx+i] - c[k].feq[cellIdx+i])/c->tau;
 	                }
 				}
 
@@ -31,7 +31,7 @@ void streamCollide(t_component *c, int xlength, double* feq, int* flagField){
 }
 
 
-void updateFeq(const int *xlength, const double*rho, double *velocity[3], double*feq){
+void updateFeq(t_component *c, const int *xlength){
 
 	int cellIdx, fieldIdx;
     //TODO: fix components in main
@@ -43,7 +43,7 @@ void updateFeq(const int *xlength, const double*rho, double *velocity[3], double
                     fieldIdx = p_computeCellOffsetXYZ(x, y, z, *xlength);
                     cellIdx = Q*fieldIdx;
 
-                    computeFeq(&rho[fieldIdx], velocity[fieldIdx], &feq[cellIdx]);
+                    computeFeq(&c[k].rho[fieldIdx], c[k].velocity[fieldIdx], &c[k].feq[cellIdx]);
 
 
                 }

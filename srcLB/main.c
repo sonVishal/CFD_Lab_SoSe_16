@@ -115,7 +115,7 @@ int main(int argc, char *argv[]){
         treatBoundary(c,flagField,velocityWall,xlength, 1);
 
         //TODO: need to include
-        streamCollide(c, xlength, feq, flagField);
+        streamCollide(c, xlength, flagField);
 
         //TODO: compute force
 		computeForce_new(c, xlength, flagField, (double**)G);
@@ -124,7 +124,7 @@ int main(int argc, char *argv[]){
         computeDensityAndVelocity(c, xlength);
 
         //TODO: compute feq
-        updateFeq(&xlength, density, (double**)velocity, feq);
+        updateFeq(c, &xlength);
 
         //TODO: streamField = collideField
 

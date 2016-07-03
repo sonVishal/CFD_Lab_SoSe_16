@@ -3,7 +3,6 @@
 #define _STREAMING_H_
 #include "LBDefinitions.h"
 
-void streamCollide(t_component* c, int xlength, double* feq, int* flagField);
-void updateFeq(const int *xlength, const double*rho, double *velocity[3], double*feq);
-
+void streamCollide(t_component *c, int xlength, int* flagField);
+void updateFeq(t_component *c, const int *xlength);
 #endif
