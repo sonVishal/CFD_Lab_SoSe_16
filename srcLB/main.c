@@ -68,7 +68,11 @@ int main(int argc, char *argv[]){
 
     //TODO: Beware! feq has changed to be of size Q*totalsize.
     feq = (double *)  malloc(Q*totalsize * sizeof( double ));
+
+    //TODO: should go into the struct of component!
     double force[totalsize][3];
+    double velocity[totalsize][3];
+    double density[totalsize];
 
 
     initializeUnitTest(totalsize);
@@ -90,8 +94,6 @@ int main(int argc, char *argv[]){
     printf("INFO: write vtk file at time t = %d \n", t);
     writeVtkOutput(c,flagField,fName,t,xlength);
     // writeVtkOutputDebug(c,flagField,fName,t,xlength);
-
-    tau = 1.0;
 
     begin_timing = clock();
 
@@ -120,11 +122,11 @@ int main(int argc, char *argv[]){
         //TODO: compute force
 		computeForce_new(c, xlength, force, flagField, G);
 
-        //TODO: compute density
-        //TODO: compute velocity
+        //TODO: compute density & compute velocity
+        computeDensityAndVelocity(c[0].collideField, velocity, density, force, xlength);
+
         //TODO: compute feq
         //TODO: streamField = collideField
-
 
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);
