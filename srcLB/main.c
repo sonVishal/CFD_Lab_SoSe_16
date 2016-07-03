@@ -89,17 +89,17 @@ int main(int argc, char *argv[]){
         int x   = 2;
         int y   = 2;
         int z   = 2;
-        int dir = 2
-        idx = Q*(x + (xlength+2)*y + (xlength+2)*(xlength+2)*z) + dir;
+        int dir = 2;
+        int idx = Q*(x + (xlength+2)*y + (xlength+2)*(xlength+2)*z) + dir;
 
 	    double *swap = NULL;
         // Get the periodic distributions before streaming since we do not initialize the ghost layers
         treatBoundary(c,flagField,velocityWall,xlength);
-        printf("t = %d, stream field 2 @ (2,2,2) %f\n", t, c[0].streamField[idx]);
-        printf("t = %d, collide field 2 @ (2,2,2) %f\n", t, c[0].collideField[idx]);
+        printf("t = %d, stream field 2 @ (2,2,2) %.8f\n", t, c[0].streamField[idx]);
+        printf("t = %d, collide field 2 @ (2,2,2) %.8f\n", t, c[0].collideField[idx]);
 	    doStreaming(c,flagField,xlength);
-        printf("t = %d, stream field 2 @ (2,2,2) %f\n", t, c[0].streamField[idx]);
-        printf("t = %d, collide field 2 @ (2,2,2) %f\n", t, c[0].collideField[idx]);
+        printf("t = %d, stream field 2 @ (2,2,2) %.8f\n", t, c[0].streamField[idx]);
+        printf("t = %d, collide field 2 @ (2,2,2) %.8f\n", t, c[0].collideField[idx]);
 
         for (int i = 0; i < NUMCOMP; i++) {
             swap = c[i].collideField;

@@ -14,6 +14,7 @@
       #include <cmath>        // pow()
       #include <ctime>        // clock_t, clock(), CLOCKS_PER_SEC
       #include <stdlib.h>
+      #include <iomanip>
 
 //    writes data to output files using XDMF + HDF5 format
 
@@ -410,13 +411,13 @@
           int cell = ((x-1)+(y-1)*NX+(z-1)*NX*NY);
           int dist = 2;
 
-          std::cout << "t = " << time << " F 2 @ (2,2,2) " << f[19*cell+dist] << std::endl;
-          std::cout << "t = " << time << " F_new 2 @ (2,2,2) " << f_new[19*cell+dist] << std::endl;
-          std::cout << "t = " << time << " F_eq 2 @ (2,2,2) " << f_eq[19*cell+dist] << std::endl;
+          std::cout << "t = " << time << " F 2 @ (2,2,2) " << std::setprecision(8) << f[19*cell+dist] << std::endl;
+          std::cout << "t = " << time << " F_new 2 @ (2,2,2) " << std::setprecision(8) << f_new[19*cell+dist] << std::endl;
+          std::cout << "t = " << time << " F_eq 2 @ (2,2,2) " << std::setprecision(8) << f_eq[19*cell+dist] << std::endl;
           streaming(NX, NY, NZ, ex, ey, ez, tau, f, f_new, f_eq);
-          std::cout << "t = " << time << " F 2 @ (2,2,2) " << f[19*cell+dist] << std::endl;
-          std::cout << "t = " << time << " F_new 2 @ (2,2,2) " << f_new[19*cell+dist] << std::endl;
-          std::cout << "t = " << time << " F_eq 2 @ (2,2,2) " << f_eq[19*cell+dist] << std::endl;
+          std::cout << "t = " << time << " F 2 @ (2,2,2) " << std::setprecision(8) << f[19*cell+dist] << std::endl;
+          std::cout << "t = " << time << " F_new 2 @ (2,2,2) " << std::setprecision(8) << f_new[19*cell+dist] << std::endl;
+          std::cout << "t = " << time << " F_eq 2 @ (2,2,2) " << std::setprecision(8) << f_eq[19*cell+dist] << std::endl;
 
           calc_dPdt(NX, NY, NZ, ex, ey, ez, G11, rho, dPdt_x, dPdt_y, dPdt_z);
 
