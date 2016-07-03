@@ -403,7 +403,22 @@
 
         while(time < 1)
         {
+
+
+
+
           time++; // increment lattice time
+
+          //OUR CELL!!!
+          int x = 2;
+          int y= 2;
+          int z = 2;
+          int cell = ((x-1)+(y-1)*NX+(z-1)*NX*NY);
+          int dist = 2;
+
+          std::cout << "t = " << time << " F 2 @ (2,2,2) " << std::setprecision(7) << f[19*cell+dist] << std::endl;
+          std::cout << "t = " << time << " F_new 2 @ (2,2,2) " << std::setprecision(7) << f_new[19*cell+dist] << std::endl;
+          std::cout << "t = " << time << " F_eq 2 @ (2,2,2) " << std::setprecision(7) << f_eq[19*cell+dist] << std::endl;
 
           streaming(NX, NY, NZ, ex, ey, ez, tau, f, f_new, f_eq);
 
