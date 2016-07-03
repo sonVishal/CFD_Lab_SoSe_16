@@ -118,6 +118,10 @@ int main(int argc, char *argv[]){
 
         //TODO: compute force
 
+		computeForce_new();
+
+		computeForce(const int currentCellIndex, const int currentCompIndex, const t_component *const c, const int *const flagField, const double *const G, int xlength, double *forces)
+
         //TODO: compute density
         //TODO: compute velocity
         //TODO: compute feq
