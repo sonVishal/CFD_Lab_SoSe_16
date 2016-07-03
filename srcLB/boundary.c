@@ -139,6 +139,22 @@ void treatBoundary(t_component *c, int* flagField, const double * const wallVelo
 		treatWallPeriodic(c[i].collideField, c[i].rho, BOTTOM, xlength, includingDensity);
 		treatWallPeriodic(c[i].collideField, c[i].rho, FRONT, xlength, includingDensity);
 		treatWallPeriodic(c[i].collideField, c[i].rho, BACK, xlength, includingDensity);
+
+		if (includingDensity == 0) {
+			treatWallPeriodic(c[i].streamField, c[i].rho, LEFT, xlength, includingDensity);
+			treatWallPeriodic(c[i].streamField, c[i].rho, RIGHT, xlength, includingDensity);
+			treatWallPeriodic(c[i].streamField, c[i].rho, TOP, xlength, includingDensity);
+			treatWallPeriodic(c[i].streamField, c[i].rho, BOTTOM, xlength, includingDensity);
+			treatWallPeriodic(c[i].streamField, c[i].rho, FRONT, xlength, includingDensity);
+			treatWallPeriodic(c[i].streamField, c[i].rho, BACK, xlength, includingDensity);
+
+			treatWallPeriodic(c[i].feq, c[i].rho, LEFT, xlength, includingDensity);
+			treatWallPeriodic(c[i].feq, c[i].rho, RIGHT, xlength, includingDensity);
+			treatWallPeriodic(c[i].feq, c[i].rho, TOP, xlength, includingDensity);
+			treatWallPeriodic(c[i].feq, c[i].rho, BOTTOM, xlength, includingDensity);
+			treatWallPeriodic(c[i].feq, c[i].rho, FRONT, xlength, includingDensity);
+			treatWallPeriodic(c[i].feq, c[i].rho, BACK, xlength, includingDensity);
+		}
 	}
 }
 

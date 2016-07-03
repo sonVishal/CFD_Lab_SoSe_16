@@ -112,6 +112,7 @@ int main(int argc, char *argv[]){
 
     for(t = 1; t <= timesteps; t++){
 
+        treatBoundary(c,flagField,velocityWall,xlength, 0);
         treatBoundary(c,flagField,velocityWall,xlength, 1);
 
         //TODO: need to include
