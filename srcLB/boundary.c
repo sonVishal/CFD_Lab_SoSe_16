@@ -212,7 +212,7 @@ void treatWallPeriodic(double * collideField, double *rho, int direction, int xl
 			int otherSideIdx = Q*computeCellOffset(k, j, fixedValueOtherIdx, direction, xlength);
 
 			if(includingDensity){
-				rho[idx/Q] = rho[otherSideIdx/Q];
+				rho[otherSideIdx/Q] = rho[idx/Q];
 			}
 
 			for (int i = 0; i < Q; i++) {
