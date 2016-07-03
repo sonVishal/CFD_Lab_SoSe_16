@@ -64,7 +64,7 @@ void computeCellForce(const int currentCellIndex, const int currentCompIndex,
     assert(psiFctPointer[c[currentCompIndex].psiFctCode](numDensity) == psi0(numDensity));
 }
 
-void computeForce_new(t_component *c, int xlength, int *flagField, double **G){
+void computeForce_new(t_component *c, int xlength, int *flagField, double G[NUMCOMP][NUMCOMP]){
 
     for (int z = 1; z <= xlength ; z++) {
         for (int y = 1; y <= xlength; y++) {

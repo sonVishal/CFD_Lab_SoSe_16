@@ -12,7 +12,7 @@
 #include "unitTest.h"
 
 //TODO: Move this into computeCellValues when finished
-void computeForce_new(t_component *c, int xlength, int *flagField, double **G);
+void computeForce_new(t_component *c, int xlength, int *flagField, double G[NUMCOMP][NUMCOMP]);
 void computeDensityAndVelocity(t_component *c, int xlength);
 
 int main(int argc, char *argv[]){
@@ -118,7 +118,7 @@ int main(int argc, char *argv[]){
         streamCollide(c, xlength, flagField);
 
         //TODO: compute force
-		computeForce_new(c, xlength, flagField, (double**)G);
+		computeForce_new(c, xlength, flagField, G);
 
         //TODO: compute density & compute velocity
         computeDensityAndVelocity(c, xlength);
