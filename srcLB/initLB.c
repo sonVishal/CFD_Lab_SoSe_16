@@ -74,12 +74,10 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
     double rhoVar = 0.01*rhoRef;    //How much initial difference is allowed in density-
 
     int x,y,z;
-    srand(1);
+    // Use the same seed in reference code as well
+    srand(3);
     for (int k = 0; k < NUMCOMP; k++) {
         for ( z = 0; z <= xlength+1; ++z) {
-            if (z == xlength/2) {
-                srand(3);
-            }
             zOffset = z*xlen2sq;
             for ( y = 0; y <= xlength+1; ++y) {
                 yzOffset = y*(xlength+2) + zOffset;
