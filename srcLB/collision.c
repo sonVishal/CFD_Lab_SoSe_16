@@ -83,6 +83,8 @@ void doCollision(t_component *c, double G[NUMCOMP][NUMCOMP], int *flagField, int
 					}
 					computeEqVelocity(&c[k], commonVel, density[k], force, eqVel);
 
+					computeNumDensity(&c[k].collideField[cellIdx], &c[k].rho[fieldIdx]);
+
 					computeFeq(&numDensity[k],eqVel,feq);
 
 					// Store the feq in stream field since it won't be used right now

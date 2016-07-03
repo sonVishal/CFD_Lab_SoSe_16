@@ -131,24 +131,21 @@ void p_setWallBoundaries(double *collideField, const int * const flagField,
 	p_treatSingleWall(collideField, flagField, xlength+1, wallVelocity, xlength, wallIdx);
 }
 
-void treatBoundary(t_component *c, int* flagField, const double * const wallVelocity, int xlength){
+void treatBoundary(t_component *c, int* flagField, const double * const wallVelocity, int xlength, int includingDensity){
 	for (int i = 0; i < NUMCOMP; i++) {
-		treatWallPeriodic(c[i].collideField, LEFT, xlength);
-		treatWallPeriodic(c[i].collideField, RIGHT, xlength);
-		treatWallPeriodic(c[i].collideField, TOP, xlength);
-		treatWallPeriodic(c[i].collideField, BOTTOM, xlength);
-		treatWallPeriodic(c[i].collideField, FRONT, xlength);
-		treatWallPeriodic(c[i].collideField, BACK, xlength);
-		// p_setWallBoundaries(c[i].collideField, flagField, wallVelocity, xlength, E_XFIXED);
-		// p_setWallBoundaries(c[i].collideField, flagField, wallVelocity, xlength, E_YFIXED);
-		// p_setWallBoundaries(c[i].collideField, flagField, wallVelocity, xlength, E_ZFIXED);
+		treatWallPeriodic(c[i].collideField, c[i].rho, LEFT, xlength, includingDensity);
+		treatWallPeriodic(c[i].collideField, c[i].rho, RIGHT, xlength, includingDensity);
+		treatWallPeriodic(c[i].collideField, c[i].rho, TOP, xlength, includingDensity);
+		treatWallPeriodic(c[i].collideField, c[i].rho, BOTTOM, xlength, includingDensity);
+		treatWallPeriodic(c[i].collideField, c[i].rho, FRONT, xlength, includingDensity);
+		treatWallPeriodic(c[i].collideField, c[i].rho, BACK, xlength, includingDensity);
 	}
 }
 
 // This will be useful for computing otherSideIdx
 // nbhR = (myRank+1)%numRanks;
 // nbhL = (myRank-1+numRanks)%numRanks;
-void treatWallPeriodic(double * collideField, int direction, int xlength) {
+void treatWallPeriodic(double * collideField, double *rho, int direction, int xlength, int includingDensity) {
 	int startOuter=0, startInner=0, endOuter=0, endInner=0, fixedValueIdx=0, fixedValueOtherIdx=0;
 	switch (direction) {
 		case LEFT:
@@ -213,6 +210,11 @@ void treatWallPeriodic(double * collideField, int direction, int xlength) {
 		for (int j = startInner; j <= endInner; j++) {
 			int idx = Q*computeCellOffset(k, j, fixedValueIdx, direction, xlength);
 			int otherSideIdx = Q*computeCellOffset(k, j, fixedValueOtherIdx, direction, xlength);
+
+			if(includingDensity){
+				rho[idx/Q] = rho[otherSideIdx/Q];
+			}
+
 			for (int i = 0; i < Q; i++) {
 				collideField[otherSideIdx+i] = collideField[idx+i];
 			}
