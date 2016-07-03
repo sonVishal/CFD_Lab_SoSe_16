@@ -24,6 +24,7 @@ void streamCollide(t_component *c, int xlength, int* flagField){
 											(z+LATTICEVELOCITIES[i][2])*(xlength+2)*(xlength+2);
 						assert(c[k].tau == 1.0);
 						c[k].collideField[cellIdx+Q-i-1] = c[k].streamField[nextCellIndex*Q+i] - (c[k].streamField[nextCellIndex*Q+i] - c[k].feq[nextCellIndex*Q+i])/c[k].tau;
+						assert(c[k].collideField[cellIdx+Q-i-1] > 0.0);
 	                }
 				}
 
@@ -46,7 +47,9 @@ void updateFeq(t_component *c, const int *xlength){
                     cellIdx = Q*fieldIdx;
 
                     computeFeq(&c[k].rho[fieldIdx], c[k].velocity[fieldIdx], &c[k].feq[cellIdx]);
-
+					for (int i = 0; i < Q; i++) {
+						assert(c[k].feq[cellIdx+i] > 0.0);
+					}
 
                 }
             }
