@@ -1,4 +1,5 @@
-#include "LBDefinitions.h"
+#include "assert.h"
+#include "computeCellValues.h"
 
 
 
@@ -24,6 +25,25 @@ void streamCollide(t_component *c, int xlength, double* feq, int* flagField){
 					//TODO: Check if this is correct:
 					c->collideField[cellIdx+Q-i-1] = c->streamField[cellIdx+i] - (c->streamField[cellIdx+i] - feq[cellIdx+i])/c->tau;
                 }
+            }
+        }
+    }
+}
+
+
+void updateFeq(const int *xlength, const double*rho, double *velocity[3], double*feq){
+
+	int cellIdx, fieldIdx;
+	for (int z = 1; z <= *xlength ; z++) {
+		for (int y = 1; y <= *xlength; y++) {
+			for (int x = 1; x <= *xlength; x++) {
+
+				fieldIdx = p_computeCellOffsetXYZ(x, y, z, *xlength);
+				cellIdx = Q*fieldIdx;
+
+                computeFeq(&rho[fieldIdx], velocity[fieldIdx], &feq[cellIdx]);
+
+
             }
         }
     }

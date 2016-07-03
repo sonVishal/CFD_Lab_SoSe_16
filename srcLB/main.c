@@ -1,6 +1,7 @@
 #ifndef _MAIN_C_
 #define _MAIN_C_
 
+#include "streamCollide.h"
 #include "boundary.h"
 #include "collision.h"
 #include "initLB.h"
@@ -10,8 +11,8 @@
 #include <time.h>
 #include "unitTest.h"
 
-//TODO: (TKS) temporarily have the streamingcollide func here.
-//      * Should rename stream and collidefield
+//TODO: Move this into computeCellValues when finished
+void computeForce_new(t_component *c, int xlength, double **force, int *flagField, double **G);
 
 
 int main(int argc, char *argv[]){
@@ -25,7 +26,7 @@ int main(int argc, char *argv[]){
 
 
     // double G[2][2] = {{0.01,0.04},{0.04,0.02}};
-    //double G[1][1] = {{-0.27}};
+    double G[1][1] = {{-0.27}};
 
     int *flagField = NULL;
     double *feq = NULL;
@@ -70,15 +71,22 @@ int main(int argc, char *argv[]){
     //TODO: Beware! feq has changed to be of size Q*totalsize.
     feq = (double *)  malloc(Q*totalsize * sizeof( double ));
 
+    double **velocity = (double**) malloc(totalsize* sizeof(double*));
+    double **force    = (double**) malloc(totalsize* sizeof(double*));
+
+    for (int i = 0; i < 3; ++i) {
+        velocity[i] = (double*) malloc(3* sizeof(double));
+        force[i]    = (double*) malloc(3* sizeof(double));
+        
+    } 
+
     initializeUnitTest(totalsize);
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     // Initialize all the fields
-    printf("init fields\n");
     initialiseFields(c, flagField,feq, xlength);
-    printf("init fields done\n");
 
     //return 0;
 
@@ -118,7 +126,7 @@ int main(int argc, char *argv[]){
 
         //TODO: compute force
 
-		computeForce_new();
+		computeForce_new(&c[0], xlength, force, flagField, G);
 
 		computeForce(const int currentCellIndex, const int currentCompIndex, const t_component *const c, const int *const flagField, const double *const G, int xlength, double *forces)
 
