@@ -84,7 +84,7 @@ int main(int argc, char *argv[]){
     tau = 1.0;
 
     begin_timing = clock();
-    for(t = 1; t <= timesteps; t++){
+    for(t = 1; t <= 1; t++){
 
         int x   = 2;
         int y   = 2;

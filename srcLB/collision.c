@@ -71,6 +71,14 @@ void doCollision(t_component *c, double G[NUMCOMP][NUMCOMP], int *flagField, int
 					computeForce(fieldIdx, k, c, flagField, G[k], xlength, force);
 					// force[0] = 0.0; force[1] = 0.0; force[2] = 0.0;
 					if (x == 2 && y == 2 && z == 2) {
+						double density_tmp;
+
+						for(int dii = 0; dii < Q; dii++){
+							printf("i=%i, %f \n", dii, c[0].collideField[fieldIdx+dii]);
+						}
+
+						computeNumDensity(&c[0].collideField[fieldIdx], &density_tmp);
+						printf("Density @(2,2,2) %.8f\n",density_tmp);
 						printf("Force x @(2,2,2) %.8f\n",force[0]);
 					}
 					computeEqVelocity(&c[k], commonVel, density[k], force, eqVel);
