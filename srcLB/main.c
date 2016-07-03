@@ -110,6 +110,7 @@ int main(int argc, char *argv[]){
 
     // treatBoundary inserted where the BC is treated.
 
+    double *swap = NULL;
     for(t = 1; t <= timesteps; t++){
 
         treatBoundary(c,velocityWall,xlength);
@@ -127,10 +128,10 @@ int main(int argc, char *argv[]){
         updateFeq(c, &xlength);
 
         //TODO: streamField = collideField
-        for (int k = 0; k < NUMCOMP; ++k) {
-            for (int idx = 0; idx < totalsize; ++idx) {
-                c[k].streamField[idx] = c[k].collideField[idx];
-            }
+        for (int k = 0; k < totalsize; ++k) {
+            swap = c[k].collideField;
+            c[k].collideField = c[k].streamField;
+            c[k].streamField = swap;
         }
 
 	    if (t%timestepsPerPlotting == 0){
@@ -153,6 +154,7 @@ int main(int argc, char *argv[]){
     printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
     		(totalsize/(1000000*time_spent))*timesteps);
 
+    //TODO: Remember to free memory
     for (int i = 0; i < NUMCOMP; i++) {
         free(c[i].streamField);
         free(c[i].collideField);
