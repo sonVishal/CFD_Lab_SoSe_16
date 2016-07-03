@@ -71,7 +71,7 @@ int main(int argc, char *argv[]){
     // Initialize all the fields
     initialiseFields(c, flagField, xlength);
 
-    return 0;
+    //return 0;
 
     printf("\nINFO: Storing cell data in VTK files.\n      Please use the"
     " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
@@ -85,14 +85,21 @@ int main(int argc, char *argv[]){
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
+
+        int x   = 2;
+        int y   = 2;
+        int z   = 2;
+        int dir = 2
+        idx = Q*(x + (xlength+2)*y + (xlength+2)*(xlength+2)*z) + dir;
+
 	    double *swap = NULL;
         // Get the periodic distributions before streaming since we do not initialize the ghost layers
         treatBoundary(c,flagField,velocityWall,xlength);
-        printf("t = %d, stream field 2 @ (2,2,2) %f\n", t, c[0].streamField[Q*(2+2*(xlength+2)+2*(xlength+2)*(xlength+2))+2]);
-        printf("t = %d, collide field 2 @ (2,2,2) %f\n", t, c[0].collideField[Q*(2+2*(xlength+2)+2*(xlength+2)*(xlength+2))+2]);
+        printf("t = %d, stream field 2 @ (2,2,2) %f\n", t, c[0].streamField[idx]);
+        printf("t = %d, collide field 2 @ (2,2,2) %f\n", t, c[0].collideField[idx]);
 	    doStreaming(c,flagField,xlength);
-        printf("t = %d, stream field 2 @ (2,2,2) %f\n", t, c[0].streamField[Q*(2+2*(xlength+2)+2*(xlength+2)*(xlength+2))+2]);
-        printf("t = %d, collide field 2 @ (2,2,2) %f\n", t, c[0].collideField[Q*(2+2*(xlength+2)+2*(xlength+2)*(xlength+2))+2]);
+        printf("t = %d, stream field 2 @ (2,2,2) %f\n", t, c[0].streamField[idx]);
+        printf("t = %d, collide field 2 @ (2,2,2) %f\n", t, c[0].collideField[idx]);
 
         for (int i = 0; i < NUMCOMP; i++) {
             swap = c[i].collideField;
