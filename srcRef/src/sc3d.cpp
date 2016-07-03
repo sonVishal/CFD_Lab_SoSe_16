@@ -41,7 +41,6 @@
                       double* f, double* f_new, double* f_eq)
       {
 //      initialize random seed
-
         srand(5);
 
 //      initialize density and velocity
@@ -54,7 +53,16 @@
             for(int i = 0; i < NX; i++)
             {
               int N = i + NX*j + NX*NY*k;
-              rho[N] = rhoAvg - 0.5*rhoVar + rhoVar * rand()/RAND_MAX;
+
+              double rnd = ((double)rand())/((double)RAND_MAX);
+              rho[N] = rhoAvg - 0.5*rhoVar + rhoVar * rnd;
+
+              static int idx = 1;
+              if(idx < 10){
+                  std::cout << rnd << std::endl;
+                  idx++;
+              }
+
               u[N] = 0.0;
               v[N] = 0.0;
               w[N] = 0.0;
@@ -337,21 +345,22 @@
 
 //                      0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18
 //                      |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-        double ex[] = { 0,-1, 0, 1, 0,-1, 0, 1,-1, 0, 1,-1, 0, 1, 0,-1, 0, 1, 0};
-        double ey[] = {-1, 0, 0, 0, 1,-1,-1,-1, 0, 0, 0, 1, 1, 1,-1, 0, 0, 0, 1};
-        double ez[] = {-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1};
+        double ex[] = { 0, 1,-1, 0, 0, 0, 0, 1,-1, 1,-1, 1,-1, 1,-1, 0, 0, 0, 0};
+        double ey[] = { 0, 0, 0, 1,-1, 0, 0, 1, 1,-1,-1, 0, 0, 0, 0, 1,-1, 1,-1};
+        double ez[] = { 0, 0, 0, 0, 0, 1,-1, 0, 0, 0, 0, 1, 1,-1,-1, 1, 1,-1,-1};
 
-        //      weight factors for the various directions
+//      weight factors for the various directions
 
-        double wt[] = {1./36., 1./36., 1./18., 1./36., 1./36., 1./36., 1./18.,
-                             1./36., 1./18., 1./3., 1./18., 1./36., 1./18.,
-                             1./36., 1./36., 1./36., 1./18., 1./36., 1./36., };
+        double wt[] = {1./3., 1./18., 1./18., 1./18., 1./18., 1./18., 1./18.,
+                              1./36., 1./36., 1./36., 1./36., 1./36., 1./36.,
+                              1./36., 1./36., 1./36., 1./36., 1./36., 1./36., };
 
-        //      cohesive force along various lattice directions
-        double G11[] = {GEE11/2, GEE11/2, GEE11, GEE11/2, GEE11/2, GEE11/2, GEE11,
-                          GEE11/2, GEE11, 0.0, GEE11,
-                          GEE11/2, GEE11, GEE11/2, GEE11/2,
-                          GEE11/2, GEE11, GEE11/2, GEE11/2};
+//      cohesive force along various lattice directions
+
+        double G11[] = {0, GEE11, GEE11, GEE11, GEE11, GEE11, GEE11,
+                           GEE11/2, GEE11/2, GEE11/2, GEE11/2,
+                           GEE11/2, GEE11/2, GEE11/2, GEE11/2,
+                           GEE11/2, GEE11/2, GEE11/2, GEE11/2};
 
 //      define buffers
 

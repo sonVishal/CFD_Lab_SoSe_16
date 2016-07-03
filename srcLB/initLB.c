@@ -87,7 +87,14 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                     //TODO: (TKS) Need to do componentwise if we introduce several components.
 
                     //Set the initial density to a random offsett to rhoRef
-                    double rho = rhoRef - 0.5*rhoVar + rhoVar*((double)rand()/(double)RAND_MAX);
+                    double rnd = ((double)rand()/(double)RAND_MAX);
+                    double rho = rhoRef - 0.5*rhoVar + rhoVar*rnd;
+
+                    static int idx = 1;
+                    if(idx < 10){
+                        printf("%f \n", rnd);
+                        idx++;
+                    }
 
                     computeFeq(&rho, v, feq);
                     for (int i = 0; i < Q; ++i) {
