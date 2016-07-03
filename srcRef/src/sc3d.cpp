@@ -436,6 +436,7 @@
           std::cout << "Uz @ (6,6,6) " << std::setprecision(10) << w[5+5*NX+5*NX*NY] << std::endl;
 
           updateEquilibrium(NX, NY, NZ, ex, ey, ez, wt, rho, u, v, w, f_eq);
+          std::cout << "F_eq 10 @ (41,12,13) " << std::setprecision(10) << f_eq[19*(40+11*NX+12*NX*NY)+10] << std::endl;
 
 //        transfer fnew back to f
 

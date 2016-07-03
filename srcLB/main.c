@@ -141,6 +141,7 @@ int main(int argc, char *argv[]){
 
         //TODO: compute feq
         updateFeq(c, &xlength);
+        printf("F_eq 10 @ (41,12,13) %.11f\n",c[0].feq[Q*(41+12*(xlength+2)+13*(xlength+2)*(xlength+2))+10]);
 
         //TODO: streamField = collideField
         for (int k = 0; k < totalsize; ++k) {
