@@ -1,6 +1,7 @@
 #ifndef _MAIN_C_
 #define _MAIN_C_
 
+#include "streamCollide.h"
 #include "boundary.h"
 #include "collision.h"
 #include "initLB.h"
@@ -10,9 +11,9 @@
 #include <time.h>
 #include "unitTest.h"
 
-//TODO: (TKS) temporarily have the streamingcollide func here.
-//      * Should rename stream and collidefield
-
+//TODO: Move this into computeCellValues when finished
+void computeForce_new(t_component *c, int xlength, int *flagField, double **G);
+void computeDensityAndVelocity(t_component *c, int xlength);
 
 int main(int argc, char *argv[]){
 
@@ -27,7 +28,6 @@ int main(int argc, char *argv[]){
     double G[1][1] = {{-0.27}};
 
     int *flagField = NULL;
-    double *feq = NULL;
 
     // Simulation parameters
     int xlength;
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]){
     }
 
     //TODO: Beware! feq has changed to be of size Q*totalsize.
-    feq = (double *)  malloc(Q*totalsize * sizeof( double ));
+    double *feq       = (double *)  malloc(Q*totalsize * sizeof( double ));
 
 
     initializeUnitTest(totalsize);
@@ -83,9 +83,7 @@ int main(int argc, char *argv[]){
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     // Initialize all the fields
-    printf("init fields\n");
     initialiseFields(c, flagField,feq, xlength);
-    printf("init fields done\n");
 
     //return 0;
 
@@ -122,7 +120,7 @@ int main(int argc, char *argv[]){
         streamCollide(c, xlength, feq, flagField);
 
         //TODO: compute force
-		computeForce_new(c, xlength, force, flagField, G);
+		computeForce_new(c, xlength, flagField, (double**)G);
 
         //TODO: compute density & compute velocity
         computeDensityAndVelocity(c, xlength);

@@ -1,7 +1,8 @@
 
 #ifndef _STREAMING_H_
 #define _STREAMING_H_
+#include "LBDefinitions.h"
 
-void streamCollide(int xlength, double* streamField, double* collideField, double* feq, int* flagField);
+void streamCollide(t_component* c, int xlength, double* feq, int* flagField);
 
 #endif
