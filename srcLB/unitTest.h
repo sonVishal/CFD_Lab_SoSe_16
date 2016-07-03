@@ -20,7 +20,7 @@ void computeGlobalMomentum(const t_component * const c, const int xlength, doubl
 
 void beforeCollision(const t_component * const c, int xLength);
 
-void afterCollisionafterCollision(const t_component * const c, int xLength);
+void afterCollision(const t_component * const c, int xLength);
 
 void checkMomentum();
 

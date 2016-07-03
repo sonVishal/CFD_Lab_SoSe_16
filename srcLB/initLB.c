@@ -90,11 +90,11 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                     double rnd = ((double)rand()/(double)RAND_MAX);
                     double rho = rhoRef - 0.5*rhoVar + rhoVar*rnd;
 
-                    // static int idx = 1;
-                    // if(idx < 10){
-                    //     printf("%f \n", rnd);
-                    //     idx++;
-                    // }
+                    static int idx = 1;
+                    if(idx < 10){
+                        printf("%f \n", rnd);
+                        idx++;
+                    }
 
                     computeFeq(&rho, v, feq);
                     for (int i = 0; i < Q; ++i) {

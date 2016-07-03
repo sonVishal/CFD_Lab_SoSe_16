@@ -101,7 +101,7 @@ int main(int argc, char *argv[]){
 
         beforeCollision(c, xlength); //unit tests
 	    doCollision(c,G,flagField,xlength);
-        beforeCollision(c, xlength); //unit tests
+        afterCollision(c, xlength); //unit tests
 
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);
