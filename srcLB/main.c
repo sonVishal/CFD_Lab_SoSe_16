@@ -104,26 +104,6 @@ int main(int argc, char *argv[]){
 
     for(t = 1; t <= timesteps; t++){
 
-	    double *swap = NULL;
-        // Get the periodic distributions before streaming since we do not initialize the ghost layers
-        
-        
-        treatBoundary(c,flagField,velocityWall,xlength, 1);
-	    doStreaming(c,flagField,xlength);
-
-        for (int i = 0; i < NUMCOMP; i++) {
-            swap = c[i].collideField;
-            c[i].collideField = c[i].streamField;
-            c[i].streamField = swap;
-        }
-
-
-
-        treatBoundary(c,flagField,velocityWall,xlength, 1);
-
-        beforeCollision(c, xlength); //unit tests
-	    doCollision(c,G,flagField,xlength);
-        afterCollision(c, xlength); //unit tests
 
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);
