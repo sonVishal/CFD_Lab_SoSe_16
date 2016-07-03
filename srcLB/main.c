@@ -13,6 +13,7 @@
 
 //TODO: Move this into computeCellValues when finished
 void computeForce_new(t_component *c, int xlength, double **force, int *flagField, double **G);
+void computeDensityAndVelocity(double *collideField, double **velocity, double **density, double **force, int xlength);
 
 
 int main(int argc, char *argv[]){
@@ -24,12 +25,10 @@ int main(int argc, char *argv[]){
     c[0].m = 1.0;
     c[0].psiFctCode = 0;
 
-
     // double G[2][2] = {{0.01,0.04},{0.04,0.02}};
     double G[1][1] = {{-0.27}};
 
     int *flagField = NULL;
-    double *feq = NULL;
 
     // Simulation parameters
     int xlength;
@@ -69,16 +68,13 @@ int main(int argc, char *argv[]){
     }
 
     //TODO: Beware! feq has changed to be of size Q*totalsize.
-    feq = (double *)  malloc(Q*totalsize * sizeof( double ));
+    double *feq       = (double *)  malloc(Q*totalsize * sizeof( double ));
 
-    double **velocity = (double**) malloc(totalsize* sizeof(double*));
-    double **force    = (double**) malloc(totalsize* sizeof(double*));
+    //TODO: should go into the struct of component!
+    double force[totalsize][3];
+    double velocity[totalsize][3];
+    double density[totalsize];
 
-    for (int i = 0; i < 3; ++i) {
-        velocity[i] = (double*) malloc(3* sizeof(double));
-        force[i]    = (double*) malloc(3* sizeof(double));
-        
-    } 
 
     initializeUnitTest(totalsize);
 
@@ -97,8 +93,6 @@ int main(int argc, char *argv[]){
     printf("INFO: write vtk file at time t = %d \n", t);
     writeVtkOutput(c,flagField,fName,t,xlength);
     // writeVtkOutputDebug(c,flagField,fName,t,xlength);
-
-    tau = 1.0;
 
     begin_timing = clock();
 
@@ -121,20 +115,15 @@ int main(int argc, char *argv[]){
 
         treatBoundary(c,flagField,velocityWall,xlength, 1);
 
-        //TODO: need to include
         streamCollide(&c[0], xlength, feq, flagField);
 
         //TODO: compute force
+		computeForce_new(c, xlength, (double**) force, flagField, (double**)G);
 
-		computeForce_new(&c[0], xlength, force, flagField, G);
+        computeDensityAndVelocity(c[0].collideField, (double**)velocity, (double**)density, (double**)force, xlength);
 
-		computeForce(const int currentCellIndex, const int currentCompIndex, const t_component *const c, const int *const flagField, const double *const G, int xlength, double *forces)
-
-        //TODO: compute density
-        //TODO: compute velocity
         //TODO: compute feq
         //TODO: streamField = collideField
-
 
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);
