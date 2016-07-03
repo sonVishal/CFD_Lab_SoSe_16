@@ -393,7 +393,7 @@
 
 //      time integration loop
 
-        while(time < 2000)
+        while(time < 100)
         {
           time++; // increment lattice time
 
