@@ -69,6 +69,10 @@ int main(int argc, char *argv[]){
         c[i].rho = (double *)  malloc(totalsize * sizeof( double ));
     }
 
+    double velocity[totalsize][3];
+    double force[totalsize][3];
+
+
     //TODO: Beware! feq has changed to be of size Q*totalsize.
     feq = (double *)  malloc(Q*totalsize * sizeof( double ));
 
@@ -78,9 +82,7 @@ int main(int argc, char *argv[]){
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     // Initialize all the fields
-    printf("init fields\n");
     initialiseFields(c, flagField,feq, xlength);
-    printf("init fields done\n");
 
     //return 0;
 
