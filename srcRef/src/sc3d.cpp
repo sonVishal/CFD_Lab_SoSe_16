@@ -420,7 +420,7 @@
           std::cout << "t = " << time << " F_new 2 @ (2,2,2) " << std::setprecision(7) << f_new[19*cell+dist] << std::endl;
           std::cout << "t = " << time << " F_eq 2 @ (2,2,2) " << std::setprecision(7) << f_eq[19*cell+dist] << std::endl;
 
-          std::cout << "Rho @ (2,2,2)" << std::setprecision(7) << rho[cell] << std::endl;
+          std::cout << "Rho @ (2,2,2)" << std::setprecision(8) << rho[cell] << std::endl;
           calc_dPdt(NX, NY, NZ, ex, ey, ez, G11, rho, dPdt_x, dPdt_y, dPdt_z);
           std::cout << "t = " << time << " Force x,y,z @ (2,2,2) " << std::setprecision(7) << dPdt_x[cell] << std::endl;
           for(int dii = 0; dii < 19; dii++){

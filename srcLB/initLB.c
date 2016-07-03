@@ -56,7 +56,7 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
     /*Setting initial distributions*/
     //f_i(x,0) = f^eq(1,0,0) = w_i
     // current cell index
-    int idx;
+    int idx, cellIdx;
 
     // Temporary variables for xlength^2
     int const xlen2 = xlength+2;
@@ -82,13 +82,14 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                 yzOffset = y*(xlength+2) + zOffset;
                 for ( x = 1; x <= xlength; ++x) {
                     // Compute the base index
-                    idx = Q*(yzOffset + x);
+                    cellIdx = (yzOffset + x);
+                    idx = Q*cellIdx;
                     double feq[19];
                     //TODO: (TKS) Need to do componentwise if we introduce several components.
 
                     //Set the initial density to a random offsett to rhoRef
                     double rnd = ((double)rand()/(double)RAND_MAX);
-                    double rho = rhoRef - 0.5*rhoVar + rhoVar*rnd;
+                    c[k].rho[cellIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd;
 
                     // static int idx = 1;
                     // if(idx < 10){
@@ -96,7 +97,7 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                     //     idx++;
                     // }
 
-                    computeFeq(&rho, v, feq);
+                    computeFeq(&c[k].rho[cellIdx], v, feq);
                     for (int i = 0; i < Q; ++i) {
                         c[k].collideField[idx+i] = feq[i];
                         c[k].streamField[idx+i]  = feq[i];

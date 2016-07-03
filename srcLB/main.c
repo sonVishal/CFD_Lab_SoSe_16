@@ -62,6 +62,7 @@ int main(int argc, char *argv[]){
     for (int i = 0; i < NUMCOMP; i++) {
         c[i].collideField = (double *)  malloc(Q*totalsize * sizeof( double ));
         c[i].streamField = (double *)  malloc(Q*totalsize * sizeof( double ));
+        c[i].rho = (double *)  malloc(totalsize * sizeof( double ));
     }
     initializeUnitTest(totalsize);
 

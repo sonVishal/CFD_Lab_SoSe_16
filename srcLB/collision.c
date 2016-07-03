@@ -77,7 +77,8 @@ void doCollision(t_component *c, double G[NUMCOMP][NUMCOMP], int *flagField, int
 							printf("i=%i, %f \n", dii, c[0].collideField[fieldIdx+dii]);
 						}
 
-						computeNumDensity(&c[0].collideField[fieldIdx], &density_tmp);
+						computeNumDensity(&c[0].collideField[cellIdx], &density_tmp);
+						printf("Density stored @(2,2,2) %.8f\n",c[0].rho[fieldIdx]);
 						printf("Density @(2,2,2) %.8f\n",density_tmp);
 						printf("Force x @(2,2,2) %.8f\n",force[0]);
 					}
