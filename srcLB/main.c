@@ -68,9 +68,9 @@ int main(int argc, char *argv[]){
         c[i].velocity     = (double **)  malloc(totalsize * sizeof( double* ));
         c[i].force        = (double **)  malloc(totalsize * sizeof( double* ));
 
-        for(int i = 0; i < totalsize; ++i){
-            c[i].velocity[i] = (double*) malloc(3* sizeof( double));
-            c[i].force[i]    = (double*) malloc(3* sizeof( double));
+        for(int j = 0; j < totalsize; ++j){
+            c[i].velocity[j] = (double*) malloc(3* sizeof( double));
+            c[i].force[j]    = (double*) malloc(3* sizeof( double));
         }
     }
 
@@ -127,10 +127,7 @@ int main(int argc, char *argv[]){
         updateFeq(c, &xlength);
 
         //TODO: streamField = collideField
-        
-
         for (int k = 0; k < NUMCOMP; ++k) {
-            
             for (int idx = 0; idx < totalsize; ++idx) {
                 c[k].streamField[idx] = c[k].collideField[idx];
             }
