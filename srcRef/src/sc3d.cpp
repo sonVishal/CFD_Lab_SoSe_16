@@ -421,7 +421,7 @@
           std::cout << "t = " << time << " F_eq 2 @ (2,2,2) " << std::setprecision(7) << f_eq[19*cell+dist] << std::endl;
 
           streaming(NX, NY, NZ, ex, ey, ez, tau, f, f_new, f_eq);
-          std::cout << "F_new 6 @ (41,12,13) " << std::setprecision(10) << f_new[19*(40+11*NX+12*NX*NY)+10] << std::endl;
+          std::cout << "F_new 10 @ (41,12,13) " << std::setprecision(10) << f_new[19*(40+11*NX+12*NX*NY)+10] << std::endl;
 
           calc_dPdt(NX, NY, NZ, ex, ey, ez, G11, rho, dPdt_x, dPdt_y, dPdt_z);
           std::cout << "Force x @ (6,6,6) " << std::setprecision(10) << dPdt_x[5+5*NX+5*NX*NY] << std::endl;
@@ -430,6 +430,10 @@
 
           updateDensityAndVelocity(NX, NY, NZ, ex, ey, ez, wt, tau,
                                    rho, u, v, w, dPdt_x, dPdt_y, dPdt_z, f);
+          std::cout << "Rho @ (6,6,6) " << std::setprecision(10) << rho[5+5*NX+5*NX*NY] << std::endl;
+          std::cout << "Ux @ (6,6,6) " << std::setprecision(10) << u[5+5*NX+5*NX*NY] << std::endl;
+          std::cout << "Uy @ (6,6,6) " << std::setprecision(10) << v[5+5*NX+5*NX*NY] << std::endl;
+          std::cout << "Uz @ (6,6,6) " << std::setprecision(10) << w[5+5*NX+5*NX*NY] << std::endl;
 
           updateEquilibrium(NX, NY, NZ, ex, ey, ez, wt, rho, u, v, w, f_eq);
 

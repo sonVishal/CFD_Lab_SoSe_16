@@ -111,7 +111,7 @@ int main(int argc, char *argv[]){
     // treatBoundary inserted where the BC is treated.
 
     double *swap = NULL;
-    for(t = 1; t <= timesteps; t++){
+    for(t = 1; t <= 1; t++){
 
         treatBoundary(c,velocityWall,xlength);
 
@@ -134,6 +134,10 @@ int main(int argc, char *argv[]){
 
         //TODO: compute density & compute velocity
         computeDensityAndVelocity(c, xlength);
+        printf("Rho @ (6,6,6) %.16f\n",c[0].rho[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))]);
+        printf("Ux @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
+        printf("Uy @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
+        printf("Uz @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
 
         //TODO: compute feq
         updateFeq(c, &xlength);
