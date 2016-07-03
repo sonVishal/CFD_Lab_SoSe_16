@@ -140,6 +140,7 @@ int main(int argc, char *argv[]){
     // calc_dPdt             --> computeForce
     // updateDensityVelocity --> computeDensity + computeVelocity
     // updateFeq             --> computeFeq
+    // use c[0].rho as density for now.
     
     // treatBoundary inserted where the BC is treated.
 
