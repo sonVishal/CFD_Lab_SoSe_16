@@ -37,6 +37,8 @@ typedef struct {
     double* streamField;
     double* collideField;
     double* rho;
+    double** velocity;
+    double** force; 
     double  tau;
     double  m;
     double  d0;

@@ -64,15 +64,17 @@ int main(int argc, char *argv[]){
         c[i].collideField = (double *)  malloc(Q*totalsize * sizeof( double ));
         c[i].streamField = (double *)  malloc(Q*totalsize * sizeof( double ));
         c[i].rho = (double *)  malloc(totalsize * sizeof( double ));
+        c[i].velocity = (double **)  malloc(totalsize * sizeof( double* ));
+        c[i].force = (double **)  malloc(totalsize * sizeof( double* ));
+
+        for(int i = 0; i < totalsize; ++i){
+            c[i].velocity[i] = (double*) malloc(3* sizeof( double));
+            c[i].force[i] = (double*) malloc(3* sizeof( double));
+        }
     }
 
     //TODO: Beware! feq has changed to be of size Q*totalsize.
     feq = (double *)  malloc(Q*totalsize * sizeof( double ));
-
-    //TODO: should go into the struct of component!
-    double force[totalsize][3];
-    double velocity[totalsize][3];
-    double density[totalsize];
 
 
     initializeUnitTest(totalsize);
@@ -117,13 +119,13 @@ int main(int argc, char *argv[]){
         treatBoundary(c,flagField,velocityWall,xlength, 1);
 
         //TODO: need to include
-        streamCollide(&c[0], xlength, feq, flagField);
+        streamCollide(c, xlength, feq, flagField);
 
         //TODO: compute force
 		computeForce_new(c, xlength, force, flagField, G);
 
         //TODO: compute density & compute velocity
-        computeDensityAndVelocity(c[0].collideField, velocity, density, force, xlength);
+        computeDensityAndVelocity(c, xlength);
 
         //TODO: compute feq
         //TODO: streamField = collideField
@@ -135,11 +137,6 @@ int main(int argc, char *argv[]){
 	    }
         printf("Time t = %d done\n",t);
     }
-
-
-
-
-
 
 
 

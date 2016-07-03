@@ -26,21 +26,24 @@ void computeNumDensity(double *currentCell, double *density){
 	}
 }
 
-void computeDensityAndVelocity(double *collideField, double **velocity, double **density, double **force, int xlength){
+void computeDensityAndVelocity(t_component *c, int xlength){
 
     for (int z = 1; z <= xlength ; z++) {
         for (int y = 1; y <= xlength; y++) {
             for (int x = 1; x <= xlength; x++) {
-                int fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
-                int cellIdx = Q*fieldIdx;
-                double *currentCell = &collideField[cellIdx];
 
-                //TODO: this has to be done component wise..., actually velocity, density and force have to be saved in the component struct
                 for(int k = 0; k < NUMCOMP; ++k){
-                    computeNumDensity(currentCell, density[fieldIdx]);
-                    computeVelocity(currentCell, velocity[fieldIdx], density[fieldIdx]);
-                }
+                    int fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
+                    int cellIdx = Q*fieldIdx;
+                    double *currentCell = &c[k].collideField[cellIdx];
 
+                    //TODO: this has to be done component wise..., actually velocity, density and force have to be saved in the component struct
+                    for(int k = 0; k < NUMCOMP; ++k){
+                        computeNumDensity(currentCell, &c[k].rho[fieldIdx]);
+                        computeVelocity(currentCell, c[k].velocity[fieldIdx], &c[k].rho[fieldIdx]);
+                    }
+
+                }
             }
         }
     }
