@@ -36,6 +36,7 @@ static const double LATTICEWEIGHTS[19] = {
 typedef struct {
     double* streamField;
     double* collideField;
+    double* feq;
     double* rho;
     double** velocity;
     double** force; 

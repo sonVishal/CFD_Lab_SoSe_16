@@ -18,6 +18,6 @@ int readParameters(
 
 
 /* initialises the particle distribution functions and the flagfield */
-void initialiseFields(t_component * c,int *flagField, double *feq,int xlength);
+void initialiseFields(t_component * c, int *flagField, int xlength);
 
 #endif

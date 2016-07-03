@@ -62,19 +62,17 @@ int main(int argc, char *argv[]){
     int totalsize = (xlength+2)*(xlength+2)*(xlength+2);
     for (int i = 0; i < NUMCOMP; i++) {
         c[i].collideField = (double *)  malloc(Q*totalsize * sizeof( double ));
-        c[i].streamField = (double *)  malloc(Q*totalsize * sizeof( double ));
-        c[i].rho = (double *)  malloc(totalsize * sizeof( double ));
-        c[i].velocity = (double **)  malloc(totalsize * sizeof( double* ));
-        c[i].force = (double **)  malloc(totalsize * sizeof( double* ));
+        c[i].streamField  = (double *)  malloc(Q*totalsize * sizeof( double ));
+        c[i].feq          = (double *)  malloc(Q*totalsize * sizeof( double ));
+        c[i].rho          = (double *)  malloc(totalsize * sizeof( double ));
+        c[i].velocity     = (double **)  malloc(totalsize * sizeof( double* ));
+        c[i].force        = (double **)  malloc(totalsize * sizeof( double* ));
 
         for(int i = 0; i < totalsize; ++i){
             c[i].velocity[i] = (double*) malloc(3* sizeof( double));
-            c[i].force[i] = (double*) malloc(3* sizeof( double));
+            c[i].force[i]    = (double*) malloc(3* sizeof( double));
         }
     }
-
-    //TODO: Beware! feq has changed to be of size Q*totalsize.
-    double *feq       = (double *)  malloc(Q*totalsize * sizeof( double ));
 
 
     initializeUnitTest(totalsize);
@@ -83,7 +81,7 @@ int main(int argc, char *argv[]){
     flagField     = (int *)  calloc(totalsize, sizeof( int ));
 
     // Initialize all the fields
-    initialiseFields(c, flagField,feq, xlength);
+    initialiseFields(c, flagField, xlength);
 
     //return 0;
 
@@ -126,6 +124,8 @@ int main(int argc, char *argv[]){
         computeDensityAndVelocity(c, xlength);
 
         //TODO: compute feq
+        updateFeq(&xlength, density, (double**)velocity, feq);
+
         //TODO: streamField = collideField
 
 	    if (t%timestepsPerPlotting == 0){

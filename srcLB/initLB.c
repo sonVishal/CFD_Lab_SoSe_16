@@ -51,7 +51,7 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
   return 0;
 }
 
-void initialiseFields(t_component * c, int *flagField, double *feq, int xlength){
+void initialiseFields(t_component * c, int *flagField, int xlength){
 
     /*Setting initial distributions*/
     //f_i(x,0) = f^eq(1,0,0) = w_i
@@ -101,8 +101,8 @@ void initialiseFields(t_component * c, int *flagField, double *feq, int xlength)
                     for (int i = 0; i < Q; ++i) {
                         c[k].collideField[idx+i] = feq_tmp[i];
                         c[k].streamField[idx+i]  = feq_tmp[i];
-                        feq[idx +i] = feq_tmp[i];
-                        printf("%f\n",feq[i]);
+                        c[k].feq[idx +i] = feq_tmp[i];
+                        //printf("%f\n",c[k].feq[i]);
                     }
                 }
             }

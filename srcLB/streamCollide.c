@@ -34,16 +34,19 @@ void streamCollide(t_component *c, int xlength, double* feq, int* flagField){
 void updateFeq(const int *xlength, const double*rho, double *velocity[3], double*feq){
 
 	int cellIdx, fieldIdx;
-	for (int z = 1; z <= *xlength ; z++) {
-		for (int y = 1; y <= *xlength; y++) {
-			for (int x = 1; x <= *xlength; x++) {
+    //TODO: fix components in main
+    for(int k  = 1; k < NUMCOMP; ++k){
+        for (int z = 1; z <= *xlength ; z++) {
+            for (int y = 1; y <= *xlength; y++) {
+                for (int x = 1; x <= *xlength; x++) {
 
-				fieldIdx = p_computeCellOffsetXYZ(x, y, z, *xlength);
-				cellIdx = Q*fieldIdx;
+                    fieldIdx = p_computeCellOffsetXYZ(x, y, z, *xlength);
+                    cellIdx = Q*fieldIdx;
 
-                computeFeq(&rho[fieldIdx], velocity[fieldIdx], &feq[cellIdx]);
+                    computeFeq(&rho[fieldIdx], velocity[fieldIdx], &feq[cellIdx]);
 
 
+                }
             }
         }
     }
