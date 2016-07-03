@@ -74,7 +74,7 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
     double rhoVar = 0.01*rhoRef;    //How much initial difference is allowed in density-
 
     int x,y,z;
-    srand(5);
+    srand(1);
     for (int k = 0; k < NUMCOMP; k++) {
         for ( z = 1; z <= xlength; ++z) {
             zOffset = z*xlen2sq;
@@ -90,10 +90,10 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                     double rnd = ((double)rand()/(double)RAND_MAX);
                     double rho = rhoRef - 0.5*rhoVar + rhoVar*rnd;
 
-                    static int idx = 1;
-                    if(idx < 10){
+                    static int idx_rand = 1;
+                    if(idx_rand < 10){
                         printf("%f \n", rnd);
-                        idx++;
+                        idx_rand++;
                     }
 
                     computeFeq(&rho, v, feq);
