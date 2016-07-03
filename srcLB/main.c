@@ -117,8 +117,16 @@ int main(int argc, char *argv[]){
 
         //TODO: need to include
         streamCollide(c, xlength, flagField);
-        printf("t = %d, stream field 2 @ (2,2,2) %.8f\n", t, c[0].streamField[idx]);
-        printf("t = %d, collide field 2 @ (2,2,2) %.8f\n", t, c[0].collideField[idx]);
+
+
+        int x = 2;
+        int y= 2;
+        int z = 2;
+        int cell = p_computeCellOffsetXYZ_Q(x, y, z, xlength);
+        int dist = 2;
+
+        printf("t = %d, stream field 2 @ (2,2,2) %.8f\n", t, c[0].streamField[cell]+dist);
+        printf("t = %d, collide field 2 @ (2,2,2) %.8f\n", t, c[0].collideField[cell]+dist);
         //TODO: compute force
 		computeForce_new(c, xlength, flagField, G);
 
