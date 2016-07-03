@@ -133,6 +133,7 @@ int main(int argc, char *argv[]){
     for (int i = 0; i < NUMCOMP; i++) {
         free(c[i].streamField);
         free(c[i].collideField);
+        free(c[i].rho);
     }
     free(flagField);
 
