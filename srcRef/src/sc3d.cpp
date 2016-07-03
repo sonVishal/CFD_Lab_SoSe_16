@@ -309,6 +309,9 @@
                 f_eq[index_f] = wt[id] * rho[N]
                               * (1 + 3*edotu
                                    + 4.5*edotu*edotu - 1.5*udotu);
+                if (f_eq[index_f] < 0.0) {
+                    std::cout << "Negative dist" << std::endl;
+                }
               }
             }
           }
