@@ -78,7 +78,7 @@ void doCollision(t_component *c, double G[NUMCOMP][NUMCOMP], int *flagField, int
 						printf("Force x @(2,2,2) %.8f\n",force[0]);
 
 						for(int dii = 0; dii < Q; dii++){
-							printf("i=%i, %f \n", dii, c[0].collideField[fieldIdx+dii]);
+							printf("i=%i, %.8f \n", dii, c[0].collideField[cellIdx+dii]);
 						}
 					}
 					computeEqVelocity(&c[k], commonVel, density[k], force, eqVel);
