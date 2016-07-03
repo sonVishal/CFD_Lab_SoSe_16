@@ -39,7 +39,7 @@ typedef struct {
     double* feq;
     double* rho;
     double** velocity;
-    double** force; 
+    double** force;
     double  tau;
     double  m;
     double  d0;
@@ -47,7 +47,12 @@ typedef struct {
 } t_component;
 
 //TODO: For now assuming that mass = 1. The input density if mass changes.
-static inline double psi0(double numberDensity){ return rho0*(1-exp(-numberDensity/rho0));}
+static inline double psi0(double numberDensity){
+    const double E = 2.71828;
+    const double rho0 = 1.0;
+    return rho0*(1 - pow(E, -numberDensity/rho0));
+    // return rho0*(1-exp(-numberDensity/rho0));
+}
 static inline double psi1(double numberDensity){ return numberDensity;}
 static inline double psi2(double numberDensity){ return 4.0*exp(-rho0/numberDensity);}
 
