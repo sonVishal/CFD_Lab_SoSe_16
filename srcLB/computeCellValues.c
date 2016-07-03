@@ -149,6 +149,9 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
     const t_component *const c, const int * const flagField,
     double const*const G, int xlength, double forces[3]) {
 
+
+
+    // Important: The currentCellIndex is without multiplication with Q
     int xlen2 = xlength+2;
     int xlen2sq = xlen2*xlen2;
 
@@ -163,13 +166,14 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
                                 + xlen2*LATTICEVELOCITIES[i][1]
                                 + xlen2sq*LATTICEVELOCITIES[i][2]; //index of cell in direction i
 
-            int nextIndex = Q*nextCellIndex; //index of number density in direction i
+            // int nextIndex = Q*nextCellIndex; //index of number density in direction i
             // numDensity = c[m].collideField[nextIndex]; //number density in direction i
             // Compute the number density for component "m" at lattice site "nextIndex"
 
-            computeNumDensity(&c[m].collideField[nextIndex], &numDensity);
+            // computeNumDensity(&c[m].collideField[nextIndex], &numDensity);
+            numDensity = c[m].rho[nextCellIndex];
             // if(flagField[nextCellIndex] == FLUID){
-            // }else{  // TODO
+            // }else{
             //     numDensity = c[m].collideField[nextIndex + 9];
             // }
 
@@ -194,7 +198,8 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
     }
 
     // numDensity = c[n].collideField[currentCellIndex];
-    computeNumDensity(&c[currentCompIndex].collideField[currentCellIndex], &numDensity);
+    // computeNumDensity(&c[currentCompIndex].collideField[currentCellIndex], &numDensity);
+    numDensity = c[currentCompIndex].rho[currentCellIndex];
 
     forces[0] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
     forces[1] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
