@@ -127,6 +127,14 @@ int main(int argc, char *argv[]){
         updateFeq(c, &xlength);
 
         //TODO: streamField = collideField
+        
+
+        for (int k = 0; k < NUMCOMP; ++k) {
+            
+            for (int idx = 0; idx < totalsize; ++idx) {
+                c[k].streamField[idx] = c[k].collideField[idx];
+            }
+        }
 
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);
