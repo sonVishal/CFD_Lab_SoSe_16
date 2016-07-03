@@ -156,7 +156,6 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
     forces[0] = 0.0; forces[1] = 0.0; forces[2] = 0.0;
 
     for (int m = 0; m < NUMCOMP; m++) {
-
         for (int i = 0; i < Q; i++) {
 
             // Go to the next cell index in the direction of lattice velocities
@@ -190,6 +189,7 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
             forces[0] += G_cur * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][0];
             forces[1] += G_cur * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][1];
             forces[2] += G_cur * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][2];
+            assert(psiFctPointer[c[m].psiFctCode](numDensity) == psi0(numDensity));
          }
     }
 
@@ -199,10 +199,11 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
     forces[0] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
     forces[1] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
     forces[2] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
+    assert(currentCompIndex == 0);
+    assert(psiFctPointer[c[currentCompIndex].psiFctCode](numDensity) == psi0(numDensity));
 }
 
 void computeEqVelocity(t_component const*const c, double const*const commonVelocity, const double compDensity, double const*const compForce, double compEqVelocity[3]) {
-
     assert(c->tau == 1.0);
     compEqVelocity[0] = commonVelocity[0] + (c->tau/compDensity)*compForce[0];
     compEqVelocity[1] = commonVelocity[1] + (c->tau/compDensity)*compForce[1];
