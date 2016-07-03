@@ -405,28 +405,9 @@
         {
           time++; // increment lattice time
 
-          //OUR CELL!!!
-          int x = 2;
-          int y= 2;
-          int z = 2;
-          int cell = ((x-1)+(y-1)*NX+(z-1)*NX*NY);
-          int dist = 2;
-
-          std::cout << "t = " << time << " F 2 @ (2,2,2) " << std::setprecision(7) << f[19*cell+dist] << std::endl;
-          std::cout << "t = " << time << " F_new 2 @ (2,2,2) " << std::setprecision(7) << f_new[19*cell+dist] << std::endl;
-          std::cout << "t = " << time << " F_eq 2 @ (2,2,2) " << std::setprecision(7) << f_eq[19*cell+dist] << std::endl;
           streaming(NX, NY, NZ, ex, ey, ez, tau, f, f_new, f_eq);
-          std::cout << "t = " << time << " F 2 @ (2,2,2) " << std::setprecision(7) << f[19*cell+dist] << std::endl;
-          std::cout << "t = " << time << " F_new 2 @ (2,2,2) " << std::setprecision(7) << f_new[19*cell+dist] << std::endl;
-          std::cout << "t = " << time << " F_eq 2 @ (2,2,2) " << std::setprecision(7) << f_eq[19*cell+dist] << std::endl;
 
-          std::cout << "Rho @ (2,2,2)" << std::setprecision(8) << rho[cell] << std::endl;
           calc_dPdt(NX, NY, NZ, ex, ey, ez, G11, rho, dPdt_x, dPdt_y, dPdt_z);
-          std::cout << "t = " << time << " Force x,y,z @ (2,2,2) " << std::setprecision(7) << dPdt_x[cell] << std::endl;
-          for(int dii = 0; dii < 19; dii++){
-              std::cout << " i=" << dii << ", "<<std::setprecision(7) << f[19*cell+dii] << std::endl;
-          }
-
 
           updateDensityAndVelocity(NX, NY, NZ, ex, ey, ez, wt, tau,
                                    rho, u, v, w, dPdt_x, dPdt_y, dPdt_z, f);

@@ -85,28 +85,30 @@ int main(int argc, char *argv[]){
     tau = 1.0;
 
     begin_timing = clock();
-    for(t = 1; t <= 500; t++){
 
-        int x   = 2;
-        int y   = 2;
-        int z   = 2;
-        int dir = 2;
-        int idx = Q*(x + (xlength+2)*y + (xlength+2)*(xlength+2)*z) + dir;
+
+
+
+
+
+
+    for(t = 1; t <= timesteps; t++){
 
 	    double *swap = NULL;
         // Get the periodic distributions before streaming since we do not initialize the ghost layers
+        
+        
         treatBoundary(c,flagField,velocityWall,xlength, 1);
-        printf("t = %d, stream field 2 @ (2,2,2) %.8f\n", t, c[0].streamField[idx]);
-        printf("t = %d, collide field 2 @ (2,2,2) %.8f\n", t, c[0].collideField[idx]);
 	    doStreaming(c,flagField,xlength);
-        printf("t = %d, stream field 2 @ (2,2,2) %.8f\n", t, c[0].streamField[idx]);
-        printf("t = %d, collide field 2 @ (2,2,2) %.8f\n", t, c[0].collideField[idx]);
 
         for (int i = 0; i < NUMCOMP; i++) {
             swap = c[i].collideField;
             c[i].collideField = c[i].streamField;
             c[i].streamField = swap;
         }
+
+
+
         treatBoundary(c,flagField,velocityWall,xlength, 1);
 
         beforeCollision(c, xlength); //unit tests
@@ -120,9 +122,6 @@ int main(int argc, char *argv[]){
 	    }
         printf("Time t = %d done\n",t);
     }
-
-
-
 
 
 
