@@ -110,13 +110,12 @@ int main(int argc, char *argv[]){
 
     // treatBoundary inserted where the BC is treated.
 
-    for(t = 1; t <= 3; t++){
+    for(t = 1; t <= timesteps; t++){
 
         treatBoundary(c,velocityWall,xlength);
 
-        //TODO: need to include
         streamCollide(c, xlength, flagField);
-        printf("collideField 10 @ (41,12,13) %.11f\n",c[0].collideField[Q*(41+12*(xlength+2)+13*(xlength+2)*(xlength+2))+10]);
+        //printf("collideField 10 @ (41,12,13) %.11f\n",c[0].collideField[Q*(41+12*(xlength+2)+13*(xlength+2)*(xlength+2))+10]);
 
         // int x = 2;
         // int y= 2;
@@ -124,24 +123,20 @@ int main(int argc, char *argv[]){
         // int cell = p_computeCellOffsetXYZ_Q(x, y, z, xlength);
         // int dist = 2;
 
-        //TODO: compute force
 		computeForce_new(c, xlength, flagField, G);
-        printf("Force x @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
-        printf("Force y @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
-        printf("Force z @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
+        //printf("Force x @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
+        //printf("Force y @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
+        //printf("Force z @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
 
-        //TODO: compute density & compute velocity
         computeDensityAndVelocity(c, xlength);
-        printf("Rho @ (6,6,6) %.16f\n",c[0].rho[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))]);
-        printf("Ux @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
-        printf("Uy @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
-        printf("Uz @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
+        //printf("Rho @ (6,6,6) %.16f\n",c[0].rho[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))]);
+        //printf("Ux @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
+        //printf("Uy @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
+        //printf("Uz @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
 
-        //TODO: compute feq
         updateFeq(c, &xlength);
-        printf("F_eq 10 @ (41,12,13) %.11f\n",c[0].feq[Q*(41+12*(xlength+2)+13*(xlength+2)*(xlength+2))+10]);
+        //printf("F_eq 10 @ (41,12,13) %.11f\n",c[0].feq[Q*(41+12*(xlength+2)+13*(xlength+2)*(xlength+2))+10]);
 
-        //TODO: streamField = collideField
         for (int k = 0; k < Q*totalsize; ++k) {
             c[0].streamField[k] = c[0].collideField[k];
         }
@@ -149,6 +144,7 @@ int main(int argc, char *argv[]){
 	    if (t%timestepsPerPlotting == 0){
             printf("INFO: write vtk file at time t = %d \n", t);
 	        writeVtkOutput(c,flagField,fName,t,xlength);
+            timestepsPerPlotting = 2*timestepsPerPlotting;
             // writeVtkOutputDebug(c,flagField,fName,t,xlength);
 	    }
         printf("Time t = %d done\n",t);
