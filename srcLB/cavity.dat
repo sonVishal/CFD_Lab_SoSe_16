@@ -14,7 +14,7 @@ yvelocity         0
 zvelocity         0
 
 # Number of timesteps
-timesteps            20
+timesteps            100
 
 # timesteps between each plot
-timestepsPerPlotting 5
+timestepsPerPlotting 10
