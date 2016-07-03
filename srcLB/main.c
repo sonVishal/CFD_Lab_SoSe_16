@@ -88,7 +88,17 @@ int main(int argc, char *argv[]){
 
 
 
-
+    //TODO: Wih reference to the ref solution the steps needed to restructure are:
+    // Also think of that ref did not use ghost layers.
+    // f     --> stream
+    // f_new --> collide
+    // swap  --> moved to the end.
+    // create combined stream/collide function
+    // calc_dPdt             --> computeForce
+    // updateDensityVelocity --> computeDensity + computeVelocity
+    // updateFeq             --> computeFeq
+    
+    // treatBoundary inserted where the BC is treated.
 
 
 
