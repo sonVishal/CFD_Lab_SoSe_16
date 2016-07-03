@@ -12,11 +12,12 @@
 
 
 //TODO: (TKS) temporarily have the streamingcollide func here.
+//      * Should rename stream and collidefield
 
 void streamCollide(int xlength, double* streamField, double* collideField, double* feq, int* flagField){
 
 	// Define iteration indices
-	//int cellIdx, fieldIdx;
+	int cellIdx, fieldIdx;
 
 	// Perform collision on all "inner" (FLUID) cells
 	for (int z = 1; z <= xlength ; z++) {
@@ -25,8 +26,18 @@ void streamCollide(int xlength, double* streamField, double* collideField, doubl
 
 				// Get the index of the first distribution
 				// in the current cell
-				//fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
-				//cellIdx = Q*fieldIdx;
+				fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
+				cellIdx = Q*fieldIdx;
+
+                
+                for (int i = 0; i < Q; ++i) {
+                    
+                //TODO: Do they stream to other cells in ref?
+                //          * We want to take distributions in.
+                collideField[cellIdx] = streamField[cellIdx];
+
+
+                }
             }
         }
     }
@@ -45,9 +56,6 @@ int main(int argc, char *argv[]){
     c[0].m = 1.0;
     c[0].psiFctCode = 0;
 
-    // c[1].tau = 0.7;
-    // c[1].m = 2.0;
-    // c[1].psiFctCode = 1;
 
     // double G[2][2] = {{0.01,0.04},{0.04,0.02}};
     //double G[1][1] = {{-0.27}};
@@ -139,7 +147,19 @@ int main(int argc, char *argv[]){
 
     for(t = 1; t <= timesteps; t++){
 
+        treatBoundary(c,flagField,velocityWall,xlength, 1);
+
+        //TODO: Finish this func.
         streamCollide(xlength, c[0].streamField, c[0].collideField, feq, flagField);
+
+        //TODO: compute force
+        
+        //TODO: compute density
+        //TODO: compute velocity
+        //TODO: compute feq
+        //TODO: streamField = collideField
+
+
 
 
 	    if (t%timestepsPerPlotting == 0){
