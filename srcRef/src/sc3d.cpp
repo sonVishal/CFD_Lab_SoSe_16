@@ -59,7 +59,6 @@
 
               static int idx = 1;
               if(idx < 10){
-                  std::cout << rnd << std::endl;
                   idx++;
               }
 
@@ -90,7 +89,8 @@
                                    + 4.5*edotu*edotu - 1.5*udotu);
                 f[index_f] = f_eq[index_f];
                 f_new[index_f] = f_eq[index_f];
-                std::cout << f_eq[index_f] << std::endl;
+
+                std::cout << f_eq[index_f] <<  std::endl;
               }
             }
           }
