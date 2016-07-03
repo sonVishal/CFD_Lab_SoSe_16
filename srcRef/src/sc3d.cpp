@@ -330,9 +330,9 @@
       {
 //      lattice size
 
-        const int NX = 5;         // number of lattice points along X
-        const int NY = 5;         // number of lattice points along Y
-        const int NZ = 5;         // number of lattice points along Z
+        const int NX = 64;         // number of lattice points along X
+        const int NY = 64;         // number of lattice points along Y
+        const int NZ = 64;         // number of lattice points along Z
 
         // domain size in lattice units
         // grid spacing is unity along X and Y
@@ -421,8 +421,12 @@
           std::cout << "t = " << time << " F_eq 2 @ (2,2,2) " << std::setprecision(7) << f_eq[19*cell+dist] << std::endl;
 
           streaming(NX, NY, NZ, ex, ey, ez, tau, f, f_new, f_eq);
+          std::cout << "F_new 6 @ (41,12,13) " << std::setprecision(10) << f_new[19*(40+11*NX+12*NX*NY)+10] << std::endl;
 
           calc_dPdt(NX, NY, NZ, ex, ey, ez, G11, rho, dPdt_x, dPdt_y, dPdt_z);
+          std::cout << "Force x @ (6,6,6) " << std::setprecision(10) << dPdt_x[5+5*NX+5*NX*NY] << std::endl;
+          std::cout << "Force y @ (6,6,6) " << std::setprecision(10) << dPdt_y[5+5*NX+5*NX*NY] << std::endl;
+          std::cout << "Force z @ (6,6,6) " << std::setprecision(10) << dPdt_z[5+5*NX+5*NX*NY] << std::endl;
 
           updateDensityAndVelocity(NX, NY, NZ, ex, ey, ez, wt, tau,
                                    rho, u, v, w, dPdt_x, dPdt_y, dPdt_z, f);

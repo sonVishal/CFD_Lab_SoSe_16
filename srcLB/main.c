@@ -117,18 +117,20 @@ int main(int argc, char *argv[]){
 
         //TODO: need to include
         streamCollide(c, xlength, flagField);
+        printf("collideField 10 @ (41,12,13) %.11f\n",c[0].collideField[Q*(41+12*(xlength+2)+13*(xlength+2)*(xlength+2))+10]);
 
 
-        int x = 2;
-        int y= 2;
-        int z = 2;
-        int cell = p_computeCellOffsetXYZ_Q(x, y, z, xlength);
-        int dist = 2;
+        // int x = 2;
+        // int y= 2;
+        // int z = 2;
+        // int cell = p_computeCellOffsetXYZ_Q(x, y, z, xlength);
+        // int dist = 2;
 
-        printf("t = %d, stream field 2 @ (2,2,2) %.8f\n", t, c[0].streamField[cell]+dist);
-        printf("t = %d, collide field 2 @ (2,2,2) %.8f\n", t, c[0].collideField[cell]+dist);
         //TODO: compute force
 		computeForce_new(c, xlength, flagField, G);
+        printf("Force x @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
+        printf("Force y @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
+        printf("Force z @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
 
         //TODO: compute density & compute velocity
         computeDensityAndVelocity(c, xlength);
