@@ -5,6 +5,9 @@
 /srcProject/
 /worksheet3/
 
+*.h5
+*.xmf
+
 
 # vim created files
 *.swp
