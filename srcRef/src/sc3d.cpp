@@ -130,6 +130,10 @@
                 f_new[f_index_end] = f[f_index_beg]
                                    - (f[f_index_beg] - f_eq[f_index_beg])
                                    / tau;
+
+               if (f_new[f_index_end] < 0.0) {
+                   std::cout << "Negative dist" << std::endl;
+               }
               }
             }
           }
