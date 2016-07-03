@@ -89,8 +89,8 @@ int main(int argc, char *argv[]){
         int x   = 2;
         int y   = 2;
         int z   = 2;
-        int dir = 2
-        idx = Q*(x + (xlength+2)*y + (xlength+2)*(xlength+2)*z) + dir;
+        int dir = 2;
+        int idx = Q*(x + (xlength+2)*y + (xlength+2)*(xlength+2)*z) + dir;
 
 	    double *swap = NULL;
         // Get the periodic distributions before streaming since we do not initialize the ghost layers
