@@ -23,9 +23,8 @@ int main(int argc, char *argv[]){
     c[0].m = 1.0;
     c[0].psiFctCode = 0;
 
-
     // double G[2][2] = {{0.01,0.04},{0.04,0.02}};
-    //double G[1][1] = {{-0.27}};
+    double G[1][1] = {{-0.27}};
 
     int *flagField = NULL;
     double *feq = NULL;
@@ -69,6 +68,8 @@ int main(int argc, char *argv[]){
 
     //TODO: Beware! feq has changed to be of size Q*totalsize.
     feq = (double *)  malloc(Q*totalsize * sizeof( double ));
+    double force[totalsize][3];
+
 
     initializeUnitTest(totalsize);
 
@@ -117,10 +118,7 @@ int main(int argc, char *argv[]){
         streamCollide(&c[0], xlength, feq, flagField);
 
         //TODO: compute force
-
-		computeForce_new();
-
-		computeForce(const int currentCellIndex, const int currentCompIndex, const t_component *const c, const int *const flagField, const double *const G, int xlength, double *forces)
+		computeForce_new(c, xlength, force, flagField, G);
 
         //TODO: compute density
         //TODO: compute velocity
