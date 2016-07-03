@@ -17,14 +17,14 @@ void streamCollide(int xlength, double* streamField, double* collideField, doubl
 				fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
 				cellIdx = Q*fieldIdx;
 
-                
                 for (int i = 0; i < Q; ++i) {
-                    
-                //TODO: Do they stream to other cells in ref?
-                //          * We want to take distributions in.
-                collideField[cellIdx] = streamField[cellIdx];
+					//TODO: Check if the order is correct
 
-
+					// f_new[f_index_end] = f[f_index_beg]
+					//                    - (f[f_index_beg] - f_eq[f_index_beg])
+					//                    / tau;
+					double tau = 1.0;
+			        collideField[cellIdx+Q-i-1] = streamField[cellIdx+i] - (streamField[cellIdx+i] - feq[cellIdx+i]) / tau;
                 }
             }
         }
