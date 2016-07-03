@@ -131,37 +131,21 @@ void p_setWallBoundaries(double *collideField, const int * const flagField,
 	p_treatSingleWall(collideField, flagField, xlength+1, wallVelocity, xlength, wallIdx);
 }
 
-void treatBoundary(t_component *c, int* flagField, const double * const wallVelocity, int xlength, int includingDensity){
+void treatBoundary(t_component *c, const double * const wallVelocity, int xlength){
 	for (int i = 0; i < NUMCOMP; i++) {
-		treatWallPeriodic(c[i].collideField, c[i].rho, LEFT, xlength, includingDensity);
-		treatWallPeriodic(c[i].collideField, c[i].rho, RIGHT, xlength, includingDensity);
-		treatWallPeriodic(c[i].collideField, c[i].rho, TOP, xlength, includingDensity);
-		treatWallPeriodic(c[i].collideField, c[i].rho, BOTTOM, xlength, includingDensity);
-		treatWallPeriodic(c[i].collideField, c[i].rho, FRONT, xlength, includingDensity);
-		treatWallPeriodic(c[i].collideField, c[i].rho, BACK, xlength, includingDensity);
-
-		if (includingDensity == 0) {
-			treatWallPeriodic(c[i].streamField, c[i].rho, LEFT, xlength, includingDensity);
-			treatWallPeriodic(c[i].streamField, c[i].rho, RIGHT, xlength, includingDensity);
-			treatWallPeriodic(c[i].streamField, c[i].rho, TOP, xlength, includingDensity);
-			treatWallPeriodic(c[i].streamField, c[i].rho, BOTTOM, xlength, includingDensity);
-			treatWallPeriodic(c[i].streamField, c[i].rho, FRONT, xlength, includingDensity);
-			treatWallPeriodic(c[i].streamField, c[i].rho, BACK, xlength, includingDensity);
-
-			treatWallPeriodic(c[i].feq, c[i].rho, LEFT, xlength, includingDensity);
-			treatWallPeriodic(c[i].feq, c[i].rho, RIGHT, xlength, includingDensity);
-			treatWallPeriodic(c[i].feq, c[i].rho, TOP, xlength, includingDensity);
-			treatWallPeriodic(c[i].feq, c[i].rho, BOTTOM, xlength, includingDensity);
-			treatWallPeriodic(c[i].feq, c[i].rho, FRONT, xlength, includingDensity);
-			treatWallPeriodic(c[i].feq, c[i].rho, BACK, xlength, includingDensity);
-		}
+		treatWallPeriodic(&c[i], LEFT, xlength);
+		treatWallPeriodic(&c[i], RIGHT, xlength);
+		treatWallPeriodic(&c[i], TOP, xlength);
+		treatWallPeriodic(&c[i], BOTTOM, xlength);
+		treatWallPeriodic(&c[i], FRONT, xlength);
+		treatWallPeriodic(&c[i], BACK, xlength);
 	}
 }
 
 // This will be useful for computing otherSideIdx
 // nbhR = (myRank+1)%numRanks;
 // nbhL = (myRank-1+numRanks)%numRanks;
-void treatWallPeriodic(double * collideField, double *rho, int direction, int xlength, int includingDensity) {
+void treatWallPeriodic(t_component * c, int direction, int xlength) {
 	int startOuter=0, startInner=0, endOuter=0, endInner=0, fixedValueIdx=0, fixedValueOtherIdx=0;
 	switch (direction) {
 		case LEFT:
@@ -224,15 +208,16 @@ void treatWallPeriodic(double * collideField, double *rho, int direction, int xl
 	}
 	for (int k = startOuter; k <= endOuter; k++) {
 		for (int j = startInner; j <= endInner; j++) {
-			int idx = Q*computeCellOffset(k, j, fixedValueIdx, direction, xlength);
-			int otherSideIdx = Q*computeCellOffset(k, j, fixedValueOtherIdx, direction, xlength);
+			int idx = computeCellOffset(k, j, fixedValueIdx, direction, xlength);
+			int idx_Q = Q*idx;
+			int otherSideIdx = computeCellOffset(k, j, fixedValueOtherIdx, direction, xlength);
+			int otherSideIdx_Q = Q*otherSideIdx;
 
-			if(includingDensity){
-				rho[otherSideIdx/Q] = rho[idx/Q];
-			}
-
+			c->rho[otherSideIdx] = c->rho[idx];
 			for (int i = 0; i < Q; i++) {
-				collideField[otherSideIdx+i] = collideField[idx+i];
+				c->collideField[otherSideIdx_Q+i] = c->collideField[idx_Q+i];
+				c->streamField[otherSideIdx_Q+i] = c->streamField[idx_Q+i];
+				c->feq[otherSideIdx_Q+i] = c->feq[idx_Q+i];
 			}
 		}
 	}
