@@ -190,6 +190,8 @@ int main(int argc, char *argv[]){
 
         // Print VTS files at given interval
 		if (t%timestepsPerPlotting == 0){
+
+            timestepsPerPlotting = timestepsPerPlotting*2;
             printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
 
             writeVtsOutput(c, fName, t, xlength, &procData, procsPerAxis);
@@ -200,7 +202,9 @@ int main(int argc, char *argv[]){
                 // p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
             }
 	    }
-        printf("R %d Time t = %d done\n",procData.rank, t);
+
+        if(t%10 == 0)
+            printf("R %d Time t = %d done\n",procData.rank, t);
     }
     endProcTime = MPI_Wtime();
 
