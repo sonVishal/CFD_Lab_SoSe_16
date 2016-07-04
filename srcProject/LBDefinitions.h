@@ -7,8 +7,9 @@ static const int Q = 19;
 
 // reference density
 //static const double rhoRef = 0.693;  //Shan Chen
+//static const double rho0   = 1;  //Shan Chen
 static const double rhoRef = 200;  //Sukop
-static const int rho0   = 200;
+static const double rho0      = 200;
 
 // Number of components is a global variable
 int numComp;
