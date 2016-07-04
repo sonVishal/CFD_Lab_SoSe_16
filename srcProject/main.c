@@ -250,13 +250,6 @@ int main(int argc, char *argv[]){
 		printf("\n===============================================================\n");
     }
 
-    printf("\n===============================================================\n");
-    printf("\nINFO TIMING:\n");
-    printf("Execution time (main loop): \t\t %.3f seconds \n", time_spent);
-    printf("#cells (including boundary): \t\t %i cells \n", totalsize);
-    printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
-    		(totalsize/(1000000*time_spent))*timesteps);
-
     //free allocated heap memory
     //TODO: Remember to free memory
     for (int i = 0; i < numComp; i++) {
