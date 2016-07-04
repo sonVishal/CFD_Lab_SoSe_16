@@ -42,7 +42,7 @@ int main(int argc, char *argv[]){
     int t = 0;
     int timesteps;
     int timestepsPerPlotting;
-    t_procData procData;
+    //t_procData procData;
 
     //double wallVelocity[3]; //TODO:(DL) deprecated
 
@@ -66,6 +66,10 @@ int main(int argc, char *argv[]){
 
     char fName[80];
     snprintf(fName, 80, "pv_files/project");
+    
+    //Timing variables:
+    clock_t begin_timing, end_timing;
+    double time_spent;
 
     //Timing variables:
     //double beginProcTime, endProcTime, beginSimTime, endSimTime;
@@ -116,8 +120,8 @@ int main(int argc, char *argv[]){
     //}
 
     // INFO printing
-    if(procData.rank == 0)
-    {
+    //if(procData.rank == 0)
+    //{
 #ifdef NDEBUG
     	printf("INFO: The compiler directive NDEBUG is enabled. Faster execution time is gained, "
     			"at the cost of less correctness checks during runtime!\n");
@@ -129,7 +133,7 @@ int main(int argc, char *argv[]){
         // INFO Printing
         printf("\nINFO: Storing cell data in VTS files.\n      Please use the"
         " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
-    }
+    //}
 
     // Domain decomposition & setting up neighbors
     //domainDecompositionAndNeighbors(&procData, xlength, procsPerAxis);
@@ -178,20 +182,21 @@ int main(int argc, char *argv[]){
     //initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.neighbours, procData.bufferSize);
 
     //Write the VTK at t = 0
-    printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
+    //printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
     writeVtkOutput(c,flagField,fName,t,xlength);
     //writeVtsOutput(c, flagField, fName, t, xlength, &procData, procsPerAxis);
     // writeVtsOutputDebug(c, flagField, "pv_files/Debug", t, xlength, &procData, procsPerAxis);
 
     // Combine VTS file at t = 0
     // Only done by root
-    if (procData.rank == 0) {
+    //if (procData.rank == 0) {
         //p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
         // p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
-    }
+    //}
 
     //beginProcTime = MPI_Wtime();
 
+    begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
 
         treatBoundary(c,xlength);
@@ -261,28 +266,37 @@ int main(int argc, char *argv[]){
                 // p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
             //}
 	    //}
-        printf("R %d Time t = %d done\n",procData.rank, t);
+        //printf("R %d Time t = %d done\n",procData.rank, t);
     }
+    end_timing = clock();
+    time_spent = (double)(end_timing - begin_timing) / CLOCKS_PER_SEC;
     //endProcTime = MPI_Wtime();
 
-    if(procData.rank == 0)
+    //if(procData.rank == 0)
         printf("\nINFO: Please open the WS4_combined.*.pvts file to view the combined result.\n");
 
     //get earliest start and latest finish of processors
     //MPI_Reduce(&beginProcTime, &beginSimTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
     //MPI_Reduce(&endProcTime, &endSimTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
-    if(procData.rank == 0){
+    //(procData.rank == 0){
     	//double elapsedTime = endSimTime - beginSimTime;
     	//int domTotalsize = (xlength+2)*(xlength+2)*(xlength+2);
-    	printf("\n===============================================================\n");
-		printf("\nINFO TIMING:\n");
+    	//printf("\n===============================================================\n");
+		//printf("\nINFO TIMING:\n");
 		//printf("Execution time (main loop): \t\t %.3f seconds \n", elapsedTime);
 		//printf("#cells (including boundary): \t\t %i cells \n", domTotalsize);
 		//printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
 		//		(domTotalsize/(1000000*elapsedTime))*timesteps);
-		printf("\n===============================================================\n");
-    }
+		//printf("\n===============================================================\n");
+    //}
+
+    printf("\n===============================================================\n");
+    printf("\nINFO TIMING:\n");
+    printf("Execution time (main loop): \t\t %.3f seconds \n", time_spent);
+    printf("#cells (including boundary): \t\t %i cells \n", totalsize);
+    printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
+    		(totalsize/(1000000*time_spent))*timesteps);
 
     //free allocated heap memory
     //TODO: Remember to free memory
