@@ -50,10 +50,6 @@ int main(int argc, char *argv[]){
     snprintf(fName, 80, "pv_files/project_rank");
 
     //Timing variables:
-    clock_t begin_timing, end_timing;
-    double time_spent;
-
-    //Timing variables:
     double beginProcTime, endProcTime, beginSimTime, endSimTime;
 
     if (procData.rank == 0) {
@@ -164,7 +160,6 @@ int main(int argc, char *argv[]){
 
     beginProcTime = MPI_Wtime();
 
-    begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
 
         communicateComponents(sendBuffer, readBuffer, c, &procData);
@@ -227,8 +222,6 @@ int main(int argc, char *argv[]){
 	    }
         printf("R %d Time t = %d done\n",procData.rank, t);
     }
-    end_timing = clock();
-    time_spent = (double)(end_timing - begin_timing) / CLOCKS_PER_SEC;
     endProcTime = MPI_Wtime();
 
     if(procData.rank == 0)
