@@ -20,7 +20,10 @@ void streamCollide(t_component *c, const t_procData * const procData) {
 						int nextCellIndex = p_computeCellOffsetXYZ_Q(x+LATTICEVELOCITIES[i][0],
 							y+LATTICEVELOCITIES[i][1], z+LATTICEVELOCITIES[i][2], procData->xLength);
 
-						c[k].collideField[cellIdx+Q-i-1] = c[k].streamField[nextCellIndex+Q-i-1] - (c[k].streamField[nextCellIndex+Q-i-1] - c[k].feq[nextCellIndex+Q-i-1])/c[k].tau;
+						c[k].collideField[cellIdx+Q-i-1] = c[k].streamField[nextCellIndex+Q-i-1] 
+                                                         - (c[k].streamField[nextCellIndex+Q-i-1] 
+                                                         - c[k].feq[nextCellIndex+Q-i-1])/c[k].tau;
+
 						assert(c[k].collideField[cellIdx+Q-i-1] > 0.0);
 	                }
 				}

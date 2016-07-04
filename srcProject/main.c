@@ -184,26 +184,6 @@ int main(int argc, char *argv[]){
             //c[k].collideField = swap;
         //}
 
-        ////do extraction , swap , injection for - left/right, top/bottom, front/back for each component
-        //communicateComponents(flagField, sendBuffer, readBuffer, c, &procData);
-
-        //// Perform local streaming for each component
-		//streamComponents(c, flagField, procData.xLength);
-
-        //// Swap the local fields for each component
-        //swapComponentFields(c);
-
-        //communicateDensityComponents(flagField, sendBuffer, readBuffer, c, &procData);
-
-// #ifndef NDEBUG
-//         beforeCollision(c, &procData);
-// #endif
-        // Perform local collision
-	    //doCollision(c, flagField, G, procData.xLength);
-
-// #ifndef NDEBUG
-//         afterCollision(c, &procData);
-// #endif
 
         // Treat local boundaries for each component
 	    // treatComponentBoundary(c, flagField, &procData, sendBuffer, readBuffer, 0);
