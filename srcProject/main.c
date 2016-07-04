@@ -138,7 +138,7 @@ int main(int argc, char *argv[]){
     int *flagField = (int *) calloc(totalsize, sizeof( int ));
 
     // Initialize all the fields
-    initialiseFields(c, flagField, xlength);
+    initialiseComponents(c, flagField, &procData);
 
 // #ifndef NDEBUG
 //     initializeUnitTest(totalsize);
@@ -153,19 +153,17 @@ int main(int argc, char *argv[]){
     initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.neighbours, procData.bufferSize);
 
     //Write the VTK at t = 0
-    //printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
+    printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
+    writeVtsOutput(c, fName, t, xlength, &procData, procsPerAxis);
+    writeVtsOutputDebug(c, flagField, "pv_files/Debug", t, xlength, &procData, procsPerAxis);
 
-    // writeVtsOutput(c, flagField, fName, t, xlength, &procData, procsPerAxis);
-    // writeVtsOutputDebug(c, flagField, "pv_files/Debug", t, xlength, &procData, procsPerAxis);
-
-    // Combine VTS file at t = 0
-    // Only done by root
+    // Combine VTS file at t = 0  -- only done by root
     if (procData.rank == 0) {
         p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
         p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
     }
 
-    //beginProcTime = MPI_Wtime();
+    beginProcTime = MPI_Wtime();
 
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
@@ -191,15 +189,6 @@ int main(int argc, char *argv[]){
             //c[k].streamField  = c[k].collideField;
             //c[k].collideField = swap;
         //}
-
-
-	    // if (t%timestepsPerPlotting == 0){
-        //     printf("INFO: write vtk file at time t = %d \n", t);
-	    //     writeVtkOutput(c,flagField,fName,t,xlength);
-        //     timestepsPerPlotting = 2*timestepsPerPlotting;
-        //     // writeVtkOutputDebug(c,flagField,fName,t,xlength);
-	    // }
-        printf("Time t = %d done\n",t);
 
         ////do extraction , swap , injection for - left/right, top/bottom, front/back for each component
         //communicateComponents(flagField, sendBuffer, readBuffer, c, &procData);
