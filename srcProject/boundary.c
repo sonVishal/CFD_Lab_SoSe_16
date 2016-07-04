@@ -577,116 +577,116 @@
 	//}
 //}
 
-void treatBoundary(t_component *c, int xlength){
-	for (int i = 0; i < NUMCOMP; i++) {
-		treatWallPeriodic(&c[i], LEFT, xlength);
-		treatWallPeriodic(&c[i], RIGHT, xlength);
-		treatWallPeriodic(&c[i], TOP, xlength);
-		treatWallPeriodic(&c[i], BOTTOM, xlength);
-		treatWallPeriodic(&c[i], FRONT, xlength);
-		treatWallPeriodic(&c[i], BACK, xlength);
-	}
-}
+//void treatBoundary(t_component *c, int xlength){
+	//for (int i = 0; i < numComp; i++) {
+		//treatWallPeriodic(&c[i], LEFT, xlength);
+		//treatWallPeriodic(&c[i], RIGHT, xlength);
+		//treatWallPeriodic(&c[i], TOP, xlength);
+		//treatWallPeriodic(&c[i], BOTTOM, xlength);
+		//treatWallPeriodic(&c[i], FRONT, xlength);
+		//treatWallPeriodic(&c[i], BACK, xlength);
+	//}
+//}
 
-// This will be useful for computing otherSideIdx
-// nbhR = (myRank+1)%numRanks;
-// nbhL = (myRank-1+numRanks)%numRanks;
-void treatWallPeriodic(t_component * c, int direction, int xlength) {
-	int startOuter=0, startInner=0, endOuter=0, endInner=0, fixedValueIdx=0, fixedValueOtherIdx=0;
-	switch (direction) {
-		case LEFT:
-			// z
-			startOuter = 1; endOuter = xlength;
-			// x
-			startInner = 1; endInner = xlength;
-			// y
-			fixedValueIdx = 1;
-			fixedValueOtherIdx = xlength+1;
-			break;
-		case RIGHT:
-			// z
-			startOuter = 1; endOuter = xlength;
-			// x
-			startInner = 1; endInner = xlength;
-			// y
-			fixedValueIdx = xlength;
-			fixedValueOtherIdx = 0;
-			break;
-		case TOP:
-			// y
-			startOuter = 0; endOuter = xlength+1;
-			// x
-			startInner = 1; endInner = xlength;
-			// z
-			fixedValueIdx = xlength;
-			fixedValueOtherIdx = 0;
-			break;
-		case BOTTOM:
-			// y
-			startOuter = 0; endOuter = xlength+1;
-			// x
-			startInner = 1; endInner = xlength;
-			// z
-			fixedValueIdx = 1;
-			fixedValueOtherIdx = xlength+1;
-			break;
-		case FRONT:
-			// z
-			startOuter = 0; endOuter = xlength+1;
-			// y
-			startInner = 0; endInner = xlength+1;
-			// x
-			fixedValueIdx = xlength;
-			fixedValueOtherIdx = 0;
-			break;
-		case BACK:
-			// z
-			startOuter = 0; endOuter = xlength+1;
-			// y
-			startInner = 0; endInner = xlength+1;
-			// x
-			fixedValueIdx = 1;
-			fixedValueOtherIdx = xlength+1;
-			break;
-		default:
-			ERROR("NO!");
-			break;
-	}
-	for (int k = startOuter; k <= endOuter; k++) {
-		for (int j = startInner; j <= endInner; j++) {
-			int idx = computeCellOffset(k, j, fixedValueIdx, direction, xlength);
-			int idx_Q = Q*idx;
-			int otherSideIdx = computeCellOffset(k, j, fixedValueOtherIdx, direction, xlength);
-			int otherSideIdx_Q = Q*otherSideIdx;
+//// This will be useful for computing otherSideIdx
+//// nbhR = (myRank+1)%numRanks;
+//// nbhL = (myRank-1+numRanks)%numRanks;
+//void treatWallPeriodic(t_component * c, int direction, int xlength) {
+	//int startOuter=0, startInner=0, endOuter=0, endInner=0, fixedValueIdx=0, fixedValueOtherIdx=0;
+	//switch (direction) {
+		//case LEFT:
+			//// z
+			//startOuter = 1; endOuter = xlength;
+			//// x
+			//startInner = 1; endInner = xlength;
+			//// y
+			//fixedValueIdx = 1;
+			//fixedValueOtherIdx = xlength+1;
+			//break;
+		//case RIGHT:
+			//// z
+			//startOuter = 1; endOuter = xlength;
+			//// x
+			//startInner = 1; endInner = xlength;
+			//// y
+			//fixedValueIdx = xlength;
+			//fixedValueOtherIdx = 0;
+			//break;
+		//case TOP:
+			//// y
+			//startOuter = 0; endOuter = xlength+1;
+			//// x
+			//startInner = 1; endInner = xlength;
+			//// z
+			//fixedValueIdx = xlength;
+			//fixedValueOtherIdx = 0;
+			//break;
+		//case BOTTOM:
+			//// y
+			//startOuter = 0; endOuter = xlength+1;
+			//// x
+			//startInner = 1; endInner = xlength;
+			//// z
+			//fixedValueIdx = 1;
+			//fixedValueOtherIdx = xlength+1;
+			//break;
+		//case FRONT:
+			//// z
+			//startOuter = 0; endOuter = xlength+1;
+			//// y
+			//startInner = 0; endInner = xlength+1;
+			//// x
+			//fixedValueIdx = xlength;
+			//fixedValueOtherIdx = 0;
+			//break;
+		//case BACK:
+			//// z
+			//startOuter = 0; endOuter = xlength+1;
+			//// y
+			//startInner = 0; endInner = xlength+1;
+			//// x
+			//fixedValueIdx = 1;
+			//fixedValueOtherIdx = xlength+1;
+			//break;
+		//default:
+			//ERROR("NO!");
+			//break;
+	//}
+	//for (int k = startOuter; k <= endOuter; k++) {
+		//for (int j = startInner; j <= endInner; j++) {
+			//int idx = computeCellOffset(k, j, fixedValueIdx, direction, xlength);
+			//int idx_Q = Q*idx;
+			//int otherSideIdx = computeCellOffset(k, j, fixedValueOtherIdx, direction, xlength);
+			//int otherSideIdx_Q = Q*otherSideIdx;
 
-			c->rho[otherSideIdx] = c->rho[idx];
-			for (int i = 0; i < Q; i++) {
-                //TODO: (TKS) Commenting out stream and collide gives succesfull test.
-				//c->collideField[otherSideIdx_Q+i] = c->collideField[idx_Q+i];
-				//c->streamField[otherSideIdx_Q+i] = c->streamField[idx_Q+i];
-				c->feq[otherSideIdx_Q+i] = c->feq[idx_Q+i];
-			}
-		}
-	}
-}
+			//c->rho[otherSideIdx] = c->rho[idx];
+			//for (int i = 0; i < Q; i++) {
+                ////TODO: (TKS) Commenting out stream and collide gives succesfull test.
+				////c->collideField[otherSideIdx_Q+i] = c->collideField[idx_Q+i];
+				////c->streamField[otherSideIdx_Q+i] = c->streamField[idx_Q+i];
+				//c->feq[otherSideIdx_Q+i] = c->feq[idx_Q+i];
+			//}
+		//}
+	//}
+//}
 
-int computeCellOffset(const int outer, const int inner, const int fixed, const int dir, const int xlength) {
-	switch (dir) {
-		case LEFT:
-			return p_computeCellOffsetXYZ(inner, fixed, outer, xlength);
-		case RIGHT:
-			return p_computeCellOffsetXYZ(inner, fixed, outer, xlength);
-		case TOP:
-			return p_computeCellOffsetXYZ(inner, outer,fixed, xlength);
-		case BOTTOM:
-			return p_computeCellOffsetXYZ(inner, outer,fixed, xlength);
-		case FRONT:
-			return p_computeCellOffsetXYZ(fixed, inner, outer,xlength);
-		case BACK:
-			return p_computeCellOffsetXYZ(fixed, inner, outer,xlength);
-		default:
-			return -1;
-			ERROR("NO!");
-			break;
-	}
-}
+//int computeCellOffset(const int outer, const int inner, const int fixed, const int dir, const int xlength) {
+	//switch (dir) {
+		//case LEFT:
+			//return p_computeCellOffsetXYZ(inner, fixed, outer, xlength);
+		//case RIGHT:
+			//return p_computeCellOffsetXYZ(inner, fixed, outer, xlength);
+		//case TOP:
+			//return p_computeCellOffsetXYZ(inner, outer,fixed, xlength);
+		//case BOTTOM:
+			//return p_computeCellOffsetXYZ(inner, outer,fixed, xlength);
+		//case FRONT:
+			//return p_computeCellOffsetXYZ(fixed, inner, outer,xlength);
+		//case BACK:
+			//return p_computeCellOffsetXYZ(fixed, inner, outer,xlength);
+		//default:
+			//return -1;
+			//ERROR("NO!");
+			//break;
+	//}
+//}
