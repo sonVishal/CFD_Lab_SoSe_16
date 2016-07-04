@@ -25,7 +25,8 @@
 #      v
 
 # Size of mesh
-xlength              64
+# xlength             64 # Shan Chen
+xlength              200
 
 # Number of components
 numComp              1
@@ -41,7 +42,7 @@ m0              1.0
 #m1              0.4
 
 # Interaction Matrix
-G00             -0.27
+G00             -120
 #G01             0.02
 #G10             0.02
 #G11             0.04
@@ -50,7 +51,7 @@ G00             -0.27
 #Select of the following implemented functions:
 #0: (1-exp(-numberDensity))
 #1: numberDensity
-psi0		0
+psi0		2
 #psi1		1
 
 #TODO:
