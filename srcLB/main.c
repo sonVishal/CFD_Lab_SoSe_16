@@ -13,6 +13,7 @@
 //            This must be fixed if we are doing several components.
 //TODO: (TKS) Rename streamField and collideField.
 //TODO: (TKS) Read in parameters for components from file.
+//TODO: (TKS) Comment the code.
 
 int main(int argc, char *argv[]){
 
@@ -31,7 +32,6 @@ int main(int argc, char *argv[]){
     // Simulation parameters
     int xlength;
     double tau;
-    double velocityWall[3];
     int t = 0;
     int timesteps;
     int timestepsPerPlotting;
@@ -97,7 +97,7 @@ int main(int argc, char *argv[]){
     // f_new --> collide
     for(t = 1; t <= timesteps; t++){
 
-        treatBoundary(c,velocityWall,xlength);
+        treatBoundary(c,xlength);
 
         streamCollide(c, xlength, flagField);
 

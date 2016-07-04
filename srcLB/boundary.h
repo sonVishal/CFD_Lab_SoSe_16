@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 /** handles the boundaries in our simulation setup */
-void treatBoundary(t_component *collideField, const double * const wallVelocity,int xlength);
+void treatBoundary(t_component *collideField, int xlength);
 int computeCellOffset(const int outer, const int inner, const int fixed, const int dir, const int xlength);
 void treatWallPeriodic(t_component * collideField, int direction, int xlength);
 #endif
