@@ -2,7 +2,9 @@
 #define _INITLB_H_
 #include "LBDefinitions.h"
 #include "helper.h"
+#include "computeCellValues.h"
 #include <mpi/mpi.h>
+#include <stdlib.h>
 #include <math.h>
 
 //// Read the number of components
@@ -22,9 +24,9 @@ int readParameters(
 );
 
 //[> Initialize the fields for all the components <]
-//void initialiseComponents(t_component *c, int *flagField, const t_procData * const thisProcData);
+void initialiseComponents(t_component *c, int *flagField, const t_procData * const procData);
 
 /* initialises the particle distribution functions and the flagfield */
-void initialiseFields(t_component * c, int *flagField, int xlength);
+void initialiseFields(t_component * c, const t_procData * const procData);
 
 #endif
