@@ -65,6 +65,40 @@ void computeVelocity(const double * const currentCell, const double * const dens
     velocity[2] /= (*density);
 }
 
+void computeDensityAndVelocity(t_component *c, int xlength){
+
+    for (int z = 1; z <= xlength ; z++) {
+        for (int y = 1; y <= xlength; y++) {
+            for (int x = 1; x <= xlength; x++) {
+
+                double commonVelocity[3];
+                double c_velocity[NUMCOMP][3];
+                double c_density[NUMCOMP];
+                for(int k = 0; k < NUMCOMP; ++k){
+                    int fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
+                    int cellIdx = Q*fieldIdx;
+                    double *currentCell = &c[k].streamField[cellIdx];
+
+                    // compute density
+                    computeNumDensity(currentCell, &c_density[k]);
+                    c[k].rho[fieldIdx] = c_density[k];
+
+                    // Compute component velocity
+                    computeVelocity(currentCell, &c[k].rho[fieldIdx], c_velocity[k]);
+
+                    // Compute common velocity
+                    computeCommonVelocity(c_density, &c_velocity[k], c, commonVelocity);
+
+                    // Compute equilibrium velocity
+                    computeEqVelocity(c, commonVelocity, c_density[k], c[k].force[fieldIdx], c[k].velocity[fieldIdx]);
+                }
+            }
+        }
+    }
+}
+
+
+
 /*  Computes the equilibrium distributions for all particle distribution
  *  functions of one cell from density and velocity and stores the results in feq.
  */
