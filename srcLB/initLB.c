@@ -74,14 +74,16 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
     double rhoVar = 0.01*rhoRef;    //How much initial difference is allowed in density-
 
     int x,y,z;
-    srand(5);
+    srand(1);
     for (int k = 0; k < NUMCOMP; k++) {
         for ( z = 1; z <= xlength; ++z) {
             zOffset = z*xlen2sq;
             for ( y = 1; y <= xlength; ++y) {
                 yzOffset = y*(xlength+2) + zOffset;
                 for ( x = 1; x <= xlength; ++x) {
-                    // Compute the base index
+                    if (z == xlength/2) {
+                        srand(3);
+                    }
                     cellIdx = (yzOffset + x);
                     idx = Q*cellIdx;
                     double feq_tmp[19]; //TODO: (TKS) Should remove this and operate directly on feq;
