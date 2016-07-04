@@ -148,25 +148,25 @@ int main(int argc, char *argv[]){
 // #endif
 
     // Use a different seed for different procs to avoid same random numbers
-    //srand(procData.rank*(procData.rank+1)+1);
     // Initialise the fields for all components
-    //initialiseComponents(c, flagField, &procData);
+    // initialiseComponents(c, flagField, &procData);
 
     // Allocate memory to send and read buffers
-    //initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.neighbours, procData.bufferSize);
+    //TODO: (DL) maybe hand in only procData for consistency?
+    initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.neighbours, procData.bufferSize);
 
     //Write the VTK at t = 0
     //printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
-    writeVtkOutput(c,flagField,fName,t,xlength);
-    //writeVtsOutput(c, flagField, fName, t, xlength, &procData, procsPerAxis);
+
+    // writeVtsOutput(c, flagField, fName, t, xlength, &procData, procsPerAxis);
     // writeVtsOutputDebug(c, flagField, "pv_files/Debug", t, xlength, &procData, procsPerAxis);
 
     // Combine VTS file at t = 0
     // Only done by root
-    //if (procData.rank == 0) {
-        //p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
-        // p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
-    //}
+    if (procData.rank == 0) {
+        p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
+        p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
+    }
 
     //beginProcTime = MPI_Wtime();
 

@@ -65,17 +65,17 @@ void computeVelocity(const double * const currentCell, const double * const dens
     velocity[2] /= (*density);
 }
 
-void computeDensityAndVelocity(t_component *c, int xlength){
+void computeDensityAndVelocity(t_component *c, const t_procData * const procData){
 
-    for (int z = 1; z <= xlength ; z++) {
-        for (int y = 1; y <= xlength; y++) {
-            for (int x = 1; x <= xlength; x++) {
+    for (int z = 1; z <= procData->xLength[2] ; z++) {
+        for (int y = 1; y <= procData->xLength[1]; y++) {
+            for (int x = 1; x <= procData->xLength[0]; x++) {
 
                 double commonVelocity[3];
-                double c_velocity[NUMCOMP][3];
-                double c_density[NUMCOMP];
-                for(int k = 0; k < NUMCOMP; ++k){
-                    int fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
+                double c_velocity[numComp][3];
+                double c_density[numComp];
+                for(int k = 0; k < numComp; ++k){
+                    int fieldIdx = p_computeCellOffsetXYZ(x, y, z, procData->xLength);
                     int cellIdx = Q*fieldIdx;
                     double *currentCell = &c[k].streamField[cellIdx];
 
@@ -156,15 +156,15 @@ void computeFeqCell(const double * const density, const double * const velocity,
     #endif
 }
 
-void computeFeq(t_component *c, const int *xlength){
+void computeFeq(t_component *c, const t_procData * const procData){
 
 	int cellIdx, fieldIdx;
-    for(int k  = 0; k < NUMCOMP; ++k){
-        for (int z = 1; z <= *xlength ; z++) {
-            for (int y = 1; y <= *xlength; y++) {
-                for (int x = 1; x <= *xlength; x++) {
+    for(int k  = 0; k < numComp; ++k){
+        for (int z = 1; z <= procData->xLength[2] ; z++) {
+            for (int y = 1; y <= procData->xLength[1]; y++) {
+                for (int x = 1; x <= procData->xLength[0]; x++) {
 
-                    fieldIdx = p_computeCellOffsetXYZ(x, y, z, *xlength);
+                    fieldIdx = p_computeCellOffsetXYZ(x, y, z, procData->xLength);
                     cellIdx = Q*fieldIdx;
 
                     computeFeqCell(&c[k].rho[fieldIdx], c[k].velocity[fieldIdx], &c[k].feq[cellIdx]);
@@ -181,7 +181,7 @@ void computeCommonVelocity(const double *const c_density, double c_velocity[2][3
     double den = 0.0;
     double momentum[3] = {0.0,0.0,0.0};
 
-    for (int n = 0; n < NUMCOMP; ++n) {
+    for (int n = 0; n < numComp; ++n) {
        momentum[0]+= c_density[n]*c_velocity[n][0]/c[n].tau;
        momentum[1]+= c_density[n]*c_velocity[n][1]/c[n].tau;
        momentum[2]+= c_density[n]*c_velocity[n][2]/c[n].tau;
@@ -196,22 +196,22 @@ void computeCommonVelocity(const double *const c_density, double c_velocity[2][3
 
 void computeCellForce(const int currentCellIndex, const int currentCompIndex,
     const t_component *const c, const int * const flagField,
-    double const*const G, int xlength, double forces[3]) {
+    double const*const G, double forces[3], const t_procData *const procData) {
 
     // Important: The currentCellIndex is without multiplication with Q
-    int xlen2 = xlength+2;
-    int xlen2sq = xlen2*xlen2;
+    int xlen2 = procData->xLength[0]+2;
+    int xlenylen2 = xlen2*(procData->xLength[1]+2);
 
     double numDensity;
     forces[0] = 0.0; forces[1] = 0.0; forces[2] = 0.0;
 
-    for (int m = 0; m < NUMCOMP; m++) {
+    for (int m = 0; m < numComp; m++) {
         for (int i = 0; i < Q; i++) {
 
             // Go to the next cell index in the direction of lattice velocities
             int nextCellIndex = currentCellIndex+LATTICEVELOCITIES[i][0]
                                 + xlen2*LATTICEVELOCITIES[i][1]
-                                + xlen2sq*LATTICEVELOCITIES[i][2]; //index of cell in direction i
+                                + xlenylen2*LATTICEVELOCITIES[i][2]; //index of cell in direction i
 
             // int nextIndex = Q*nextCellIndex; //index of number density in direction i
             // numDensity = c[m].collideField[nextIndex]; //number density in direction i
@@ -255,15 +255,15 @@ void computeCellForce(const int currentCellIndex, const int currentCompIndex,
     assert(psiFctPointer[c[currentCompIndex].psiFctCode](numDensity) == psi0(numDensity));
 }
 
-void computeForce(t_component *c, int xlength, int *flagField, double G[NUMCOMP][NUMCOMP]){
+void computeForce(t_component *c, const t_procData * const procData, int *flagField, double G[numComp][numComp]){
 
-    for(int k = 0; k < NUMCOMP; ++k){
-        for (int z = 1; z <= xlength ; z++) {
-            for (int y = 1; y <= xlength; y++) {
-                for (int x = 1; x <= xlength; x++) {
-                    int fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
+    for(int k = 0; k < numComp; ++k){
+        for (int z = 1; z <= procData->xLength[2] ; z++) {
+            for (int y = 1; y <= procData->xLength[1]; y++) {
+                for (int x = 1; x <= procData->xLength[0]; x++) {
+                    int fieldIdx = p_computeCellOffsetXYZ(x, y, z, procData->xLength);
                     // int cellIdx = Q*fieldIdx;
-                    computeCellForce(fieldIdx, k, c, flagField, G[k], xlength, c[k].force[fieldIdx]);
+                    computeCellForce(fieldIdx, k, c, flagField, G[k],  c[k].force[fieldIdx], procData);
                 }
             }
         }
