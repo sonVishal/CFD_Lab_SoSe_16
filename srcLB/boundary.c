@@ -215,6 +215,7 @@ void treatWallPeriodic(t_component * c, int direction, int xlength) {
 
 			c->rho[otherSideIdx] = c->rho[idx];
 			for (int i = 0; i < Q; i++) {
+                //TODO: (TKS) Commenting out stream and collide gives succesfull test.
 				c->collideField[otherSideIdx_Q+i] = c->collideField[idx_Q+i];
 				c->streamField[otherSideIdx_Q+i] = c->streamField[idx_Q+i];
 				c->feq[otherSideIdx_Q+i] = c->feq[idx_Q+i];

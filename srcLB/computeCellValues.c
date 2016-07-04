@@ -148,6 +148,12 @@ void computeFeqCell(const double * const density, const double * const velocity,
     feq[16] = d2*(u_u + (uz)*(1/cs_2 + (uz)/cs_4_2));
     feq[17] = d1*(u_u + (ux+uz)*(1/cs_2 + (ux+uz)/cs_4_2));
     feq[18] = d1*(u_u + (uy+uz)*(1/cs_2 + (uy+uz)/cs_4_2));
+
+    #ifndef NDEBUG
+    for (int i = 0; i < Q; i++) {
+        assert(feq[i] > 0.0);
+    }
+    #endif
 }
 
 void computeFeq(t_component *c, const int *xlength){
@@ -163,11 +169,6 @@ void computeFeq(t_component *c, const int *xlength){
 
                     computeFeqCell(&c[k].rho[fieldIdx], c[k].velocity[fieldIdx], &c[k].feq[cellIdx]);
 
-                    #ifndef NDEBUG
-					for (int i = 0; i < Q; i++) {
-						assert(c[k].feq[cellIdx+i] > 0.0);
-					}
-                    #endif
 
                 }
             }
