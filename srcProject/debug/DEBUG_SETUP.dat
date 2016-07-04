@@ -1,0 +1,40 @@
+# Size of mesh
+xlength              32
+
+# Relaxation time
+# In recent version calculated from the Reynolds number
+#tau                  1
+
+# Reynolds Number
+Re                    20
+
+# Number of timesteps
+timesteps            50
+
+# timesteps between each plot
+timestepsPerPlotting 50
+
+
+# Number of components
+numComp              1
+
+tau0               1.01
+
+# Molecular mass
+m0              1.0
+
+
+# Interaction Matrix
+G00             -0.27
+
+psi0		0
+
+# Domain decomposition
+# Number of subdivisions per axis
+# x-axis = iProc
+# y-axis = jProc
+# z-axis = kProc
+iProc		1
+jProc		1
+kProc		2
+
