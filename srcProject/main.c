@@ -24,11 +24,8 @@
 
 int main(int argc, char *argv[]){
 
-    int *flagField = NULL;
-
     // Simulation parameters
     int xlength;
-    double tau;
     int t = 0;
     int timesteps;
     int timestepsPerPlotting;
@@ -36,7 +33,7 @@ int main(int argc, char *argv[]){
     t_procData procData;
 
     //MPI parameters
-    MPI_Status status;
+    //MPI_Status status;
     int procsPerAxis[3];
 
     // Send and read buffers for all possible directions:
@@ -138,7 +135,7 @@ int main(int argc, char *argv[]){
     //initializeUnitTest(totalsize);
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
-    flagField = (int *) calloc(totalsize, sizeof( int ));
+    int *flagField = (int *) calloc(totalsize, sizeof( int ));
 
     // Initialize all the fields
     initialiseFields(c, flagField, xlength);
@@ -175,14 +172,13 @@ int main(int argc, char *argv[]){
 
         treatBoundary(c,xlength);
 
-        streamCollide(c, xlength, flagField);
+        streamCollide(c, &procData);
 
-		computeForce(c, xlength, flagField, G);
+		computeForce(c, &procData, flagField, G);
 
-        computeDensityAndVelocity(c, xlength);
+        computeDensityAndVelocity(c, &procData);
 
-        computeFeq(c, &xlength);
-
+        computeFeq(c, &procData);
 
         for (int k = 0; k < Q*totalsize; ++k) {
             c[0].streamField[k] = c[0].collideField[k];
@@ -197,12 +193,12 @@ int main(int argc, char *argv[]){
         //}
 
 
-	    if (t%timestepsPerPlotting == 0){
-            printf("INFO: write vtk file at time t = %d \n", t);
-	        writeVtkOutput(c,flagField,fName,t,xlength);
-            timestepsPerPlotting = 2*timestepsPerPlotting;
-            // writeVtkOutputDebug(c,flagField,fName,t,xlength);
-	    }
+	    // if (t%timestepsPerPlotting == 0){
+        //     printf("INFO: write vtk file at time t = %d \n", t);
+	    //     writeVtkOutput(c,flagField,fName,t,xlength);
+        //     timestepsPerPlotting = 2*timestepsPerPlotting;
+        //     // writeVtkOutputDebug(c,flagField,fName,t,xlength);
+	    // }
         printf("Time t = %d done\n",t);
 
         ////do extraction , swap , injection for - left/right, top/bottom, front/back for each component
@@ -230,40 +226,41 @@ int main(int argc, char *argv[]){
 	    // treatComponentBoundary(c, flagField, &procData, sendBuffer, readBuffer, 0);
 
         // Print VTS files at given interval
-		//if (t%timestepsPerPlotting == 0){
-            //printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
-	        //writeVtsOutput(c, flagField, fName, t, xlength, &procData, procsPerAxis);
+		if (t%timestepsPerPlotting == 0){
+            printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
+
+            writeVtsOutput(c, fName, t, xlength, &procData, procsPerAxis);
             // writeVtsOutputDebug(c, flagField, "pv_files/Debug", t, xlength, &procData, procsPerAxis);
             // Combine VTS file at t
-            //if (procData.rank == 0) {
-                //p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
-                // p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
-            //}
-	    //}
-        //printf("R %d Time t = %d done\n",procData.rank, t);
+            if (procData.rank == 0) {
+                p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
+                p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
+            }
+	    }
+        printf("R %d Time t = %d done\n",procData.rank, t);
     }
     end_timing = clock();
     time_spent = (double)(end_timing - begin_timing) / CLOCKS_PER_SEC;
-    //endProcTime = MPI_Wtime();
+    endProcTime = MPI_Wtime();
 
-    //if(procData.rank == 0)
+    if(procData.rank == 0)
         printf("\nINFO: Please open the WS4_combined.*.pvts file to view the combined result.\n");
 
     //get earliest start and latest finish of processors
-    //MPI_Reduce(&beginProcTime, &beginSimTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
-    //MPI_Reduce(&endProcTime, &endSimTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&beginProcTime, &beginSimTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&endProcTime, &endSimTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
-    //(procData.rank == 0){
-    	//double elapsedTime = endSimTime - beginSimTime;
-    	//int domTotalsize = (xlength+2)*(xlength+2)*(xlength+2);
-    	//printf("\n===============================================================\n");
-		//printf("\nINFO TIMING:\n");
-		//printf("Execution time (main loop): \t\t %.3f seconds \n", elapsedTime);
-		//printf("#cells (including boundary): \t\t %i cells \n", domTotalsize);
-		//printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
-		//		(domTotalsize/(1000000*elapsedTime))*timesteps);
-		//printf("\n===============================================================\n");
-    //}
+    if(procData.rank == 0){
+    	double elapsedTime = endSimTime - beginSimTime;
+    	int domTotalsize = (xlength+2)*(xlength+2)*(xlength+2);
+    	printf("\n===============================================================\n");
+		printf("\nINFO TIMING:\n");
+		printf("Execution time (main loop): \t\t %.3f seconds \n", elapsedTime);
+		printf("#cells (including boundary): \t\t %i cells \n", domTotalsize);
+		printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
+				(domTotalsize/(1000000*elapsedTime))*timesteps);
+		printf("\n===============================================================\n");
+    }
 
     printf("\n===============================================================\n");
     printf("\nINFO TIMING:\n");
@@ -274,7 +271,7 @@ int main(int argc, char *argv[]){
 
     //free allocated heap memory
     //TODO: Remember to free memory
-    for (int i = 0; i < NUMCOMP; i++) {
+    for (int i = 0; i < numComp; i++) {
         free(c[i].streamField);
         free(c[i].collideField);
         free(c[i].rho);
@@ -292,15 +289,15 @@ int main(int argc, char *argv[]){
     for (int i = LEFT; i <= BACK; i++) {
     	//set to NULL in initializeBuffers if buffer is not allocated (due to non existing neighbour)
         //TODO: (DL) at the moment we dont need this check, because all send/read buffers are allocated
-        //if(sendBuffer[i] != NULL) free(sendBuffer[i]);
-        //if(readBuffer[i] != NULL) free(readBuffer[i]);
+        if(sendBuffer[i] != NULL) free(sendBuffer[i]);
+        if(readBuffer[i] != NULL) free(readBuffer[i]);
     }
 
     // #ifndef NDEBUG
     // freeUnitTest();
     // #endif
 
-    //finaliseMPI(&procData);
+    finaliseMPI(&procData);
     return 0;
 }
 
