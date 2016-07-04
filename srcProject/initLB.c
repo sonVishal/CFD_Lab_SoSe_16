@@ -112,6 +112,13 @@ void initialiseFields(t_component * c, const t_procData * const procData){
 	// Initially velocity is 0
 	double u0[3] = {0.0, 0.0, 0.0};
 
+	//TODO: (DL) this 'if' is for reference solution, can be deleted when cleaning up...
+	if(procData->rank == 0){
+		srand(1);
+	}else if(procData->rank == 1){
+		srand(3);
+	}//else no seed
+
     // [> initialize collideField and streamField <]
     int x,y,z;
     for ( z = 1; z <= procData->xLength[2]; ++z) {
