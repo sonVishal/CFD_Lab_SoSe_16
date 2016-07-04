@@ -74,7 +74,6 @@ int main(int argc, char *argv[]){
         }
     }
 
-
     initializeUnitTest(totalsize);
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
@@ -89,12 +88,11 @@ int main(int argc, char *argv[]){
     " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
 
     // Write the VTK at t = 0
-    printf("INFO: write vtk file at time t = %d \n", t);
-    writeVtkOutput(c,flagField,fName,t,xlength);
+    // printf("INFO: write vtk file at time t = %d \n", t);
+    // writeVtkOutput(c,flagField,fName,t,xlength);
     // writeVtkOutputDebug(c,flagField,fName,t,xlength);
 
     begin_timing = clock();
-
 
     //TODO: Wih reference to the ref solution the steps needed to restructure are:
     // Also think of that ref did not use ghost layers.
