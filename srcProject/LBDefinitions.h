@@ -127,7 +127,6 @@ typedef struct {
     double** force;
     double  tau;
     double  m;
-    double  d0;
     int psiFctCode;
 } t_component;
 

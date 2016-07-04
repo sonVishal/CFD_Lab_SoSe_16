@@ -17,11 +17,7 @@ typedef struct{
 } t_iterPara;
 
 // Wrapper around communicate function to communicate each component
-void communicateComponents(int const * const flagField,
-    double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData);
-
-void communicateDensityComponents(int const * const flagField,
-    double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData);
+void communicateComponents(double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData);
 
 // Performs extract, swap and inject for all the directions
 void communicate(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData);
@@ -41,20 +37,19 @@ void inject(double const * const readBuffer, double* collideField, t_iterPara co
             const int direction, int const * const index);
 
 void communicateDensity(double** sendBuffer, double**readBuffer, double* collideField,
-	const int * const flagField, t_procData const * const procData);
+	t_procData const * const procData);
 
-int extractDensity(double sendBuffer[], double const * const collideField, const int * const flagField,
+int extractDensity(double sendBuffer[], double const * const rho,
 	t_iterPara const * const iterPara, t_procData const * const procData, const int direction);
 
 void swapDensity(double** sendBuffer, double** readBuffer, t_procData const * const procData,
 	const int direction, const int bufferSize1, const int bufferSize2);
 
-int injectDensity(double const * const readBuffer, double* collideField, const int * const flagField,
+int injectDensity(double const * const readBuffer, double* rho,
 	t_iterPara const * const iterPara, t_procData const * const procData, const int direction);
 
-void swapNoCommDensity(double* collideField, const int * const flagField,
-	t_iterPara const * const iterPara1,t_iterPara const * const iterPara2,
-	t_procData const * const procData, const int direction);
+void swapNoCommDensity(double* rho, t_iterPara const * const iterPara1,
+    t_iterPara const * const iterPara2, t_procData const * const procData, const int direction);
 
 // Sets the iteration parameters
 void p_setCommIterationParameters(t_iterPara * const iterPara, t_procData const*const procData, const int direction);
