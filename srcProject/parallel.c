@@ -22,21 +22,36 @@ void broadcastValues(int rank, int *xlength, t_component *c, double G[numComp][n
 	// 	MPI_Bcast(&c[i].m, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	// }
 
+	// The struct looks like this
+	// double* streamField;
+    // double* collideField;
+    // double* feq;
+    // double* rho;
+    // double** velocity;
+    // double** force;
+    // double  tau;
+    // double  m;
+    // int psiFctCode;
+
 	// Create a struct for broadcasting components
 	MPI_Datatype MPI_Component;
-    MPI_Datatype types[5] = {MPI_BYTE, MPI_BYTE, MPI_DOUBLE, MPI_DOUBLE, MPI_INT};
-	int blocklengths[5] = {sizeof(double *), sizeof(double *), 1, 1, 1};
-    MPI_Aint offsets[5];
-
+    MPI_Datatype types[9] = {MPI_BYTE, MPI_BYTE, MPI_BYTE, MPI_BYTE, MPI_BYTE, MPI_BYTE,
+								MPI_DOUBLE, MPI_DOUBLE, MPI_INT};
+	int blocklengths[9] = {sizeof(double *), sizeof(double *), 1, 1, 1};
+    MPI_Aint offsets[9];
 
 	//TODO: (DL) need to pass other values here too!!!
 	offsets[0] = (size_t)(void *)&c[0].streamField - (size_t)(void *)&c[0];
 	offsets[1] = (size_t)(void *)&c[0].collideField - (size_t)(void *)&c[0];
-	offsets[2] = (size_t)(void *)&c[0].tau - (size_t)(void *)&c[0];
-	offsets[3] = (size_t)(void *)&c[0].m - (size_t)(void *)&c[0];
-	offsets[4] = (size_t)(void *)&c[0].psiFctCode - (size_t)(void *)&c[0];
+	offsets[2] = (size_t)(void *)&c[0].feq - (size_t)(void *)&c[0];
+	offsets[3] = (size_t)(void *)&c[0].rho - (size_t)(void *)&c[0];
+	offsets[4] = (size_t)(void **)&c[0].velocity - (size_t)(void *)&c[0];
+	offsets[5] = (size_t)(void **)&c[0].force - (size_t)(void *)&c[0];
+	offsets[6] = (size_t)(void *)&c[0].tau - (size_t)(void *)&c[0];
+	offsets[7] = (size_t)(void *)&c[0].m - (size_t)(void *)&c[0];
+	offsets[8] = (size_t)(void *)&c[0].psiFctCode - (size_t)(void *)&c[0];
 
-    MPI_Type_create_struct(5, blocklengths, offsets, types, &MPI_Component);
+    MPI_Type_create_struct(9, blocklengths, offsets, types, &MPI_Component);
     MPI_Type_commit(&MPI_Component);
 
 	MPI_Bcast(c, numComp, MPI_Component, 0, MPI_COMM_WORLD);
