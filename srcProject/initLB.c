@@ -96,309 +96,97 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int
   return 0;
 }
 
-//void initialiseFields(double *collideField, double *streamField, const t_procData * const thisProcData){
 
-    //[>Setting initial distributions<]
-    ////f_i(x,0) = f^eq(1,0,0) = w_i
+// NOTE: Currently only supports random initialization for multiphase
+void initialiseFields(t_component * c, const t_procData * const procData){
 
-    //// current cell index
-    //int idx;
-
-    //// Temporary variables for xlength^2
-    //int const xylen = (thisProcData->xLength[0]+2)*(thisProcData->xLength[1]+2);
-
-    //// Temporary variables for z and y offsets
-    //int zOffset, yzOffset;
-
-    //[> initialize collideField and streamField <]
-    //int x,y,z;
-    //for ( z = 0; z <= thisProcData->xLength[2]+1; ++z) {
-        //zOffset = z*xylen;
-        //for ( y = 0; y <= thisProcData->xLength[1]+1; ++y) {
-            //yzOffset = y*(thisProcData->xLength[0]+2) + zOffset;
-            //for ( x = 0; x <= thisProcData->xLength[0]+1; ++x) {
-                //// Compute the base index
-                //idx = Q*(yzOffset + x);
-                //for (int i = 0; i < Q; ++i) {
-                    //collideField[idx+i] = 200*LATTICEWEIGHTS[i] + (double)rand()/(double)RAND_MAX/Q;/[>(1+(double)rand()/(double)RAND_MAX/100);
-                    //streamField[idx+i]  = 200*LATTICEWEIGHTS[i] + (double)rand()/(double)RAND_MAX/Q;/[>(1+(double)rand()/(double)RAND_MAX/100);
-
-					//// TODO: (VS) Remove.
-					//// This is good for debugging since we see different values
-					//// in each subdomain.
-					//// collideField[idx+i] = (double)(thisProcData->rank+1)/100.0;
-                    //// streamField[idx+i]  = (double)(thisProcData->rank+1)/100.0;
-                //}
-            //}
-        //}
-    //}
-//}
-
-//void initialiseComponents(t_component *c, int *flagField, const t_procData * const thisProcData) {
-
-	//// Initialize the collide and stream fields for each component
-	//for (int i = 0; i < numComp; i++) {
-		//initialiseFields(c[i].collideField, c[i].streamField, thisProcData);
-	//}
-
-	//// Flag field is component independent
-
-	//[>Looping over boundary of flagFields<]
-    ////All points set to zero at memory allocation (using calloc)
-	//int innerIt,outerIt;	// Iteration variables
-	//int endOuter, endInner, fixedValue, wallIdx, idx;
-
-	//// First set up the parallel boundary layer
-	//for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
-		//if (thisProcData->neighbours[wallIdx] != MPI_PROC_NULL) {
-			//p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, wallIdx);
-			//for (outerIt = 0; outerIt <= endOuter; outerIt++) {
-				//for (innerIt = 0; innerIt <= endInner; innerIt++) {
-					//idx = p_computeCellOffset(outerIt,innerIt,fixedValue,thisProcData->xLength,wallIdx);
-					//flagField[idx] = PARALLEL_BOUNDARY;
-				//}
-			//}
-		//}
-	//}
-
-	////TODO: (DL) only quickly changed to PERIODIC_BC
-
-	//// Now set up the ghost boundary layer with no slip
-	//for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
-		//if (thisProcData->neighbours[wallIdx] == MPI_PROC_NULL && wallIdx != TOP) {
-			//p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, wallIdx);
-			//for (outerIt = 0; outerIt <= endOuter; outerIt++) {
-				//for (innerIt = 0; innerIt <= endInner; innerIt++) {
-					//idx = p_computeCellOffset(outerIt,innerIt,fixedValue,thisProcData->xLength,wallIdx);
-					//flagField[idx] = PERIODIC_BOUNDARY;
-				//}
-			//}
-		//}
-	//}
-
-	//// Now set up the ghost boundary layer with moving wall - if it's at the TOP ghost layer
-	//if (thisProcData->neighbours[TOP] == MPI_PROC_NULL) {
-		//p_setIterationParameters(&endOuter, &endInner, &fixedValue, thisProcData, TOP);
-		//for (outerIt = 0; outerIt <= endOuter; outerIt++) {
-			//for (innerIt = 0; innerIt <= endInner; innerIt++) {
-				//idx = p_computeCellOffset(outerIt,innerIt,fixedValue,thisProcData->xLength, TOP);
-				//flagField[idx] = PERIODIC_BOUNDARY;
-			//}
-		//}
-	//}
-//}
-
-
-#include "initLB.h"
-#include "LBDefinitions.h"
-#include "computeCellValues.h"
-
-// int readParameters(int *xlength, double *tau, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
-//
-//     /* Read values from file given in argv */
-//     READ_INT(*argv, *xlength);
-//
-//     READ_INT(*argv, *timesteps);
-//     READ_INT(*argv, *timestepsPerPlotting);
-//
-//
-//     //TODO: (TKS) Adapt this to component case.
-//     //if(*tau<=0.5 || *tau>2){
-//         //ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
-//     //}
-//
-//   return 0;
-// }
-
-void initialiseFields(t_component * c, int *flagField, int xlength){
-
-    /*Setting initial distributions*/
-    /*Initializes to equilibrium state with a random density with 1% max from reference density*/
+    // [>Setting initial distributions<]
+    //f_i(x,0) = f^eq(random,0)
 
     // current cell index
-    int idx, cellIdx;
+    int fieldIdx, cellIdx;
 
-    // Temporary variables for xlength^2
-    int const xlen2 = xlength+2;
-    int const xlen2sq = xlen2*xlen2;
+	// How much initial difference is allowed in density
+	double rhoVar = 0.01*rhoRef;
 
-    // Temporary variables for z and y offsets
-    int zOffset, yzOffset;
+	// Initially velocity is 0
+	double u0[3] = {0.0, 0.0, 0.0};
 
-    /* initialize collideField and streamField */
-
-    //Intermediate values to calculate feq for a random density.
-    double v[3] = {0,0,0};          //Assume no initial velocity
-
-    double rhoVar = 0.01*rhoRef;    //How much initial difference is allowed in density
-
+    // [> initialize collideField and streamField <]
     int x,y,z;
-    srand(5);
-    for (int k = 0; k < numComp; k++) {
-        for ( z = 1; z <= xlength; ++z) {
-            zOffset = z*xlen2sq;
-            for ( y = 1; y <= xlength; ++y) {
-                yzOffset = y*(xlength+2) + zOffset;
-                for ( x = 1; x <= xlength; ++x) {
+    for ( z = 1; z <= procData->xLength[2]; ++z) {
+        for ( y = 1; y <= procData->xLength[1]; ++y) {
+            for ( x = 1; x <= procData->xLength[0]; ++x) {
+                // Compute the base index
+				fieldIdx = p_computeCellOffsetXYZ(x, y, z, procData->xLength);
+                cellIdx = Q*fieldIdx;
 
-                    // Compute the base index
-                    cellIdx = (yzOffset + x);
-                    idx = Q*cellIdx;
+				double rnd = ((double)rand()/(double)RAND_MAX);
+				c->rho[fieldIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd;
 
-                    //Set the initial density to a random offsett to rhoRef
-                    double rnd = ((double)rand()/(double)RAND_MAX);
-                    c[k].rho[cellIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd;
-
-                    computeFeqCell(&c[k].rho[cellIdx], v, &c[k].feq[idx]);
-                    for (int i = 0; i < Q; ++i) {
-                        c[k].collideField[idx+i] = c[k].feq[idx +i];
-                        c[k].streamField[idx+i]  = c[k].feq[idx +i];
-                    }
+				computeFeqCell(&(c->rho[fieldIdx]), u0, &(c->feq[cellIdx]));
+                for (int i = 0; i < Q; ++i) {
+                    c->collideField[cellIdx+i] = c->feq[cellIdx+i];
+                    c->streamField[cellIdx+i]  = c->feq[cellIdx+i];
                 }
             }
         }
     }
+}
 
+// Currently the initialization is only for single component multiphase simulation
+// TODO: Box and random initialization for multicomponents as per Sukop code
+void initialiseComponents(t_component *c, int *flagField, const t_procData * const procData) {
 
-    // NOTE: For debug
-    // for (z = 1; z <= xlength; z++) {
-    //     zOffset = z*xlen2sq;
-    //     for (x = 1; x <= xlength; x++) {
-    //         idx = Q*(zOffset + 1*(xlength+2) + x);
-    //         for (int i = 0; i < Q; i++) {
-    //             c[0].collideField[idx+i] = 1;
-    //             c[0].streamField[idx+i] = 1;
-    //         }
-    //         idx = Q*(zOffset + (xlength)*(xlength+2) + x);
-    //         for (int i = 0; i < Q; i++) {
-    //             c[0].collideField[idx+i] = 2;
-    //             c[0].streamField[idx+i] = 2;
-    //         }
-    //     }
-    // }
-    //
-    // for (z = 1; z <= xlength; z++) {
-    //     zOffset = z*xlen2sq;
-    //     for (y = 1; y <= xlength; y++) {
-    //         idx = Q*(zOffset + y*(xlength+2) + 1);
-    //         for (int i = 0; i < Q; i++) {
-    //             c[0].collideField[idx+i] = 3;
-    //             c[0].streamField[idx+i] = 3;
-    //         }
-    //         idx = Q*(zOffset + y*(xlength+2) + xlength);
-    //         for (int i = 0; i < Q; i++) {
-    //             c[0].collideField[idx+i] = 4;
-    //             c[0].streamField[idx+i] = 4;
-    //         }
-    //     }
-    // }
-    //
-    // for (y = 1; y <= xlength; y++) {
-    //     for (x = 1; x <= xlength; x++) {
-    //         idx = Q*(xlen2sq + y*(xlength+2) + x);
-    //         for (int i = 0; i < Q; i++) {
-    //             c[0].collideField[idx+i] = 5;
-    //             c[0].streamField[idx+i] = 5;
-    //         }
-    //         idx = Q*(xlen2sq*(xlength) + y*(xlength+2) + x);
-    //         for (int i = 0; i < Q; i++) {
-    //             c[0].collideField[idx+i] = 6;
-    //             c[0].streamField[idx+i] = 6;
-    //         }
-    //     }
-    // }
-    // y = 1; z = 1;
-    // for (x = 1; x <= xlength; x++) {
-    //     idx = Q*(z*xlen2sq + y*xlen2 + x);
-    //     for (int i = 0; i < Q; i++) {
-    //         c[0].collideField[idx + i] = 1;
-    //         c[0].streamField[idx + i] = 1;
-    //     }
-    // }
-    //
-    // y = xlength; z = xlength;
-    // for (x = 1; x <= xlength; x++) {
-    //     idx = Q*(z*xlen2sq + y*xlen2 + x);
-    //     for (int i = 0; i < Q; i++) {
-    //         c[0].collideField[idx + i] = 3;
-    //         c[0].streamField[idx + i] = 3;
-    //     }
-    // }
+	// Initialize the collide and stream fields for each component
+	// TODO: this also changes in multicomponent
+	// Set up a seed based on the procData
+	srand(procData->rank*(procData->rank+1)+1);
+	for (int i = 0; i < numComp; i++) {
+		initialiseFields(&c[i], procData);
+	}
 
-    // x= 1; y = 1;
-    // for (z = 1; z <= xlength; z++) {
-    //     idx = Q*(z*xlen2sq + y*xlen2 + x);
-    //     for (int i = 0; i < Q; i++) {
-    //         c[0].collideField[idx + i] = 1;
-    //         c[0].streamField[idx + i] = 1;
-    //     }
-    // }
-    //
-    // x = xlength; y = xlength;
-    // for (z = 1; z <= xlength; z++) {
-    //     idx = Q*(z*xlen2sq + y*xlen2 + x);
-    //     for (int i = 0; i < Q; i++) {
-    //         c[0].collideField[idx + i] = 3;
-    //         c[0].streamField[idx + i] = 3;
-    //     }
-    // }
+	// Flag field is component independent
 
-    /*Looping over boundary of flagFields*/
+	// [>Looping over boundary of flagFields<]
     //All points set to zero at memory allocation (using calloc)
+	int innerIt,outerIt;	// Iteration variables
+	int endOuter, endInner, fixedValue, wallIdx, idx;
 
-    //These are the no-slip walls
-    //fixed: z = 0
-    for (y = 0; y <= xlength+1; y++) {
-        idx = y*(xlength+2);
-        for (x = 0; x <= xlength+1; x++) {
-            flagField[x+idx] = 1;
-        }
-    }
+	// First set up the parallel boundary layer
+	for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
+		if (procData->neighbours[wallIdx] != MPI_PROC_NULL) {
+			p_setIterationParameters(&endOuter, &endInner, &fixedValue, procData, wallIdx);
+			for (outerIt = 0; outerIt <= endOuter; outerIt++) {
+				for (innerIt = 0; innerIt <= endInner; innerIt++) {
+					idx = p_computeCellOffset(outerIt,innerIt,fixedValue,procData->xLength,wallIdx);
+					flagField[idx] = PARALLEL_BOUNDARY;
+				}
+			}
+		}
+	}
 
-    //fixed: x = 0
-    //We start at 1 to not include previous cells again from z = 0
-    for (z = 1; z <= xlength; z++) {
-        zOffset = z*xlen2sq;
-        for (y = 0; y <= xlength+1; y++) {
-            flagField[zOffset+y*(xlength+2)] = 1;
-        }
-    }
+	// Now set up the ghost boundary layer with no slip
+	for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
+		if (procData->neighbours[wallIdx] == MPI_PROC_NULL && wallIdx != TOP) {
+			p_setIterationParameters(&endOuter, &endInner, &fixedValue, procData, wallIdx);
+			for (outerIt = 0; outerIt <= endOuter; outerIt++) {
+				for (innerIt = 0; innerIt <= endInner; innerIt++) {
+					idx = p_computeCellOffset(outerIt,innerIt,fixedValue,procData->xLength,wallIdx);
+					flagField[idx] = PERIODIC_BOUNDARY;
+				}
+			}
+		}
+	}
 
-    //fixed: x = xlength+1
-    //We start at 1 to not include previous cells again from z = 0
-    for (z = 1; z <= xlength; z++) {
-        zOffset = z*xlen2sq + xlength + 1;
-        for (y = 0; y <= xlength+1; y++) {
-            flagField[zOffset+y*(xlength+2)] = 1;
-        }
-    }
-
-    //fixed: y = 0
-    //from 1:xlength only, to not include cells at upper, lower, left and right edges
-    //The edge cells are set in the other loops.
-    for (z = 1; z <= xlength; z++) {
-        zOffset = z*xlen2sq;
-        for (x = 1; x <= xlength; x++) {
-            flagField[zOffset+x] = 1;
-        }
-    }
-
-    //fixed: y = xlength+1
-    //same reasoning for index range as in fixed y=0
-    for (z = 1; z <= xlength; z++) {
-        zOffset = z*xlen2sq + (xlength+1)*(xlength+2);
-        for (x = 1; x <= xlength; x++) {
-            flagField[zOffset+x] = 1;
-        }
-    }
-
-    // This is the moving wall. All cells at z=xlength+1 are included (also the edge cells).
-    // fixed: z = xlength+1
-    zOffset = (xlength+1)*xlen2sq;
-    for (y = 0; y <= xlength+1; y++) {
-        idx = zOffset + y*(xlength+2);
-        for (x = 0; x <= xlength+1; x++) {
-            flagField[x+idx] = 2;
-        }
-    }
+	// Now set up the ghost boundary layer with moving wall - if it's at the TOP ghost layer
+	if (procData->neighbours[TOP] == MPI_PROC_NULL) {
+		p_setIterationParameters(&endOuter, &endInner, &fixedValue, procData, TOP);
+		for (outerIt = 0; outerIt <= endOuter; outerIt++) {
+			for (innerIt = 0; innerIt <= endInner; innerIt++) {
+				idx = p_computeCellOffset(outerIt,innerIt,fixedValue,procData->xLength, TOP);
+				flagField[idx] = PERIODIC_BOUNDARY;
+			}
+		}
+	}
 }
