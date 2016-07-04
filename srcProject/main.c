@@ -152,7 +152,8 @@ int main(int argc, char *argv[]){
     // initialiseComponents(c, flagField, &procData);
 
     // Allocate memory to send and read buffers
-    //initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.neighbours, procData.bufferSize);
+    //TODO: (DL) maybe hand in only procData for consistency?
+    initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.neighbours, procData.bufferSize);
 
     //Write the VTK at t = 0
     //printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
