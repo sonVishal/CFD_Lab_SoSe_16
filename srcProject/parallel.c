@@ -17,10 +17,11 @@ void broadcastValues(int rank, int *xlength, t_component *c, double G[numComp][n
 	MPI_Bcast(G, numComp*numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
 	// Avoid this by creating a struct
-	// for (int i = 0; i < numComp; i++) {
-	// 	MPI_Bcast(&c[i].tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	// 	MPI_Bcast(&c[i].m, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	// }
+	for (int i = 0; i < numComp; i++) {
+		MPI_Bcast(&c[i].tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+		MPI_Bcast(&c[i].m, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	 	MPI_Bcast(&c[i].psiFctCode, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	}
 
 	// The struct looks like this
 	// double* streamField;
@@ -34,29 +35,29 @@ void broadcastValues(int rank, int *xlength, t_component *c, double G[numComp][n
     // int psiFctCode;
 
 	// Create a struct for broadcasting components
-	MPI_Datatype MPI_Component;
-    MPI_Datatype types[9] = {MPI_BYTE, MPI_BYTE, MPI_BYTE, MPI_BYTE, MPI_BYTE, MPI_BYTE,
-								MPI_DOUBLE, MPI_DOUBLE, MPI_INT};
-	int blocklengths[9] = {sizeof(double *), sizeof(double *), 1, 1, 1};
-    MPI_Aint offsets[9];
-
-	//TODO: (DL) need to pass other values here too!!!
-	offsets[0] = (size_t)(void *)&c[0].streamField - (size_t)(void *)&c[0];
-	offsets[1] = (size_t)(void *)&c[0].collideField - (size_t)(void *)&c[0];
-	offsets[2] = (size_t)(void *)&c[0].feq - (size_t)(void *)&c[0];
-	offsets[3] = (size_t)(void *)&c[0].rho - (size_t)(void *)&c[0];
-	offsets[4] = (size_t)(void **)&c[0].velocity - (size_t)(void *)&c[0];
-	offsets[5] = (size_t)(void **)&c[0].force - (size_t)(void *)&c[0];
-	offsets[6] = (size_t)(void *)&c[0].tau - (size_t)(void *)&c[0];
-	offsets[7] = (size_t)(void *)&c[0].m - (size_t)(void *)&c[0];
-	offsets[8] = (size_t)(void *)&c[0].psiFctCode - (size_t)(void *)&c[0];
-
-    MPI_Type_create_struct(9, blocklengths, offsets, types, &MPI_Component);
-    MPI_Type_commit(&MPI_Component);
-
-	MPI_Bcast(c, numComp, MPI_Component, 0, MPI_COMM_WORLD);
-
-	MPI_Type_free(&MPI_Component);
+	// MPI_Datatype MPI_Component;
+    // MPI_Datatype types[9] = {MPI_BYTE, MPI_BYTE, MPI_BYTE, MPI_BYTE, MPI_BYTE, MPI_BYTE,
+	// 							MPI_DOUBLE, MPI_DOUBLE, MPI_INT};
+	// int blocklengths[9] = {sizeof(double *), sizeof(double *), 1, 1, 1};
+    // MPI_Aint offsets[9];
+	//
+	// //TODO: (DL) need to pass other values here too!!!
+	// offsets[0] = (size_t)(void *)&c[0].streamField - (size_t)(void *)&c[0];
+	// offsets[1] = (size_t)(void *)&c[0].collideField - (size_t)(void *)&c[0];
+	// offsets[2] = (size_t)(void *)&c[0].feq - (size_t)(void *)&c[0];
+	// offsets[3] = (size_t)(void *)&c[0].rho - (size_t)(void *)&c[0];
+	// offsets[4] = (size_t)(void **)&c[0].velocity - (size_t)(void *)&c[0];
+	// offsets[5] = (size_t)(void **)&c[0].force - (size_t)(void *)&c[0];
+	// offsets[6] = (size_t)(void *)&c[0].tau - (size_t)(void *)&c[0];
+	// offsets[7] = (size_t)(void *)&c[0].m - (size_t)(void *)&c[0];
+	// offsets[8] = (size_t)(void *)&c[0].psiFctCode - (size_t)(void *)&c[0];
+	//
+    // MPI_Type_create_struct(9, blocklengths, offsets, types, &MPI_Component);
+    // MPI_Type_commit(&MPI_Component);
+	//
+	// MPI_Bcast(c, numComp, MPI_Component, 0, MPI_COMM_WORLD);
+	//
+	// MPI_Type_free(&MPI_Component);
 }
 
 /*

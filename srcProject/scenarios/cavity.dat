@@ -25,7 +25,7 @@
 #      v
 
 # Size of mesh
-xlength              200
+xlength              64
 
 # Number of components
 numComp              1
@@ -41,7 +41,7 @@ m0              1.0
 #m1              0.4
 
 # Interaction Matrix
-G00             -120.0
+G00             -0.27
 #G01             0.02
 #G10             0.02
 #G11             0.04
@@ -50,24 +50,24 @@ G00             -120.0
 #Select of the following implemented functions:
 #0: (1-exp(-numberDensity))
 #1: numberDensity
-psi0		2
+psi0		0
 #psi1		1
 
 #TODO:
-d00         1
-d01         1
+#d00         1
+#d01         1
 
 
 # Reynolds Number
 Re              2
 
 # Velocity of moving wall
-xvelocity         0.01
-yvelocity         0
-zvelocity         0
+#xvelocity         0.01
+#yvelocity         0
+#zvelocity         0
 
 # Number of timesteps
-timesteps            200
+timesteps            2000
 
 # timesteps between each plot
 timestepsPerPlotting 100
