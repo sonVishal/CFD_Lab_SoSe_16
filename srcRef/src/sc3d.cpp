@@ -28,9 +28,10 @@
 
       double psi(double x)
       {
-        const double E = 2.71828;
+        // const double E = 2.71828;
         const double rho0 = 1.0;
-        return rho0 * (1 - pow(E, -x/rho0));
+        // return rho0 * (1 - pow(E, -x/rho0));
+        return rho0*(1-exp(-x/rho0));
       }
 
 //    function to initialize density, velocity and PDFs
