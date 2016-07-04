@@ -13,10 +13,9 @@
 // t            - Time at which output is to be stored
 // xlength      - Number of cells in one direction
 
-void writeVtsOutput(const t_component * const c, const int * const flagField,
-    const char * filename, unsigned int t, int xlen,
-    const t_procData * const procData, const int * const procsPerAxis)
-{
+void writeVtsOutput(const t_component * const c, const char * filename,
+    unsigned int t, int xlen, const t_procData * const procData,
+    const int * const procsPerAxis) {
     // Files related variables
     char pFileName[80];
     FILE *fp = NULL;

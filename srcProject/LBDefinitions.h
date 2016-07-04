@@ -5,9 +5,6 @@
 // Number of lattice directions
 static const int Q = 19;
 
-// Dimensions
-static const int D = 3;
-
 // reference density
 static const double rhoRef = 0.693;
 static const int rho0   = 1;

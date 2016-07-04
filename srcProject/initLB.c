@@ -1,126 +1,100 @@
-//#include "initLB.h"
+#include "initLB.h"
 
-//void readNumComp(int argc, char *argv[]) {
-	//if(argc != 2){
-		//char msg[200];
-		//snprintf(msg, 200, "There are %i arguments provided to the simulation. Only 1 argument "
-				//"providing \nthe path+filename (of relative to working directory) of the scenario "
-				//"is accepted!", argc-1);
-		//ERROR(msg);
-	//}
+void readNumComp(int argc, char *argv[]) {
+	if(argc != 2){
+		char msg[200];
+		snprintf(msg, 200, "There are %i arguments provided to the simulation. Only 1 argument "
+				"providing \nthe path+filename (of relative to working directory) of the scenario "
+				"is accepted!", argc-1);
+		ERROR(msg);
+	}
 
-	//READ_INT(*argv, numComp);
+	READ_INT(*argv, numComp);
 
-	//MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
-//}
+	MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
+}
 
-//// TODO: (VS) Remove velocity and reynolds number in final version from entire code
-//int readParameters(int *xlength, t_component *c, double G[numComp][numComp],
-	//double *velocityWall, int *procsPerAxis, int *timesteps, int *timestepsPerPlotting,
-	//int argc, char *argv[]){
+int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int *procsPerAxis,
+    int *timesteps, int *timestepsPerPlotting,
+	int argc, char *argv[]){
 
-	//if(argc != 2){
-		//char msg[200];
-		//snprintf(msg, 200, "There are %i arguments provided to the simulation. Only 1 argument "
-				//"providing \nthe path+filename (of relative to working directory) of the scenario "
-				//"is accepted!", argc-1);
-		//ERROR(msg);
-	//}
+	if(argc != 2){
+		char msg[200];
+		snprintf(msg, 200, "There are %i arguments provided to the simulation. Only 1 argument "
+				"providing \nthe path+filename (of relative to working directory) of the scenario "
+				"is accepted!", argc-1);
+		ERROR(msg);
+	}
 
-    //double xvelocity, yvelocity, zvelocity;
-	//int iProc, jProc, kProc;
-    //double Re, u_wall, machNr;
+	int iProc, jProc, kProc;
+    double Re;
 
-    //[> Read values from file given in argv <]
-    //READ_INT(*argv, *xlength);
+    // [> Read values from file given in argv <]
+    READ_INT(*argv, *xlength);
 
-	//// Read the tau and mass for each component
-	//// * If mass and tau are provided for less number of components
-	////   read_double will give an error
-	//// * If mass and tau are provided for more number of components
-	//// 	 they will not be read due to the for loop
-	//for (int i = 0; i < numComp; i++) {
-		//char tempName[20];
-		//snprintf(tempName, 20, "tau%d",i);
-		//read_double(*argv, tempName, &c[i].tau);
+	// Read the tau and mass for each component
+	// * If mass and tau are provided for less number of components
+	//   read_double will give an error
+	// * If mass and tau are provided for more number of components
+	// 	 they will not be read due to the for loop
+	for (int i = 0; i < numComp; i++) {
+		char tempName[20];
+		snprintf(tempName, 20, "tau%d",i);
+		read_double(*argv, tempName, &c[i].tau);
 
-		//snprintf(tempName, 20, "m%d",i);
-		//read_double(*argv, tempName, &c[i].m);
+		snprintf(tempName, 20, "m%d",i);
+		read_double(*argv, tempName, &c[i].m);
 
-		//for (int j = 0; j < numComp; j++) {
-			//snprintf(tempName, 20, "G%d%d",i,j);
-			//read_double(*argv, tempName, &G[i][j]);
-		//}
+		for (int j = 0; j < numComp; j++) {
+			snprintf(tempName, 20, "G%d%d",i,j);
+			read_double(*argv, tempName, &G[i][j]);
+		}
 
-		//snprintf(tempName, 20, "psi%d", i);
-		//read_int(*argv, tempName, &c[i].psiFctCode);
+		snprintf(tempName, 20, "psi%d", i);
+		read_int(*argv, tempName, &c[i].psiFctCode);
+	}
 
-		//snprintf(tempName, 20, "d0%d", i);
-		//read_double(*argv, tempName, &c[i].d0);
-	//}
+    READ_DOUBLE(*argv, Re);
 
-    //READ_DOUBLE(*argv, Re);
+    READ_INT(*argv, *timesteps);
+    READ_INT(*argv, *timestepsPerPlotting);
 
-    //READ_DOUBLE(*argv, xvelocity);
-    //READ_DOUBLE(*argv, yvelocity);
-    //READ_DOUBLE(*argv, zvelocity);
+	READ_INT(*argv, iProc);
+	READ_INT(*argv, jProc);
+	READ_INT(*argv, kProc);
 
-    //velocityWall[0] = xvelocity;
-    //velocityWall[1] = yvelocity;
-    //velocityWall[2] = zvelocity;
+	procsPerAxis[0] = iProc;
+	procsPerAxis[1] = jProc;
+	procsPerAxis[2] = kProc;
 
-    //READ_INT(*argv, *timesteps);
-    //READ_INT(*argv, *timestepsPerPlotting);
+    //TODO: make tau check again (can be multiple...)
+    // if(*tau<=0.5 || *tau>2){
+    //     ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
+    // }
 
-	//READ_INT(*argv, iProc);
-	//READ_INT(*argv, jProc);
-	//READ_INT(*argv, kProc);
+    // [>We allow user defined mach number tolerance for Ma << 1 (default = 0.1)
+    //   To change please look at LBDefinitions.h*/
+    // if(machNr > machNrTol){
+    //     char buffer[80];
+    //     snprintf(buffer, 80, "Mach number is larger than %f (aborting)! \n",machNrTol);
+    //     ERROR(buffer);
+    // }
 
-	//procsPerAxis[0] = iProc;
-	//procsPerAxis[1] = jProc;
-	//procsPerAxis[2] = kProc;
+	// Check if iProc, jProc and kProc are less than the domain size and nonzero
+	if (iProc <= 0 || iProc > *xlength || jProc <= 0 || jProc > *xlength ||
+		kProc <= 0 || kProc > *xlength) {
+		char buffer[120];
+        snprintf(buffer, 120, "Please make sure that iProc, jProc and kProc are greater than 0 and less than xlength = %d (aborting)! \n",*xlength);
+        ERROR(buffer);
+	}
 
-    //[>Calculates tau from the Reynolds number<]
-    //u_wall  = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity);
-    //// *tau    =  u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
-    //machNr  = u_wall/C_S;
-
-    //// printf("\nINFO: Calculated tau = %f \n", *tau);
-    //printf("\nINFO: Wall speed = %f \n", u_wall);
-    //printf("\nINFO: Mach number = %f \n\n", machNr);
-
-    //[> valid settings check<]
-    //if(u_wall >= C_S){
-        //ERROR("Wall speed is supersonic (aborting)! \n");
-    //}
-
-    //// if(*tau<=0.5 || *tau>2){
-    ////     ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
-    //// }
-
-    //[>We allow user defined mach number tolerance for Ma << 1 (default = 0.1)
-      //To change please look at LBDefinitions.h*/
-    //if(machNr > machNrTol){
-        //char buffer[80];
-        //snprintf(buffer, 80, "Mach number is larger than %f (aborting)! \n",machNrTol);
-        //ERROR(buffer);
-    //}
-
-	//// Check if iProc, jProc and kProc are less than the domain size and nonzero
-	//if (iProc <= 0 || iProc > *xlength || jProc <= 0 || jProc > *xlength ||
-		//kProc <= 0 || kProc > *xlength) {
-		//char buffer[120];
-        //snprintf(buffer, 120, "Please make sure that iProc, jProc and kProc are greater than 0 and less than xlength = %d (aborting)! \n",*xlength);
-        //ERROR(buffer);
-	//}
-
-	//if (*xlength%iProc != 0 || *xlength%jProc != 0 || *xlength%kProc != 0) {
-        //printf("WARNING: The domain decomposition is not uniform. This might create load unbalances between processes.\n");
-	//}
+	if (*xlength%iProc != 0 || *xlength%jProc != 0 || *xlength%kProc != 0) {
+        printf("WARNING: The domain decomposition is not uniform. This might create load unbalances between processes.\n");
+	}
 
 
-  //return 0;
-//}
+  return 0;
+}
 
 //void initialiseFields(double *collideField, double *streamField, const t_procData * const thisProcData){
 
@@ -219,28 +193,28 @@
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 
-int readParameters(int *xlength, double *tau, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
-
-    /* Read values from file given in argv */
-    READ_INT(*argv, *xlength);
-
-    READ_INT(*argv, *timesteps);
-    READ_INT(*argv, *timestepsPerPlotting);
-
-
-    //TODO: (TKS) Adapt this to component case.
-    //if(*tau<=0.5 || *tau>2){
-        //ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
-    //}
-
-  return 0;
-}
+// int readParameters(int *xlength, double *tau, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
+//
+//     /* Read values from file given in argv */
+//     READ_INT(*argv, *xlength);
+//
+//     READ_INT(*argv, *timesteps);
+//     READ_INT(*argv, *timestepsPerPlotting);
+//
+//
+//     //TODO: (TKS) Adapt this to component case.
+//     //if(*tau<=0.5 || *tau>2){
+//         //ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
+//     //}
+//
+//   return 0;
+// }
 
 void initialiseFields(t_component * c, int *flagField, int xlength){
 
     /*Setting initial distributions*/
     /*Initializes to equilibrium state with a random density with 1% max from reference density*/
-    
+
     // current cell index
     int idx, cellIdx;
 
@@ -260,7 +234,7 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
 
     int x,y,z;
     srand(5);
-    for (int k = 0; k < NUMCOMP; k++) {
+    for (int k = 0; k < numComp; k++) {
         for ( z = 1; z <= xlength; ++z) {
             zOffset = z*xlen2sq;
             for ( y = 1; y <= xlength; ++y) {
