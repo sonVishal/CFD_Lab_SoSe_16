@@ -66,15 +66,14 @@ void computeCellForce(const int currentCellIndex, const int currentCompIndex,
 
 void computeForce_new(t_component *c, int xlength, int *flagField, double G[NUMCOMP][NUMCOMP]){
 
-    for (int z = 1; z <= xlength ; z++) {
-        for (int y = 1; y <= xlength; y++) {
-            for (int x = 1; x <= xlength; x++) {
-                int fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
-                // int cellIdx = Q*fieldIdx;
-                for(int k = 0; k < NUMCOMP; ++k){
+    for(int k = 0; k < NUMCOMP; ++k){
+        for (int z = 1; z <= xlength ; z++) {
+            for (int y = 1; y <= xlength; y++) {
+                for (int x = 1; x <= xlength; x++) {
+                    int fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
+                    // int cellIdx = Q*fieldIdx;
                     computeCellForce(fieldIdx, k, c, flagField, G[k], xlength, c[k].force[fieldIdx]);
                 }
-
             }
         }
     }
