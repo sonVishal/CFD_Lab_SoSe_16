@@ -107,7 +107,7 @@ void initialiseFields(t_component * c, const t_procData * const procData){
     int fieldIdx, cellIdx;
 
 	// How much initial difference is allowed in density
-	//double rhoVar = 0.01*rhoRef;  //Shan Chen
+	double rhoVar = 0.01*rhoRef;  //Shan Chen
 
 	// Initially velocity is 0
 	double u0[3] = {0.0, 0.0, 0.0};
@@ -129,8 +129,8 @@ void initialiseFields(t_component * c, const t_procData * const procData){
                 cellIdx = Q*fieldIdx;
 
 				double rnd = ((double)rand()/(double)RAND_MAX);
-				//c->rho[fieldIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd; //Shan Chen
-				c->rho[fieldIdx] = rhoRef + rnd; //Sukop
+				c->rho[fieldIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd; //Shan Chen
+				//c->rho[fieldIdx] = rhoRef + rnd; //Sukop
 
 				computeFeqCell(&(c->rho[fieldIdx]), u0, &(c->feq[cellIdx]));
                 for (int i = 0; i < Q; ++i) {
