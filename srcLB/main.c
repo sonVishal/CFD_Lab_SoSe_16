@@ -39,7 +39,7 @@ int main(int argc, char *argv[]){
 
     // File printing parameters
     char fName[80];
-    snprintf(fName, 80, "pv_files/worksheet2");
+    snprintf(fName, 80, "pv_files/project");
 
     //Timing variables:
     clock_t begin_timing, end_timing;
