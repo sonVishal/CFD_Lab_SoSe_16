@@ -8,9 +8,7 @@
 *.h5
 *.xmf
 
-*.sh
-!execute_debug_setup.sh
-
+*.csv
 
 # vim created files
 *.swp
@@ -99,7 +97,7 @@ lbsim
 .fuse_hidden*
 
 # Shell executables
-
+*.sh
 
 # Latex files
 *.log
