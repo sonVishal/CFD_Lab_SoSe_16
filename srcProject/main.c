@@ -24,8 +24,6 @@
 
 int main(int argc, char *argv[]){
 
-
-
     int *flagField = NULL;
 
     // Simulation parameters
@@ -89,8 +87,7 @@ int main(int argc, char *argv[]){
 
     // Broadcast the data from rank 0 (root) to other processes
     //TODO: (DL) maybe initialize also procData in here (collideField & streamField) & validity tests
-    // broadcastValues(procData.rank, &xlength, c, G, wallVelocity,
-    //    procsPerAxis, &timesteps, &timestepsPerPlotting);
+    broadcastValues(procData.rank, &xlength, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting);
 
     // Abort if the number of processes given by user do not match with the dat file
     //TODO: (DL) could we get this somewhere else than main?
@@ -120,18 +117,11 @@ int main(int argc, char *argv[]){
     }
 
     // Domain decomposition & setting up neighbors
-    //domainDecompositionAndNeighbors(&procData, xlength, procsPerAxis);
-
-    /*Allocate memory to pointers*/
-    //int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
-    //for (int i = 0; i < numComp; i++) {
-        //c[i].collideField  = (double *)  malloc(Q*totalsize * sizeof( double ));
-        //c[i].streamField   = (double *)  malloc(Q*totalsize * sizeof( double ));
-    //}
+    domainDecompositionAndNeighbors(&procData, xlength, procsPerAxis);
 
     /*Allocate memory to pointers*/
     int totalsize = (xlength+2)*(xlength+2)*(xlength+2);
-    for (int i = 0; i < NUMCOMP; i++) {
+    for (int i = 0; i < numComp; i++) {
         c[i].collideField = (double *)  malloc(Q*totalsize * sizeof( double ));
         c[i].streamField  = (double *)  malloc(Q*totalsize * sizeof( double ));
         c[i].feq          = (double *)  malloc(Q*totalsize * sizeof( double ));

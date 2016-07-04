@@ -27,7 +27,7 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int
 	}
 
 	int iProc, jProc, kProc;
-    double Re, u_wall, machNr;
+    double Re;
 
     // [> Read values from file given in argv <]
     READ_INT(*argv, *xlength);
@@ -52,9 +52,6 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int
 
 		snprintf(tempName, 20, "psi%d", i);
 		read_int(*argv, tempName, &c[i].psiFctCode);
-
-		snprintf(tempName, 20, "d0%d", i);
-		read_double(*argv, tempName, &c[i].d0);
 	}
 
     READ_DOUBLE(*argv, Re);
@@ -196,22 +193,22 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 
-int readParameters(int *xlength, double *tau, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
-
-    /* Read values from file given in argv */
-    READ_INT(*argv, *xlength);
-
-    READ_INT(*argv, *timesteps);
-    READ_INT(*argv, *timestepsPerPlotting);
-
-
-    //TODO: (TKS) Adapt this to component case.
-    //if(*tau<=0.5 || *tau>2){
-        //ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
-    //}
-
-  return 0;
-}
+// int readParameters(int *xlength, double *tau, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
+//
+//     /* Read values from file given in argv */
+//     READ_INT(*argv, *xlength);
+//
+//     READ_INT(*argv, *timesteps);
+//     READ_INT(*argv, *timestepsPerPlotting);
+//
+//
+//     //TODO: (TKS) Adapt this to component case.
+//     //if(*tau<=0.5 || *tau>2){
+//         //ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
+//     //}
+//
+//   return 0;
+// }
 
 void initialiseFields(t_component * c, int *flagField, int xlength){
 
@@ -237,7 +234,7 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
 
     int x,y,z;
     srand(5);
-    for (int k = 0; k < NUMCOMP; k++) {
+    for (int k = 0; k < numComp; k++) {
         for ( z = 1; z <= xlength; ++z) {
             zOffset = z*xlen2sq;
             for ( y = 1; y <= xlength; ++y) {

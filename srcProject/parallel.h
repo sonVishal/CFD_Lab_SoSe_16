@@ -70,7 +70,7 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]);
 
 // Broadcasts the values read by proc 0
 void broadcastValues(int rank, int *xlength, t_component *c, double G[numComp][numComp],
-	double *velocityWall, int *procsPerAxis, int *timesteps, int *timestepsPerPlotting);
+    int *procsPerAxis, int *timesteps, int *timestepsPerPlotting);
 
 // Initialise the buffers
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const * const xlength,

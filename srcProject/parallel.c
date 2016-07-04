@@ -7,78 +7,79 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 	MPI_Comm_rank(MPI_COMM_WORLD,rank);
 }
 
-//void broadcastValues(int rank, int *xlength, t_component *c, double G[numComp][numComp],
-	//double *velocityWall, int *procsPerAxis, int *timesteps, int *timestepsPerPlotting) {
+void broadcastValues(int rank, int *xlength, t_component *c, double G[numComp][numComp],
+	int *procsPerAxis, int *timesteps, int *timestepsPerPlotting) {
 
-	//MPI_Bcast(xlength, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    //MPI_Bcast(velocityWall, 3, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    //MPI_Bcast(timesteps, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    //MPI_Bcast(timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    //MPI_Bcast(procsPerAxis, 3, MPI_INT, 0, MPI_COMM_WORLD);
-	//MPI_Bcast(G, numComp*numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Bcast(xlength, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(timesteps, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(procsPerAxis, 3, MPI_INT, 0, MPI_COMM_WORLD);
+	MPI_Bcast(G, numComp*numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-	//// Avoid this by creating a struct
-	//// for (int i = 0; i < numComp; i++) {
-	//// 	MPI_Bcast(&c[i].tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	//// 	MPI_Bcast(&c[i].m, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	//// }
+	// Avoid this by creating a struct
+	// for (int i = 0; i < numComp; i++) {
+	// 	MPI_Bcast(&c[i].tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	// 	MPI_Bcast(&c[i].m, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	// }
 
-	//// Create a struct for broadcasting components
-	//MPI_Datatype MPI_Component;
-    //MPI_Datatype types[5] = {MPI_BYTE, MPI_BYTE, MPI_DOUBLE, MPI_DOUBLE, MPI_INT};
-	//int blocklengths[5] = {sizeof(double *), sizeof(double *), 1, 1, 1};
-    //MPI_Aint offsets[5];
+	// Create a struct for broadcasting components
+	MPI_Datatype MPI_Component;
+    MPI_Datatype types[5] = {MPI_BYTE, MPI_BYTE, MPI_DOUBLE, MPI_DOUBLE, MPI_INT};
+	int blocklengths[5] = {sizeof(double *), sizeof(double *), 1, 1, 1};
+    MPI_Aint offsets[5];
 
-	//offsets[0] = (size_t)(void *)&c[0].streamField - (size_t)(void *)&c[0];
-	//offsets[1] = (size_t)(void *)&c[0].collideField - (size_t)(void *)&c[0];
-	//offsets[2] = (size_t)(void *)&c[0].tau - (size_t)(void *)&c[0];
-	//offsets[3] = (size_t)(void *)&c[0].m - (size_t)(void *)&c[0];
-	//offsets[4] = (size_t)(void *)&c[0].psiFctCode - (size_t)(void *)&c[0];
 
-    //MPI_Type_create_struct(5, blocklengths, offsets, types, &MPI_Component);
-    //MPI_Type_commit(&MPI_Component);
+	//TODO: (DL) need to pass other values here too!!!
+	offsets[0] = (size_t)(void *)&c[0].streamField - (size_t)(void *)&c[0];
+	offsets[1] = (size_t)(void *)&c[0].collideField - (size_t)(void *)&c[0];
+	offsets[2] = (size_t)(void *)&c[0].tau - (size_t)(void *)&c[0];
+	offsets[3] = (size_t)(void *)&c[0].m - (size_t)(void *)&c[0];
+	offsets[4] = (size_t)(void *)&c[0].psiFctCode - (size_t)(void *)&c[0];
 
-	//MPI_Bcast(c, numComp, MPI_Component, 0, MPI_COMM_WORLD);
+    MPI_Type_create_struct(5, blocklengths, offsets, types, &MPI_Component);
+    MPI_Type_commit(&MPI_Component);
 
-	//MPI_Type_free(&MPI_Component);
-//}
+	MPI_Bcast(c, numComp, MPI_Component, 0, MPI_COMM_WORLD);
+
+	MPI_Type_free(&MPI_Component);
+}
 
 /*
 * Divides the entire domain into sub-domains. The function sets the processor specific data to determine the size
 * of the sub-domain and determines the neighbours.
 */
-//void domainDecompositionAndNeighbors(t_procData *const procData, const int xlength, int const * const procsPerAxis) {
+void domainDecompositionAndNeighbors(t_procData *const procData, const int xlength, int const * const procsPerAxis) {
 
-	//#define M_NBGH procData->neighbours
+	#define M_NBGH procData->neighbours
 
-	//int procPos[3] = {0,0,0};
-	//// Get the position of the process based on its rank
-	//p_rankToPos(procsPerAxis,procData->rank,procPos);
+	int procPos[3] = {0,0,0};
+	// Get the position of the process based on its rank
+	p_rankToPos(procsPerAxis,procData->rank,procPos);
 
-	//[> Compute the subdomain size and save it into procData <]
-	//int baseLength[3] = {xlength/procsPerAxis[0], xlength/procsPerAxis[1], xlength/procsPerAxis[2]};
+	// [> Compute the subdomain size and save it into procData <]
+	int baseLength[3] = {xlength/procsPerAxis[0], xlength/procsPerAxis[1], xlength/procsPerAxis[2]};
 
-	//// If the proc is at the end of some axis then add the remaining length
-	//procData->xLength[0] = (procPos[0] == procsPerAxis[0]-1)?xlength-(procsPerAxis[0]-1)*baseLength[0]:baseLength[0];
-	//procData->xLength[1] = (procPos[1] == procsPerAxis[1]-1)?xlength-(procsPerAxis[1]-1)*baseLength[1]:baseLength[1];
-	//procData->xLength[2] = (procPos[2] == procsPerAxis[2]-1)?xlength-(procsPerAxis[2]-1)*baseLength[2]:baseLength[2];
+	// If the proc is at the end of some axis then add the remaining length
+	procData->xLength[0] = (procPos[0] == procsPerAxis[0]-1)?xlength-(procsPerAxis[0]-1)*baseLength[0]:baseLength[0];
+	procData->xLength[1] = (procPos[1] == procsPerAxis[1]-1)?xlength-(procsPerAxis[1]-1)*baseLength[1]:baseLength[1];
+	procData->xLength[2] = (procPos[2] == procsPerAxis[2]-1)?xlength-(procsPerAxis[2]-1)*baseLength[2]:baseLength[2];
 
-	//[> Set neighbours for parallel boundaries <]
-	//[> Decide whether it is a ghost boundary (= MPI_PROC_NULL) or a parallel boundary (assign rank of neighbor) <]
-    //procData->neighbours[LEFT]	 = procPos[0] + (procPos[1]-1+procsPerAxis[1])%procsPerAxis[1]*procsPerAxis[0] + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
-    //procData->neighbours[RIGHT]	 = procPos[0] + (procPos[1]+1)%procsPerAxis[1]*procsPerAxis[0] + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
-    //procData->neighbours[TOP]	 = procPos[0] + procPos[1]*procsPerAxis[0] + (procPos[2]+1)%procsPerAxis[2]*procsPerAxis[0]*procsPerAxis[1];
-    //procData->neighbours[BOTTOM] = procPos[0] + procPos[1]*procsPerAxis[0] + (procPos[2]-1+procsPerAxis[2])%procsPerAxis[2]*procsPerAxis[0]*procsPerAxis[1];
-    //procData->neighbours[FRONT]	 = (procPos[0]+1)%procsPerAxis[0] + procPos[1]*procsPerAxis[0] + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
-    //procData->neighbours[BACK]	 = (procPos[0]-1+procsPerAxis[0])%procsPerAxis[0] + procPos[1]*procsPerAxis[0] + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
+	// [> Set neighbours for parallel boundaries <]
+	// [> Decide whether it is a ghost boundary (= MPI_PROC_NULL) or a parallel boundary (assign rank of neighbor) <]
+    procData->neighbours[LEFT]	 = procPos[0] + (procPos[1]-1+procsPerAxis[1])%procsPerAxis[1]*procsPerAxis[0] + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
+    procData->neighbours[RIGHT]	 = procPos[0] + (procPos[1]+1)%procsPerAxis[1]*procsPerAxis[0] + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
+    procData->neighbours[TOP]	 = procPos[0] + procPos[1]*procsPerAxis[0] + (procPos[2]+1)%procsPerAxis[2]*procsPerAxis[0]*procsPerAxis[1];
+    procData->neighbours[BOTTOM] = procPos[0] + procPos[1]*procsPerAxis[0] + (procPos[2]-1+procsPerAxis[2])%procsPerAxis[2]*procsPerAxis[0]*procsPerAxis[1];
+    procData->neighbours[FRONT]	 = (procPos[0]+1)%procsPerAxis[0] + procPos[1]*procsPerAxis[0] + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
+    procData->neighbours[BACK]	 = (procPos[0]-1+procsPerAxis[0])%procsPerAxis[0] + procPos[1]*procsPerAxis[0] + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
 
-	//// If self neighbor then set neighbor to MPI_PROC_NULL
-	//for (int i = 0; i < 6; i++) {
-		//if (procData->neighbours[i] == procData->rank) {
-			//procData->neighbours[i] = MPI_PROC_NULL;
-		//}
-	//}
-//}
+	// If self neighbor then set neighbor to MPI_PROC_NULL
+	for (int i = 0; i < 6; i++) {
+		if (procData->neighbours[i] == procData->rank) {
+			procData->neighbours[i] = MPI_PROC_NULL;
+		}
+	}
+}
 
 /*
 * Initialize sendBuffer and readBuffer. They are only initialized in a certain direction when there is a valid neighbor
@@ -158,7 +159,7 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 //}
 
 
-//// TODO: (VS) Combine the communicate and communicate density 
+//// TODO: (VS) Combine the communicate and communicate density
 
 /*
  * Main algorithm to carry out the communication between the processes.
