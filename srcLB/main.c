@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
     // Distribution function vectors
     t_component c[NUMCOMP];
 
-    c[0].tau = 1.0;
+    c[0].tau = 0.8;
     c[0].m = 1.0;
     c[0].psiFctCode = 0;
 
@@ -42,21 +42,21 @@ int main(int argc, char *argv[]){
     snprintf(fName, 80, "debug/REFERENCE_SOLUTION");
 
     //Timing variables:
-    clock_t begin_timing, end_timing;
-    double time_spent;
+    // clock_t begin_timing, end_timing;
+    // double time_spent;
 
     /*Read parameters and check the bounds on tau*/
     //tau is calculated automatically from the reynoldsnumber
     readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
 
-#ifdef NO_CHECKS
-    printf("INFO: The compiler directive NO_CHECKS is enabled. Faster execution time is gained, "
-    		"at the cost of less correctness checks during runtime!\n");
-#else
-    printf("INFO: The compiler directive NO_CHECKS is disabled. Checks for "
-    		"correctness are carried out at the cost of execution speed!\n"
-            "      Use \"make speed\" for a faster execution time.\n");
-#endif
+// #ifdef NO_CHECKS
+//     printf("INFO: The compiler directive NO_CHECKS is enabled. Faster execution time is gained, "
+//     		"at the cost of less correctness checks during runtime!\n");
+// #else
+//     printf("INFO: The compiler directive NO_CHECKS is disabled. Checks for "
+//     		"correctness are carried out at the cost of execution speed!\n"
+//             "      Use \"make speed\" for a faster execution time.\n");
+// #endif
 
     /*Allocate memory to pointers*/
     int totalsize = (xlength+2)*(xlength+2)*(xlength+2);
@@ -84,15 +84,15 @@ int main(int argc, char *argv[]){
 
     //return 0;
 
-    printf("\nINFO: Storing cell data in VTK files.\n      Please use the"
-    " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
+    // printf("\nINFO: Storing cell data in VTK files.\n      Please use the"
+    // " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
 
     // Write the VTK at t = 0
     // printf("INFO: write vtk file at time t = %d \n", t);
     // writeVtkOutput(c,flagField,fName,t,xlength);
     // writeVtkOutputDebug(c,flagField,fName,t,xlength);
 
-    begin_timing = clock();
+    // begin_timing = clock();
 
     //TODO: Wih reference to the ref solution the steps needed to restructure are:
     // Also think of that ref did not use ghost layers.
@@ -122,18 +122,18 @@ int main(int argc, char *argv[]){
         // int dist = 2;
 
 		computeForce_new(c, xlength, flagField, G);
-        printf("Force x @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
-        printf("Force y @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
-        printf("Force z @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
+        // printf("Force x @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
+        // printf("Force y @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
+        // printf("Force z @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
 
         computeDensityAndVelocity(c, xlength);
-        printf("Rho @ (6,6,6) %.16f\n",c[0].rho[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))]);
-        printf("Ux @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
-        printf("Uy @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
-        printf("Uz @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
+        // printf("Rho @ (6,6,6) %.16f\n",c[0].rho[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))]);
+        // printf("Ux @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
+        // printf("Uy @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
+        // printf("Uz @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
 
         updateFeq(c, &xlength);
-        printf("F_eq 10 @ (41,12,13) %.11f\n",c[0].feq[Q*(41+12*(xlength+2)+13*(xlength+2)*(xlength+2))+10]);
+        // printf("F_eq 10 @ (41,12,13) %.11f\n",c[0].feq[Q*(41+12*(xlength+2)+13*(xlength+2)*(xlength+2))+10]);
 
         for (int k = 0; k < Q*totalsize; ++k) {
             c[0].streamField[k] = c[0].collideField[k];
@@ -148,17 +148,17 @@ int main(int argc, char *argv[]){
         printf("Time t = %d done\n",t);
     }
 
+    printf("SUCCESSFULLY CREATED A REFERENCE SOLUTION IN FOLDER /debug \n");
 
+    // end_timing = clock();
+    // time_spent = (double)(end_timing - begin_timing) / CLOCKS_PER_SEC;
 
-    end_timing = clock();
-    time_spent = (double)(end_timing - begin_timing) / CLOCKS_PER_SEC;
-
-    printf("\n===============================================================\n");
-    printf("\nINFO TIMING:\n");
-    printf("Execution time (main loop): \t\t %.3f seconds \n", time_spent);
-    printf("#cells (including boundary): \t\t %i cells \n", totalsize);
-    printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
-    		(totalsize/(1000000*time_spent))*timesteps);
+    // printf("\n===============================================================\n");
+    // printf("\nINFO TIMING:\n");
+    // printf("Execution time (main loop): \t\t %.3f seconds \n", time_spent);
+    // printf("#cells (including boundary): \t\t %i cells \n", totalsize);
+    // printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
+    // 		(totalsize/(1000000*time_spent))*timesteps);
 
     //TODO: Remember to free memory
     for (int i = 0; i < NUMCOMP; i++) {

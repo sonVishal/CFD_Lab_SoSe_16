@@ -22,7 +22,7 @@ void streamCollide(t_component *c, int xlength, int* flagField){
 						//TODO: Check if this is correct:
 						int nextCellIndex = x+LATTICEVELOCITIES[i][0] + (y+LATTICEVELOCITIES[i][1])*(xlength+2) +
 											(z+LATTICEVELOCITIES[i][2])*(xlength+2)*(xlength+2);
-						assert(c[k].tau == 1.0);
+						// assert(c[k].tau == 1.0);
 						c[k].collideField[cellIdx+Q-i-1] = c[k].streamField[nextCellIndex*Q+Q-i-1] - (c[k].streamField[nextCellIndex*Q+Q-i-1] - c[k].feq[nextCellIndex*Q+Q-i-1])/c[k].tau;
 						assert(c[k].collideField[cellIdx+Q-i-1] > 0.0);
 	                }

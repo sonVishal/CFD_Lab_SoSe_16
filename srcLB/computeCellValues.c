@@ -209,7 +209,7 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
 }
 
 void computeEqVelocity(t_component const*const c, double const*const commonVelocity, const double compDensity, double const*const compForce, double compEqVelocity[3]) {
-    assert(c->tau == 1.0);
+    // assert(c->tau == 1.0);
     compEqVelocity[0] = commonVelocity[0] + (c->tau/compDensity)*compForce[0];
     compEqVelocity[1] = commonVelocity[1] + (c->tau/compDensity)*compForce[1];
     compEqVelocity[2] = commonVelocity[2] + (c->tau/compDensity)*compForce[2];
