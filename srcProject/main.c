@@ -168,7 +168,7 @@ int main(int argc, char *argv[]){
     begin_timing = clock();
     for(t = 1; t <= timesteps; t++){
 
-        treatBoundary(c,xlength);
+        communicateComponents(sendBuffer, readBuffer, c, &procData);
 
         streamCollide(c, &procData);
 
