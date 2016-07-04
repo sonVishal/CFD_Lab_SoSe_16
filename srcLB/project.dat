@@ -1,5 +1,5 @@
 # Size of mesh
-xlength              64
+xlength              32
 
 # Relaxation time
 #tau                  1
