@@ -22,7 +22,8 @@ int readParameters(int *xlength, double *tau, int *timesteps, int *timestepsPerP
 void initialiseFields(t_component * c, int *flagField, int xlength){
 
     /*Setting initial distributions*/
-    //f_i(x,0) = f^eq(1,0,0) = w_i
+    /*Initializes to equilibrium state with a random density with 1% max from reference density*/
+    
     // current cell index
     int idx, cellIdx;
 
@@ -38,8 +39,7 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
     //Intermediate values to calculate feq for a random density.
     double v[3] = {0,0,0};          //Assume no initial velocity
 
-    //TODO: (TKS) Maybe set the percentage 0.01 as a variable we can choose instead.
-    double rhoVar = 0.01*rhoRef;    //How much initial difference is allowed in density-
+    double rhoVar = 0.01*rhoRef;    //How much initial difference is allowed in density
 
     int x,y,z;
     srand(5);
@@ -49,28 +49,19 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
             for ( y = 1; y <= xlength; ++y) {
                 yzOffset = y*(xlength+2) + zOffset;
                 for ( x = 1; x <= xlength; ++x) {
+
                     // Compute the base index
                     cellIdx = (yzOffset + x);
                     idx = Q*cellIdx;
-                    double feq_tmp[19]; //TODO: (TKS) Should remove this and operate directly on feq;
-                    //TODO: (TKS) Need to do componentwise if we introduce several components.
 
                     //Set the initial density to a random offsett to rhoRef
                     double rnd = ((double)rand()/(double)RAND_MAX);
                     c[k].rho[cellIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd;
 
-                    // static int idx = 1;
-                    // if(idx < 10){
-                    //     printf("%f \n", rnd);
-                    //     idx++;
-                    // }
-
-                    computeFeq(&c[k].rho[cellIdx], v, feq_tmp);
+                    computeFeq(&c[k].rho[cellIdx], v, &c[k].feq[idx]);
                     for (int i = 0; i < Q; ++i) {
-                        c[k].collideField[idx+i] = feq_tmp[i];
-                        c[k].streamField[idx+i]  = feq_tmp[i];
-                        c[k].feq[idx +i] = feq_tmp[i];
-                        //printf("%f\n",c[k].feq[i]);
+                        c[k].collideField[idx+i] = c[k].feq[idx +i];
+                        c[k].streamField[idx+i]  = c[k].feq[idx +i];
                     }
                 }
             }
