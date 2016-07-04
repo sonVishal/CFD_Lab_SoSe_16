@@ -10,7 +10,6 @@
 #include "common.h"
 #include "parallel.h"
 #include "unitTest.h"
-#include "debug.h"
 #include <stdio.h>
 #include <mpi/mpi.h>
 
@@ -117,7 +116,7 @@ int main(int argc, char *argv[]){
     domainDecompositionAndNeighbors(&procData, xlength, procsPerAxis);
 
     /*Allocate memory to pointers*/
-    int totalsize = (xlength+2)*(xlength+2)*(xlength+2);
+    int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
     for (int i = 0; i < numComp; i++) {
         c[i].collideField = (double *)  malloc(Q*totalsize * sizeof( double ));
         c[i].streamField  = (double *)  malloc(Q*totalsize * sizeof( double ));
@@ -155,12 +154,12 @@ int main(int argc, char *argv[]){
     //Write the VTK at t = 0
     printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
     writeVtsOutput(c, fName, t, xlength, &procData, procsPerAxis);
-    //writeVtsOutputDebug(c, flagField, "pv_files/Debug", t, xlength, &procData, procsPerAxis);
+    // writeVtsOutputDebug(c, flagField, "pv_files/Debug", t, xlength, &procData, procsPerAxis);
 
     // Combine VTS file at t = 0  -- only done by root
     if (procData.rank == 0) {
         p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
-        //p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
+        // p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
     }
 
     beginProcTime = MPI_Wtime();
@@ -223,7 +222,7 @@ int main(int argc, char *argv[]){
             // Combine VTS file at t
             if (procData.rank == 0) {
                 p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
-                //p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
+                // p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
             }
 	    }
         printf("R %d Time t = %d done\n",procData.rank, t);
