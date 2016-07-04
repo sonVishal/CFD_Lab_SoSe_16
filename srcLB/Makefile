@@ -1,5 +1,5 @@
 # Include files
-SOURCES=initLB.c visualLB.c boundary.c collision.c streaming.c computeCellValues.c main.c helper.c unitTest.c streamCollide.c computeDensityAndVelocity.c computeForce_new.c
+SOURCES=initLB.c visualLB.c boundary.c computeCellValues.c main.c helper.c unitTest.c streamCollide.c computeDensityAndVelocity.c computeForce_new.c
 
 # Compiler
 # --------

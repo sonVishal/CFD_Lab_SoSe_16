@@ -93,17 +93,6 @@ void computeFeq(const double * const density, const double * const velocity, dou
     double const d3 = (*density)*LATTICEWEIGHTS[9];
     assert(d3 == w1 * (*density));
 
-    // Semantics for the unrolled loop
-    // int i;
-    //
-    // for (i = 0; i < Q; i++) {
-	// 	double dotProd1 = ux*ux + uy*uy + uz*uz;
-	// 	double dotProd2 = ux*LATTICEVELOCITIES[i][0]
-    //                     + uy*LATTICEVELOCITIES[i][1]
-    //                     + uz*LATTICEVELOCITIES[i][2];
-	// 	feq[i] = LATTICEWEIGHTS[i]*(*density)*(1 + dotProd2/cs_2 + dotProd2*dotProd2/cs_4_2 - dotProd1/(2*cs_2));
-	// }
-
     // Unroll loop
     // Faster even with -O3
     feq[0]  = d1*(u_u + (-uy-uz)*(1/cs_2 + (-uy-uz)/cs_4_2));
@@ -125,8 +114,42 @@ void computeFeq(const double * const density, const double * const velocity, dou
     feq[16] = d2*(u_u + (uz)*(1/cs_2 + (uz)/cs_4_2));
     feq[17] = d1*(u_u + (ux+uz)*(1/cs_2 + (ux+uz)/cs_4_2));
     feq[18] = d1*(u_u + (uy+uz)*(1/cs_2 + (uy+uz)/cs_4_2));
-
 }
+
+void updateFeq(t_component *c, const int *xlength){
+
+	int cellIdx, fieldIdx;
+    for(int k  = 0; k < NUMCOMP; ++k){
+        for (int z = 1; z <= *xlength ; z++) {
+            for (int y = 1; y <= *xlength; y++) {
+                for (int x = 1; x <= *xlength; x++) {
+
+                    fieldIdx = p_computeCellOffsetXYZ(x, y, z, *xlength);
+                    cellIdx = Q*fieldIdx;
+                    double ux = c[k].velocity[fieldIdx][0];
+                    double uy = c[k].velocity[fieldIdx][1];
+                    double uz = c[k].velocity[fieldIdx][2];
+
+                    double udotu = ux*ux + uy*uy + uz*uz;
+
+                    //TODO: check if reuse computeEq works
+                    //computeFeq(&c[k].rho[fieldIdx], c[k].velocity[fieldIdx], &c[k].feq[cellIdx]);
+					for (int i = 0; i < Q; i++) {
+                        double edotu =  LATTICEVELOCITIES[i][0]*ux +
+                                        LATTICEVELOCITIES[i][1]*uy +
+                                        LATTICEVELOCITIES[i][2]*uz;
+
+                        c[k].feq[cellIdx + i] = LATTICEWEIGHTS[i] * c[k].rho[fieldIdx]
+                                                      * (1 + 3.*edotu + 4.5*edotu*edotu - 1.5*udotu);
+						assert(c[k].feq[cellIdx+i] > 0.0);
+					}
+
+                }
+            }
+        }
+    }
+}
+
 
 void computeCommonVelocity(const double *const c_density, double c_velocity[2][3], t_component *c, double* commonVel){
     double den = 0.0;
@@ -148,8 +171,6 @@ void computeCommonVelocity(const double *const c_density, double c_velocity[2][3
 void computeForce(const int currentCellIndex, const int currentCompIndex,
     const t_component *const c, const int * const flagField,
     double const*const G, int xlength, double forces[3]) {
-
-
 
     // Important: The currentCellIndex is without multiplication with Q
     int xlen2 = xlength+2;

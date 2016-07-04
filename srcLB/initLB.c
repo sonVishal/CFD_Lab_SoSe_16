@@ -2,51 +2,20 @@
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 
-int readParameters(int *xlength, double *tau, double *velocityWall, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
-
-    double xvelocity, yvelocity, zvelocity;
-    double Re, u_wall, machNr;
+int readParameters(int *xlength, double *tau, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
+    //TODO: (TKS) Add reading in of parameters.
 
     /* Read values from file given in argv */
     READ_INT(*argv, *xlength);
-    READ_DOUBLE(*argv, Re);
-
-    READ_DOUBLE(*argv, xvelocity);
-    READ_DOUBLE(*argv, yvelocity);
-    READ_DOUBLE(*argv, zvelocity);
-
-    velocityWall[0] = xvelocity;
-    velocityWall[1] = yvelocity;
-    velocityWall[2] = zvelocity;
 
     READ_INT(*argv, *timesteps);
     READ_INT(*argv, *timestepsPerPlotting);
 
-    /*Calculates tau from the Reynolds number*/
-    u_wall  = sqrt(xvelocity*xvelocity + yvelocity*yvelocity+zvelocity*zvelocity);
-    *tau    =  u_wall*(*xlength)/(C_S*C_S*Re)+0.5;
-    machNr  = u_wall/C_S;
 
-    printf("\nINFO: Calculated tau = %f \n", *tau);
-    printf("\nINFO: Wall speed = %f \n", u_wall);
-    printf("\nINFO: Mach number = %f \n\n", machNr);
-
-    /* valid settings check*/
-    if(u_wall >= C_S){
-    	ERROR("Wall speed is supersonic (aborting)! \n");
-    }
-
-    if(*tau<=0.5 || *tau>2){
-        ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
-    }
-
-    /*We allow user defined mach number tolerance for Ma << 1 (default = 0.1)
-      To change please look at LBDefinitions.h*/
-    if(machNr > machNrTol){
-        char buffer[80];
-        snprintf(buffer, 80, "Mach number is larger than %f (aborting)! \n",machNrTol);
-    	ERROR(buffer);
-    }
+    //TODO: (TKS) Adapt this to component case.
+    //if(*tau<=0.5 || *tau>2){
+        //ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
+    //}
 
   return 0;
 }

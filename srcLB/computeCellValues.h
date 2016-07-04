@@ -13,6 +13,9 @@ void computeNumDensity(const double *const currentCell, double *density);
 /** computes the velocity within currentCell and stores the result in velocity */
 void computeVelocity(const double *const currentCell, const double * const density,double *velocity);
 
+
+void computeDensityAndVelocity(t_component *c, int xlength);
+
 /** computes the equilibrium distributions for all particle distribution functions of one
  *  cell from density and velocity and stores the results in feq.
  */
@@ -23,6 +26,8 @@ void computeCommonVelocity(const double *const c_density, double c_velocity[2][3
 void computeForce(const int currentCellIndex, const int currentCompIndex,
     const t_component *const c, const int * const flagField,
     double const*const G, int xlength, double forces[3]);
+
+void computeForce_new(t_component *c, int xlength, int *flagField, double G[NUMCOMP][NUMCOMP]);
 
 void computeEqVelocity(const t_component * const c, const double * const commonVelocity, const double compDenstiy, const double * const compForce, double compEqVelocity[3]);
 

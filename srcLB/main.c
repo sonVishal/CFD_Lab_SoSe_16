@@ -3,17 +3,14 @@
 
 #include "streamCollide.h"
 #include "boundary.h"
-#include "collision.h"
 #include "initLB.h"
-#include "streaming.h"
 #include "visualLB.h"
 #include "LBDefinitions.h"
 #include <time.h>
 #include "unitTest.h"
 
-//TODO: Move this into computeCellValues when finished
-void computeForce_new(t_component *c, int xlength, int *flagField, double G[NUMCOMP][NUMCOMP]);
-void computeDensityAndVelocity(t_component *c, int xlength);
+//TODO: (TKS) We assume that mass is 1 and use numDensity as density in different places.
+//            This must be fixed if we are doing several components.
 
 int main(int argc, char *argv[]){
 
@@ -46,17 +43,16 @@ int main(int argc, char *argv[]){
     double time_spent;
 
     /*Read parameters and check the bounds on tau*/
-    //tau is calculated automatically from the reynoldsnumber
-    readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
+    readParameters(&xlength, &tau, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
 
-#ifdef NO_CHECKS
+    #ifdef NO_CHECKS
     printf("INFO: The compiler directive NO_CHECKS is enabled. Faster execution time is gained, "
     		"at the cost of less correctness checks during runtime!\n");
-#else
+    #else
     printf("INFO: The compiler directive NO_CHECKS is disabled. Checks for "
     		"correctness are carried out at the cost of execution speed!\n"
             "      Use \"make speed\" for a faster execution time.\n");
-#endif
+    #endif
 
     /*Allocate memory to pointers*/
     int totalsize = (xlength+2)*(xlength+2)*(xlength+2);

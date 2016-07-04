@@ -34,36 +34,3 @@ void streamCollide(t_component *c, int xlength, int* flagField){
 }
 
 
-void updateFeq(t_component *c, const int *xlength){
-
-	int cellIdx, fieldIdx;
-    //TODO: fix components in main
-    for(int k  = 0; k < NUMCOMP; ++k){
-        for (int z = 1; z <= *xlength ; z++) {
-            for (int y = 1; y <= *xlength; y++) {
-                for (int x = 1; x <= *xlength; x++) {
-
-                    fieldIdx = p_computeCellOffsetXYZ(x, y, z, *xlength);
-                    cellIdx = Q*fieldIdx;
-                    double ux = c[k].velocity[fieldIdx][0];
-                    double uy = c[k].velocity[fieldIdx][1];
-                    double uz = c[k].velocity[fieldIdx][2];
-
-                    double udotu = ux*ux + uy*uy + uz*uz;
-
-                    //computeFeq(&c[k].rho[fieldIdx], c[k].velocity[fieldIdx], &c[k].feq[cellIdx]);
-					for (int i = 0; i < Q; i++) {
-                        double edotu =  LATTICEVELOCITIES[i][0]*ux +
-                                        LATTICEVELOCITIES[i][1]*uy +
-                                        LATTICEVELOCITIES[i][2]*uz;
-
-                        c[k].feq[cellIdx + i] = LATTICEWEIGHTS[i] * c[k].rho[fieldIdx]
-                                                      * (1 + 3.*edotu + 4.5*edotu*edotu - 1.5*udotu);
-						assert(c[k].feq[cellIdx+i] > 0.0);
-					}
-
-                }
-            }
-        }
-    }
-}
