@@ -1,0 +1,14 @@
+    <Grid Name="mesh 000000" GridType="Uniform">
+        <Topology TopologyType="3DSMesh" NumberOfElements="64 64 64" >
+        </Topology>
+        <Geometry GeometryType="XYZ">
+            <DataItem Format="HDF" Precision=" 4 " Dimensions="262144  3 ">
+                ./hdf5/data_000000.h5:/xyz
+            </DataItem>
+        </Geometry>
+        <Attribute Name="rho" AttributeType="Scalar" Center="Node">
+            <DataItem Dimensions="64 64 64" Precision=" 8 " Format="HDF">
+                ./hdf5/data_000000.h5:/rho
+            </DataItem>
+        </Attribute>
+    </Grid>

@@ -8,6 +8,12 @@ static const int Q = 19;
 // Dimensions
 static const int D = 3;
 
+// reference density
+static const double rhoRef = 0.693;
+static const int rho0   = 1;
+
+#define NUMCOMP 1
+
 // Number of components is a global variable
 int numComp;
 
@@ -68,12 +74,15 @@ enum CELLS {
 };
 
 //TODO: (DL) not sure if a function pointer with inline works... we can test it out.
-static inline double psi0(double numberDensity){ return (1-exp(-numberDensity));}
+//TODO: For now assuming that mass = 1. The input density if mass changes.
+static inline double psi0(double numberDensity){
+    // const double E = 2.71828;
+    const double rho0 = 1.0;
+    // return rho0*(1 - pow(E, -numberDensity/rho0));
+    return rho0*(1-exp(-numberDensity/rho0));
+}
 static inline double psi1(double numberDensity){ return numberDensity;}
-
-// TODO: (VS) Fix this
-// Used this value for testing with the local code since nothing blows up
-static inline double psi2(double numberDensity){ return 4.0;}
+static inline double psi2(double numberDensity){ return 4.0*exp(-rho0/numberDensity);}
 
 typedef double (*fctPtrPsi)(double);
 static const fctPtrPsi psiFctPointer[3] = {psi0, psi1, psi2};
@@ -119,11 +128,14 @@ typedef struct {
 typedef struct {
     double* streamField;
     double* collideField;
+    double* feq;
+    double* rho;
+    double** velocity;
+    double** force;
     double  tau;
     double  m;
     double  d0;
     int psiFctCode;
-
 } t_component;
 
 /* Function for reverse index search for procs.
