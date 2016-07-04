@@ -14,17 +14,17 @@ void computeNumDensity(const double *const currentCell, double *density);
 void computeVelocity(const double *const currentCell, const double * const density,double *velocity);
 
 
-void computeDensityAndVelocity(t_component *c, int xlength);
+void computeDensityAndVelocity(t_component *c, const t_procData * const procData);
 
 /** computes the equilibrium distributions for all particle distribution functions of one
  *  cell from density and velocity and stores the results in feq.
  */
 void computeFeqCell(const double * const density, const double * const velocity, double *feq);
-void computeFeq(t_component *c, const int *xlength);
+void computeFeq(t_component *c, const t_procData * const procData);
 
 void computeCommonVelocity(const double *const c_density, double c_velocity[2][3], t_component *c, double* commonVel);
 
-void computeForce(t_component *c, int xlength, int *flagField, double G[NUMCOMP][NUMCOMP]);
+void computeForce(t_component *c, const t_procData * const procData, int *flagField, double G[numComp][numComp]);
 
 void computeEqVelocity(const t_component * const c, const double * const commonVelocity, const double compDenstiy, const double * const compForce, double compEqVelocity[3]);
 
