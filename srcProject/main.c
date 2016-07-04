@@ -24,15 +24,7 @@
 
 int main(int argc, char *argv[]){
 
-    // Distribution function vectors
-    t_component c[NUMCOMP];
 
-    c[0].tau = 0.99;
-    c[0].m = 1.0;
-    c[0].psiFctCode = 0;
-
-    // double G[2][2] = {{0.01,0.04},{0.04,0.02}};
-    double G[1][1] = {{-0.27}};
 
     int *flagField = NULL;
 
@@ -42,86 +34,78 @@ int main(int argc, char *argv[]){
     int t = 0;
     int timesteps;
     int timestepsPerPlotting;
-    //t_procData procData;
 
-    //double wallVelocity[3]; //TODO:(DL) deprecated
+    t_procData procData;
 
-    // MPI parameters
-    // MPI_Status status;
-    //int procsPerAxis[3];
+    //MPI parameters
+    MPI_Status status;
+    int procsPerAxis[3];
 
     // Send and read buffers for all possible directions:
     // Look at enum for index and direction correlation
-    //double *sendBuffer[6];
-    //double *readBuffer[6];
+    double *sendBuffer[6];
+    double *readBuffer[6];
 
     // initialiseMPI(&procData.rank,&procData.numRanks,argc,argv);
-    //MPI_Init(&argc, &argv);
-    //MPI_Comm_size(MPI_COMM_WORLD, &procData.numRanks);
-    //MPI_Comm_rank(MPI_COMM_WORLD, &procData.rank);
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &procData.numRanks);
+    MPI_Comm_rank(MPI_COMM_WORLD, &procData.rank);
 
     // File printing parameters
-    //char fName[80];
-    //snprintf(fName, 80, "pv_files/project_rank");
-
     char fName[80];
-    snprintf(fName, 80, "pv_files/project");
-    
+    snprintf(fName, 80, "pv_files/project_rank");
+
     //Timing variables:
     clock_t begin_timing, end_timing;
     double time_spent;
 
     //Timing variables:
-    //double beginProcTime, endProcTime, beginSimTime, endSimTime;
+    double beginProcTime, endProcTime, beginSimTime, endSimTime;
 
-
-    //if (procData.rank == 0) {
-        //readNumComp(argc, &argv[1]);
-    //}else{
-        //MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    //}
+    if (procData.rank == 0) {
+        readNumComp(argc, &argv[1]);
+    }else{
+        MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    }
 
     // Array of the components in our simulation
-    //t_component c[numComp];
+    t_component c[numComp];
+    //Handling in serial code:
+    // c[0].tau = 0.99;
+    // c[0].m = 1.0;
+    // c[0].psiFctCode = 0;
 
     // Interacting potential
-    //double G[numComp][numComp];
+    double G[numComp][numComp];
+    // double G[2][2] = {{0.01,0.04},{0.04,0.02}};
+    // double G[1][1] = {{-0.27}};
+
 
     /* Read parameters and check the bounds on tau
      * Only performed by the root and then broadcasted in 'broadcastValues'*/
-    //if (procData.rank == 0) {
-        //readParameters(&xlength, c, G, wallVelocity, procsPerAxis, &timesteps,
-        //    &timestepsPerPlotting, argc, &argv[1]);
-    //}
-    //TODO: From serial.
-    /*Read parameters and check the bounds on tau*/
-    readParameters(&xlength, &tau, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
+    if (procData.rank == 0) {
+        readParameters(&xlength, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
+    }
 
     // Broadcast the data from rank 0 (root) to other processes
     //TODO: (DL) maybe initialize also procData in here (collideField & streamField) & validity tests
-    //broadcastValues(procData.rank, &xlength, c, G, wallVelocity,
+    // broadcastValues(procData.rank, &xlength, c, G, wallVelocity,
     //    procsPerAxis, &timesteps, &timestepsPerPlotting);
-
-    // Assign the wall velocity
-    // TODO: (DL) deprecated
-    //procData.wallVelocity[0] = wallVelocity[0];
-    //procData.wallVelocity[1] = wallVelocity[1];
-    //procData.wallVelocity[2] = wallVelocity[2];
 
     // Abort if the number of processes given by user do not match with the dat file
     //TODO: (DL) could we get this somewhere else than main?
-    //if (procData.numRanks != procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2]) {
-        //if (procData.rank == 0) {
-            //printf("ERROR: The number of processes assigned in the dat file, %d, "
-            //"do not match the number of processes given as input, %d, while running the code\n",procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2],procData.numRanks);
-        //}
-        //finaliseMPI(&procData);
-        //return -1;
-    //}
+    if (procData.numRanks != procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2]) {
+        if (procData.rank == 0) {
+            printf("ERROR: The number of processes assigned in the dat file, %d, "
+            "do not match the number of processes given as input, %d, while running the code\n",procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2],procData.numRanks);
+        }
+        finaliseMPI(&procData);
+        return -1;
+    }
 
     // INFO printing
-    //if(procData.rank == 0)
-    //{
+    if(procData.rank == 0)
+    {
 #ifdef NDEBUG
     	printf("INFO: The compiler directive NDEBUG is enabled. Faster execution time is gained, "
     			"at the cost of less correctness checks during runtime!\n");
@@ -133,7 +117,7 @@ int main(int argc, char *argv[]){
         // INFO Printing
         printf("\nINFO: Storing cell data in VTS files.\n      Please use the"
         " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
-    //}
+    }
 
     // Domain decomposition & setting up neighbors
     //domainDecompositionAndNeighbors(&procData, xlength, procsPerAxis);
@@ -165,7 +149,7 @@ int main(int argc, char *argv[]){
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
     flagField = (int *) calloc(totalsize, sizeof( int ));
-    
+
     // Initialize all the fields
     initialiseFields(c, flagField, xlength);
 
