@@ -117,8 +117,6 @@ typedef struct {
     int numRanks;
     int xLength[3];
     int neighbours[6];         //same order as enum //TODO: (DL) possibly rename neighbours, e.g. "parallelNeighbours"
-    int periodicNeighbours[6]; //only value if MPI_PROC_NULL in neighbours
-    int periodicEdgeNeighbours[12]; //shared edges - diagonal opposite neighbours
     int bufferSize[3]; //buffer sizes for all directions
     double wallVelocity[3];
 } t_procData;
@@ -217,20 +215,12 @@ static inline int p_computeCellOffset(const int outer, const int inner, const in
 	}
 }
 
-static inline int p_computeCellOffsetXYZ_Q(const int x, const int y, const int z, const int xlength) {
-    return Q*(x+(y+z*(xlength+2))*(xlength+2));
+static inline int p_computeCellOffsetXYZ_Q(const int x, const int y, const int z, const int * const xlength) {
+    return Q*(x+(y+z*(xlength[1]+2))*(xlength[0]+2));
 }
 
-static inline int p_computeCellOffsetXYZ(const int x, const int y, const int z, const int xlength) {
-    return x+(y+z*(xlength+2))*(xlength+2);
+static inline int p_computeCellOffsetXYZ(const int x, const int y, const int z, const int * const xlength) {
+    return x+(y+z*(xlength[1]+2))*(xlength[0]+2);
 }
-
-//static inline int p_computeCellOffsetXYZ_Q(const int x, const int y, const int z, const int * const xlength) {
-    //return Q*(x+(y+z*(xlength[1]+2))*(xlength[0]+2));
-//}
-
-//static inline int p_computeCellOffsetXYZ(const int x, const int y, const int z, const int * const xlength) {
-    //return x+(y+z*(xlength[1]+2))*(xlength[0]+2);
-//}
 
 #endif
