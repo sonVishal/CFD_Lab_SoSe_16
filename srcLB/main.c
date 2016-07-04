@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
     // Distribution function vectors
     t_component c[NUMCOMP];
 
-    c[0].tau = 1.0;
+    c[0].tau = 0.8;
     c[0].m = 1.0;
     c[0].psiFctCode = 0;
 
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]){
         for (int k = 0; k < Q*totalsize; ++k) {
             c[0].streamField[k] = c[0].collideField[k];
         }
-        
+
         //TODO: (TKS) Swap does not work! Possible to find a way that it does?
         //double *swap = NULL;
         //for (int k = 0; k < NUMCOMP; ++k) {
