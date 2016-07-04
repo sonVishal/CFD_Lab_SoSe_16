@@ -14,6 +14,11 @@
 #include <stdio.h>
 #include <mpi/mpi.h>
 
+//TODO: (TKS) We assume that mass is 1 and use numDensity as density in different places.
+//            This must be fixed if we are doing several components.
+//TODO: (TKS) Rename streamField and collideField.
+//TODO: (TKS) Read in parameters for components from file.
+//TODO: (TKS) Comment the code.
 // TODO:(VS)   Remove velocity and reynolds number stuff after testing
 // TODO: (TKS) Go through all ifndef/ifdef.
 
@@ -47,13 +52,13 @@ int main(int argc, char *argv[]){
 
     // Send and read buffers for all possible directions:
     // Look at enum for index and direction correlation
-    double *sendBuffer[6];
-    double *readBuffer[6];
+    //double *sendBuffer[6];
+    //double *readBuffer[6];
 
     // initialiseMPI(&procData.rank,&procData.numRanks,argc,argv);
-    MPI_Init(&argc, &argv);
-    MPI_Comm_size(MPI_COMM_WORLD, &procData.numRanks);
-    MPI_Comm_rank(MPI_COMM_WORLD, &procData.rank);
+    //MPI_Init(&argc, &argv);
+    //MPI_Comm_size(MPI_COMM_WORLD, &procData.numRanks);
+    //MPI_Comm_rank(MPI_COMM_WORLD, &procData.rank);
 
     // File printing parameters
     //char fName[80];
@@ -66,11 +71,11 @@ int main(int argc, char *argv[]){
     //double beginProcTime, endProcTime, beginSimTime, endSimTime;
 
 
-    if (procData.rank == 0) {
+    //if (procData.rank == 0) {
         //readNumComp(argc, &argv[1]);
-    }else{
+    //}else{
         //MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    }
+    //}
 
     // Array of the components in our simulation
     //t_component c[numComp];
@@ -80,10 +85,10 @@ int main(int argc, char *argv[]){
 
     /* Read parameters and check the bounds on tau
      * Only performed by the root and then broadcasted in 'broadcastValues'*/
-    if (procData.rank == 0) {
+    //if (procData.rank == 0) {
         //readParameters(&xlength, c, G, wallVelocity, procsPerAxis, &timesteps,
         //    &timestepsPerPlotting, argc, &argv[1]);
-    }
+    //}
     //TODO: From serial.
     /*Read parameters and check the bounds on tau*/
     readParameters(&xlength, &tau, &timesteps, &timestepsPerPlotting,argc, &argv[1]);
@@ -165,7 +170,7 @@ int main(int argc, char *argv[]){
 // #endif
 
     // Use a different seed for different procs to avoid same random numbers
-    srand(procData.rank*(procData.rank+1)+1);
+    //srand(procData.rank*(procData.rank+1)+1);
     // Initialise the fields for all components
     //initialiseComponents(c, flagField, &procData);
 
@@ -299,15 +304,15 @@ int main(int argc, char *argv[]){
     for (int i = LEFT; i <= BACK; i++) {
     	//set to NULL in initializeBuffers if buffer is not allocated (due to non existing neighbour)
         //TODO: (DL) at the moment we dont need this check, because all send/read buffers are allocated
-        if(sendBuffer[i] != NULL) free(sendBuffer[i]);
-        if(readBuffer[i] != NULL) free(readBuffer[i]);
+        //if(sendBuffer[i] != NULL) free(sendBuffer[i]);
+        //if(readBuffer[i] != NULL) free(readBuffer[i]);
     }
 
     // #ifndef NDEBUG
     // freeUnitTest();
     // #endif
 
-    finaliseMPI(&procData);
+    //finaliseMPI(&procData);
     return 0;
 }
 
