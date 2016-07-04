@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
     // Distribution function vectors
     t_component c[NUMCOMP];
 
-    c[0].tau = 0.8;
+    c[0].tau = 1.01;
     c[0].m = 1.0;
     c[0].psiFctCode = 0;
 
