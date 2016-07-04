@@ -51,7 +51,7 @@ G00             -120
 #Select of the following implemented functions:
 #0: (1-exp(-numberDensity))
 #1: numberDensity
-psi0		2
+psi0		0
 #psi1		1
 
 #TODO:
