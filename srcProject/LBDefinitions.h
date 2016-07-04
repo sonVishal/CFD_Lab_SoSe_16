@@ -12,8 +12,6 @@ static const int D = 3;
 static const double rhoRef = 0.693;
 static const int rho0   = 1;
 
-#define NUMCOMP 1
-
 // Number of components is a global variable
 int numComp;
 
