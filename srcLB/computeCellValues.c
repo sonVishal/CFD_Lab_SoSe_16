@@ -194,7 +194,7 @@ void computeCommonVelocity(const double *const c_density, double c_velocity[2][3
     commonVel[2] = momentum[2]/den;
 }
 
-void computeForce(const int currentCellIndex, const int currentCompIndex,
+void computeCellForce(const int currentCellIndex, const int currentCompIndex,
     const t_component *const c, const int * const flagField,
     double const*const G, int xlength, double forces[3]) {
 
@@ -253,6 +253,22 @@ void computeForce(const int currentCellIndex, const int currentCompIndex,
     forces[2] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
     assert(currentCompIndex == 0);
     assert(psiFctPointer[c[currentCompIndex].psiFctCode](numDensity) == psi0(numDensity));
+}
+
+void computeForce(t_component *c, int xlength, int *flagField, double G[NUMCOMP][NUMCOMP]){
+
+    for(int k = 0; k < NUMCOMP; ++k){
+        for (int z = 1; z <= xlength ; z++) {
+            for (int y = 1; y <= xlength; y++) {
+                for (int x = 1; x <= xlength; x++) {
+                    int fieldIdx = p_computeCellOffsetXYZ(x, y, z, xlength);
+                    // int cellIdx = Q*fieldIdx;
+                    computeCellForce(fieldIdx, k, c, flagField, G[k], xlength, c[k].force[fieldIdx]);
+                }
+            }
+        }
+    }
+
 }
 
 void computeEqVelocity(t_component const*const c, double const*const commonVelocity, const double compDensity, double const*const compForce, double compEqVelocity[3]) {

@@ -101,7 +101,7 @@ int main(int argc, char *argv[]){
 
         streamCollide(c, xlength, flagField);
 
-		computeForce_new(c, xlength, flagField, G);
+		computeForce(c, xlength, flagField, G);
 
         computeDensityAndVelocity(c, xlength);
 

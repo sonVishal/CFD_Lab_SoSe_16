@@ -24,11 +24,7 @@ void computeFeq(t_component *c, const int *xlength);
 
 void computeCommonVelocity(const double *const c_density, double c_velocity[2][3], t_component *c, double* commonVel);
 
-void computeForce(const int currentCellIndex, const int currentCompIndex,
-    const t_component *const c, const int * const flagField,
-    double const*const G, int xlength, double forces[3]);
-
-void computeForce_new(t_component *c, int xlength, int *flagField, double G[NUMCOMP][NUMCOMP]);
+void computeForce(t_component *c, int xlength, int *flagField, double G[NUMCOMP][NUMCOMP]);
 
 void computeEqVelocity(const t_component * const c, const double * const commonVelocity, const double compDenstiy, const double * const compForce, double compEqVelocity[3]);
 
