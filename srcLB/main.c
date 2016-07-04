@@ -11,6 +11,8 @@
 
 //TODO: (TKS) We assume that mass is 1 and use numDensity as density in different places.
 //            This must be fixed if we are doing several components.
+//TODO: (TKS) Rename streamField and collideField.
+//TODO: (TKS) Read in parameters for components from file.
 
 int main(int argc, char *argv[]){
 
@@ -92,20 +94,9 @@ int main(int argc, char *argv[]){
     begin_timing = clock();
 
 
-    //TODO: Wih reference to the ref solution the steps needed to restructure are:
-    // Also think of that ref did not use ghost layers.
-    //
-    // Keeping the names for now to not change notation for now.
+    // Current mapping
     // f     --> stream
     // f_new --> collide
-    // swap  --> moved to the end.
-    // create combined stream/collide function
-    // calc_dPdt             --> computeForce
-    // updateDensityVelocity --> computeDensity + computeVelocity
-    // updateFeq             --> computeFeq
-
-    // treatBoundary inserted where the BC is treated.
-
     for(t = 1; t <= timesteps; t++){
 
         treatBoundary(c,velocityWall,xlength);

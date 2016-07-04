@@ -3,7 +3,6 @@
 #include "computeCellValues.h"
 
 int readParameters(int *xlength, double *tau, int *timesteps, int *timestepsPerPlotting, int argc, char *argv[]){
-    //TODO: (TKS) Add reading in of parameters.
 
     /* Read values from file given in argv */
     READ_INT(*argv, *xlength);
