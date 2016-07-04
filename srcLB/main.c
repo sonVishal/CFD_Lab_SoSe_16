@@ -111,6 +111,14 @@ int main(int argc, char *argv[]){
         for (int k = 0; k < Q*totalsize; ++k) {
             c[0].streamField[k] = c[0].collideField[k];
         }
+        
+        //TODO: (TKS) Swap does not work! Possible to find a way that it does?
+        //double *swap = NULL;
+        //for (int k = 0; k < NUMCOMP; ++k) {
+            //swap              = c[k].streamField;
+            //c[k].streamField  = c[k].collideField;
+            //c[k].collideField = swap;
+        //}
 
 
 	    if (t%timestepsPerPlotting == 0){
