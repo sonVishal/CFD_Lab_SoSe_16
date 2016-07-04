@@ -1,0 +1,12 @@
+# Size of mesh
+xlength              32
+
+# Relaxation time
+#tau                  1
+
+
+# Number of timesteps
+timesteps            200
+
+# timesteps between each plot
+timestepsPerPlotting 10
