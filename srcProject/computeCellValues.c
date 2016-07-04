@@ -227,10 +227,10 @@ void computeCellForce(const int currentCellIndex, const int currentCompIndex,
             double G_cur;
             if(LATTICEWEIGHTS[i] == w2){ // 1/18
                 G_cur = G[m];
-                assert(G_cur == -0.27);
+                //assert(G_cur == -0.27);
             }else if(LATTICEWEIGHTS[i] == w3){ // 1/36
                 G_cur = G[m]/2;
-                assert(G_cur == -0.27/2);
+                //assert(G_cur == -0.27/2);
             }else{
                 assert(i == 9);
                 G_cur = 0;
@@ -240,7 +240,7 @@ void computeCellForce(const int currentCellIndex, const int currentCompIndex,
             forces[0] += G_cur * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][0];
             forces[1] += G_cur * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][1];
             forces[2] += G_cur * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][2];
-            assert(psiFctPointer[c[m].psiFctCode](numDensity) == psi0(numDensity));
+            //assert(psiFctPointer[c[m].psiFctCode](numDensity) == psi0(numDensity));
          }
     }
 
@@ -252,7 +252,7 @@ void computeCellForce(const int currentCellIndex, const int currentCompIndex,
     forces[1] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
     forces[2] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
     assert(currentCompIndex == 0);
-    assert(psiFctPointer[c[currentCompIndex].psiFctCode](numDensity) == psi0(numDensity));
+    //assert(psiFctPointer[c[currentCompIndex].psiFctCode](numDensity) == psi0(numDensity));
 }
 
 void computeForce(t_component *c, const t_procData * const procData, int *flagField, double G[numComp][numComp]){
