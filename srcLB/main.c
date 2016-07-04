@@ -139,6 +139,14 @@ int main(int argc, char *argv[]){
         free(c[i].streamField);
         free(c[i].collideField);
         free(c[i].rho);
+        free(c[i].feq);
+
+        for(int j = 0; j < totalsize; ++j){
+            c[i].velocity[j] = (double*) malloc(3* sizeof( double));
+            c[i].force[j]    = (double*) malloc(3* sizeof( double));
+        }
+        free(c[i].velocity);
+        free(c[i].force);
     }
     free(flagField);
 
