@@ -9,9 +9,9 @@ void computeNumDensity(const double *const currentCell, double *density){
     // Density is the sum of the distributions in the current lattice
     int i;
     *density = 0.0;
-	for (i = 0; i < Q; i++) {
-		 *density += currentCell[i];
-	}
+    for (i = 0; i < Q; i++) {
+        *density += currentCell[i];
+    }
 }
 
 /** computes the velocity within currentCell and stores the result in velocity */
@@ -25,13 +25,13 @@ void computeVelocity(const double * const currentCell, const double * const dens
     // velocity[1] = 0.0;
     // velocity[2] = 0.0;
     // int i;
-	// for (i = 0; i < Q; i++) {
-	// 	   velocity[0] += currentCell[i]*LATTICEVELOCITIES[i][0];
-	// 	   velocity[1] += currentCell[i]*LATTICEVELOCITIES[i][1];
-	// 	   velocity[2] += currentCell[i]*LATTICEVELOCITIES[i][2];
-	// }
+    // for (i = 0; i < Q; i++) {
+    // 	   velocity[0] += currentCell[i]*LATTICEVELOCITIES[i][0];
+    // 	   velocity[1] += currentCell[i]*LATTICEVELOCITIES[i][1];
+    // 	   velocity[2] += currentCell[i]*LATTICEVELOCITIES[i][2];
+    // }
 
-	// Unroll the loop for cache efficient access
+    // Unroll the loop for cache efficient access
     // Improved speed even with -O3 flag
 
     // Blocks of 4 for efficient cache access
@@ -67,14 +67,14 @@ void computeVelocity(const double * const currentCell, const double * const dens
 
 void computeDensityAndVelocity(t_component *c, const t_procData * const procData){
 
-    for (int z = 1; z <= procData->xLength[2] ; z++) {
-        for (int y = 1; y <= procData->xLength[1]; y++) {
-            for (int x = 1; x <= procData->xLength[0]; x++) {
+    for(int k = 0; k < numComp; ++k){
+        for (int z = 1; z <= procData->xLength[2] ; z++) {
+            for (int y = 1; y <= procData->xLength[1]; y++) {
+                for (int x = 1; x <= procData->xLength[0]; x++) {
 
-                double commonVelocity[3];
-                double c_velocity[numComp][3];
-                double c_density[numComp];
-                for(int k = 0; k < numComp; ++k){
+                    double commonVelocity[3];
+                    double c_velocity[numComp][3];
+                    double c_density[numComp];
                     int fieldIdx = p_computeCellOffsetXYZ(x, y, z, procData->xLength);
                     int cellIdx = Q*fieldIdx;
                     double *currentCell = &c[k].streamField[cellIdx];
