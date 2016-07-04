@@ -39,7 +39,7 @@ int main(int argc, char *argv[]){
 
     // File printing parameters
     char fName[80];
-    snprintf(fName, 80, "pv_files/worksheet2");
+    snprintf(fName, 80, "debug/REFERENCE_SOLUTION");
 
     //Timing variables:
     clock_t begin_timing, end_timing;
@@ -124,18 +124,18 @@ int main(int argc, char *argv[]){
         // int dist = 2;
 
 		computeForce_new(c, xlength, flagField, G);
-        //printf("Force x @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
-        //printf("Force y @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
-        //printf("Force z @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
+        printf("Force x @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
+        printf("Force y @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
+        printf("Force z @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
 
         computeDensityAndVelocity(c, xlength);
-        //printf("Rho @ (6,6,6) %.16f\n",c[0].rho[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))]);
-        //printf("Ux @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
-        //printf("Uy @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
-        //printf("Uz @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
+        printf("Rho @ (6,6,6) %.16f\n",c[0].rho[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))]);
+        printf("Ux @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
+        printf("Uy @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
+        printf("Uz @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
 
         updateFeq(c, &xlength);
-        //printf("F_eq 10 @ (41,12,13) %.11f\n",c[0].feq[Q*(41+12*(xlength+2)+13*(xlength+2)*(xlength+2))+10]);
+        printf("F_eq 10 @ (41,12,13) %.11f\n",c[0].feq[Q*(41+12*(xlength+2)+13*(xlength+2)*(xlength+2))+10]);
 
         for (int k = 0; k < Q*totalsize; ++k) {
             c[0].streamField[k] = c[0].collideField[k];
