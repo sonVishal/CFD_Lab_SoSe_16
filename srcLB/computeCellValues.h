@@ -19,7 +19,8 @@ void computeDensityAndVelocity(t_component *c, int xlength);
 /** computes the equilibrium distributions for all particle distribution functions of one
  *  cell from density and velocity and stores the results in feq.
  */
-void computeFeq(const double * const density, const double * const velocity, double *feq);
+void computeFeqCell(const double * const density, const double * const velocity, double *feq);
+void computeFeq(t_component *c, const int *xlength);
 
 void computeCommonVelocity(const double *const c_density, double c_velocity[2][3], t_component *c, double* commonVel);
 

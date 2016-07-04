@@ -58,7 +58,7 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                     double rnd = ((double)rand()/(double)RAND_MAX);
                     c[k].rho[cellIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd;
 
-                    computeFeq(&c[k].rho[cellIdx], v, &c[k].feq[idx]);
+                    computeFeqCell(&c[k].rho[cellIdx], v, &c[k].feq[idx]);
                     for (int i = 0; i < Q; ++i) {
                         c[k].collideField[idx+i] = c[k].feq[idx +i];
                         c[k].streamField[idx+i]  = c[k].feq[idx +i];

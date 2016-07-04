@@ -105,7 +105,7 @@ int main(int argc, char *argv[]){
 
         computeDensityAndVelocity(c, xlength);
 
-        updateFeq(c, &xlength);
+        computeFeq(c, &xlength);
 
 
         for (int k = 0; k < Q*totalsize; ++k) {

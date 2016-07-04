@@ -4,5 +4,4 @@
 #include "LBDefinitions.h"
 
 void streamCollide(t_component *c, int xlength, int* flagField);
-void updateFeq(t_component *c, const int *xlength);
 #endif

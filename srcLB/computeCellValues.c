@@ -102,7 +102,7 @@ void computeDensityAndVelocity(t_component *c, int xlength){
 /*  Computes the equilibrium distributions for all particle distribution
  *  functions of one cell from density and velocity and stores the results in feq.
  */
-void computeFeq(const double * const density, const double * const velocity, double *feq){
+void computeFeqCell(const double * const density, const double * const velocity, double *feq){
 
     // Temporary variables for speed of sound squared and ^4
 	// Since it is called that often and having the most work, we made these static
@@ -150,7 +150,7 @@ void computeFeq(const double * const density, const double * const velocity, dou
     feq[18] = d1*(u_u + (uy+uz)*(1/cs_2 + (uy+uz)/cs_4_2));
 }
 
-void updateFeq(t_component *c, const int *xlength){
+void computeFeq(t_component *c, const int *xlength){
 
 	int cellIdx, fieldIdx;
     for(int k  = 0; k < NUMCOMP; ++k){
@@ -160,23 +160,14 @@ void updateFeq(t_component *c, const int *xlength){
 
                     fieldIdx = p_computeCellOffsetXYZ(x, y, z, *xlength);
                     cellIdx = Q*fieldIdx;
-                    double ux = c[k].velocity[fieldIdx][0];
-                    double uy = c[k].velocity[fieldIdx][1];
-                    double uz = c[k].velocity[fieldIdx][2];
 
-                    double udotu = ux*ux + uy*uy + uz*uz;
+                    computeFeqCell(&c[k].rho[fieldIdx], c[k].velocity[fieldIdx], &c[k].feq[cellIdx]);
 
-                    //TODO: check if reuse computeEq works
-                    //computeFeq(&c[k].rho[fieldIdx], c[k].velocity[fieldIdx], &c[k].feq[cellIdx]);
+                    #ifndef NDEBUG
 					for (int i = 0; i < Q; i++) {
-                        double edotu =  LATTICEVELOCITIES[i][0]*ux +
-                                        LATTICEVELOCITIES[i][1]*uy +
-                                        LATTICEVELOCITIES[i][2]*uz;
-
-                        c[k].feq[cellIdx + i] = LATTICEWEIGHTS[i] * c[k].rho[fieldIdx]
-                                                      * (1 + 3.*edotu + 4.5*edotu*edotu - 1.5*udotu);
 						assert(c[k].feq[cellIdx+i] > 0.0);
 					}
+                    #endif
 
                 }
             }
