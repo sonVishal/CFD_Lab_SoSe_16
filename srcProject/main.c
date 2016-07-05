@@ -173,7 +173,7 @@ int main(int argc, char *argv[]){
         streamCollide(c, &procData);
 
 		computeForce(c, &procData, flagField, G);
-        if(procData.rank == 0){
+        if(procData.rank == 0 && t == 2){
             printf("AFTER COMPUTING FORCE\n");
             printf("Force x @ (6,6,6) %.16f\n",c[0].force[cell][0]);
             printf("Force y @ (6,6,6) %.16f\n",c[0].force[cell][1]);
@@ -181,7 +181,7 @@ int main(int argc, char *argv[]){
         }
 
         computeDensityAndVelocity(c, &procData);
-        if(procData.rank == 0){
+        if(procData.rank == 0 && t == 2){
             printf("AFTER COMPUTING DENSITY AND VELOCITY\n");
             printf("Rho @ (6,6,6) %.16f\n",c[0].rho[cell]);
             printf("Ux @ (6,6,6) %.16f\n",c[0].velocity[cell][0]);
@@ -190,8 +190,7 @@ int main(int argc, char *argv[]){
         }
 
         computeFeq(c, &procData);
-
-        if(procData.rank == 0){
+        if(procData.rank == 0 && t == 2){
             printf("AFTER COMPUTING FEQ \n");
             printf("F_eq dist=%i @ (6,6,6) %.16f\n",dist,c[0].feq[Q*cell+dist]);
         }
