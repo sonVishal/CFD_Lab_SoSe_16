@@ -94,6 +94,7 @@ void domainDecompositionAndNeighbors(t_procData *const procData, const int xleng
 		if (procData->neighbours[i] == procData->rank) {
 			procData->neighbours[i] = MPI_PROC_NULL;
 		}
+        printf("R%d neighbours[%d] = %d\n", procData->rank, i, procData->neighbours[i]);
 	}
 }
 
@@ -160,8 +161,8 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const *
 */
 void communicateComponents(double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData){
     for (int i = 0; i < numComp; ++i) {
-        communicate(sendBuffer, readBuffer, c[i].streamField, procData);
-		communicate(sendBuffer, readBuffer, c[i].feq, procData);
+        communicate(sendBuffer, readBuffer, c[i].streamField, procData, 0);
+		communicate(sendBuffer, readBuffer, c[i].feq, procData, 1);
 		communicateDensity(sendBuffer, readBuffer, c[i].rho, procData);
     }
 }
@@ -170,7 +171,7 @@ void communicateComponents(double** sendBuffer, double**readBuffer, t_component 
 /*
  * Main algorithm to carry out the communication between the processes.
  */
-void communicate(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData){
+void communicate(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData, int tag){
     //Run extract, swap, inject for all sides and cells.
 
     int 		index1[5], index2[5];
@@ -196,7 +197,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 			extract(sendBuffer[face2], collideField, &iterPara2, procData, face2, index2);
 
             // [> Swap the distributions <]
-            swap(sendBuffer, readBuffer, procData, direction);
+            swap(sendBuffer, readBuffer, procData, direction, tag);
 
             // [> Inject the distributions from read buffer to collide field <]
             //NOTE: opposite index get injected from the readBuffer
@@ -245,7 +246,7 @@ void extract(double sendBuffer[], double const * const collideField, t_iterPara 
 /*
  * Swap distributions with neighboring processes.
  */
-void swap(double** sendBuffer, double** readBuffer, t_procData const * const procData, const int direction){
+void swap(double** sendBuffer, double** readBuffer, t_procData const * const procData, const int direction, int tag){
 
     //temp variables for readabillity.
 	const int bufferSize = procData->bufferSize[direction/2];
@@ -259,15 +260,16 @@ void swap(double** sendBuffer, double** readBuffer, t_procData const * const pro
     //                 MPI_Comm comm, MPI_Status *status)
     //Send proc1 receive proc1
     if(procData->neighbours[direction] < procData->rank){
-        MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[direction],
-            bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
-            bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+        MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, tag, readBuffer[direction],
+            bufferSize, MPI_DOUBLE, proc1, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, tag, readBuffer[direction+1],
+            bufferSize, MPI_DOUBLE, proc2, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     } else {
-        MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
-            bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[direction],
-            bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, tag, readBuffer[direction+1],
+            bufferSize, MPI_DOUBLE, proc2, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, tag, readBuffer[direction],
+            bufferSize, MPI_DOUBLE, proc1, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
 }
 
@@ -316,21 +318,23 @@ void swapNoComm(double* collideField, t_iterPara const * const iterPara1,t_iterP
 	int fromFixedValue1, toFixedValue1, fromFixedValue2, toFixedValue2;
 	if (iterPara1->fixedValue == 1) {
 		fromFixedValue1 = iterPara1->fixedValue;
-		toFixedValue1 = iterPara2->fixedValue+1;
+		toFixedValue1   = iterPara2->fixedValue+1;
 		fromFixedValue2 = iterPara2->fixedValue;
-		toFixedValue2 = iterPara1->fixedValue-1;
+		toFixedValue2   = iterPara1->fixedValue-1;
 	} else {
 		fromFixedValue1 = iterPara1->fixedValue;
-		toFixedValue1 = iterPara2->fixedValue-1;
+		toFixedValue1   = iterPara2->fixedValue-1;
 		fromFixedValue2 = iterPara2->fixedValue;
-		toFixedValue2 = iterPara1->fixedValue+1;
+		toFixedValue2   = iterPara1->fixedValue+1;
 	}
 	for (int k = iterPara1->startOuter; k <= iterPara1->endOuter; k++) {
 		for (int j = iterPara1->startInner; j <= iterPara1->endInner; j++) {
+
 			int fromIdx1 = Q*p_computeCellOffset(k, j, fromFixedValue1, procData->xLength, direction);
-			int toIdx1 = Q*p_computeCellOffset(k, j, toFixedValue1, procData->xLength, direction);
+			int toIdx1   = Q*p_computeCellOffset(k, j, toFixedValue1, procData->xLength, direction);
 			int fromIdx2 = Q*p_computeCellOffset(k, j, fromFixedValue2, procData->xLength, direction);
-			int toIdx2 = Q*p_computeCellOffset(k, j, toFixedValue2, procData->xLength, direction);
+			int toIdx2   = Q*p_computeCellOffset(k, j, toFixedValue2, procData->xLength, direction);
+
 			for (int i = 0; i < 5; i++) {
 				collideField[toIdx1+index1[i]] = collideField[fromIdx1+index1[i]];
 				collideField[toIdx2+index2[i]] = collideField[fromIdx2+index2[i]];
@@ -423,11 +427,13 @@ void swapDensity(double** sendBuffer, double** readBuffer, t_procData const * co
     if(procData->neighbours[direction] < procData->rank){
         MPI_Sendrecv(sendBuffer[direction], bufferSize1 , MPI_DOUBLE, proc1, 0, readBuffer[direction],
             bufferSize1, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
         MPI_Sendrecv(sendBuffer[direction+1], bufferSize2 , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
             bufferSize2, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     } else {
         MPI_Sendrecv(sendBuffer[direction+1], bufferSize2 , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
             bufferSize2, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
         MPI_Sendrecv(sendBuffer[direction], bufferSize1, MPI_DOUBLE, proc1, 0, readBuffer[direction],
             bufferSize1, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
@@ -473,21 +479,23 @@ void swapNoCommDensity(double* rho, t_iterPara const * const iterPara1,
 	int fromFixedValue1, toFixedValue1, fromFixedValue2, toFixedValue2;
 	if (iterPara1->fixedValue == 1) {
 		fromFixedValue1 = iterPara1->fixedValue;
-		toFixedValue1 = iterPara2->fixedValue+1;
+		toFixedValue1   = iterPara2->fixedValue+1;
 		fromFixedValue2 = iterPara2->fixedValue;
-		toFixedValue2 = iterPara1->fixedValue-1;
+		toFixedValue2   = iterPara1->fixedValue-1;
 	} else {
 		fromFixedValue1 = iterPara1->fixedValue;
-		toFixedValue1 = iterPara2->fixedValue-1;
+		toFixedValue1   = iterPara2->fixedValue-1;
 		fromFixedValue2 = iterPara2->fixedValue;
-		toFixedValue2 = iterPara1->fixedValue+1;
+		toFixedValue2   = iterPara1->fixedValue+1;
 	}
 	for (int k = iterPara1->startOuter; k <= iterPara1->endOuter; k++) {
 		for (int j = iterPara1->startInner; j <= iterPara1->endInner; j++) {
+
 			int fromIdx1 = p_computeCellOffset(k, j, fromFixedValue1, procData->xLength, direction);
-			int toIdx1 = p_computeCellOffset(k, j, toFixedValue1, procData->xLength, direction);
+			int toIdx1   = p_computeCellOffset(k, j, toFixedValue1, procData->xLength, direction);
 			int fromIdx2 = p_computeCellOffset(k, j, fromFixedValue2, procData->xLength, direction);
-			int toIdx2 = p_computeCellOffset(k, j, toFixedValue2, procData->xLength, direction);
+			int toIdx2   = p_computeCellOffset(k, j, toFixedValue2, procData->xLength, direction);
+
 			rho[toIdx1] = rho[fromIdx1];
 			rho[toIdx2] = rho[fromIdx2];
 		}
