@@ -5,6 +5,11 @@
 /srcProject/
 /worksheet3/
 
+
+*.sh
+!execute_debug_setup_MPI_REF.sh
+!execute_debug_setup.sh
+
 *.h5
 *.xmf
 
@@ -97,7 +102,7 @@ lbsim
 .fuse_hidden*
 
 # Shell executables
-*.sh
+
 
 # Latex files
 *.log
