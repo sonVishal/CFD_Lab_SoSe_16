@@ -113,7 +113,9 @@ void initialiseFields(t_component * c, const t_procData * const procData){
 		srand(1);
 	}else if(procData->rank == 1){
 		srand(3);
-	}//else no seed
+	}else{
+		srand(procData->rank*10);
+	}
 
     // [> initialize collideField and streamField <]
     int x,y,z;
