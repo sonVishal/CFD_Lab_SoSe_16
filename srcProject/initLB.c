@@ -103,7 +103,7 @@ void initialiseFields(t_component * c, const t_procData * const procData){
     int fieldIdx, cellIdx;
 
 	// How much initial difference is allowed in density
-	double rhoVar = 0.01*rhoRef;  //Shan Chen
+	// double rhoVar = 0.01*rhoRef;  //Shan Chen
 
 	// Initially velocity is 0
 	double u0[3] = {0.0, 0.0, 0.0};
@@ -126,9 +126,23 @@ void initialiseFields(t_component * c, const t_procData * const procData){
 				fieldIdx = p_computeCellOffsetXYZ(x, y, z, procData->xLength);
                 cellIdx = Q*fieldIdx;
 
-				double rnd = ((double)rand()/(double)RAND_MAX);
-				c->rho[fieldIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd; //Shan Chen
+				//double rnd = ((double)rand()/(double)RAND_MAX);
+				//c->rho[fieldIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd; //Shan Chen
 				//c->rho[fieldIdx] = rhoRef + rnd; //Sukop
+                
+                //initializing a circle
+                double xx = (x-procData->xLength[0]/2);
+                double yy = (y-procData->xLength[1]/2);
+                double zz = (z-procData->xLength[2]/2);
+                double radius = procData->xLength[0]/4;
+
+
+                if( xx*xx + yy*yy + zz*zz <= radius*radius){
+				    c->rho[fieldIdx] = rhoRef*1.1;
+                }
+                else{
+				    c->rho[fieldIdx] = rhoRef;
+                }
 
 				if(x == 1 && y == 1 && z == 2 && procData->rank == 1){
 					printf("R%i: @(1,1,2) %.16f \n", procData->rank, c->rho[fieldIdx]);
