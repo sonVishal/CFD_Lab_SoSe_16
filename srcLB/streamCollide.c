@@ -24,7 +24,7 @@ void streamCollide(t_component *c, int xlength, int* flagField){
 											(z+LATTICEVELOCITIES[i][2])*(xlength+2)*(xlength+2);
 
 						c[k].collideField[cellIdx+Q-i-1] = c[k].streamField[nextCellIndex*Q+Q-i-1] - (c[k].streamField[nextCellIndex*Q+Q-i-1] - c[k].feq[nextCellIndex*Q+Q-i-1])/c[k].tau;
-						assert(c[k].collideField[cellIdx+Q-i-1] > 0.0);
+						assert(c[k].collideField[cellIdx+Q-i-1] >= 0.0);
 	                }
 				}
 
@@ -32,4 +32,3 @@ void streamCollide(t_component *c, int xlength, int* flagField){
         }
     }
 }
-

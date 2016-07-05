@@ -59,7 +59,7 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                 }
 
                 c[0].velocity[cellIdx][0] = 0.0;c[0].velocity[cellIdx][1] = 0.0;c[0].velocity[cellIdx][2] = 0.0;
-                c[1].velocity[cellIdx][0] = 0.0;c[1].velocity[cellIdx][1] = 0.0;c[2].velocity[cellIdx][2] = 0.0;
+                c[1].velocity[cellIdx][0] = 0.0;c[1].velocity[cellIdx][1] = 0.0;c[1].velocity[cellIdx][2] = 0.0;
 
                 computeFeqCell(&c[0].rho[cellIdx], c[0].velocity[cellIdx], &c[0].feq[idx]);
                 computeFeqCell(&c[1].rho[cellIdx], c[1].velocity[cellIdx], &c[1].feq[idx]);

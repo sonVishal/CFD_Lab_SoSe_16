@@ -33,36 +33,41 @@ void computeVelocity(const double * const currentCell, const double * const dens
 
 	// Unroll the loop for cache efficient access
     // Improved speed even with -O3 flag
+    if (*density != 0.0) {
+        // Blocks of 4 for efficient cache access
+        // 0 to 3
+        velocity[0] = -currentCell[1]+currentCell[3];
+        velocity[1] = -currentCell[0];
+        velocity[2] = -(currentCell[0]+currentCell[1]+currentCell[2]+currentCell[3]);
 
-    // Blocks of 4 for efficient cache access
-    // 0 to 3
-    velocity[0] = -currentCell[1]+currentCell[3];
-    velocity[1] = -currentCell[0];
-    velocity[2] = -(currentCell[0]+currentCell[1]+currentCell[2]+currentCell[3]);
+        // 4 to 7
+        velocity[0] += -currentCell[5]+currentCell[7];
+        velocity[1] += currentCell[4]-(currentCell[5]+currentCell[6]+currentCell[7]);
+        velocity[2] += -currentCell[4];
 
-    // 4 to 7
-    velocity[0] += -currentCell[5]+currentCell[7];
-    velocity[1] += currentCell[4]-(currentCell[5]+currentCell[6]+currentCell[7]);
-    velocity[2] += -currentCell[4];
+        // 8 to 11
+        velocity[0] += -currentCell[8]+currentCell[10]-currentCell[11];
+        velocity[1] += currentCell[11];
 
-    // 8 to 11
-    velocity[0] += -currentCell[8]+currentCell[10]-currentCell[11];
-    velocity[1] += currentCell[11];
+        // 12 to 15
+        velocity[0] += currentCell[13]-currentCell[15];
+        velocity[1] += currentCell[12]+currentCell[13]-currentCell[14];
+        velocity[2] += currentCell[14]+currentCell[15];
 
-    // 12 to 15
-    velocity[0] += currentCell[13]-currentCell[15];
-    velocity[1] += currentCell[12]+currentCell[13]-currentCell[14];
-    velocity[2] += currentCell[14]+currentCell[15];
+        // 16 to 18
+        velocity[0] += currentCell[17];
+        velocity[1] += currentCell[18];
+        velocity[2] += currentCell[16]+currentCell[17]+currentCell[18];
 
-    // 16 to 18
-    velocity[0] += currentCell[17];
-    velocity[1] += currentCell[18];
-    velocity[2] += currentCell[16]+currentCell[17]+currentCell[18];
-
-    // Divide by density
-    velocity[0] /= (*density);
-    velocity[1] /= (*density);
-    velocity[2] /= (*density);
+        // Divide by density
+        velocity[0] /= (*density);
+        velocity[1] /= (*density);
+        velocity[2] /= (*density);
+    } else {
+        velocity[0] = 0.0;
+        velocity[1] = 0.0;
+        velocity[2] = 0.0;
+    }
 }
 
 void computeDensityAndVelocity(t_component *c, int xlength){
@@ -151,7 +156,7 @@ void computeFeqCell(const double * const density, const double * const velocity,
 
     #ifndef NDEBUG
     for (int i = 0; i < Q; i++) {
-        assert(feq[i] > 0.0);
+        assert(feq[i] >= 0.0);
     }
     #endif
 }
@@ -188,10 +193,15 @@ void computeCommonVelocity(const double *const c_density, double c_velocity[2][3
 
        den+= c_density[n]/c[n].tau;
     }
-
-    commonVel[0] = momentum[0]/den;
-    commonVel[1] = momentum[1]/den;
-    commonVel[2] = momentum[2]/den;
+    if (den != 0.0) {
+        commonVel[0] = momentum[0]/den;
+        commonVel[1] = momentum[1]/den;
+        commonVel[2] = momentum[2]/den;
+    } else {
+        commonVel[0] = 0.0;
+        commonVel[1] = 0.0;
+        commonVel[2] = 0.0;
+    }
 }
 
 void computeCellForce(const int currentCellIndex, const int currentCompIndex,
@@ -227,10 +237,10 @@ void computeCellForce(const int currentCellIndex, const int currentCompIndex,
             double G_cur;
             if(LATTICEWEIGHTS[i] == w2){ // 1/18
                 G_cur = G[m];
-                assert(G_cur == -0.27);
+                // assert(G_cur == -0.27);
             }else if(LATTICEWEIGHTS[i] == w3){ // 1/36
                 G_cur = G[m]/2;
-                assert(G_cur == -0.27/2);
+                // assert(G_cur == -0.27/2);
             }else{
                 assert(i == 9);
                 G_cur = 0;
@@ -240,7 +250,7 @@ void computeCellForce(const int currentCellIndex, const int currentCompIndex,
             forces[0] += G_cur * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][0];
             forces[1] += G_cur * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][1];
             forces[2] += G_cur * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][2];
-            assert(psiFctPointer[c[m].psiFctCode](numDensity) == psi0(numDensity));
+            // assert(psiFctPointer[c[m].psiFctCode](numDensity) == psi0(numDensity));
          }
     }
 
@@ -251,8 +261,8 @@ void computeCellForce(const int currentCellIndex, const int currentCompIndex,
     forces[0] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
     forces[1] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
     forces[2] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
-    assert(currentCompIndex == 0);
-    assert(psiFctPointer[c[currentCompIndex].psiFctCode](numDensity) == psi0(numDensity));
+    // assert(currentCompIndex == 0);
+    // assert(psiFctPointer[c[currentCompIndex].psiFctCode](numDensity) == psi0(numDensity));
 }
 
 void computeForce(t_component *c, int xlength, int *flagField, double G[NUMCOMP][NUMCOMP]){
@@ -272,8 +282,14 @@ void computeForce(t_component *c, int xlength, int *flagField, double G[NUMCOMP]
 }
 
 void computeEqVelocity(t_component const*const c, double const*const commonVelocity, const double compDensity, double const*const compForce, double compEqVelocity[3]) {
-    
-    compEqVelocity[0] = commonVelocity[0] + (c->tau/compDensity)*compForce[0];
-    compEqVelocity[1] = commonVelocity[1] + (c->tau/compDensity)*compForce[1];
-    compEqVelocity[2] = commonVelocity[2] + (c->tau/compDensity)*compForce[2];
+
+    if (compDensity != 0.0) {
+        compEqVelocity[0] = commonVelocity[0] + (c->tau/compDensity)*compForce[0];
+        compEqVelocity[1] = commonVelocity[1] + (c->tau/compDensity)*compForce[1];
+        compEqVelocity[2] = commonVelocity[2] + (c->tau/compDensity)*compForce[2];
+    } else {
+        compEqVelocity[0] = commonVelocity[0];
+        compEqVelocity[1] = commonVelocity[1];
+        compEqVelocity[2] = commonVelocity[2];
+    }
 }
