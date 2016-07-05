@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
     c[1].m = 1.0;
     c[1].psiFctCode = 1;
 
-    double G[2][2] = {{0.0,0.27},{0.27,0.0}};
+    double G[2][2] = {{3.0,3.0},{3.0,3.0}};
     // double G[1][1] = {{-0.27}};
 
     int *flagField = NULL;
