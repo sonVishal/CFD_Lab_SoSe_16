@@ -128,6 +128,15 @@ void initialiseFields(t_component * c, const t_procData * const procData){
 				c->rho[fieldIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd; //Shan Chen
 				//c->rho[fieldIdx] = rhoRef + rnd; //Sukop
 
+				if(x == 5 && y == 5 && z == 6 && procData->rank == 1){
+					printf("R%i: @(5,5,6) %.16f", procData->rank, c->rho[fieldIdx]);
+				}
+
+				if(x == 5 && y == 5 && z == 5 && procData->rank == 0){
+					printf("R%i: @(5,5,5) %.16f", procData->rank, c->rho[fieldIdx]);
+				}
+
+
 				computeFeqCell(&(c->rho[fieldIdx]), u0, &(c->feq[cellIdx]));
                 for (int i = 0; i < Q; ++i) {
                     c->collideField[cellIdx+i] = c->feq[cellIdx+i];
