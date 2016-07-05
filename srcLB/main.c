@@ -123,21 +123,31 @@ int main(int argc, char *argv[]){
         // int dist = 2;
 
 		computeForce_new(c, xlength, flagField, G);
-        printf("AFTER COMPUTING FORCE\n");
+
+        int tcheck = 2;
+
+        if(t == tcheck){
+
+        }
+        printf("AFTER COMPUTING FORCE @ time %i\n", t);
         printf("Force x @ (6,6,6) %.16f\n",c[0].force[cell][0]);
         printf("Force y @ (6,6,6) %.16f\n",c[0].force[cell][1]);
         printf("Force z @ (6,6,6) %.16f\n",c[0].force[cell][2]);
 
         computeDensityAndVelocity(c, xlength);
-        printf("AFTER COMPUTING DENSITY AND VELOCITY\n");
-        printf("Rho @ (6,6,6) %.16f\n",c[0].rho[cell]);
-        printf("Ux @ (6,6,6) %.16f\n",c[0].velocity[cell][0]);
-        printf("Uy @ (6,6,6) %.16f\n",c[0].velocity[cell][1]);
-        printf("Uz @ (6,6,6) %.16f\n",c[0].velocity[cell][2]);
+        if(t == tcheck){
+            printf("AFTER COMPUTING DENSITY AND VELOCITY @ time %i\n", t);
+            printf("Rho @ (6,6,6) %.16f\n",c[0].rho[cell]);
+            printf("Ux @ (6,6,6) %.16f\n",c[0].velocity[cell][0]);
+            printf("Uy @ (6,6,6) %.16f\n",c[0].velocity[cell][1]);
+            printf("Uz @ (6,6,6) %.16f\n",c[0].velocity[cell][2]);
+        }
 
         updateFeq(c, &xlength);
-        printf("AFTER COMPUTING FEQ \n");
-        printf("F_eq dist=%i @ (6,6,6) %.16f\n",dist,c[0].feq[Q*cell+dist]);
+        if(t == tcheck){
+            printf("AFTER COMPUTING FEQ @ time %i\n", t);
+            printf("F_eq dist=%i @ (6,6,6) %.16f\n",dist,c[0].feq[Q*cell+dist]);
+        }
 
         for (int k = 0; k < Q*totalsize; ++k) {
             c[0].streamField[k] = c[0].collideField[k];
