@@ -27,7 +27,6 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int
 	}
 
 	int iProc, jProc, kProc;
-    double Re;
 
     // [> Read values from file given in argv <]
     READ_INT(*argv, *xlength);
@@ -53,8 +52,6 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int
 		snprintf(tempName, 20, "psi%d", i);
 		read_int(*argv, tempName, &c[i].psiFctCode);
 	}
-
-    READ_DOUBLE(*argv, Re);
 
     READ_INT(*argv, *timesteps);
     READ_INT(*argv, *timestepsPerPlotting);
@@ -91,7 +88,6 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int
 	if (*xlength%iProc != 0 || *xlength%jProc != 0 || *xlength%kProc != 0) {
         printf("WARNING: The domain decomposition is not uniform. This might create load unbalances between processes.\n");
 	}
-
 
   return 0;
 }
@@ -149,7 +145,7 @@ void initialiseComponents(t_component *c, int *flagField, const t_procData * con
 	// Initialize the collide and stream fields for each component
 	// TODO: this also changes in multicomponent
 	// Set up a seed based on the procData
-	srand(procData->rank*(procData->rank+1)+1);
+	// srand(procData->rank*(procData->rank+1)+1);
 	for (int i = 0; i < numComp; i++) {
 		initialiseFields(&c[i], procData);
 	}

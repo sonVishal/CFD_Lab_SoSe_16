@@ -60,14 +60,6 @@ psi0		0
 #d01         1
 
 
-# Reynolds Number
-Re              2
-
-# Velocity of moving wall
-#xvelocity         0.01
-#yvelocity         0
-#zvelocity         0
-
 # Number of timesteps
 timesteps            256000
 
