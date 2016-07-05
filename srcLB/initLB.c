@@ -93,6 +93,15 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                     double rnd = ((double)rand()/(double)RAND_MAX);
                     c[k].rho[cellIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd;
 
+
+                    if(x == 5 && y == 5 && z == 5){
+                        printf("@(5,5,5): %.16f\n", c[k].rho[cellIdx]);
+                    }
+
+                    if(x == 5 && y == 5 && z == 21){
+                        printf("@(5,5,21): %.16f\n", c[k].rho[cellIdx]);
+                    }
+
                     // static int idx = 1;
                     // if(idx < 10){
                     //     printf("%f \n", rnd);
@@ -104,7 +113,6 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                         c[k].collideField[idx+i] = feq_tmp[i];
                         c[k].streamField[idx+i]  = feq_tmp[i];
                         c[k].feq[idx +i] = feq_tmp[i];
-                        //printf("%f\n",c[k].feq[i]);
                     }
                 }
             }
