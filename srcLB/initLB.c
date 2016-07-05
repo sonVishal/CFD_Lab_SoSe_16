@@ -78,9 +78,9 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
     for (int k = 0; k < NUMCOMP; k++) {
         for ( z = 1; z <= xlength; ++z) {
             zOffset = z*xlen2sq;
-            // if (z == xlength/2) { //Comment in /out for 1*1*2/1*1*1 case
-            //     srand(3);
-            // }
+            if (z == xlength/2) { //Comment in /out for 1*1*2/1*1*1 case
+                srand(3);
+            }
             for ( y = 1; y <= xlength; ++y) {
                 yzOffset = y*(xlength+2) + zOffset;
                 for ( x = 1; x <= xlength; ++x) {
