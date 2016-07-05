@@ -78,12 +78,12 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
     for (int k = 0; k < NUMCOMP; k++) {
         for ( z = 1; z <= xlength; ++z) {
             zOffset = z*xlen2sq;
+            if (z == xlength/2) {
+                srand(3);
+            }
             for ( y = 1; y <= xlength; ++y) {
                 yzOffset = y*(xlength+2) + zOffset;
                 for ( x = 1; x <= xlength; ++x) {
-                    if (z == xlength/2) {
-                        srand(3);
-                    }
                     cellIdx = (yzOffset + x);
                     idx = Q*cellIdx;
                     double feq_tmp[19]; //TODO: (TKS) Should remove this and operate directly on feq;
