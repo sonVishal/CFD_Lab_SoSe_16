@@ -7,7 +7,7 @@ import datetime
 
 path_debug = os.path.dirname(os.path.abspath(__file__)) # the file should be in /debug/!
 
-reader = simple.OpenDataFile(os.path.join(path_debug, "REFERENCE_SOLUTION.50.vtk"))
+reader = simple.OpenDataFile(os.path.join(path_debug, "../../srcLB/debug/REFERENCE_SOLUTION.50.vtk"))
 readerRef = simple.OpenDataFile(os.path.join(path_debug, "../pv_files/project_combined.50.pvts"))
 
 fileREF = "REF_SOLUTION.csv"
