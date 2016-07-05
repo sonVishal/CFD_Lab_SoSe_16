@@ -61,10 +61,10 @@ psi0		0
 
 
 # Number of timesteps
-timesteps            256000
+timesteps            100
 
 # timesteps between each plot
-timestepsPerPlotting 100
+timestepsPerPlotting 10
 
 # Domain decomposition
 # Number of subdivisions per axis
@@ -72,5 +72,5 @@ timestepsPerPlotting 100
 # y-axis = jProc
 # z-axis = kProc
 iProc		1
-jProc		2
-kProc		2
+jProc		1
+kProc		1
