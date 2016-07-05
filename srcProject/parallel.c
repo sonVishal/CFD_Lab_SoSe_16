@@ -365,6 +365,8 @@ void communicateDensity(double** sendBuffer, double**readBuffer, double* rho,
 			bufferSize1 = extractDensity(sendBuffer[face1], rho, &iterPara1, procData, face1);
 			bufferSize2 = extractDensity(sendBuffer[face2], rho, &iterPara2, procData, face2);
 
+			assert(bufferSize1 == procData->bufferSize[direction/2]/nrDistSwap);
+			assert(bufferSize2 == procData->bufferSize[direction/2]/nrDistSwap);
             // [> Swap the distributions <]
             swapDensity(sendBuffer, readBuffer, procData, direction, bufferSize1, bufferSize2);
 
@@ -375,7 +377,6 @@ void communicateDensity(double** sendBuffer, double**readBuffer, double* rho,
             injectSize1 = injectDensity(readBuffer[face1], rho, &iterPara1, procData, face1);
             injectSize2 = injectDensity(readBuffer[face2], rho, &iterPara2, procData, face2);
             assert(injectSize1 == bufferSize1 && injectSize2 == bufferSize2);
-            injectSize1 += injectSize2;
 		}
         else if (procData->neighbours[face1] == MPI_PROC_NULL && procData->neighbours[face2] == MPI_PROC_NULL) {
 			swapNoCommDensity(rho, &iterPara1, &iterPara2, procData, direction);
