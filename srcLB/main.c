@@ -115,25 +115,29 @@ int main(int argc, char *argv[]){
         streamCollide(c, xlength, flagField);
         //printf("collideField 10 @ (41,12,13) %.11f\n",c[0].collideField[Q*(41+12*(xlength+2)+13*(xlength+2)*(xlength+2))+10]);
 
-        // int x = 2;
-        // int y= 2;
-        // int z = 2;
-        // int cell = p_computeCellOffsetXYZ_Q(x, y, z, xlength);
+        int x = 6;
+        int y= 6;
+        int z = 6;
+        int cell = p_computeCellOffsetXYZ(x, y, z, xlength);
+        int dist = 10;
         // int dist = 2;
 
 		computeForce_new(c, xlength, flagField, G);
-        // printf("Force x @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
-        // printf("Force y @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
-        // printf("Force z @ (6,6,6) %.16f\n",c[0].force[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
+        printf("AFTER COMPUTING FORCE\n");
+        printf("Force x @ (6,6,6) %.16f\n",c[0].force[cell][0]);
+        printf("Force y @ (6,6,6) %.16f\n",c[0].force[cell][1]);
+        printf("Force z @ (6,6,6) %.16f\n",c[0].force[cell][2]);
 
         computeDensityAndVelocity(c, xlength);
-        // printf("Rho @ (6,6,6) %.16f\n",c[0].rho[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))]);
-        // printf("Ux @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][0]);
-        // printf("Uy @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][1]);
-        // printf("Uz @ (6,6,6) %.16f\n",c[0].velocity[(6+6*(xlength+2)+6*(xlength+2)*(xlength+2))][2]);
+        printf("AFTER COMPUTING DENSITY AND VELOCITY\n");
+        printf("Rho @ (6,6,6) %.16f\n",c[0].rho[cell]);
+        printf("Ux @ (6,6,6) %.16f\n",c[0].velocity[cell][0]);
+        printf("Uy @ (6,6,6) %.16f\n",c[0].velocity[cell][1]);
+        printf("Uz @ (6,6,6) %.16f\n",c[0].velocity[cell][2]);
 
         updateFeq(c, &xlength);
-        // printf("F_eq 10 @ (41,12,13) %.11f\n",c[0].feq[Q*(41+12*(xlength+2)+13*(xlength+2)*(xlength+2))+10]);
+        printf("AFTER COMPUTING FEQ \n");
+        printf("F_eq dist=%i @ (6,6,6) %.16f\n",dist,c[0].feq[Q*cell+dist]);
 
         for (int k = 0; k < Q*totalsize; ++k) {
             c[0].streamField[k] = c[0].collideField[k];
