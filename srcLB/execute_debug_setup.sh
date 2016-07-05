@@ -1,2 +1,2 @@
-make all
+make
 ./lbsim DEBUG_SETUP.dat
