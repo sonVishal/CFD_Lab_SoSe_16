@@ -214,7 +214,7 @@ int main(int argc, char *argv[]){
         // Print VTS files at given interval
 		if (t%timestepsPerPlotting == 0){
 
-            timestepsPerPlotting = timestepsPerPlotting*2;
+            //timestepsPerPlotting = timestepsPerPlotting*2;
             printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
 
             writeVtsOutput(c, fName, t, xlength, &procData, procsPerAxis);
