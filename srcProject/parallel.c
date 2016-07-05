@@ -190,25 +190,25 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         p_assignIndices(face1, index1);
         p_assignIndices(face2, index2);
 
-		// [> Extract the distributions from collideField to the send buffer <]
         if(procData->neighbours[face1] != MPI_PROC_NULL && procData->neighbours[face2] != MPI_PROC_NULL) {
+		    // [> Extract the distributions from collideField to the send buffer <]
 			extract(sendBuffer[face1], collideField, &iterPara1, procData, face1, index1);
 			extract(sendBuffer[face2], collideField, &iterPara2, procData, face2, index2);
+
+            // [> Swap the distributions <]
+            swap(sendBuffer, readBuffer, procData, direction);
+
+            // [> Inject the distributions from read buffer to collide field <]
+            //NOTE: opposite index get injected from the readBuffer
+            inject(readBuffer[face1], collideField, &iterPara1, procData, face1, index2);
+            inject(readBuffer[face2], collideField, &iterPara2, procData, face2, index1);
 		}
-
-		// [> Swap the distributions <]
-        swap(sendBuffer, readBuffer, procData, direction);
-
-		// [> Inject the distributions from read buffer to collide field <]
-        //NOTE: opposite index get injected from the readBuffer
-        if(procData->neighbours[face1] != MPI_PROC_NULL && procData->neighbours[face2] != MPI_PROC_NULL) {
-			inject(readBuffer[face1], collideField, &iterPara1, procData, face1, index2);
-			inject(readBuffer[face2], collideField, &iterPara2, procData, face2, index1);
-		}
-
-		if (procData->neighbours[face1] == MPI_PROC_NULL && procData->neighbours[face2] == MPI_PROC_NULL) {
+        else if (procData->neighbours[face1] == MPI_PROC_NULL && procData->neighbours[face2] == MPI_PROC_NULL) {
 			swapNoComm(collideField, &iterPara1, &iterPara2, procData, direction, index1, index2);
 		}
+        else {
+            ERROR("No communication of distributions happened!");
+        }
     }
 }
 
@@ -258,19 +258,17 @@ void swap(double** sendBuffer, double** readBuffer, t_procData const * const pro
     //                 MPI_Datatype recvtype, int source, int recvtag,
     //                 MPI_Comm comm, MPI_Status *status)
     //Send proc1 receive proc1
-	if (proc1 != MPI_PROC_NULL && proc2 != MPI_PROC_NULL) {
-		if(procData->neighbours[direction] < procData->rank){
-			MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[direction],
-				bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
-				bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		} else {
-			MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
-				bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[direction],
-				bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		}
-	}
+    if(procData->neighbours[direction] < procData->rank){
+        MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[direction],
+            bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
+            bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    } else {
+        MPI_Sendrecv(sendBuffer[direction+1], bufferSize , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
+            bufferSize, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, 0, readBuffer[direction],
+            bufferSize, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
 }
 
 /*
@@ -362,24 +360,26 @@ void communicateDensity(double** sendBuffer, double**readBuffer, double* rho,
         if(procData->neighbours[face1] != MPI_PROC_NULL && procData->neighbours[face2] != MPI_PROC_NULL) {
 			bufferSize1 = extractDensity(sendBuffer[face1], rho, &iterPara1, procData, face1);
 			bufferSize2 = extractDensity(sendBuffer[face2], rho, &iterPara2, procData, face2);
+
+            // [> Swap the distributions <]
+            swapDensity(sendBuffer, readBuffer, procData, direction, bufferSize1, bufferSize2);
+
+            int injectSize1, injectSize2;
+
+            // [> Inject the distributions from read buffer to collide field <]
+            //NOTE: opposite index get injected from the readBuffer
+            injectSize1 = injectDensity(readBuffer[face1], rho, &iterPara1, procData, face1);
+            injectSize2 = injectDensity(readBuffer[face2], rho, &iterPara2, procData, face2);
+            assert(injectSize1 == bufferSize1 && injectSize2 == bufferSize2);
+            injectSize1 += injectSize2;
 		}
-
-		// [> Swap the distributions <]
-        swapDensity(sendBuffer, readBuffer, procData, direction, bufferSize1, bufferSize2);
-
-		int injectSize1, injectSize2;
-		// [> Inject the distributions from read buffer to collide field <]
-        //NOTE: opposite index get injected from the readBuffer
-        if(procData->neighbours[face1] != MPI_PROC_NULL && procData->neighbours[face2] != MPI_PROC_NULL) {
-			injectSize1 = injectDensity(readBuffer[face1], rho, &iterPara1, procData, face1);
-			injectSize2 = injectDensity(readBuffer[face2], rho, &iterPara2, procData, face2);
-			assert(injectSize1 == bufferSize1 && injectSize2 == bufferSize2);
-			injectSize1 += injectSize2;
-		}
-
-		if (procData->neighbours[face1] == MPI_PROC_NULL && procData->neighbours[face2] == MPI_PROC_NULL) {
+        else if (procData->neighbours[face1] == MPI_PROC_NULL && procData->neighbours[face2] == MPI_PROC_NULL) {
 			swapNoCommDensity(rho, &iterPara1, &iterPara2, procData, direction);
 		}
+        else{
+            ERROR("No communication of densities happened!");
+
+        }
     }
 }
 
@@ -419,20 +419,18 @@ void swapDensity(double** sendBuffer, double** readBuffer, t_procData const * co
     //                 MPI_Datatype recvtype, int source, int recvtag,
     //                 MPI_Comm comm, MPI_Status *status)
     //Send proc1 receive proc1
-	if (proc1 != MPI_PROC_NULL && proc2 != MPI_PROC_NULL) {
-		assert(bufferSize1 != 0 && bufferSize2 != 0);
-		if(procData->neighbours[direction] < procData->rank){
-			MPI_Sendrecv(sendBuffer[direction], bufferSize1 , MPI_DOUBLE, proc1, 0, readBuffer[direction],
-				bufferSize1, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			MPI_Sendrecv(sendBuffer[direction+1], bufferSize2 , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
-				bufferSize2, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		} else {
-			MPI_Sendrecv(sendBuffer[direction+1], bufferSize2 , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
-				bufferSize2, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			MPI_Sendrecv(sendBuffer[direction], bufferSize1, MPI_DOUBLE, proc1, 0, readBuffer[direction],
-				bufferSize1, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		}
-	}
+    assert(bufferSize1 != 0 && bufferSize2 != 0);
+    if(procData->neighbours[direction] < procData->rank){
+        MPI_Sendrecv(sendBuffer[direction], bufferSize1 , MPI_DOUBLE, proc1, 0, readBuffer[direction],
+            bufferSize1, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Sendrecv(sendBuffer[direction+1], bufferSize2 , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
+            bufferSize2, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    } else {
+        MPI_Sendrecv(sendBuffer[direction+1], bufferSize2 , MPI_DOUBLE, proc2, 0, readBuffer[direction+1],
+            bufferSize2, MPI_DOUBLE, proc2, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Sendrecv(sendBuffer[direction], bufferSize1, MPI_DOUBLE, proc1, 0, readBuffer[direction],
+            bufferSize1, MPI_DOUBLE, proc1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
 }
 
 int injectDensity(double const * const readBuffer, double* rho,
