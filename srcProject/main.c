@@ -160,17 +160,41 @@ int main(int argc, char *argv[]){
 
     beginProcTime = MPI_Wtime();
 
-    for(t = 1; t <= timesteps; t++){
+    for(t = 1; t <= 1; t++){
+
+        int x = 6;
+        int y= 6;
+        int z = 6;
+        int cell = p_computeCellOffsetXYZ(x, y, z, procData.xLength);
+        int dist = 10;
 
         communicateComponents(sendBuffer, readBuffer, c, &procData);
 
         streamCollide(c, &procData);
 
 		computeForce(c, &procData, flagField, G);
+        if(procData.rank == 0){
+            printf("AFTER COMPUTING FORCE\n");
+            printf("Force x @ (6,6,6) %.16f\n",c[0].force[cell][0]);
+            printf("Force y @ (6,6,6) %.16f\n",c[0].force[cell][1]);
+            printf("Force z @ (6,6,6) %.16f\n",c[0].force[cell][2]);
+        }
 
         computeDensityAndVelocity(c, &procData);
+        if(procData.rank == 0){
+            printf("AFTER COMPUTING DENSITY AND VELOCITY\n");
+            printf("Rho @ (6,6,6) %.16f\n",c[0].rho[cell]);
+            printf("Ux @ (6,6,6) %.16f\n",c[0].velocity[cell][0]);
+            printf("Uy @ (6,6,6) %.16f\n",c[0].velocity[cell][1]);
+            printf("Uz @ (6,6,6) %.16f\n",c[0].velocity[cell][2]);
+        }
 
         computeFeq(c, &procData);
+
+        if(procData.rank == 0){
+            printf("AFTER COMPUTING FEQ \n");
+            printf("F_eq dist=%i @ (6,6,6) %.16f\n",dist,c[0].feq[Q*cell+dist]);
+        }
 
         for (int k = 0; k < Q*totalsize; ++k) {
             c[0].streamField[k] = c[0].collideField[k];
