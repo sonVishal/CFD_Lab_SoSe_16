@@ -115,9 +115,9 @@ int main(int argc, char *argv[]){
         streamCollide(c, xlength, flagField);
         //printf("collideField 10 @ (41,12,13) %.11f\n",c[0].collideField[Q*(41+12*(xlength+2)+13*(xlength+2)*(xlength+2))+10]);
 
-        int x = 6;
-        int y= 6;
-        int z = 6;
+        int x = 1;
+        int y= 1;
+        int z = 1;
         int cell = p_computeCellOffsetXYZ(x, y, z, xlength);
         int dist = 10;
         // int dist = 2;
@@ -128,24 +128,24 @@ int main(int argc, char *argv[]){
 
         if(t == tcheck){
             printf("AFTER COMPUTING FORCE @ time %i\n", t);
-            printf("Force x @ (6,6,6) %.16f\n",c[0].force[cell][0]);
-            printf("Force y @ (6,6,6) %.16f\n",c[0].force[cell][1]);
-            printf("Force z @ (6,6,6) %.16f\n",c[0].force[cell][2]);
+            printf("Force x @ (1,1,1) %.16f\n",c[0].force[cell][0]);
+            printf("Force y @ (1,1,1) %.16f\n",c[0].force[cell][1]);
+            printf("Force z @ (1,1,1) %.16f\n",c[0].force[cell][2]);
         }
 
         computeDensityAndVelocity(c, xlength);
         if(t == tcheck){
             printf("AFTER COMPUTING DENSITY AND VELOCITY @ time %i\n", t);
-            printf("Rho @ (6,6,6) %.16f\n",c[0].rho[cell]);
-            printf("Ux @ (6,6,6) %.16f\n",c[0].velocity[cell][0]);
-            printf("Uy @ (6,6,6) %.16f\n",c[0].velocity[cell][1]);
-            printf("Uz @ (6,6,6) %.16f\n",c[0].velocity[cell][2]);
+            printf("Rho @ (1,1,1) %.16f\n",c[0].rho[cell]);
+            printf("Ux @ (1,1,1) %.16f\n",c[0].velocity[cell][0]);
+            printf("Uy @ (1,1,1) %.16f\n",c[0].velocity[cell][1]);
+            printf("Uz @ (1,1,1) %.16f\n",c[0].velocity[cell][2]);
         }
 
         updateFeq(c, &xlength);
         if(t == tcheck){
             printf("AFTER COMPUTING FEQ @ time %i\n", t);
-            printf("F_eq dist=%i @ (6,6,6) %.16f\n",dist,c[0].feq[Q*cell+dist]);
+            printf("F_eq dist=%i @ (1,1,1) %.16f\n",dist,c[0].feq[Q*cell+dist]);
         }
 
         for (int k = 0; k < Q*totalsize; ++k) {

@@ -94,12 +94,12 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
                     c[k].rho[cellIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd;
 
 
-                    if(x == 5 && y == 5 && z == 5){
-                        printf("@(5,5,5): %.16f\n", c[k].rho[cellIdx]);
+                    if(x == 1 && y == 1 && z == 1){
+                        printf("@(1,1,1): %.16f\n", c[k].rho[cellIdx]);
                     }
 
-                    if(x == 5 && y == 5 && z == 21){
-                        printf("@(5,5,21): %.16f\n", c[k].rho[cellIdx]);
+                    if(x == 1 && y == 1 && z == 17){
+                        printf("@(1,1,17): %.16f\n", c[k].rho[cellIdx]);
                     }
 
                     // static int idx = 1;
