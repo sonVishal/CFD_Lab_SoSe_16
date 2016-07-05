@@ -108,7 +108,7 @@ int main(int argc, char *argv[]){
 
     // treatBoundary inserted where the BC is treated.
 
-    for(t = 1; t <= timesteps; t++){
+    for(t = 1; t <= 2; t++){
 
         treatBoundary(c,velocityWall,xlength);
 
@@ -127,12 +127,11 @@ int main(int argc, char *argv[]){
         int tcheck = 2;
 
         if(t == tcheck){
-
+            printf("AFTER COMPUTING FORCE @ time %i\n", t);
+            printf("Force x @ (6,6,6) %.16f\n",c[0].force[cell][0]);
+            printf("Force y @ (6,6,6) %.16f\n",c[0].force[cell][1]);
+            printf("Force z @ (6,6,6) %.16f\n",c[0].force[cell][2]);
         }
-        printf("AFTER COMPUTING FORCE @ time %i\n", t);
-        printf("Force x @ (6,6,6) %.16f\n",c[0].force[cell][0]);
-        printf("Force y @ (6,6,6) %.16f\n",c[0].force[cell][1]);
-        printf("Force z @ (6,6,6) %.16f\n",c[0].force[cell][2]);
 
         computeDensityAndVelocity(c, xlength);
         if(t == tcheck){
