@@ -1,5 +1,5 @@
 #include "computeCellValues.h"
-
+#include <stdio.h>
 /** computes the density from the particle distribution functions stored at
  *  currentCell. currentCell thus denotes the address of the first particle
  *  distribution function of the respective cell.
@@ -171,7 +171,7 @@ void computeFeq(t_component *c, const int *xlength){
 
                     fieldIdx = p_computeCellOffsetXYZ(x, y, z, *xlength);
                     cellIdx = Q*fieldIdx;
-
+                    // printf("%d,%d,%d done\n",x,y,z);
                     computeFeqCell(&c[k].rho[fieldIdx], c[k].velocity[fieldIdx], &c[k].feq[cellIdx]);
 
 
@@ -288,8 +288,8 @@ void computeEqVelocity(t_component const*const c, double const*const commonVeloc
         compEqVelocity[1] = commonVelocity[1] + (c->tau/compDensity)*compForce[1];
         compEqVelocity[2] = commonVelocity[2] + (c->tau/compDensity)*compForce[2];
     } else {
-        compEqVelocity[0] = commonVelocity[0];
-        compEqVelocity[1] = commonVelocity[1];
-        compEqVelocity[2] = commonVelocity[2];
+        compEqVelocity[0] = 0.0;
+        compEqVelocity[1] = 0.0;
+        compEqVelocity[2] = 0.0;
     }
 }
