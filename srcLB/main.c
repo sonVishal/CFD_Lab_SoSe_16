@@ -108,7 +108,7 @@ int main(int argc, char *argv[]){
 
     // treatBoundary inserted where the BC is treated.
 
-    for(t = 1; t <= 2; t++){
+    for(t = 1; t <= timesteps; t++){
 
         treatBoundary(c,velocityWall,xlength);
 
@@ -124,7 +124,7 @@ int main(int argc, char *argv[]){
 
 		computeForce_new(c, xlength, flagField, G);
 
-        int tcheck = 2;
+        int tcheck = 50;
 
         if(t == tcheck){
             printf("AFTER COMPUTING FORCE @ time %i\n", t);
