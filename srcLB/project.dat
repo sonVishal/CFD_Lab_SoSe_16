@@ -6,7 +6,7 @@ xlength              32
 
 
 # Number of timesteps
-timesteps            50
+timesteps            0
 
 # timesteps between each plot
 timestepsPerPlotting 10

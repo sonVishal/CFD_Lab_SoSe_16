@@ -37,34 +37,37 @@ void initialiseFields(t_component * c, int *flagField, int xlength){
     /* initialize collideField and streamField */
 
     //Intermediate values to calculate feq for a random density.
-    double v[3] = {0,0,0};          //Assume no initial velocity
-
-    double rhoVar = 0.01*rhoRef;    //How much initial difference is allowed in density
 
     int x,y,z;
-    srand(1);
-    for (int k = 0; k < NUMCOMP; k++) {
-        for ( z = 1; z <= xlength; ++z) {
-            zOffset = z*xlen2sq;
-            for ( y = 1; y <= xlength; ++y) {
-                yzOffset = y*(xlength+2) + zOffset;
-                for ( x = 1; x <= xlength; ++x) {
-                    if (z == xlength/2) {
-                        srand(3);
-                    }
-                    // Compute the base index
-                    cellIdx = (yzOffset + x);
-                    idx = Q*cellIdx;
+    for ( z = 1; z <= xlength; ++z) {
+        zOffset = z*xlen2sq;
+        for ( y = 1; y <= xlength; ++y) {
+            yzOffset = y*(xlength+2) + zOffset;
+            for ( x = 1; x <= xlength; ++x) {
+                // Compute the base index
+                cellIdx = (yzOffset + x);
+                idx = Q*cellIdx;
 
-                    //Set the initial density to a random offsett to rhoRef
-                    double rnd = ((double)rand()/(double)RAND_MAX);
-                    c[k].rho[cellIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd;
+                //Set the initial density to a random offsett to rhoRef
+                double rnd = ((double)rand()/(double)RAND_MAX);
+                if (rnd <= 0.6) {
+                    c[0].rho[cellIdx] = 1.0;
+                    c[1].rho[cellIdx] = 0.0;
+                } else {
+                    c[0].rho[cellIdx] = 0.0;
+                    c[1].rho[cellIdx] = 1.0;
+                }
 
-                    computeFeqCell(&c[k].rho[cellIdx], v, &c[k].feq[idx]);
-                    for (int i = 0; i < Q; ++i) {
-                        c[k].collideField[idx+i] = c[k].feq[idx +i];
-                        c[k].streamField[idx+i]  = c[k].feq[idx +i];
-                    }
+                c[0].velocity[cellIdx][0] = 0.0;c[0].velocity[cellIdx][1] = 0.0;c[0].velocity[cellIdx][2] = 0.0;
+                c[1].velocity[cellIdx][0] = 0.0;c[1].velocity[cellIdx][1] = 0.0;c[2].velocity[cellIdx][2] = 0.0;
+
+                computeFeqCell(&c[0].rho[cellIdx], c[0].velocity[cellIdx], &c[0].feq[idx]);
+                computeFeqCell(&c[1].rho[cellIdx], c[1].velocity[cellIdx], &c[1].feq[idx]);
+                for (int i = 0; i < Q; ++i) {
+                    c[0].collideField[idx+i] = c[0].feq[idx +i];
+                    c[0].streamField[idx+i]  = c[0].feq[idx +i];
+                    c[1].collideField[idx+i] = c[1].feq[idx +i];
+                    c[1].streamField[idx+i]  = c[1].feq[idx +i];
                 }
             }
         }

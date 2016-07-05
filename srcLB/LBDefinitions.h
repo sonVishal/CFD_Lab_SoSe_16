@@ -9,7 +9,7 @@ static const int Q = 19;
 static const double rhoRef = 0.693;
 static const int rho0   = 1;
 
-#define NUMCOMP 1
+#define NUMCOMP 2
 
 // Lattice velocity vectors
 static const int LATTICEVELOCITIES[19][3] = {

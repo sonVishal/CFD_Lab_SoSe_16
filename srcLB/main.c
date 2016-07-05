@@ -20,12 +20,16 @@ int main(int argc, char *argv[]){
     // Distribution function vectors
     t_component c[NUMCOMP];
 
-    c[0].tau = 1.01;
+    c[0].tau = 1.0;
     c[0].m = 1.0;
-    c[0].psiFctCode = 0;
+    c[0].psiFctCode = 1;
 
-    // double G[2][2] = {{0.01,0.04},{0.04,0.02}};
-    double G[1][1] = {{-0.27}};
+    c[1].tau = 1.0;
+    c[1].m = 1.0;
+    c[1].psiFctCode = 1;
+
+    double G[2][2] = {{0.01,0.04},{0.04,0.02}};
+    // double G[1][1] = {{-0.27}};
 
     int *flagField = NULL;
 
