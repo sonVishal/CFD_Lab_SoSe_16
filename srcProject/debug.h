@@ -8,7 +8,7 @@
 #include "helper.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <mpi/mpi.h>
+#include <mpi.h>
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 
