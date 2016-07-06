@@ -2,6 +2,7 @@
 #define _UNITTEST_H_
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
+#include "parallel.h"
 #include <mpi/mpi.h>
 
 #define _TOL_ 1e-15

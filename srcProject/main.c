@@ -163,9 +163,9 @@ int main(int argc, char *argv[]){
     // Initialize all fields
     initialiseProblem(c, flagField, &procData);
 
-    // #ifndef NDEBUG
-    // initializeUnitTest(totalsize);
-    // #endif
+    #ifndef NDEBUG
+    initializeUnitTest(totalsize);
+    #endif
 
     // Allocate memory to send and read buffers
     //TODO: (DL) maybe hand in only procData for consistency?
@@ -189,8 +189,11 @@ int main(int argc, char *argv[]){
         // and periodic boundaries
         communicateComponents(sendBuffer, readBuffer, c, &procData);
 
-        // Collide and stream step
+        #ifndef NDEBUG
+        steamCollideUnitTest(c, &procData);
+        #else
         streamCollide(c, &procData);
+        #endif
 
         // Compute the force between cells
 		computeForce(c, &procData, flagField, G);
@@ -268,9 +271,9 @@ int main(int argc, char *argv[]){
         free(readBuffer[i]);
     }
 
-    // #ifndef NDEBUG
-    // freeUnitTest();
-    // #endif
+    #ifndef NDEBUG
+    freeUnitTest();
+    #endif
 
     finaliseMPI(&procData);
     return 0;
