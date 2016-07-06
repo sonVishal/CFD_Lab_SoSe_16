@@ -94,6 +94,7 @@ void computeDensityAndVelocity(t_component *c, const t_procData * const procData
                 }
                 // Compute common velocity
                 computeCommonVelocity(c_density, c_velocity, c, commonVelocity);
+
                 for (int k = 0; k < numComp; k++) {
                     // Compute equilibrium velocity
                     computeEqVelocity(c, commonVelocity, c_density[k], c[k].force[fieldIdx], c[k].velocity[fieldIdx]);
@@ -174,8 +175,6 @@ void computeFeq(t_component *c, const t_procData * const procData){
                     cellIdx = Q*fieldIdx;
 
                     computeFeqCell(&c[k].rho[fieldIdx], c[k].velocity[fieldIdx], &c[k].feq[cellIdx]);
-
-
                 }
             }
         }
@@ -224,46 +223,30 @@ void computeCellForce(const int currentCellIndex, const int currentCompIndex,
                                 + xlen2*LATTICEVELOCITIES[i][1]
                                 + xlenylen2*LATTICEVELOCITIES[i][2]; //index of cell in direction i
 
-            // int nextIndex = Q*nextCellIndex; //index of number density in direction i
-            // numDensity = c[m].collideField[nextIndex]; //number density in direction i
-            // Compute the number density for component "m" at lattice site "nextIndex"
-
-            // computeNumDensity(&c[m].collideField[nextIndex], &numDensity);
             numDensity = c[m].rho[nextCellIndex];
-            // if(flagField[nextCellIndex] == FLUID){
-            // }else{
-            //     numDensity = c[m].collideField[nextIndex + 9];
-            // }
 
             double G_cur;
             if(LATTICEWEIGHTS[i] == w2){ // 1/18
                 G_cur = G[m];
-                //assert(G_cur == -0.27);
             }else if(LATTICEWEIGHTS[i] == w3){ // 1/36
                 G_cur = G[m]/2;
-                //assert(G_cur == -0.27/2);
             }else{
                 assert(i == 9);
-                G_cur = 0;
+                G_cur = 0.0;
             }
 
             //Shan&Doolen eq. 4 (PDF page 5)
             forces[0] += G_cur * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][0];
             forces[1] += G_cur * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][1];
             forces[2] += G_cur * psiFctPointer[c[m].psiFctCode](numDensity) * LATTICEVELOCITIES[i][2];
-            //assert(psiFctPointer[c[m].psiFctCode](numDensity) == psi0(numDensity));
          }
     }
 
-    // numDensity = c[n].collideField[currentCellIndex];
-    // computeNumDensity(&c[currentCompIndex].collideField[currentCellIndex], &numDensity);
     numDensity = c[currentCompIndex].rho[currentCellIndex];
 
     forces[0] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
     forces[1] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
     forces[2] *= -psiFctPointer[c[currentCompIndex].psiFctCode](numDensity);
-    // assert(currentCompIndex == 0);
-    //assert(psiFctPointer[c[currentCompIndex].psiFctCode](numDensity) == psi0(numDensity));
 }
 
 void computeForce(t_component *c, const t_procData * const procData, int *flagField, double G[numComp][numComp]){
