@@ -137,11 +137,9 @@ int main(int argc, char *argv[]){
         c[i].streamField  = (double *)   malloc(Q*totalsize * sizeof( double ));
         c[i].feq          = (double *)   malloc(Q*totalsize * sizeof( double ));
         c[i].rho          = (double *)   malloc(totalsize   * sizeof( double ));
-        c[i].velocity     = (double **)  malloc(totalsize   * sizeof( double* ));
         c[i].force        = (double **)  malloc(totalsize   * sizeof( double* ));
 
         for(int j = 0; j < totalsize; ++j){
-            c[i].velocity[j] = (double*) malloc(3* sizeof( double));
             c[i].force[j]    = (double*) malloc(3* sizeof( double));
         }
     }
@@ -259,10 +257,8 @@ int main(int argc, char *argv[]){
         free(c[i].feq);
 
         for(int j = 0; j < totalsize; ++j){
-            c[i].velocity[j] = (double*) malloc(3* sizeof( double));
             c[i].force[j]    = (double*) malloc(3* sizeof( double));
         }
-        free(c[i].velocity);
         free(c[i].force);
     }
     free(flagField);

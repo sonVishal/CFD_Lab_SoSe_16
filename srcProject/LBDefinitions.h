@@ -112,7 +112,6 @@ typedef struct {
     int xLength[3];
     int neighbours[6];         //same order as enum //TODO: (DL) possibly rename neighbours, e.g. "parallelNeighbours"
     int bufferSize[3]; //buffer sizes for all directions
-    double wallVelocity[3];
 } t_procData;
 
 typedef struct {
@@ -120,7 +119,6 @@ typedef struct {
     double* collideField;
     double* feq;
     double* rho;
-    double** velocity;
     double** force;
     double  tau;
     double  m;
