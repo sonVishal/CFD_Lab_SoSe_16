@@ -13,6 +13,15 @@
 #include <stdio.h>
 #include <mpi/mpi.h>
 
+
+//--------------------------------------------------------
+//                        NOTE
+//--------------------------------------------------------
+// The framework is set up for doing multiple components, 
+// but in the current state that is not implemented 
+// properly.
+//--------------------------------------------------------
+
 //TODO: (TKS) We assume that mass is 1 and use numDensity as density in different places.
 //            This must be fixed if we are doing several components.
 //TODO: (TKS) Rename streamField and collideField.
@@ -31,8 +40,6 @@ int main(int argc, char *argv[]){
 
     t_procData procData;
 
-    //MPI parameters
-    //MPI_Status status;
     int procsPerAxis[3];
 
     // Send and read buffers for all possible directions:
@@ -40,10 +47,7 @@ int main(int argc, char *argv[]){
     double *sendBuffer[6];
     double *readBuffer[6];
 
-    // initialiseMPI(&procData.rank,&procData.numRanks,argc,argv);
-    MPI_Init(&argc, &argv);
-    MPI_Comm_size(MPI_COMM_WORLD, &procData.numRanks);
-    MPI_Comm_rank(MPI_COMM_WORLD, &procData.rank);
+    initialiseMPI(&procData.rank,&procData.numRanks,argc,argv);
 
     // File printing parameters
     char fName[80];
@@ -60,19 +64,13 @@ int main(int argc, char *argv[]){
 
     // Array of the components in our simulation
     t_component c[numComp];
-    //Handling in serial code:
-    // c[0].tau = 0.99;
-    // c[0].m = 1.0;
-    // c[0].psiFctCode = 0;
 
     // Interacting potential
     double G[numComp][numComp];
-    // double G[2][2] = {{0.01,0.04},{0.04,0.02}};
-    // double G[1][1] = {{-0.27}};
 
 
-    /* Read parameters and check the bounds on tau
-     * Only performed by the root and then broadcasted in 'broadcastValues'*/
+    /* Read parameters*/
+    //Only performed by the root and then broadcasted in 'broadcastValues'
     if (procData.rank == 0) {
         readParameters(&xlength, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
     }
@@ -86,7 +84,8 @@ int main(int argc, char *argv[]){
     if (procData.numRanks != procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2]) {
         if (procData.rank == 0) {
             printf("ERROR: The number of processes assigned in the dat file, %d, "
-            "do not match the number of processes given as input, %d, while running the code\n",procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2],procData.numRanks);
+            "do not match the number of processes given as input, %d, while running the code\n"
+            ,procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2],procData.numRanks);
         }
         finaliseMPI(&procData);
         return -1;
@@ -95,14 +94,15 @@ int main(int argc, char *argv[]){
     // INFO printing
     if(procData.rank == 0)
     {
-#ifdef NDEBUG
+        #ifdef NDEBUG
     	printf("INFO: The compiler directive NDEBUG is enabled. Faster execution time is gained, "
     			"at the cost of less correctness checks during runtime!\n");
-#else
+        #else
 		printf("INFO: The compiler directive NDEBUG is disabled. Checks for "
 				"correctness are carried out at the cost of execution speed!\n"
 				"      Use \"make speed\" for a faster execution time.\n");
-#endif
+        #endif
+
         // INFO Printing
         printf("\nINFO: Storing cell data in VTS files.\n      Please use the"
         " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
@@ -111,15 +111,16 @@ int main(int argc, char *argv[]){
     // Domain decomposition & setting up neighbors
     domainDecompositionAndNeighbors(&procData, xlength, procsPerAxis);
 
+    // TODO: Make a note about this not being a good way and we should calculate velocity etc?
     /*Allocate memory to pointers*/
     int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
     for (int i = 0; i < numComp; i++) {
-        c[i].collideField = (double *)  malloc(Q*totalsize * sizeof( double ));
-        c[i].streamField  = (double *)  malloc(Q*totalsize * sizeof( double ));
-        c[i].feq          = (double *)  malloc(Q*totalsize * sizeof( double ));
-        c[i].rho          = (double *)  malloc(totalsize * sizeof( double ));
-        c[i].velocity     = (double **)  malloc(totalsize * sizeof( double* ));
-        c[i].force        = (double **)  malloc(totalsize * sizeof( double* ));
+        c[i].collideField = (double *)   malloc(Q*totalsize * sizeof( double ));
+        c[i].streamField  = (double *)   malloc(Q*totalsize * sizeof( double ));
+        c[i].feq          = (double *)   malloc(Q*totalsize * sizeof( double ));
+        c[i].rho          = (double *)   malloc(totalsize   * sizeof( double ));
+        c[i].velocity     = (double **)  malloc(totalsize   * sizeof( double* ));
+        c[i].force        = (double **)  malloc(totalsize   * sizeof( double* ));
 
         for(int j = 0; j < totalsize; ++j){
             c[i].velocity[j] = (double*) malloc(3* sizeof( double));
@@ -127,21 +128,28 @@ int main(int argc, char *argv[]){
         }
     }
 
+    //TODO: Make unit tests (?)
     //initializeUnitTest(totalsize);
 
+
+    //----------------------------------------------------
+    //                  NOTE
+    //----------------------------------------------------
+    // Currently flagField is not used in the simulation, 
+    // but kept as a future extension to incorporate 
+    // other boundary conditions
+    //----------------------------------------------------
+
     /* calloc: only required to set boundary values. Sets every value to zero*/
-    int *flagField = (int *) calloc(totalsize, sizeof( int ));
+    //int *flagField = (int *) calloc(totalsize, sizeof( int ));
+    int *flagField = NULL;
 
-    // Initialize all the fields
-    initialiseComponents(c, flagField, &procData);
+    // Initialize all fields
+    initialiseProblem(c, flagField, &procData);
 
-// #ifndef NDEBUG
-//     initializeUnitTest(totalsize);
-// #endif
-
-    // Use a different seed for different procs to avoid same random numbers
-    // Initialise the fields for all components
-    // initialiseComponents(c, flagField, &procData);
+    // #ifndef NDEBUG
+    // initializeUnitTest(totalsize);
+    // #endif
 
     // Allocate memory to send and read buffers
     //TODO: (DL) maybe hand in only procData for consistency?
@@ -150,56 +158,34 @@ int main(int argc, char *argv[]){
     //Write the VTK at t = 0
     printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
     writeVtsOutput(c, fName, t, xlength, &procData, procsPerAxis);
-    // writeVtsOutputDebug(c, flagField, "pv_files/Debug", t, xlength, &procData, procsPerAxis);
 
     // Combine VTS file at t = 0  -- only done by root
     if (procData.rank == 0) {
         p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
-        // p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
     }
 
     beginProcTime = MPI_Wtime();
 
+    // Main time loop
     for(t = 1; t <= timesteps; t++){
 
-        int x = 1;
-        int y= 1;
-        int z = 1;
-        int cell = p_computeCellOffsetXYZ(x, y, z, procData.xLength);
-        int dist = 10;
-        int tcheck = 50;
+        // Communicate required fields components to parallel boundaries 
+        // and periodic boundaries
         communicateComponents(sendBuffer, readBuffer, c, &procData);
 
+        // Collide and stream step
         streamCollide(c, &procData);
 
+        // Compute the force between cells
 		computeForce(c, &procData, flagField, G);
-        if(procData.rank == 0 && t == tcheck){
-            printf("AFTER COMPUTING FORCE\n");
-            printf("Force x @ (1,1,1) %.16f\n",c[0].force[cell][0]);
-            printf("Force y @ (1,1,1) %.16f\n",c[0].force[cell][1]);
-            printf("Force z @ (1,1,1) %.16f\n",c[0].force[cell][2]);
-        }
 
+        // Compute density and velocity
         computeDensityAndVelocity(c, &procData);
-        if(procData.rank == 0 && t == tcheck){
-            printf("AFTER COMPUTING DENSITY AND VELOCITY\n");
-            printf("Rho @ (1,1,1) %.16f\n",c[0].rho[cell]);
-            printf("Ux @ (1,1,1) %.16f\n",c[0].velocity[cell][0]);
-            printf("Uy @ (1,1,1) %.16f\n",c[0].velocity[cell][1]);
-            printf("Uz @ (1,1,1) %.16f\n",c[0].velocity[cell][2]);
-        }
 
+        // Compute the equilibrium distributions
         computeFeq(c, &procData);
-        if(procData.rank == 0 && t == tcheck){
-            printf("AFTER COMPUTING FEQ \n");
-            printf("F_eq dist=%i @ (1,1,1) %.16f\n",dist,c[0].feq[Q*cell+dist]);
-        }
 
-        //TODO: (TKS) Swap does not work! Possible to find a way that it does?
-        // for (int k = 0; k < Q*totalsize; ++k) {
-        //     c[0].streamField[k] = c[0].collideField[k];
-        // }
-
+        // Swap fields. new --> old
         double *swap = NULL;
         for (int k = 0; k < numComp; ++k) {
             swap              = c[k].streamField;
@@ -207,22 +193,21 @@ int main(int argc, char *argv[]){
             c[k].collideField = swap;
         }
 
-
-        // Treat local boundaries for each component
-	    // treatComponentBoundary(c, flagField, &procData, sendBuffer, readBuffer, 0);
-
+        
         // Print VTS files at given interval
 		if (t%timestepsPerPlotting == 0){
 
+            // TODO: Write something about this in input file, maybe
+            //       make it a setting.
+            //Double timestep for write in each iteration
             timestepsPerPlotting = timestepsPerPlotting*2;
-            printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
 
+            printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
             writeVtsOutput(c, fName, t, xlength, &procData, procsPerAxis);
-            // writeVtsOutputDebug(c, flagField, "pv_files/Debug", t, xlength, &procData, procsPerAxis);
+            
             // Combine VTS file at t
             if (procData.rank == 0) {
                 p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
-                // p_writeCombinedPVTSFileDebug("pv_files/Debug", t, xlength, procsPerAxis);
             }
 	    }
 
@@ -270,7 +255,6 @@ int main(int argc, char *argv[]){
 
     for (int i = LEFT; i <= BACK; i++) {
     	//set to NULL in initializeBuffers if buffer is not allocated (due to non existing neighbour)
-        //TODO: (DL) at the moment we dont need this check, because all send/read buffers are allocated
         if(sendBuffer[i] != NULL) free(sendBuffer[i]);
         if(readBuffer[i] != NULL) free(readBuffer[i]);
     }
