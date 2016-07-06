@@ -10,6 +10,12 @@ void storeMassVector(const t_component * const c, const int * const xlength, dou
 
 void checkMassVector(const int * const xlength, const int rank);
 
+void computePostCollisionDistributions(const t_component * const c, t_procData const * const procData);
+
+void doStreaming(const t_component * const c, t_procData const * const procData);
+
+void steamCollideUnitTest(const t_component * const c, t_procData const * const procData);
+
 void computeCellMomentum(const double * const currentCell, double *momentum);
 
 void initializeUnitTest(const int ts);
