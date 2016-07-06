@@ -17,8 +17,8 @@
 //--------------------------------------------------------
 //                        NOTE
 //--------------------------------------------------------
-// The framework is set up for doing multiple components, 
-// but in the current state that is not implemented 
+// The framework is set up for doing multiple components,
+// but in the current state that is not implemented
 // properly.
 //--------------------------------------------------------
 
@@ -113,17 +113,33 @@ int main(int argc, char *argv[]){
 
     // TODO: Make a note about this not being a good way and we should calculate velocity etc?
     /*Allocate memory to pointers*/
+
+    //------------------------------------------------------
+    //          NOTE
+    //------------------------------------------------------
+    // We are aware that the current scheme is not optimal.
+    // feq and the elements needed to calculate it should
+    // be calculated on each process instead of it being
+    // communicated and velocity etc. stored.
+    //
+    // The reason this is done is because of a very subtle
+    // bug in our earlier code that we could not find, even
+    // though we spent a week looking for it. We then chose
+    // to restructure out code to be sure everything was
+    // working as it should and unfortunately did not have
+    // time for optimizations. Since the goal was to
+    // implement multiphase we feel this is fine enough
+    //------------------------------------------------------
+
     int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
     for (int i = 0; i < numComp; i++) {
         c[i].collideField = (double *)   malloc(Q*totalsize * sizeof( double ));
         c[i].streamField  = (double *)   malloc(Q*totalsize * sizeof( double ));
         c[i].feq          = (double *)   malloc(Q*totalsize * sizeof( double ));
         c[i].rho          = (double *)   malloc(totalsize   * sizeof( double ));
-        c[i].velocity     = (double **)  malloc(totalsize   * sizeof( double* ));
         c[i].force        = (double **)  malloc(totalsize   * sizeof( double* ));
 
         for(int j = 0; j < totalsize; ++j){
-            c[i].velocity[j] = (double*) malloc(3* sizeof( double));
             c[i].force[j]    = (double*) malloc(3* sizeof( double));
         }
     }
@@ -135,8 +151,8 @@ int main(int argc, char *argv[]){
     //----------------------------------------------------
     //                  NOTE
     //----------------------------------------------------
-    // Currently flagField is not used in the simulation, 
-    // but kept as a future extension to incorporate 
+    // Currently flagField is not used in the simulation,
+    // but kept as a future extension to incorporate
     // other boundary conditions
     //----------------------------------------------------
 
@@ -169,7 +185,7 @@ int main(int argc, char *argv[]){
     // Main time loop
     for(t = 1; t <= timesteps; t++){
 
-        // Communicate required fields components to parallel boundaries 
+        // Communicate required fields components to parallel boundaries
         // and periodic boundaries
         communicateComponents(sendBuffer, readBuffer, c, &procData);
 
@@ -179,11 +195,8 @@ int main(int argc, char *argv[]){
         // Compute the force between cells
 		computeForce(c, &procData, flagField, G);
 
-        // Compute density and velocity
-        computeDensityAndVelocity(c, &procData);
-
-        // Compute the equilibrium distributions
-        computeFeq(c, &procData);
+        // Compute density and update the equilibrium distribution
+        computeDensityAndUpdateFeq(c, &procData);
 
         // Swap fields. new --> old
         double *swap = NULL;
@@ -193,7 +206,7 @@ int main(int argc, char *argv[]){
             c[k].collideField = swap;
         }
 
-        
+
         // Print VTS files at given interval
 		if (t%timestepsPerPlotting == 0){
 
@@ -204,15 +217,14 @@ int main(int argc, char *argv[]){
 
             printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
             writeVtsOutput(c, fName, t, xlength, &procData, procsPerAxis);
-            
+
             // Combine VTS file at t
             if (procData.rank == 0) {
                 p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
             }
 	    }
 
-        MPI_Barrier(MPI_COMM_WORLD);
-        if(t%10 == 0)
+        if(t%10 == 0 && procData.rank == 0)
             printf("R %d Time t = %d done\n",procData.rank, t);
     }
     endProcTime = MPI_Wtime();
@@ -220,13 +232,13 @@ int main(int argc, char *argv[]){
     if(procData.rank == 0)
         printf("\nINFO: Please open the WS4_combined.*.pvts file to view the combined result.\n");
 
-    //get earliest start and latest finish of processors
+    //Get earliest start and latest finish of processors
     MPI_Reduce(&beginProcTime, &beginSimTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
-    MPI_Reduce(&endProcTime, &endSimTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&endProcTime,   &endSimTime,   1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
     if(procData.rank == 0){
     	double elapsedTime = endSimTime - beginSimTime;
-    	int domTotalsize = (xlength+2)*(xlength+2)*(xlength+2);
+    	int domTotalsize   = (xlength+2)*(xlength+2)*(xlength+2);
     	printf("\n===============================================================\n");
 		printf("\nINFO TIMING:\n");
 		printf("Execution time (main loop): \t\t %.3f seconds \n", elapsedTime);
@@ -245,10 +257,8 @@ int main(int argc, char *argv[]){
         free(c[i].feq);
 
         for(int j = 0; j < totalsize; ++j){
-            c[i].velocity[j] = (double*) malloc(3* sizeof( double));
             c[i].force[j]    = (double*) malloc(3* sizeof( double));
         }
-        free(c[i].velocity);
         free(c[i].force);
     }
     free(flagField);
