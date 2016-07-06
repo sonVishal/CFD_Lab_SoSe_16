@@ -17,6 +17,8 @@ void doStreaming(const t_component * const c, t_procData const * const procData)
 
 void steamCollideUnitTest(const t_component * const c, t_procData const * const procData);
 
+void treatPostCollisionBoundary(const t_component * const c, t_procData const * const procData, int direction);
+
 void computeCellMomentum(const double * const currentCell, double *momentum);
 
 void initializeUnitTest(const int ts);

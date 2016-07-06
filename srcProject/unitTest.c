@@ -29,12 +29,9 @@ void storeMassVector(const t_component * const c, const int * const xlength, dou
             }
         }
     }
-
-
-
 }
 
-void treatPostCollisionBounary(const t_component * const c, t_procData const * const procData, int direction){
+void treatPostCollisionBoundary(const t_component * const c, t_procData const * const procData, int direction){
     t_iterPara iterPara1, iterPara2;
     int index1[5], index2[5];
 
@@ -98,14 +95,13 @@ void computePostCollisionDistributions(const t_component * const c, t_procData c
             		    currentCell[i] = currentCell[i] - (currentCell[i] - c[k].feq[i])/(c[k].tau);
                         assert(currentCell[i] >= 0);
                     }
-
             	}
             }
         }
         //Does also treat boundary for the respective counterpart (e.g. LEFT & RIGHT)
-        treatPostCollisionBounary(c, procData, LEFT);
-        treatPostCollisionBounary(c, procData, TOP);
-        treatPostCollisionBounary(c, procData, FRONT);
+        treatPostCollisionBoundary(c, procData, LEFT);
+        treatPostCollisionBoundary(c, procData, TOP);
+        treatPostCollisionBoundary(c, procData, FRONT);
     }
 }
 
@@ -124,7 +120,6 @@ void doStreaming(const t_component * const c, t_procData const * const procData)
                             y+LATTICEVELOCITIES[j][1], z+LATTICEVELOCITIES[j][2], procData->xLength);
                         c[k].collideField[cellIdx+Q-j-1] = c[k].streamField[nextCellIndex+Q-j-1];
                     }
-
             	}
             }
         }
