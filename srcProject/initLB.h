@@ -28,7 +28,7 @@ void initialiseProblem(t_component *c, int *flagField, const t_procData * const 
 // Initialises fields for two components
 void initialiseComponents(t_component *c, const t_procData * const procData);
 
-// Initialises fields for one component
+// Initialises fields for one component assuming multiphase.
 void initialiseFields(t_component * c, const t_procData * const procData);
 
 #endif
