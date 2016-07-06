@@ -23,8 +23,10 @@ int readParameters(
     char *argv[]                        // argv[1] shall contain the path to the config file
 );
 
+void initialiseProblem(t_component *c, int *flagField, const t_procData * const procData);
+
 //[> Initialize the fields for all the components <]
-void initialiseComponents(t_component *c, int *flagField, const t_procData * const procData);
+void initialiseComponents(t_component *c, const t_procData * const procData);
 
 /* initialises the particle distribution functions and the flagfield */
 void initialiseFields(t_component * c, const t_procData * const procData);
