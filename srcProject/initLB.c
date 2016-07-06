@@ -137,12 +137,62 @@ void initialiseFields(t_component * c, const t_procData * const procData){
     }
 }
 
-// TODO: Box and random initialization for multicomponents as per Sukop code
-/*Initialize fields for all components*/
-void initialiseComponents(t_component *c, int *flagField, const t_procData * const procData) {
+// Random initialization for multicomponent case
+void initialiseComponents(t_component *c, const t_procData * const procData) {
 
-	for (int k = 0; k < numComp; k++) {
-		initialiseFields(&c[k], procData);
+	// current cell index
+    int fieldIdx, cellIdx;
+
+	// Random number
+	double rnd;
+
+	// Zero initial velocity
+	double u0[3] = {0.0, 0.0, 0.0};
+
+	// Initialize collideField, streamField and feq
+    int x,y,z;
+    for ( z = 1; z <= procData->xLength[2]; ++z) {
+        for ( y = 1; y <= procData->xLength[1]; ++y) {
+            for ( x = 1; x <= procData->xLength[0]; ++x) {
+
+                // Compute the base index
+				fieldIdx = p_computeCellOffsetXYZ(x, y, z, procData->xLength);
+                cellIdx = Q*fieldIdx;
+
+				rnd = (double)rand()/(double)RAND_MAX;
+				if (rnd < 0.5) {
+					c[0].rho[fieldIdx] = 0.0;
+					c[1].rho[fieldIdx] = 1.0;
+				} else {
+					c[0].rho[fieldIdx] = 1.0;
+					c[1].rho[fieldIdx] = 0.0;
+				}
+				computeFeqCell(&c[0].rho[fieldIdx], u0, &c[0].feq[cellIdx]);
+				computeFeqCell(&c[1].rho[fieldIdx], u0, &c[1].feq[cellIdx]);
+
+                for (int i = 0; i < Q; ++i) {
+                    c[0].collideField[cellIdx+i] = c[0].feq[cellIdx+i];
+                    c[0].streamField[cellIdx+i]  = c[0].feq[cellIdx+i];
+
+					c[1].collideField[cellIdx+i] = c[1].feq[cellIdx+i];
+                    c[1].streamField[cellIdx+i]  = c[1].feq[cellIdx+i];
+                }
+			}
+		}
+	}
+
+}
+
+/*Initialize fields for all components*/
+void initialiseProblem(t_component *c, int *flagField, const t_procData * const procData) {
+
+	// If a single component then create a random distribution
+	if (numComp == 1) {
+		initialiseFields(&c[0], procData);
+	} else if(numComp == 2) {
+		initialiseComponents(c, procData);
+	} else {
+		ERROR("Only 1 or 2 components are allowed");
 	}
 
 
