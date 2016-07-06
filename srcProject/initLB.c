@@ -97,7 +97,6 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int
 void initialiseFields(t_component * c, const t_procData * const procData){
 
     /*Setting initial distributions*/
-    //f_i(x,0) = f^eq(random,0)
 
     // current cell index
     int fieldIdx, cellIdx;
