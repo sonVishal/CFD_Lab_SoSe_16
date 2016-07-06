@@ -1,5 +1,7 @@
 #include "initLB.h"
 
+
+/*Read in the number of components*/
 void readNumComp(int argc, char *argv[]) {
 	if(argc != 2){
 		char msg[200];
@@ -14,6 +16,8 @@ void readNumComp(int argc, char *argv[]) {
 	MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
 }
 
+
+/*Read parameters from the input file*/
 int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int *procsPerAxis,
     int *timesteps, int *timestepsPerPlotting,
 	int argc, char *argv[]){
@@ -28,7 +32,7 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int
 
 	int iProc, jProc, kProc;
 
-    // [> Read values from file given in argv <]
+    // Read values from file given in argv
     READ_INT(*argv, *xlength);
 
 	// Read the tau and mass for each component
@@ -64,18 +68,14 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int
 	procsPerAxis[1] = jProc;
 	procsPerAxis[2] = kProc;
 
-    //TODO: make tau check again (can be multiple...)
-    // if(*tau<=0.5 || *tau>2){
-    //     ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
-    // }
 
-    // [>We allow user defined mach number tolerance for Ma << 1 (default = 0.1)
-    //   To change please look at LBDefinitions.h*/
-    // if(machNr > machNrTol){
-    //     char buffer[80];
-    //     snprintf(buffer, 80, "Mach number is larger than %f (aborting)! \n",machNrTol);
-    //     ERROR(buffer);
-    // }
+    //Check if tau is outside stability range
+    for (int k = 0; k < numComp; ++k) {
+         if(c[k].tau<=0.5 || c[k].tau>2){
+             ERROR("Tau is out of stability region (0.5,2.0) (aborting)! \n");
+         }
+    }
+
 
 	// Check if iProc, jProc and kProc are less than the domain size and nonzero
 	if (iProc <= 0 || iProc > *xlength || jProc <= 0 || jProc > *xlength ||
@@ -96,50 +96,38 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int
 // NOTE: Currently only supports random initialization for multiphase
 void initialiseFields(t_component * c, const t_procData * const procData){
 
-    // [>Setting initial distributions<]
+    /*Setting initial distributions*/
     //f_i(x,0) = f^eq(random,0)
 
     // current cell index
     int fieldIdx, cellIdx;
 
 	// How much initial difference is allowed in density
-	double rhoVar = 0.01*rhoRef;  //Shan Chen
+    //TODO: Make the 0.01 an input for easier tests
+	double rhoVar = 0.01*rhoRef;
 
-	// Initially velocity is 0
+	// Initial velocity is 0
 	double u0[3] = {0.0, 0.0, 0.0};
 
-	//TODO: (DL) this 'if' is for reference solution, can be deleted when cleaning up...
-	if(procData->rank == 0){
-		srand(1);
-	}else if(procData->rank == 1){
-		srand(3);
-	}else{
-		srand(procData->rank*10);
-	}
+    // Set a different random seed for each process
+    srand(time(NULL) + procData->rank + 1);
 
-    // [> initialize collideField and streamField <]
+    // Initialize collideField, streamField and feq
     int x,y,z;
     for ( z = 1; z <= procData->xLength[2]; ++z) {
         for ( y = 1; y <= procData->xLength[1]; ++y) {
             for ( x = 1; x <= procData->xLength[0]; ++x) {
+
                 // Compute the base index
 				fieldIdx = p_computeCellOffsetXYZ(x, y, z, procData->xLength);
                 cellIdx = Q*fieldIdx;
 
 				double rnd = ((double)rand()/(double)RAND_MAX);
-				c->rho[fieldIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd; //Shan Chen
+				c->rho[fieldIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd;  // Shan Chen
 				//c->rho[fieldIdx] = rhoRef + rnd; //Sukop
 
-				if(x == 1 && y == 1 && z == 2 && procData->rank == 1){
-					printf("R%i: @(1,1,2) %.16f \n", procData->rank, c->rho[fieldIdx]);
-				}
-
-				if(x == 1 && y == 1 && z == 1 && procData->rank == 0){
-					printf("R%i: @(1,1,1) %.16f \n", procData->rank, c->rho[fieldIdx]);
-				}
-
-
 				computeFeqCell(&(c->rho[fieldIdx]), u0, &(c->feq[cellIdx]));
+
                 for (int i = 0; i < Q; ++i) {
                     c->collideField[cellIdx+i] = c->feq[cellIdx+i];
                     c->streamField[cellIdx+i]  = c->feq[cellIdx+i];
@@ -149,59 +137,65 @@ void initialiseFields(t_component * c, const t_procData * const procData){
     }
 }
 
-// Currently the initialization is only for single component multiphase simulation
 // TODO: Box and random initialization for multicomponents as per Sukop code
+/*Initialize fields for all components*/
 void initialiseComponents(t_component *c, int *flagField, const t_procData * const procData) {
 
-	// Initialize the collide and stream fields for each component
-	// TODO: this also changes in multicomponent
-	// Set up a seed based on the procData
-	// srand(procData->rank*(procData->rank+1)+1);
-	for (int i = 0; i < numComp; i++) {
-		initialiseFields(&c[i], procData);
+	for (int k = 0; k < numComp; k++) {
+		initialiseFields(&c[k], procData);
 	}
+
+
+    //----------------------------------------------
+    //                  NOTE
+    //----------------------------------------------
+    // In the current verison flagField is not used,
+    // but it is kept here for additions of further
+    // boundaries etc.
+    //----------------------------------------------
+
 
 	// Flag field is component independent
 
-	// [>Looping over boundary of flagFields<]
-    //All points set to zero at memory allocation (using calloc)
-	int innerIt,outerIt;	// Iteration variables
-	int endOuter, endInner, fixedValue, wallIdx, idx;
+	// Looping over boundary of flagFields
+    // All points set to zero at memory allocation (using calloc)
+	//int innerIt,outerIt;	// Iteration variables
+	//int endOuter, endInner, fixedValue, wallIdx, idx;
 
-	// First set up the parallel boundary layer
-	for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
-		if (procData->neighbours[wallIdx] != MPI_PROC_NULL) {
-			p_setIterationParameters(&endOuter, &endInner, &fixedValue, procData, wallIdx);
-			for (outerIt = 0; outerIt <= endOuter; outerIt++) {
-				for (innerIt = 0; innerIt <= endInner; innerIt++) {
-					idx = p_computeCellOffset(outerIt,innerIt,fixedValue,procData->xLength,wallIdx);
-					flagField[idx] = PARALLEL_BOUNDARY;
-				}
-			}
-		}
-	}
+	//// First set up the parallel boundary layer
+	//for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
+		//if (procData->neighbours[wallIdx] != MPI_PROC_NULL) {
+			//p_setIterationParameters(&endOuter, &endInner, &fixedValue, procData, wallIdx);
+			//for (outerIt = 0; outerIt <= endOuter; outerIt++) {
+				//for (innerIt = 0; innerIt <= endInner; innerIt++) {
+					//idx = p_computeCellOffset(outerIt,innerIt,fixedValue,procData->xLength,wallIdx);
+					//flagField[idx] = PARALLEL_BOUNDARY;
+				//}
+			//}
+		//}
+	//}
 
-	// Now set up the ghost boundary layer with no slip
-	for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
-		if (procData->neighbours[wallIdx] == MPI_PROC_NULL && wallIdx != TOP) {
-			p_setIterationParameters(&endOuter, &endInner, &fixedValue, procData, wallIdx);
-			for (outerIt = 0; outerIt <= endOuter; outerIt++) {
-				for (innerIt = 0; innerIt <= endInner; innerIt++) {
-					idx = p_computeCellOffset(outerIt,innerIt,fixedValue,procData->xLength,wallIdx);
-					flagField[idx] = PERIODIC_BOUNDARY;
-				}
-			}
-		}
-	}
+	//// Now set up the ghost boundary layer with no slip
+	//for (wallIdx = LEFT; wallIdx <= BACK; wallIdx++) {
+		//if (procData->neighbours[wallIdx] == MPI_PROC_NULL && wallIdx != TOP) {
+			//p_setIterationParameters(&endOuter, &endInner, &fixedValue, procData, wallIdx);
+			//for (outerIt = 0; outerIt <= endOuter; outerIt++) {
+				//for (innerIt = 0; innerIt <= endInner; innerIt++) {
+					//idx = p_computeCellOffset(outerIt,innerIt,fixedValue,procData->xLength,wallIdx);
+					//flagField[idx] = PERIODIC_BOUNDARY;
+				//}
+			//}
+		//}
+	//}
 
-	// Now set up the ghost boundary layer with moving wall - if it's at the TOP ghost layer
-	if (procData->neighbours[TOP] == MPI_PROC_NULL) {
-		p_setIterationParameters(&endOuter, &endInner, &fixedValue, procData, TOP);
-		for (outerIt = 0; outerIt <= endOuter; outerIt++) {
-			for (innerIt = 0; innerIt <= endInner; innerIt++) {
-				idx = p_computeCellOffset(outerIt,innerIt,fixedValue,procData->xLength, TOP);
-				flagField[idx] = PERIODIC_BOUNDARY;
-			}
-		}
-	}
+	//// Now set up the ghost boundary layer with moving wall - if it's at the TOP ghost layer
+	//if (procData->neighbours[TOP] == MPI_PROC_NULL) {
+		//p_setIterationParameters(&endOuter, &endInner, &fixedValue, procData, TOP);
+		//for (outerIt = 0; outerIt <= endOuter; outerIt++) {
+			//for (innerIt = 0; innerIt <= endInner; innerIt++) {
+				//idx = p_computeCellOffset(outerIt,innerIt,fixedValue,procData->xLength, TOP);
+				//flagField[idx] = PERIODIC_BOUNDARY;
+			//}
+		//}
+	//}
 }
