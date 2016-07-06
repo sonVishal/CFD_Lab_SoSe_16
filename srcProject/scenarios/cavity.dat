@@ -73,4 +73,4 @@ timestepsPerPlotting 10
 # z-axis = kProc
 iProc		1
 jProc		1
-kProc		1
+kProc		2
