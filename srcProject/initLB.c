@@ -108,9 +108,6 @@ void initialiseFields(t_component * c, const t_procData * const procData){
 	// Initial velocity is 0
 	double u0[3] = {0.0, 0.0, 0.0};
 
-    // Set a different random seed for each process
-    srand(time(NULL) + procData->rank + 1);
-
     // Initialize collideField, streamField and feq
     int x,y,z;
     for ( z = 1; z <= procData->xLength[2]; ++z) {
@@ -184,6 +181,9 @@ void initialiseComponents(t_component *c, const t_procData * const procData) {
 
 /*Initialize fields for all components*/
 void initialiseProblem(t_component *c, int *flagField, const t_procData * const procData) {
+
+	// Set a different random seed for each process
+    srand(time(NULL) + procData->rank + 1);
 
 	// If a single component then create a random distribution
 	if (numComp == 1) {
