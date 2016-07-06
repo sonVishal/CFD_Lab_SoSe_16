@@ -113,6 +113,24 @@ int main(int argc, char *argv[]){
 
     // TODO: Make a note about this not being a good way and we should calculate velocity etc?
     /*Allocate memory to pointers*/
+    
+    //------------------------------------------------------
+    //          NOTE
+    //------------------------------------------------------
+    // We are aware that the current scheme is not optimal.
+    // feq and the elements needed to calculate it should
+    // be calculated on each process instead of it being
+    // communicated and velocity etc. stored.
+    //
+    // The reason this is done is because of a very subtle
+    // bug in our earlier code that we could not find, even
+    // though we spent a week looking for it. We then chose
+    // to restructure out code to be sure everything was
+    // working as it should and unfortunately did not have
+    // time for optimizations. Since the goal was to 
+    // implement multiphase we feel this is fine enough
+    //------------------------------------------------------
+
     int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
     for (int i = 0; i < numComp; i++) {
         c[i].collideField = (double *)   malloc(Q*totalsize * sizeof( double ));
@@ -211,8 +229,7 @@ int main(int argc, char *argv[]){
             }
 	    }
 
-        MPI_Barrier(MPI_COMM_WORLD);
-        if(t%10 == 0)
+        if(t%10 == 0 && procData.rank == 0)
             printf("R %d Time t = %d done\n",procData.rank, t);
     }
     endProcTime = MPI_Wtime();
@@ -220,13 +237,13 @@ int main(int argc, char *argv[]){
     if(procData.rank == 0)
         printf("\nINFO: Please open the WS4_combined.*.pvts file to view the combined result.\n");
 
-    //get earliest start and latest finish of processors
+    //Get earliest start and latest finish of processors
     MPI_Reduce(&beginProcTime, &beginSimTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
-    MPI_Reduce(&endProcTime, &endSimTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&endProcTime,   &endSimTime,   1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
     if(procData.rank == 0){
     	double elapsedTime = endSimTime - beginSimTime;
-    	int domTotalsize = (xlength+2)*(xlength+2)*(xlength+2);
+    	int domTotalsize   = (xlength+2)*(xlength+2)*(xlength+2);
     	printf("\n===============================================================\n");
 		printf("\nINFO TIMING:\n");
 		printf("Execution time (main loop): \t\t %.3f seconds \n", elapsedTime);
