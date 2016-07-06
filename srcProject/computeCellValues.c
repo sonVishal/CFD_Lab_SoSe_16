@@ -70,7 +70,7 @@ void computeVelocity(const double * const currentCell, const double * const dens
     }
 }
 
-void computeDensityAndVelocity(t_component *c, const t_procData * const procData){
+void computeDensityAndUpdateFeq(t_component *c, const t_procData * const procData){
 
     for (int z = 1; z <= procData->xLength[2] ; z++) {
         for (int y = 1; y <= procData->xLength[1]; y++) {
@@ -97,7 +97,10 @@ void computeDensityAndVelocity(t_component *c, const t_procData * const procData
 
                 for (int k = 0; k < numComp; k++) {
                     // Compute equilibrium velocity
-                    computeEqVelocity(c, commonVelocity, c_density[k], c[k].force[fieldIdx], c[k].velocity[fieldIdx]);
+                    computeEqVelocity(c, commonVelocity, c_density[k], c[k].force[fieldIdx], c_velocity[k]);
+
+                    // Update the equilibrium distributions
+                    computeFeqCell(&c[k].rho[fieldIdx], c_velocity[k], &c[k].feq[cellIdx]);
                 }
             }
         }
@@ -161,24 +164,6 @@ void computeFeqCell(const double * const density, const double * const velocity,
         assert(feq[i] > 0.0);
     }
     #endif
-}
-
-void computeFeq(t_component *c, const t_procData * const procData){
-
-	int cellIdx, fieldIdx;
-    for(int k  = 0; k < numComp; ++k){
-        for (int z = 1; z <= procData->xLength[2] ; z++) {
-            for (int y = 1; y <= procData->xLength[1]; y++) {
-                for (int x = 1; x <= procData->xLength[0]; x++) {
-
-                    fieldIdx = p_computeCellOffsetXYZ(x, y, z, procData->xLength);
-                    cellIdx = Q*fieldIdx;
-
-                    computeFeqCell(&c[k].rho[fieldIdx], c[k].velocity[fieldIdx], &c[k].feq[cellIdx]);
-                }
-            }
-        }
-    }
 }
 
 

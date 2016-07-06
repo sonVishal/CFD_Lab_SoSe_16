@@ -17,8 +17,8 @@
 //--------------------------------------------------------
 //                        NOTE
 //--------------------------------------------------------
-// The framework is set up for doing multiple components, 
-// but in the current state that is not implemented 
+// The framework is set up for doing multiple components,
+// but in the current state that is not implemented
 // properly.
 //--------------------------------------------------------
 
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]){
 
     // TODO: Make a note about this not being a good way and we should calculate velocity etc?
     /*Allocate memory to pointers*/
-    
+
     //------------------------------------------------------
     //          NOTE
     //------------------------------------------------------
@@ -127,7 +127,7 @@ int main(int argc, char *argv[]){
     // though we spent a week looking for it. We then chose
     // to restructure out code to be sure everything was
     // working as it should and unfortunately did not have
-    // time for optimizations. Since the goal was to 
+    // time for optimizations. Since the goal was to
     // implement multiphase we feel this is fine enough
     //------------------------------------------------------
 
@@ -153,8 +153,8 @@ int main(int argc, char *argv[]){
     //----------------------------------------------------
     //                  NOTE
     //----------------------------------------------------
-    // Currently flagField is not used in the simulation, 
-    // but kept as a future extension to incorporate 
+    // Currently flagField is not used in the simulation,
+    // but kept as a future extension to incorporate
     // other boundary conditions
     //----------------------------------------------------
 
@@ -187,7 +187,7 @@ int main(int argc, char *argv[]){
     // Main time loop
     for(t = 1; t <= timesteps; t++){
 
-        // Communicate required fields components to parallel boundaries 
+        // Communicate required fields components to parallel boundaries
         // and periodic boundaries
         communicateComponents(sendBuffer, readBuffer, c, &procData);
 
@@ -197,11 +197,8 @@ int main(int argc, char *argv[]){
         // Compute the force between cells
 		computeForce(c, &procData, flagField, G);
 
-        // Compute density and velocity
-        computeDensityAndVelocity(c, &procData);
-
-        // Compute the equilibrium distributions
-        computeFeq(c, &procData);
+        // Compute density and update the equilibrium distribution
+        computeDensityAndUpdateFeq(c, &procData);
 
         // Swap fields. new --> old
         double *swap = NULL;
@@ -211,7 +208,7 @@ int main(int argc, char *argv[]){
             c[k].collideField = swap;
         }
 
-        
+
         // Print VTS files at given interval
 		if (t%timestepsPerPlotting == 0){
 
@@ -222,7 +219,7 @@ int main(int argc, char *argv[]){
 
             printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
             writeVtsOutput(c, fName, t, xlength, &procData, procsPerAxis);
-            
+
             // Combine VTS file at t
             if (procData.rank == 0) {
                 p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
