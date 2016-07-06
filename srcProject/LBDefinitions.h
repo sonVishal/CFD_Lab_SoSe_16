@@ -110,8 +110,8 @@ typedef struct {
     int rank;
     int numRanks;
     int xLength[3];
-    int neighbours[6];         //same order as enum //TODO: (DL) possibly rename neighbours, e.g. "parallelNeighbours"
-    int bufferSize[3]; //buffer sizes for all directions
+    int neighbours[6];         //same order as enum
+    int bufferSize[3];         //buffer sizes for all directions
 } t_procData;
 
 typedef struct {
