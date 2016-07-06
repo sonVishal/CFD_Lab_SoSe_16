@@ -120,15 +120,15 @@ int main(int argc, char *argv[]){
     // We are aware that the current scheme is not optimal.
     // feq and the elements needed to calculate it should
     // be calculated on each process instead of it being
-    // communicated and velocity etc. stored.
+    // communicated and e.g. force stored.
     //
     // The reason this is done is because of a very subtle
     // bug in our earlier code that we could not find, even
     // though we spent a week looking for it. We then chose
-    // to restructure out code to be sure everything was
+    // to restructure our code to be sure everything was
     // working as it should and unfortunately did not have
     // time for optimizations. Since the goal was to
-    // implement multiphase we feel this is fine enough
+    // implement multiphase we feel this is fine enough.
     //------------------------------------------------------
 
     int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
