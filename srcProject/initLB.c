@@ -103,7 +103,7 @@ void initialiseFields(t_component * c, const t_procData * const procData){
 
 	// How much initial difference is allowed in density
     //TODO: Make the 0.01 an input for easier tests
-	double rhoVar = 0.01*rhoRef;
+	double rhoVar = 0.1*rhoRef;
 
 	// Initial velocity is 0
 	double u0[3] = {0.0, 0.0, 0.0};
