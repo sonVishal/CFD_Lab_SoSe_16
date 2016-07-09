@@ -23,7 +23,9 @@
 #      v
 
 # Size of mesh
-xlength             512
+xlength             256
+
+# 1% random perturbation
 
 # Number of components
 numComp              1
@@ -45,7 +47,7 @@ G00              -0.27
 psi0		0
 
 # Number of timesteps
-timesteps            25600
+timesteps            12800
 
 # timesteps between each plot
 timestepsPerPlotting 100
@@ -55,6 +57,6 @@ timestepsPerPlotting 100
 # x-axis = iProc
 # y-axis = jProc
 # z-axis = kProc
-iProc		3
+iProc		2
 jProc		3
-kProc		3
+kProc		2
