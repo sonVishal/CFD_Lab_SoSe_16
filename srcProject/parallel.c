@@ -53,27 +53,27 @@ void domainDecompositionAndNeighbors(t_procData *const procData, const int xleng
 	// Set neighbours for parallel boundaries
 	// Decide whether it is a ghost boundary (= MPI_PROC_NULL) or a parallel boundary (assign rank of neighbor)
     procData->neighbours[LEFT]	 = procPos[0]
-                                 + (procPos[1]-1+procsPerAxis[1])%procsPerAxis[1]*procsPerAxis[0] 
+                                 + (procPos[1]-1+procsPerAxis[1])%procsPerAxis[1]*procsPerAxis[0]
                                  + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
 
-    procData->neighbours[RIGHT]	 = procPos[0] 
-                                 + (procPos[1]+1)%procsPerAxis[1]*procsPerAxis[0] 
+    procData->neighbours[RIGHT]	 = procPos[0]
+                                 + (procPos[1]+1)%procsPerAxis[1]*procsPerAxis[0]
                                  + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
 
-    procData->neighbours[TOP]	 = procPos[0] 
-                                 + procPos[1]*procsPerAxis[0] 
+    procData->neighbours[TOP]	 = procPos[0]
+                                 + procPos[1]*procsPerAxis[0]
                                  + (procPos[2]+1)%procsPerAxis[2]*procsPerAxis[0]*procsPerAxis[1];
 
-    procData->neighbours[BOTTOM] = procPos[0] 
-                                 + procPos[1]*procsPerAxis[0] 
+    procData->neighbours[BOTTOM] = procPos[0]
+                                 + procPos[1]*procsPerAxis[0]
                                  + (procPos[2]-1+procsPerAxis[2])%procsPerAxis[2]*procsPerAxis[0]*procsPerAxis[1];
 
-    procData->neighbours[FRONT]	 = (procPos[0]+1)%procsPerAxis[0] 
-                                 + procPos[1]*procsPerAxis[0] 
+    procData->neighbours[FRONT]	 = (procPos[0]+1)%procsPerAxis[0]
+                                 + procPos[1]*procsPerAxis[0]
                                  + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
 
-    procData->neighbours[BACK]	 = (procPos[0]-1+procsPerAxis[0])%procsPerAxis[0] 
-                                 + procPos[1]*procsPerAxis[0] 
+    procData->neighbours[BACK]	 = (procPos[0]-1+procsPerAxis[0])%procsPerAxis[0]
+                                 + procPos[1]*procsPerAxis[0]
                                  + procPos[2]*procsPerAxis[0]*procsPerAxis[1];
 
 
@@ -82,12 +82,12 @@ void domainDecompositionAndNeighbors(t_procData *const procData, const int xleng
 		if (procData->neighbours[i] == procData->rank) {
 			procData->neighbours[i] = MPI_PROC_NULL;
 		}
-        printf("R%d neighbours[%d] = %d\n", procData->rank, i, procData->neighbours[i]);
+        // printf("R%d neighbours[%d] = %d\n", procData->rank, i, procData->neighbours[i]);
 	}
 }
 
 /*
-* Initialize sendBuffer and readBuffer. They are only initialized in a certain 
+* Initialize sendBuffer and readBuffer. They are only initialized in a certain
 * direction when there is a valid neighbor, i.e. no domain boundary
 */
 void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const * const xlength,
@@ -95,13 +95,13 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const *
 
     const int db = sizeof(double); //double in bytes
 
-    
+
     //---------------------------------------------
     //      NOTE
     //---------------------------------------------
     // In the current implementation all buffers
     // are initialized, if we had other BC than
-    // periodic, e.g. noslip,  this should not be 
+    // periodic, e.g. noslip,  this should not be
     // done to save memory.
     //---------------------------------------------
 
@@ -161,7 +161,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         const int face1 = direction;   //LEFT,  TOP,    FRONT
         const int face2 = direction+1; //RIGHT, BOTTOM, BACK
 
-		// Set iteration parameters for both faces of a direction 
+		// Set iteration parameters for both faces of a direction
         p_setCommIterationParameters(&iterPara1, procData, face1);
         p_setCommIterationParameters(&iterPara2, procData, face2);
 
@@ -238,7 +238,7 @@ void swap(double** sendBuffer, double** readBuffer, t_procData const * const pro
     //                 MPI_Datatype recvtype, int source, int recvtag,
     //                 MPI_Comm comm, MPI_Status *status)
     //Send proc1 receive proc1
-    
+
     if(procData->neighbours[direction] < procData->rank){
 
         MPI_Sendrecv(sendBuffer[direction], bufferSize , MPI_DOUBLE, proc1, tag, readBuffer[direction],
@@ -262,11 +262,11 @@ void inject(double const * const readBuffer, double* collideField, t_iterPara co
     int currentIndexField = -1; //Initially assign to invalid
     int currentIndexBuff = 0;   //Simple counter
 
-    
+
     static int shiftFixedValue[6] = {-1, 1, 1, -1, 1, -1}; //static to allocate/assign only once
-    
+
     //change value also in outer scope okay, because not needed afterwards
-    int newFixedValue = iterPara->fixedValue + shiftFixedValue[direction]; 
+    int newFixedValue = iterPara->fixedValue + shiftFixedValue[direction];
 
     //k - corresponds to the 'outer' value when computing the offset
     for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
@@ -345,7 +345,7 @@ void communicateDensity(double** sendBuffer, double**readBuffer, double* rho,
 
 			assert(bufferSize1 == procData->bufferSize[direction/2]/nrDistSwap);
 			assert(bufferSize2 == procData->bufferSize[direction/2]/nrDistSwap);
-            
+
             // Swap the distributions
             swapDensity(sendBuffer, readBuffer, procData, direction, bufferSize1, bufferSize2);
 
@@ -428,9 +428,9 @@ int injectDensity(double const * const readBuffer, double* rho,
     int currentIndexBuff = 0;
 
     static int shiftFixedValue[6] = {-1, 1, 1, -1, 1, -1}; //static to allocate/assign only once
-    
+
     //change value also in outer scope okay, because not needed afterwards
-    int newFixedValue = iterPara->fixedValue + shiftFixedValue[direction]; 
+    int newFixedValue = iterPara->fixedValue + shiftFixedValue[direction];
 
     //k - corresponds to the 'outer' value when computing the offset
     for(int k = iterPara->startOuter; k <= iterPara->endOuter; ++k){
