@@ -102,9 +102,11 @@ void initialiseFields(t_component * c, const t_procData * const procData){
     int fieldIdx, cellIdx;
 
 	// How much initial difference is allowed in density
-    //TODO: Make the 0.01 an input for easier tests
-	double rhoVar = 0.1*rhoRef;
-
+	double rhoVar = 0.01*rhoRef;
+	int x0 = procData->xLength[0]/2;
+	int y0, z0;
+	y0 = (procData->rank%2 == 0) ? procData->xLength[1]:1;
+	z0 = (procData->rank <= 1) ? procData->xLength[2]:1;
 	// Initial velocity is 0
 	double u0[3] = {0.0, 0.0, 0.0};
 
@@ -118,10 +120,11 @@ void initialiseFields(t_component * c, const t_procData * const procData){
 				fieldIdx = p_computeCellOffsetXYZ(x, y, z, procData->xLength);
                 cellIdx = Q*fieldIdx;
 
-				double rnd = ((double)rand()/(double)RAND_MAX);
-				c->rho[fieldIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd;  // Shan Chen
-				//c->rho[fieldIdx] = rhoRef + rnd; //Sukop
-
+				if ((x-x0)*(x-x0) + (y-y0)*(y-y0) + (z-z0)*(z-z0) <= 400) {
+					c->rho[fieldIdx] = rhoRef - rhoVar;  // Shan Chen
+				} else {
+					c->rho[fieldIdx] = rhoRef;  // Shan Chen
+				}
 				computeFeqCell(&(c->rho[fieldIdx]), u0, &(c->feq[cellIdx]));
 
                 for (int i = 0; i < Q; ++i) {
