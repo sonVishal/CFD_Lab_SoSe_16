@@ -15,8 +15,7 @@
 //                        NOTE
 //--------------------------------------------------------
 // The framework is set up for doing multiple components,
-// but in the current state that is not implemented
-// properly.
+// however, currently we only support multiphase simulation entirly.
 //--------------------------------------------------------
 
 //TODO: (TKS) We assume that mass is 1 and use numDensity as density in different places.
@@ -24,7 +23,6 @@
 //TODO: (TKS) Rename streamField and collideField.
 //TODO: (TKS) Read in parameters for components from file.
 //TODO: (TKS) Comment the code.
-// TODO:(VS)   Remove velocity and reynolds number stuff after testing
 // TODO: (TKS) Go through all ifndef/ifdef.
 
 int main(int argc, char *argv[]){
@@ -65,7 +63,6 @@ int main(int argc, char *argv[]){
     // Interacting potential
     double G[numComp][numComp];
 
-
     /* Read parameters*/
     //Only performed by the root and then broadcasted in 'broadcastValues'
     if (procData.rank == 0) {
@@ -73,11 +70,9 @@ int main(int argc, char *argv[]){
     }
 
     // Broadcast the data from rank 0 (root) to other processes
-    //TODO: (DL) maybe initialize also procData in here (collideField & streamField) & validity tests
     broadcastValues(procData.rank, &xlength, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting);
 
     // Abort if the number of processes given by user do not match with the dat file
-    //TODO: (DL) could we get this somewhere else than main?
     if (procData.numRanks != procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2]) {
         if (procData.rank == 0) {
             printf("ERROR: The number of processes assigned in the dat file, %d, "
@@ -108,26 +103,15 @@ int main(int argc, char *argv[]){
     // Domain decomposition & setting up neighbors
     domainDecompositionAndNeighbors(&procData, xlength, procsPerAxis);
 
-    // TODO: Make a note about this not being a good way and we should calculate velocity etc?
-    /*Allocate memory to pointers*/
-
     //------------------------------------------------------
     //          NOTE
     //------------------------------------------------------
-    // We are aware that the current scheme is not optimal.
-    // feq and the elements needed to calculate it should
-    // be calculated on each process instead of it being
-    // communicated and e.g. force stored.
+    // The current implementation is not optimized with respect to memory.
     //
-    // The reason this is done is because of a very subtle
-    // bug in our earlier code that we could not find, even
-    // though we spent a week looking for it. We then chose
-    // to restructure our code to be sure everything was
-    // working as it should and unfortunately did not have
-    // time for optimizations. Since the goal was to
-    // implement multiphase we feel this is fine enough.
+    // In order to obtain a stable solution we changed the order of computations
+    // in the main loop. For this we also (additional) space for feq and force.
     //------------------------------------------------------
-
+    /*Allocate memory*/
     int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
     for (int i = 0; i < numComp; i++) {
         c[i].collideField = (double *)   malloc(Q*totalsize * sizeof( double ));
@@ -141,16 +125,12 @@ int main(int argc, char *argv[]){
         }
     }
 
-    //TODO: Make unit tests (?)
-    //initializeUnitTest(totalsize);
-
-
     //----------------------------------------------------
     //                  NOTE
     //----------------------------------------------------
     // Currently flagField is not used in the simulation,
     // but kept as a future extension to incorporate
-    // other boundary conditions
+    // other boundary conditions again.
     //----------------------------------------------------
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
@@ -160,6 +140,7 @@ int main(int argc, char *argv[]){
     // Initialize all fields
     initialiseProblem(c, flagField, &procData);
 
+    //TODO: Make unit tests (?)
     // #ifndef NDEBUG
     // initializeUnitTest(totalsize);
     // #endif
@@ -206,7 +187,6 @@ int main(int argc, char *argv[]){
             c[k].streamField  = c[k].collideField;
             c[k].collideField = swap;
         }
-
 
         // Print VTS files at given interval
 		if (t%timestepsPerPlotting == 0){
