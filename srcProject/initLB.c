@@ -146,9 +146,9 @@ void initialiseFields(t_component * c, const t_procData * const procData){
                 cellIdx = Q*fieldIdx;
 
 				if ((x-x0)*(x-x0) + (y-y0)*(y-y0) + (z-z0)*(z-z0) <= 400) {
-					c->rho[fieldIdx] = rhoRef - 0.5*rhoVar;  // Shan Chen
-				} else {
 					c->rho[fieldIdx] = rhoRef + 0.5*rhoVar;  // Shan Chen
+				} else {
+					c->rho[fieldIdx] = rhoRef - 0.5*rhoVar;  // Shan Chen
 				}
 				computeFeqCell(&(c->rho[fieldIdx]), u0, &(c->feq[cellIdx]));
 
