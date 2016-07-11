@@ -58,6 +58,6 @@ timestepsPerPlotting 100
 # x-axis = iProc
 # y-axis = jProc
 # z-axis = kProc
-iProc		1
+iProc		2
 jProc		2
 kProc		2

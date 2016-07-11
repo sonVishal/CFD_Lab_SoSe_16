@@ -103,10 +103,35 @@ void initialiseFields(t_component * c, const t_procData * const procData){
 
 	// How much initial difference is allowed in density
 	double rhoVar = 0.01*rhoRef;
-	int x0 = procData->xLength[0]/2;
-	int y0, z0;
-	y0 = (procData->rank%2 == 0) ? procData->xLength[1]:1;
-	z0 = (procData->rank <= 1) ? procData->xLength[2]:1;
+	int x0, y0, z0;
+	switch (procData->rank) {
+		case 0:
+			x0 = procData->xLength[0]; y0 = procData->xLength[1]; z0 = procData->xLength[2];
+			break;
+		case 1:
+			x0 = 0; y0 = procData->xLength[1]; z0 = procData->xLength[2];
+			break;
+		case 2:
+			x0 = procData->xLength[0]; y0 = 0; z0 = procData->xLength[2];
+			break;
+		case 3:
+			x0 = 0; y0 = 0; z0 = procData->xLength[2];
+			break;
+		case 4:
+			x0 = procData->xLength[0]; y0 = procData->xLength[1]; z0 = 0;
+			break;
+		case 5:
+			x0 = 0; y0 = procData->xLength[1]; z0 = 0;
+			break;
+		case 6:
+			x0 = procData->xLength[0]; y0 = 0; z0 = 0;
+			break;
+		case 7:
+			x0 = 0; y0 = 0; z0 = 0;
+			break;
+		default:
+			x0 = 0; y0 = 0; z0 = 0;
+	}
 	// Initial velocity is 0
 	double u0[3] = {0.0, 0.0, 0.0};
 
