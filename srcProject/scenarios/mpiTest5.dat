@@ -23,7 +23,7 @@
 #      v
 
 
-# Circular ball outside less density (rhoRef vs rhoRef-rhoVar)
+# Circular ball inside less density (rhoRef - 0.5*rhoVar vs rhoRef + 0.5*rhoVar)
 
 # Size of mesh
 xlength             64
