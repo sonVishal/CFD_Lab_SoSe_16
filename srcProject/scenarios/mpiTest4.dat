@@ -1,0 +1,63 @@
+#--------------------------------------------
+#                  GEOMETRY
+#--------------------------------------------
+#            ^  (Z)
+#            |
+#            |
+#            |
+#            |
+#            +-----------------------------+
+#           /|               XY top       /|
+#          / |                           / |
+#         +-----------------------------+  |
+#         |  |             YZ back      |  |
+# XZ left |  |            /             |  | XZ right
+#         |  |           /              |  |
+#         |  |   YZ front               |  |                    (Y)
+#         |  +--------------------------|--+--------------------->
+#         | /                           | /
+#         |/                 XY bottom  |/
+#         +-----------------------------+
+#        /
+#       / (X)
+#      v
+
+
+# Circular ball outside less density
+
+# Size of mesh
+xlength             64
+
+# Number of components
+numComp              1
+
+# Relaxation time
+# In recent version calculated from the Reynolds number
+tau0               1
+
+# Molecular mass
+m0              1.0
+
+# Interaction Matrix
+G00              -0.27
+
+#Psi function
+#Select of the following implemented functions:
+#0: (1-exp(-numberDensity))
+#1: numberDensity
+psi0		0
+
+# Number of timesteps
+timesteps            25600
+
+# timesteps between each plot
+timestepsPerPlotting 100
+
+# Domain decomposition
+# Number of subdivisions per axis
+# x-axis = iProc
+# y-axis = jProc
+# z-axis = kProc
+iProc		1
+jProc		2
+kProc		2
