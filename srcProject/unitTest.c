@@ -43,11 +43,9 @@ void treatPostCollisionBoundary(const t_component * const c, t_procData const * 
     p_assignIndices(direction,    index2);
 
     int currentIndexField1 = -1, currentIndexField2=-1; //Initially assign to invalid
-    int currentIndexBuff = 0;   //Simple counter
 
     static int shiftFixedValue[6] = {-1, 1, 1, -1, 1, -1}; //static to allocate/assign only once
 
-    //change value also in outer scope okay, because not needed afterwards
     int newFixedValue1 = iterPara1.fixedValue + shiftFixedValue[direction];
     int newFixedValue2 = iterPara2.fixedValue + shiftFixedValue[direction+1];
 
@@ -71,7 +69,6 @@ void treatPostCollisionBoundary(const t_component * const c, t_procData const * 
                 double *currentCell2 = &c[m].streamField[currentIndexField2];
 
                 for (int i = 0; i < 5; i++) {
-                    assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
                     currentCell1[index1[i]] = currentCell1[index1[i]] - (currentCell1[index1[i]] - c[m].feq[index1[i]])/(c[m].tau);
                     currentCell2[index2[i]] = currentCell2[index2[i]] - (currentCell2[index2[i]] - c[m].feq[index2[i]])/(c[m].tau);
                 }
@@ -127,7 +124,6 @@ void doStreaming(const t_component * const c, t_procData const * const procData)
 }
 
 void steamCollideUnitTest(const t_component * const c, t_procData const * const procData){
-
     beforeCollision(c, procData);
     computePostCollisionDistributions(c, procData);
     afterCollision(c, procData);

@@ -349,13 +349,10 @@ void communicateDensity(double** sendBuffer, double**readBuffer, double* rho,
             // Swap the distributions
             swapDensity(sendBuffer, readBuffer, procData, direction, bufferSize1, bufferSize2);
 
-            int injectSize1, injectSize2;
-
             // Inject the distributions from read buffer to collide field
             //NOTE: opposite index get injected from the readBuffer
-            injectSize1 = injectDensity(readBuffer[face1], rho, &iterPara1, procData, face1);
-            injectSize2 = injectDensity(readBuffer[face2], rho, &iterPara2, procData, face2);
-            assert(injectSize1 == bufferSize1 && injectSize2 == bufferSize2);
+            injectDensity(readBuffer[face1], rho, &iterPara1, procData, face1);
+            injectDensity(readBuffer[face2], rho, &iterPara2, procData, face2);
 		}
         else if (procData->neighbours[face1] == MPI_PROC_NULL && procData->neighbours[face2] == MPI_PROC_NULL) {
 			swapNoCommDensity(rho, &iterPara1, &iterPara2, procData, direction);
