@@ -1,13 +1,10 @@
 #ifndef _MAIN_C_
 #define _MAIN_C_
 #include "streamCollide.h"
-#include "collision.h"
 #include "initLB.h"
-#include "streaming.h"
 #include "visualLB.h"
 #include "LBDefinitions.h"
 #include "helper.h"
-#include "common.h"
 #include "parallel.h"
 #include "unitTest.h"
 #include <stdio.h>
@@ -195,7 +192,6 @@ int main(int argc, char *argv[]){
         // streamCollide(c, &procData);
         // #endif
         streamCollide(c, &procData);
-
 
         // Compute the force between cells
 		computeForce(c, &procData, flagField, G);
