@@ -62,15 +62,15 @@ enum WALLS {
 };
 
 // Enum for cell type
+//NOTE: because we do not use a flagfield at the moment, this enum is no in use currently.
 enum CELLS {
     FLUID,
-    NO_SLIP,        //TODO: (DL) Deprecated
-    MOVING_WALL,    //TODO: (DL) Deprecated
+    NO_SLIP,
+    MOVING_WALL,
     PARALLEL_BOUNDARY,
     PERIODIC_BOUNDARY
 };
 
-//TODO: (DL) not sure if a function pointer with inline works... we can test it out.
 //TODO: For now assuming that mass = 1. The input density if mass changes.
 static inline double psi0(double numberDensity){ return rho0*(1-exp(-numberDensity/rho0));}
 static inline double psi1(double numberDensity){ return numberDensity;}
@@ -79,38 +79,12 @@ static inline double psi2(double numberDensity){ return 4.0*exp(-rho0/numberDens
 typedef double (*fctPtrPsi)(double);
 static const fctPtrPsi psiFctPointer[3] = {psi0, psi1, psi2};
 
-
-//TODO: (DL) There can be "better" ways to number edges. At the moment the numbering is benefical for computing indices.
-// Numbering of edges of the domain:
-// //
-//
-//            ^  (Z)
-//            |
-//            |
-//            |
-//            |             (11)
-//            +-----------------------------+
-//        (8)/|                            /|
-//          / |        (9)            (10)/ |
-//         +-----------------------------+  |
-//         |  |                          |  |
-//         |  | (4)                      |  |(7)
-//         |  |                          |  |
-//      (5)|  |                       (6)|  |                    (Y)
-//         |  +--------------------------|--+--------------------->
-//         | /           (3)             | /
-//         |/(0)                         |/ (2)
-//         +-----------------------------+
-//        /          (1)
-//       / (X)
-//      v
-
 // Local struct for each process
 typedef struct {
     int rank;
     int numRanks;
     int xLength[3];
-    int neighbours[6];         //same order as enum
+    int neighbours[6];         //same order as enum WALLS
     int bufferSize[3];         //buffer sizes for all directions
 } t_procData;
 
