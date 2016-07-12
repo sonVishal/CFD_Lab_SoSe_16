@@ -1,18 +1,6 @@
 #include "visualLB.h"
 
-// Function to write VTK output files for visualization
-// Inputs
-// field_new - Probability distribution function
-//                  Length = Q*(xlength+2)^D
-// flagField    - Geometry info about whether a cell is
-//                  FLUID         = 0
-//                  NO_SLIP       = 1
-//                  MOVING_WALL   = 2
-//                  Length        = (xlength+2)^D
-// filename     - Name of the file to which output is to be written
-// t            - Time at which output is to be stored
-// xlength      - Number of cells in one direction
-
+// Function to write VTS output files for visualization
 void writeVtsOutput(const t_component * const c, const char * filename,
     unsigned int t, int xlen, const t_procData * const procData,
     const int * const procsPerAxis) {
@@ -111,6 +99,7 @@ void writeVtsOutput(const t_component * const c, const char * filename,
     }
 }
 
+// Function to write coordinates of the points
 void writevtsPointCoordinates(FILE * fp, const int xlen, const int * const xlength,
     const int * const myPos, const int * const procsPerAxis) {
     int x, y, z;
@@ -142,6 +131,7 @@ void writevtsPointCoordinates(FILE * fp, const int xlen, const int * const xleng
     fprintf(fp,"</Points>\n");
 }
 
+// Function to combine the VTS files into one
 void p_writeCombinedPVTSFile(const char * const filename, const unsigned int t,
     const int xlen, const int * const procsPerAxis) {
     // Files related variables
