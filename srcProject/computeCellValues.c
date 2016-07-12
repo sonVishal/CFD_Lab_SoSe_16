@@ -33,6 +33,9 @@ void computeVelocity(const double * const currentCell, const double * const dens
 
     // Unroll the loop for cache efficient access
     // Improved speed even with -O3 flag
+
+    // In case a component is present, its density is non-zero
+    // Thus its velocity will be computable
     if ((*density) != 0.0) {
         // Blocks of 4 for efficient cache access
         // 0 to 3
@@ -64,6 +67,8 @@ void computeVelocity(const double * const currentCell, const double * const dens
         velocity[1] /= (*density);
         velocity[2] /= (*density);
     } else {
+        // In case a component is absent, its density is 0.0
+        // Thus its velocity will also be 0.0
         velocity[0] = 0.0;
         velocity[1] = 0.0;
         velocity[2] = 0.0;
@@ -178,6 +183,8 @@ void computeCommonVelocity(const double *const c_density, double c_velocity[2][3
 
        den+= c_density[n]/c[n].tau;
     }
+    // To avoid division by 0.0 in case all the densities are 0.0
+    // Probably will never happen that all densities are 0.0
     if (den != 0.0) {
         commonVel[0] = momentum[0]/den;
         commonVel[1] = momentum[1]/den;
@@ -250,11 +257,15 @@ void computeForce(t_component *c, const t_procData * const procData, int *flagFi
 }
 
 void computeEqVelocity(t_component const*const c, double const*const commonVelocity, const double compDensity, double const*const compForce, double compEqVelocity[3]) {
+    // In case the component denstiy compDensity != 0.0
+    // we can compute the equilibrium velocity
     if (compDensity != 0.0) {
         compEqVelocity[0] = commonVelocity[0] + (c->tau/compDensity)*compForce[0];
         compEqVelocity[1] = commonVelocity[1] + (c->tau/compDensity)*compForce[1];
         compEqVelocity[2] = commonVelocity[2] + (c->tau/compDensity)*compForce[2];
     } else {
+        // In case the component density is 0.0 => component not present
+        // we set the equilibrium density to 0.0
         compEqVelocity[0] = 0.0;
         compEqVelocity[1] = 0.0;
         compEqVelocity[2] = 0.0;
