@@ -100,6 +100,9 @@ lbsim
 *.log
 *.aux
 *.synctex.gz
+*.fls
+*.out
+*.fdb_latexmk
 
 # Matlab
 *.m~
