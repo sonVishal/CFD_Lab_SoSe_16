@@ -26,6 +26,8 @@ int main(int argc, char *argv[]){
     int t = 0;
     int timesteps;
     int timestepsPerPlotting;
+    int timestepDouble;
+    int timestepMax;
     double rhoFluct;
 
     t_procData procData;
@@ -62,11 +64,13 @@ int main(int argc, char *argv[]){
     /* Read parameters*/
     //Only performed by the root and then broadcasted in 'broadcastValues'
     if (procData.rank == 0) {
-        readParameters(&xlength, &rhoFluct, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
+        readParameters(&xlength, &rhoFluct, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting, 
+                       &timestepDouble, &timestepMax, argc, &argv[1]);
     }
 
     // Broadcast the data from rank 0 (root) to other processes
-    broadcastValues(procData.rank, &xlength, &rhoFluct, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting);
+    broadcastValues(procData.rank, &xlength, &rhoFluct, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting,
+                    &timestepDouble, &timestepMax);
 
     // Abort if the number of processes given by user do not match with the dat file
     if (procData.numRanks != procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2]) {
@@ -185,10 +189,9 @@ int main(int argc, char *argv[]){
         // Print VTS files at given interval
 		if (t%timestepsPerPlotting == 0){
 
-            // TODO: Write something about this in input file, maybe
-            //       make it a setting.
             //Double timestep for write in each iteration
-            timestepsPerPlotting = timestepsPerPlotting*2;
+            if(timestepDouble && timestepsPerPlotting < timestepMax)
+                timestepsPerPlotting = timestepsPerPlotting*2;
 
             printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
             writeVtsOutput(c, fName, t, xlength, &procData, procsPerAxis);

@@ -19,6 +19,8 @@ int readParameters(
     int *procsPerAxis,                  // Number of sub divisions in x,y,z directions
     int *timesteps,                     // Number of timesteps. Parameter name: "timesteps"
     int *timestepsPerPlotting,          // Timesteps between subsequent VTK plots. Parameter name: "vtkoutput"
+    int *timestepDouble,                // If timesteps should be doubled in each timestep
+    int *timestepMax,                   // Maximum timestep
     int argc,                           // Number of arguments. Should equal 2 (program + name of config file
     char *argv[]                        // argv[1] shall contain the path to the config file
 );

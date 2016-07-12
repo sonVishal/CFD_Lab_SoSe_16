@@ -18,8 +18,8 @@ void readNumComp(int argc, char *argv[]) {
 
 /*Read parameters from the input file*/
 int readParameters(int *xlength, double* rhoFluct, t_component *c, double G[numComp][numComp], 
-    int *procsPerAxis, int *timesteps, int *timestepsPerPlotting,
-	int argc, char *argv[]){
+    int *procsPerAxis, int *timesteps, int *timestepsPerPlotting, int *timestepDouble,
+	int *timestepMax, int argc, char *argv[]){
 
 	if(argc != 2){
 		char msg[200];
@@ -62,6 +62,8 @@ int readParameters(int *xlength, double* rhoFluct, t_component *c, double G[numC
 
     READ_INT(*argv, *timesteps);
     READ_INT(*argv, *timestepsPerPlotting);
+    READ_INT(*argv, *timestepMax);
+    READ_INT(*argv, *timestepDouble);
 
 	READ_INT(*argv, iProc);
 	READ_INT(*argv, jProc);

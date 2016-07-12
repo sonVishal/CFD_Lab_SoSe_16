@@ -8,11 +8,13 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 }
 
 void broadcastValues(int rank, int *xlength, double* rhoFluct, t_component *c, double G[numComp][numComp],
-	int *procsPerAxis, int *timesteps, int *timestepsPerPlotting) {
+	int *procsPerAxis, int *timesteps, int *timestepsPerPlotting, int* timestepDouble, int* timestepMax) {
 
 	MPI_Bcast(xlength, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(timesteps, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(timestepDouble, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(timestepMax, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(procsPerAxis, 3, MPI_INT, 0, MPI_COMM_WORLD);
 	MPI_Bcast(G, numComp*numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	MPI_Bcast(rhoFluct, numComp*numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);

@@ -25,17 +25,14 @@
 #      v
 
 # Size of mesh
-xlength             64 # Shan Chen
-# xlength              200 #sukop
+xlength             64 
 
 # Number of components
 numComp              1
 
 # Relaxation time
-# In recent version calculated from the Reynolds number
-# tau                  1
 tau0               1
-#tau1               0.8
+tau1               0.8
 
 # Molecular mass
 m0              1.0
@@ -47,12 +44,11 @@ rhoRef1           0.693
 
 # How much the initial density difference is in %
 # from rhoRef. Only used in multiphase.
-rhoFluct        0.01
+rhoFluct        0.001
 
 
 # Interaction Matrix
-G00              -0.27
-#G00             -120 #sukop
+G00              -0.03
 #G01             0.02
 #G10             0.02
 #G11             0.04
@@ -64,16 +60,18 @@ G00              -0.27
 psi0		0
 #psi1		1
 
-#TODO:
-#d00         1
-#d01         1
-
 
 # Number of timesteps
-timesteps            100
+timesteps            1000
 
 # timesteps between each plot
 timestepsPerPlotting 10
+
+# If timestepsPerPlotting should be doubled in each timestep
+timestepDouble       1
+
+# Set a maximum size of timeStepPerPlotting. Only relevant if timeStepDouble is set.
+timestepMax          40
 
 # Domain decomposition
 # Number of subdivisions per axis
