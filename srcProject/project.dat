@@ -1,12 +1,83 @@
+#--------------------------------------------
+#                  GEOMETRY
+#--------------------------------------------
+
+
+#            ^  (Z)
+#            |
+#            |
+#            |
+#            |
+#            +-----------------------------+
+#           /|               XY top       /|
+#          / |                           / |
+#         +-----------------------------+  |
+#         |  |             YZ back      |  |
+# XZ left |  |            /             |  | XZ right
+#         |  |           /              |  |
+#         |  |   YZ front               |  |                    (Y)
+#         |  +--------------------------|--+--------------------->
+#         | /                           | /
+#         |/                 XY bottom  |/
+#         +-----------------------------+
+#        /
+#       / (X)
+#      v
+
 # Size of mesh
-xlength              32
+xlength             64
+
+# Number of components
+numComp              1
 
 # Relaxation time
-#tau                  1
+tau0               1
+#tau1               0.8
+
+# Molecular mass
+m0              1.0
+#m1              0.4
+
+# Reference density
+rhoRef0           0.693
+#rhoRef1           0.693
+
+# How much the initial density difference is in %
+# from rhoRef. Only used in multiphase.
+rhoFluct        1
+
+
+# Interaction Matrix
+G00              -0.27
+#G01             0.02
+#G10             0.02
+#G11             0.04
+
+#Psi function
+#Select of the following implemented functions:
+#0: (1-exp(-numberDensity))
+#1: numberDensity
+psi0		0
+#psi1		1
 
 
 # Number of timesteps
-timesteps            200
+timesteps            1000
 
 # timesteps between each plot
 timestepsPerPlotting 10
+
+# If timestepsPerPlotting should be doubled in each timestep
+timestepDouble       1
+
+# Set a maximum size of timeStepPerPlotting. Only relevant if timeStepDouble is set.
+timestepMax          40
+
+# Domain decomposition
+# Number of subdivisions per axis
+# x-axis = iProc
+# y-axis = jProc
+# z-axis = kProc
+iProc		1
+jProc		2
+kProc		2

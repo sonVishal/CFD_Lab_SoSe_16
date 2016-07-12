@@ -17,7 +17,7 @@ void broadcastValues(int rank, int *xlength, double* rhoFluct, t_component *c, d
     MPI_Bcast(timestepMax, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(procsPerAxis, 3, MPI_INT, 0, MPI_COMM_WORLD);
 	MPI_Bcast(G, numComp*numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	MPI_Bcast(rhoFluct, numComp*numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Bcast(rhoFluct, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
 	for (int i = 0; i < numComp; i++) {
 		MPI_Bcast(&c[i].tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
