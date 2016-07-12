@@ -14,7 +14,7 @@
 //                        NOTE
 //--------------------------------------------------------
 // The framework is set up for doing multiple components,
-// however, but currently we only support multiphase
+// however, currently we only support multiphase
 // simulation.
 //--------------------------------------------------------
 
