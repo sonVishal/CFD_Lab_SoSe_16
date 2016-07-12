@@ -23,7 +23,7 @@
 #      v
 
 
-# Circular ball outside less density (rhoRef - 0.5*rhoVar vs rhoRef + 0.5*rhoVar)
+# Circular ball outside more density (rhoRef vs decreasing inside)
 
 # Size of mesh
 xlength             64
@@ -48,7 +48,7 @@ G00              -0.27
 psi0		0
 
 # Number of timesteps
-timesteps            25600
+timesteps            0
 
 # timesteps between each plot
 timestepsPerPlotting 100

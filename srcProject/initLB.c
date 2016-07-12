@@ -145,10 +145,18 @@ void initialiseFields(t_component * c, const t_procData * const procData){
 				fieldIdx = p_computeCellOffsetXYZ(x, y, z, procData->xLength);
                 cellIdx = Q*fieldIdx;
 
-				if ((x-x0)*(x-x0) + (y-y0)*(y-y0) + (z-z0)*(z-z0) <= 400) {
-					c->rho[fieldIdx] = rhoRef + 0.5*rhoVar;  // Shan Chen
+				if ((x-x0)*(x-x0) + (y-y0)*(y-y0) + (z-z0)*(z-z0) <= 400 && (x-x0)*(x-x0) + (y-y0)*(y-y0) + (z-z0)*(z-z0) > 256) {
+					c->rho[fieldIdx] = rhoRef - 0.2*rhoVar;  // Shan Chen
+				} else if((x-x0)*(x-x0) + (y-y0)*(y-y0) + (z-z0)*(z-z0) <= 256 && (x-x0)*(x-x0) + (y-y0)*(y-y0) + (z-z0)*(z-z0) > 144) {
+					c->rho[fieldIdx] = rhoRef - 0.4*rhoVar;  // Shan Chen
+				} else if ((x-x0)*(x-x0) + (y-y0)*(y-y0) + (z-z0)*(z-z0) <= 144 && (x-x0)*(x-x0) + (y-y0)*(y-y0) + (z-z0)*(z-z0) > 100) {
+					c->rho[fieldIdx] = rhoRef - 0.6*rhoVar;  // Shan Chen
+				} else if((x-x0)*(x-x0) + (y-y0)*(y-y0) + (z-z0)*(z-z0) <= 100 && (x-x0)*(x-x0) + (y-y0)*(y-y0) + (z-z0)*(z-z0) > 64) {
+					c->rho[fieldIdx] = rhoRef - 0.8*rhoVar;  // Shan Chen
+				} else if((x-x0)*(x-x0) + (y-y0)*(y-y0) + (z-z0)*(z-z0) <= 64) {
+					c->rho[fieldIdx] = rhoRef - rhoVar;  // Shan Chen
 				} else {
-					c->rho[fieldIdx] = rhoRef - 0.5*rhoVar;  // Shan Chen
+					c->rho[fieldIdx] = rhoRef;  // Shan Chen
 				}
 				computeFeqCell(&(c->rho[fieldIdx]), u0, &(c->feq[cellIdx]));
 
