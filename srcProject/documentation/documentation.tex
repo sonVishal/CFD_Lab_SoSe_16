@@ -28,6 +28,8 @@ Once the project is built, the scenario file needs to be set up. Go to the \verb
 	\end{itemize}
 	\item \verb|timesteps|: This gives the number of time steps the simulation should run for.
 	\item \verb|timestepsPerPlotting|: This gives the number of time steps after which an output file must be written for visualization.
+    \item \verb|timestepDouble|: Double the timestep between plot after each timestep where a plot happened if this does not equal 0.
+    \item \verb|timestepMax|: This gives the maximum number of timesteps between plots.
 	\item \verb|iProc, jProc, kProc|: These parameters specify the number of sub-domains in each direction for parallel computation. In the \verb|x| direction the domain will be divided into \verb|iProc| sub-domains, in the \verb|y| direction \verb|jProc| sub-domains, and in the \verb|z| direction \verb|kProc| sub-domains. Thus we have \verb|iProc*jProc*kProc| number of processes, each working on a cuboid.
 \end{itemize}
 
