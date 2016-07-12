@@ -3,7 +3,7 @@
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 #include "parallel.h"
-#include <mpi/mpi.h>
+#include <mpi.h>
 
 #define _TOL_ 1e-15
 

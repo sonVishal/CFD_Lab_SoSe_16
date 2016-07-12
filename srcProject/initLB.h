@@ -3,7 +3,7 @@
 #include "LBDefinitions.h"
 #include "helper.h"
 #include "computeCellValues.h"
-#include <mpi/mpi.h>
+#include <mpi.h>
 #include <stdlib.h>
 #include <math.h>
 

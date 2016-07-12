@@ -1,6 +1,6 @@
 #ifndef _PARALLEL_H_
 #define _PARALLEL_H_
-#include <mpi/mpi.h>
+#include <mpi.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>

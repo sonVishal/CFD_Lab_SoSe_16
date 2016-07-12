@@ -8,7 +8,7 @@
 #include "parallel.h"
 #include "unitTest.h"
 #include <stdio.h>
-#include <mpi/mpi.h>
+#include <mpi.h>
 
 //--------------------------------------------------------
 //                        NOTE
