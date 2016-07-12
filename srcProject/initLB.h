@@ -13,6 +13,7 @@ void readNumComp(int argc, char *argv[]);
 
 int readParameters(
     int *xlength,                       // Reads domain size. Parameter name: "xlength"
+    double *rhoRef,                     // Reference density.
     t_component *c,                     // Contains information on the components of the simulation
     double G[numComp][numComp],         // Matrix giving interaction. name: "G00, G01, G10, G11,..."
     int *procsPerAxis,                  // Number of sub divisions in x,y,z directions
@@ -23,12 +24,12 @@ int readParameters(
 );
 
 // Initialize the fields for all the components
-void initialiseProblem(t_component *c, int *flagField, const t_procData * const procData);
+void initialiseProblem(double *rhoRef, t_component *c, int *flagField, const t_procData * const procData);
 
 // Initialises fields for two components
 void initialiseComponents(t_component *c, const t_procData * const procData);
 
 // Initialises fields for one component assuming multiphase.
-void initialiseFields(t_component * c, const t_procData * const procData);
+void initialiseFields(double *rhoRef, t_component * c, const t_procData * const procData);
 
 #endif

@@ -26,6 +26,7 @@ int main(int argc, char *argv[]){
     int t = 0;
     int timesteps;
     int timestepsPerPlotting;
+    double rhoRef;
 
     t_procData procData;
 
@@ -60,11 +61,11 @@ int main(int argc, char *argv[]){
     /* Read parameters*/
     //Only performed by the root and then broadcasted in 'broadcastValues'
     if (procData.rank == 0) {
-        readParameters(&xlength, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
+        readParameters(&xlength, &rhoRef, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting, argc, &argv[1]);
     }
 
     // Broadcast the data from rank 0 (root) to other processes
-    broadcastValues(procData.rank, &xlength, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting);
+    broadcastValues(procData.rank, &xlength, &rhoRef, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting);
 
     // Abort if the number of processes given by user do not match with the dat file
     if (procData.numRanks != procsPerAxis[0]*procsPerAxis[1]*procsPerAxis[2]) {
@@ -131,7 +132,7 @@ int main(int argc, char *argv[]){
     int *flagField = NULL;
 
     // Initialize all fields
-    initialiseProblem(c, flagField, &procData);
+    initialiseProblem(&rhoRef, c, flagField, &procData);
 
     //TODO: Make unit tests (?)
     // #ifndef NDEBUG

@@ -41,6 +41,9 @@ tau0               1
 m0              1.0
 #m1              0.4
 
+# Reference density
+rhoRef           0.693
+
 # Interaction Matrix
 G00              -0.27
 #G00             -120 #sukop
@@ -72,5 +75,5 @@ timestepsPerPlotting 10
 # y-axis = jProc
 # z-axis = kProc
 iProc		1
-jProc		1
-kProc		1
+jProc		2
+kProc		2

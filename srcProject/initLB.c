@@ -18,8 +18,8 @@ void readNumComp(int argc, char *argv[]) {
 
 
 /*Read parameters from the input file*/
-int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int *procsPerAxis,
-    int *timesteps, int *timestepsPerPlotting,
+int readParameters(int *xlength, double *rhoRef, t_component *c, double G[numComp][numComp], 
+    int *procsPerAxis, int *timesteps, int *timestepsPerPlotting,
 	int argc, char *argv[]){
 
 	if(argc != 2){
@@ -34,6 +34,7 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int
 
     // Read values from file given in argv
     READ_INT(*argv, *xlength);
+    READ_DOUBLE(*argv, *rhoRef);
 
 	// Read the tau and mass for each component
 	// * If mass and tau are provided for less number of components
@@ -94,7 +95,7 @@ int readParameters(int *xlength, t_component *c, double G[numComp][numComp], int
 
 
 // NOTE: Currently only supports random initialization for multiphase
-void initialiseFields(t_component * c, const t_procData * const procData){
+void initialiseFields(double *rhoRef, t_component * c, const t_procData * const procData){
 
     /*Setting initial distributions*/
 
@@ -103,7 +104,7 @@ void initialiseFields(t_component * c, const t_procData * const procData){
 
 	// How much initial difference is allowed in density
     //TODO: Make the 0.01 an input for easier tests
-	double rhoVar = 0.01*rhoRef;
+	double rhoVar = 0.01*(*rhoRef);
 
 	// Initial velocity is 0
 	double u0[3] = {0.0, 0.0, 0.0};
@@ -119,7 +120,7 @@ void initialiseFields(t_component * c, const t_procData * const procData){
                 cellIdx = Q*fieldIdx;
 
 				double rnd = ((double)rand()/(double)RAND_MAX);
-				c->rho[fieldIdx] = rhoRef - 0.5*rhoVar + rhoVar*rnd;  // Shan Chen
+				c->rho[fieldIdx] = *rhoRef - 0.5*rhoVar + rhoVar*rnd;  // Shan Chen
 				//c->rho[fieldIdx] = rhoRef + rnd; //Sukop
 
 				computeFeqCell(&(c->rho[fieldIdx]), u0, &(c->feq[cellIdx]));
@@ -180,14 +181,14 @@ void initialiseComponents(t_component *c, const t_procData * const procData) {
 }
 
 /*Initialize fields for all components*/
-void initialiseProblem(t_component *c, int *flagField, const t_procData * const procData) {
+void initialiseProblem(double *rhoRef, t_component *c, int *flagField, const t_procData * const procData) {
 
 	// Set a different random seed for each process
     srand(time(NULL) + procData->rank + 1);
 
 	// If a single component then create a random distribution
 	if (numComp == 1) {
-		initialiseFields(&c[0], procData);
+		initialiseFields(rhoRef, &c[0], procData);
 	} else if(numComp == 2) {
 		initialiseComponents(c, procData);
 	} else {

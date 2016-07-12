@@ -6,7 +6,7 @@
 static const int Q = 19;
 
 // reference density // TODO:(DL) read these values from scenario file
-static const double rhoRef = 0.693;  //Shan Chen
+//static const double rhoRef = 0.693;  //Shan Chen
 static const double rho0   = 1;  //Shan Chen
 // static const double rhoRef = 200;  //Sukop
 // static const double rho0      = 200;
