@@ -92,8 +92,7 @@ int main(int argc, char *argv[]){
 				"correctness are carried out at the cost of execution speed!\n"
 				"      Use \"make speed\" for a faster execution time.\n");
         #endif
-
-        // INFO Printing
+        
         printf("\nINFO: Storing cell data in VTS files.\n      Please use the"
         " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
     }

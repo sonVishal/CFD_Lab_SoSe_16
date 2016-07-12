@@ -17,7 +17,7 @@ void readNumComp(int argc, char *argv[]) {
 
 
 /*Read parameters from the input file*/
-int readParameters(int *xlength, double* rhoFluct, t_component *c, double G[numComp][numComp], 
+int readParameters(int *xlength, double* rhoFluct, t_component *c, double G[numComp][numComp],
     int *procsPerAxis, int *timesteps, int *timestepsPerPlotting, int *timestepDouble,
 	int *timestepMax, int argc, char *argv[]){
 
@@ -98,7 +98,6 @@ int readParameters(int *xlength, double* rhoFluct, t_component *c, double G[numC
 }
 
 
-// NOTE: Currently only supports random initialization for multiphase
 void initialiseFields(double* rhoFluct, t_component * c, const t_procData * const procData){
 
     /*Setting initial distributions*/
