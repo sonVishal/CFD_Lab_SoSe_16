@@ -14,10 +14,10 @@
 //                        NOTE
 //--------------------------------------------------------
 // The framework is set up for doing multiple components,
-// however, currently we only support multiphase simulation entirly.
+// however, but currently we only support multiphase 
+// simulation.
 //--------------------------------------------------------
 
-//TODO: (TKS) Rename field and field_new.
 
 int main(int argc, char *argv[]){
 
@@ -103,14 +103,16 @@ int main(int argc, char *argv[]){
     // Domain decomposition & setting up neighbors
     domainDecompositionAndNeighbors(&procData, xlength, procsPerAxis);
 
-    //------------------------------------------------------
+    //---------------------------------------------------------------------
     //          NOTE
-    //------------------------------------------------------
+    //---------------------------------------------------------------------
     // The current implementation is not optimized with respect to memory.
     //
-    // In order to obtain a stable solution we changed the order of computations
-    // in the main loop. For this we allocated (additional) space for feq and force.
-    //------------------------------------------------------
+    // In order to obtain a stable solution we changed the order of 
+    // computations in the main loop. For this we  allocated (additional)
+    // space for feq and force.
+    //---------------------------------------------------------------------
+    
     /*Allocate memory*/
     int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
     for (int i = 0; i < numComp; i++) {
@@ -128,8 +130,9 @@ int main(int argc, char *argv[]){
     //----------------------------------------------------
     //                  NOTE
     //----------------------------------------------------
-    // Currently flagField is not used in the simulation, but kept as a future
-    // extension to incorporate other boundary conditions again.
+    // Currently flagField is not used in the simulation, 
+    // but kept as a future extension to incorporate other 
+    // boundary conditions again.
     //----------------------------------------------------
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
@@ -138,11 +141,6 @@ int main(int argc, char *argv[]){
 
     // Initialize all fields
     initialiseProblem(&rhoFluct, c, flagField, &procData);
-
-    //TODO: Make unit tests (?)
-    // #ifndef NDEBUG
-    // initializeUnitTest(totalsize);
-    // #endif
 
     // Allocate memory to send and read buffers
     initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.neighbours, procData.bufferSize);
@@ -165,11 +163,7 @@ int main(int argc, char *argv[]){
         // and periodic boundaries
         communicateComponents(sendBuffer, readBuffer, c, &procData);
 
-        // #ifndef NDEBUG
-        // steamCollideUnitTest(c, &procData);
-        // #else
-        // streamCollide(c, &procData);
-        // #endif
+        // Do stream and collision step
         streamCollide(c, &procData);
 
         // Compute the force between cells
@@ -227,7 +221,6 @@ int main(int argc, char *argv[]){
     }
 
     //free allocated heap memory
-    //TODO: Remember to free memory
     for (int i = 0; i < numComp; i++) {
         free(c[i].field);
         free(c[i].field_new);
@@ -246,9 +239,6 @@ int main(int argc, char *argv[]){
         free(readBuffer[i]);
     }
 
-    // #ifndef NDEBUG
-    // freeUnitTest();
-    // #endif
 
     finaliseMPI(&procData);
     return 0;

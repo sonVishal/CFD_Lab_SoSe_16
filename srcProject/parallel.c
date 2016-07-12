@@ -86,7 +86,6 @@ void domainDecompositionAndNeighbors(t_procData *const procData, const int xleng
 		if (procData->neighbours[i] == procData->rank) {
 			procData->neighbours[i] = MPI_PROC_NULL;
 		}
-        // printf("R%d neighbours[%d] = %d\n", procData->rank, i, procData->neighbours[i]);
 	}
 }
 
@@ -222,7 +221,6 @@ void extract(double sendBuffer[], double const * const field_new, t_iterPara con
             }
         }
     }
-
 }
 
 

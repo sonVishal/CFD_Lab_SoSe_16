@@ -14,9 +14,6 @@ void streamCollide(t_component *c, const t_procData * const procData) {
 				cellIdx = p_computeCellOffsetXYZ_Q(x, y, z, procData->xLength);
 				for(int k = 0; k < numComp; ++k){
 	                for (int i = 0; i < Q; ++i) {
-						// f_new[f_index_end] = f[f_index_beg]
-						//                    - (f[f_index_beg] - f_eq[f_index_beg])
-						//                    / tau;
 						int nextCellIndex = p_computeCellOffsetXYZ_Q(x+LATTICEVELOCITIES[i][0],
 							y+LATTICEVELOCITIES[i][1], z+LATTICEVELOCITIES[i][2], procData->xLength);
 

@@ -5,16 +5,11 @@
 // Number of lattice directions
 static const int Q = 19;
 
-// reference density // TODO:(DL) read these values from scenario file
-//static const double rhoRef = 0.693;  //Shan Chen
 static const double rho0   = 1;  //Shan Chen
-// static const double rhoRef = 200;  //Sukop
-// static const double rho0      = 200;
 
 // Number of components is a global variable
 int numComp;
 
-//TODO: (TKS) namechange?
 // Number of distributions + number density sent in communication.
 static const int nrDistSwap = 5;
 
@@ -32,6 +27,7 @@ static const int LATTICEVELOCITIES[19][3] = {
 #define w2 2.0/36.0   /* if ||c_i|| = 1 */
 #define w3 1.0/36.0   /* if ||c_i|| = sqrt(2) */
 
+
 // Lattice weights
 static const double LATTICEWEIGHTS[19] = {
     w3, w3, w2, w3, w3,
@@ -40,16 +36,12 @@ static const double LATTICEWEIGHTS[19] = {
     w3, w2, w3, w3
 };
 
-//#undef w1
-//#undef w2
-//#undef w3
 
 // Speed of sound
 #define C_S ((double)0.57735026918962576) // double cast to guarantee type safety
 
 // Tolerances
 static const double densityTol  = 0.03;
-static const double machNrTol   = 0.1; //TODO: (DL) delete if not required.
 
 // Enum for send and read buffer directions
 enum WALLS {
@@ -99,6 +91,7 @@ typedef struct {
     double  m;
     int psiFctCode;
 } t_component;
+
 
 /* Function for reverse index search for procs.
  * Is required in parallel.c and visualLB.c
