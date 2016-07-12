@@ -1,16 +1,13 @@
 \documentclass[11pt]{article}
 \usepackage[a4paper, total={6in, 8in}]{geometry}
 \usepackage{hyperref}
-\title{\textbf{Documentation}}
-\author{Daniel Lehmberg\\
-		Tord Kriznik Sørensen\\
-		Vishal Sontakke}
+\title{\textbf{User Guide - LBM with Multiphase}}
+\author{Daniel Lehmberg, Tord Kriznik Sørensen, Vishal Sontakke}
 \date{}
 \begin{document}
 
 \maketitle
 
-\section{Guide to running the program}
 Open a terminal at the source folder and type in \verb|make| to build the project with assertion checks enabled (recommended). These checks are done for negative distribution values. Alternatively one can also use \verb|make speed| to build the project without assertion checks (not recommended if randomly chosen values for the parameter $G$ are chosen).
 
 Once the project is built, the scenario file needs to be set up. Open the \verb|project.dat| file inside the source folder with any text editor. This file already consists default values of the input parameters to the code. Following is a description of all the parameters:
