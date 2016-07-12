@@ -93,6 +93,7 @@ typedef struct {
     double* field_new;
     double* feq;
     double* rho;
+    double rhoRef;
     double** force;
     double  tau;
     double  m;

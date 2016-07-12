@@ -7,19 +7,20 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 	MPI_Comm_rank(MPI_COMM_WORLD,rank);
 }
 
-void broadcastValues(int rank, int *xlength, double *rhoRef, t_component *c, double G[numComp][numComp],
+void broadcastValues(int rank, int *xlength, double* rhoFluct, t_component *c, double G[numComp][numComp],
 	int *procsPerAxis, int *timesteps, int *timestepsPerPlotting) {
 
 	MPI_Bcast(xlength, 1, MPI_INT, 0, MPI_COMM_WORLD);
-	MPI_Bcast(rhoRef, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(timesteps, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(procsPerAxis, 3, MPI_INT, 0, MPI_COMM_WORLD);
 	MPI_Bcast(G, numComp*numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Bcast(rhoFluct, numComp*numComp, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
 	for (int i = 0; i < numComp; i++) {
 		MPI_Bcast(&c[i].tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 		MPI_Bcast(&c[i].m, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+		MPI_Bcast(&c[i].rhoRef, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	 	MPI_Bcast(&c[i].psiFctCode, 1, MPI_INT, 0, MPI_COMM_WORLD);
 	}
 

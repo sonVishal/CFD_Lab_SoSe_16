@@ -42,7 +42,13 @@ m0              1.0
 #m1              0.4
 
 # Reference density
-rhoRef           0.693
+rhoRef0           0.693
+rhoRef1           0.693
+
+# How much the initial density difference is in %
+# from rhoRef. Only used in multiphase.
+rhoFluct        0.01
+
 
 # Interaction Matrix
 G00              -0.27
