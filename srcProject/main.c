@@ -14,7 +14,7 @@
 //                        NOTE
 //--------------------------------------------------------
 // The framework is set up for doing multiple components,
-// however, but currently we only support multiphase 
+// however, but currently we only support multiphase
 // simulation.
 //--------------------------------------------------------
 
@@ -50,10 +50,8 @@ int main(int argc, char *argv[]){
 
     if (procData.rank == 0) {
         readNumComp(argc, &argv[1]);
-	    MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    }else{
-        MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    }
+	}
+    MPI_Bcast(&numComp, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
     // Array of the components in our simulation
     t_component c[numComp];
@@ -64,7 +62,7 @@ int main(int argc, char *argv[]){
     /* Read parameters*/
     //Only performed by the root and then broadcasted in 'broadcastValues'
     if (procData.rank == 0) {
-        readParameters(&xlength, &rhoFluct, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting, 
+        readParameters(&xlength, &rhoFluct, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting,
                        &timestepDouble, &timestepMax, argc, &argv[1]);
     }
 
@@ -108,11 +106,11 @@ int main(int argc, char *argv[]){
     //---------------------------------------------------------------------
     // The current implementation is not optimized with respect to memory.
     //
-    // In order to obtain a stable solution we changed the order of 
+    // In order to obtain a stable solution we changed the order of
     // computations in the main loop. For this we  allocated (additional)
     // space for feq and force.
     //---------------------------------------------------------------------
-    
+
     /*Allocate memory*/
     int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
     for (int i = 0; i < numComp; i++) {
@@ -130,8 +128,8 @@ int main(int argc, char *argv[]){
     //----------------------------------------------------
     //                  NOTE
     //----------------------------------------------------
-    // Currently flagField is not used in the simulation, 
-    // but kept as a future extension to incorporate other 
+    // Currently flagField is not used in the simulation,
+    // but kept as a future extension to incorporate other
     // boundary conditions again.
     //----------------------------------------------------
 
@@ -175,8 +173,8 @@ int main(int argc, char *argv[]){
         // Swap fields. new --> old
         double *swap = NULL;
         for (int k = 0; k < numComp; ++k) {
-            swap              = c[k].field;
-            c[k].field  = c[k].field_new;
+            swap           = c[k].field;
+            c[k].field     = c[k].field_new;
             c[k].field_new = swap;
         }
 
