@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-/** writes the density and velocity field (derived from the distributions in collideField)
+/** writes the density and velocity field (derived from the distributions in field_new)
  *  to a file determined by 'filename' and timestep 't'. You can re-use parts of the code
  *  from visual.c (VTK output for Navier-Stokes solver) and modify it for 3D datasets.
  */

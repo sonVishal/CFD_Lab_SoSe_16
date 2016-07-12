@@ -108,7 +108,7 @@ void initialiseFields(t_component * c, const t_procData * const procData){
 	// Initial velocity is 0
 	double u0[3] = {0.0, 0.0, 0.0};
 
-    // Initialize collideField, streamField and feq
+    // Initialize field_new, field and feq
     int x,y,z;
     for ( z = 1; z <= procData->xLength[2]; ++z) {
         for ( y = 1; y <= procData->xLength[1]; ++y) {
@@ -125,8 +125,8 @@ void initialiseFields(t_component * c, const t_procData * const procData){
 				computeFeqCell(&(c->rho[fieldIdx]), u0, &(c->feq[cellIdx]));
 
                 for (int i = 0; i < Q; ++i) {
-                    c->collideField[cellIdx+i] = c->feq[cellIdx+i];
-                    c->streamField[cellIdx+i]  = c->feq[cellIdx+i];
+                    c->field_new[cellIdx+i] = c->feq[cellIdx+i];
+                    c->field[cellIdx+i]  = c->feq[cellIdx+i];
                 }
             }
         }
@@ -145,7 +145,7 @@ void initialiseComponents(t_component *c, const t_procData * const procData) {
 	// Zero initial velocity
 	double u0[3] = {0.0, 0.0, 0.0};
 
-	// Initialize collideField, streamField and feq
+	// Initialize field_new, field and feq
     int x,y,z;
     for ( z = 1; z <= procData->xLength[2]; ++z) {
         for ( y = 1; y <= procData->xLength[1]; ++y) {
@@ -167,11 +167,11 @@ void initialiseComponents(t_component *c, const t_procData * const procData) {
 				computeFeqCell(&c[1].rho[fieldIdx], u0, &c[1].feq[cellIdx]);
 
                 for (int i = 0; i < Q; ++i) {
-                    c[0].collideField[cellIdx+i] = c[0].feq[cellIdx+i];
-                    c[0].streamField[cellIdx+i]  = c[0].feq[cellIdx+i];
+                    c[0].field_new[cellIdx+i] = c[0].feq[cellIdx+i];
+                    c[0].field[cellIdx+i]  = c[0].feq[cellIdx+i];
 
-					c[1].collideField[cellIdx+i] = c[1].feq[cellIdx+i];
-                    c[1].streamField[cellIdx+i]  = c[1].feq[cellIdx+i];
+					c[1].field_new[cellIdx+i] = c[1].feq[cellIdx+i];
+                    c[1].field[cellIdx+i]  = c[1].feq[cellIdx+i];
                 }
 			}
 		}

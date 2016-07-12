@@ -2,7 +2,7 @@
 
 // Function to write VTK output files for visualization
 // Inputs
-// collideField - Probability distribution function
+// field_new - Probability distribution function
 //                  Length = Q*(xlength+2)^D
 // flagField    - Geometry info about whether a cell is
 //                  FLUID         = 0
@@ -66,11 +66,11 @@ void writeVtsOutput(const t_component * const c, const char * filename,
             for(y = 1; y <= procData->xLength[1]; y++) {
                 yzOffset = zOffset + y*(procData->xLength[0]+2);
                 for(x = 1; x <= procData->xLength[0]; x++) {
-                    // Compute the base index for collideField
+                    // Compute the base index for field_new
                     idx = Q*(yzOffset + x);
 
-                    computeNumDensity(&c[i].collideField[idx], &cellDensity);
-                    computeVelocity(&c[i].collideField[idx], &cellDensity, cellVelocity);
+                    computeNumDensity(&c[i].field_new[idx], &cellDensity);
+                    computeVelocity(&c[i].field_new[idx], &cellDensity, cellVelocity);
 
                     // Write cell average velocities
                     fprintf(fp, "%f %f %f\n", cellVelocity[0],
@@ -86,10 +86,10 @@ void writeVtsOutput(const t_component * const c, const char * filename,
             for(y = 1; y <= procData->xLength[1]; y++) {
                 yzOffset = zOffset + y*(procData->xLength[0]+2);
                 for(x = 1; x <= procData->xLength[0]; x++) {
-                    // Compute the base index for collideField
+                    // Compute the base index for field_new
                     idx = Q*(yzOffset + x);
 
-                    computeNumDensity(&c[i].collideField[idx], &cellDensity);
+                    computeNumDensity(&c[i].field_new[idx], &cellDensity);
                     // Write cell average velocities
                     fprintf(fp, "%f\n", cellDensity);
                 }

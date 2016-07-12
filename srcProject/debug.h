@@ -22,7 +22,7 @@ void writevtsPointCoordinatesDebug(FILE * fp, const int xlen, const int * const 
 void p_writeCombinedPVTSFileDebug(const char * const filename, const unsigned int t,
     const int xlen, const int * const procsPerAxis);
 
-void writeCollideFieldDebug(char *filename, double* collideField, int size);
+void writeCollideFieldDebug(char *filename, double* field_new, int size);
 
 void checkCollideFieldDebug(char *referenceFile, double *currentCollideField, int size);
 

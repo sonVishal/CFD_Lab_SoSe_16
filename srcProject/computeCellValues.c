@@ -83,7 +83,7 @@ void computeDensityAndUpdateFeq(t_component *c, const t_procData * const procDat
                 int cellIdx = Q*fieldIdx;
 
                 for(int k = 0; k < numComp; ++k){
-                    double *currentCell = &c[k].streamField[cellIdx];
+                    double *currentCell = &c[k].field[cellIdx];
 
                     // compute density
                     computeNumDensity(currentCell, &c_density[k]);

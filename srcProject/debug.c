@@ -180,11 +180,11 @@
             //for(y = 0; y <= procData->xLength[1]+1; y++) {
                 //yzOffset = zOffset + y*(procData->xLength[0]+2);
                 //for(x = 0; x <= procData->xLength[0]+1; x++) {
-                    //// Compute the base index for collideField
+                    //// Compute the base index for field_new
                     //idx = Q*(yzOffset + x);
 
-                    //c_computeNumDensity(&c[i].collideField[idx], &cellDensity);
-                    //c_computeVelocity(&c[i].collideField[idx], &cellDensity, &cellVelocity[0], &c[i].m);
+                    //c_computeNumDensity(&c[i].field_new[idx], &cellDensity);
+                    //c_computeVelocity(&c[i].field_new[idx], &cellDensity, &cellVelocity[0], &c[i].m);
 
                     //// Write cell average velocities
                     //fprintf(fp, "%f %f %f\n", cellVelocity[0],
@@ -200,10 +200,10 @@
             //for(y = 0; y <= procData->xLength[1]+1; y++) {
                 //yzOffset = zOffset + y*(procData->xLength[0]+2);
                 //for(x = 0; x <= procData->xLength[0]+1; x++) {
-                    //// Compute the base index for collideField
+                    //// Compute the base index for field_new
                     //idx = Q*(yzOffset + x);
 
-                    //c_computeNumDensity(&c[i].collideField[idx], &cellDensity);
+                    //c_computeNumDensity(&c[i].field_new[idx], &cellDensity);
                     //// Write cell average velocities
                     //fprintf(fp, "%f\n", cellDensity);
                 //}
@@ -219,7 +219,7 @@
 		//for(y = 0; y <= procData->xLength[1]+1; y++) {
 			//yzOffset = zOffset + y*(procData->xLength[0]+2);
 			//for(x = 0; x <= procData->xLength[0]+1; x++) {
-				//// Compute the base index for collideField
+				//// Compute the base index for field_new
 				//idx = yzOffset + x;
 				//fprintf(fp, "%d\n", flagField[idx]);
 			//}

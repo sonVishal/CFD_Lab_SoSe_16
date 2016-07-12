@@ -65,8 +65,8 @@ void treatPostCollisionBoundary(const t_component * const c, t_procData const * 
                 assert(currentIndexField2 < Q*(procData->xLength[0]+2)*(procData->xLength[1]+2)*(procData->xLength[2]+2)
                         && currentIndexField2 >= 0);
 
-                double *currentCell1 = &c[m].streamField[currentIndexField1];
-                double *currentCell2 = &c[m].streamField[currentIndexField2];
+                double *currentCell1 = &c[m].field[currentIndexField1];
+                double *currentCell2 = &c[m].field[currentIndexField2];
 
                 for (int i = 0; i < 5; i++) {
                     currentCell1[index1[i]] = currentCell1[index1[i]] - (currentCell1[index1[i]] - c[m].feq[index1[i]])/(c[m].tau);
@@ -86,7 +86,7 @@ void computePostCollisionDistributions(const t_component * const c, t_procData c
         		for (int x = 1; x <= procData->xLength[0]; x++) {
 
                     int idx = p_computeCellOffsetXYZ_Q(x, y, z, procData->xLength);
-                    double *currentCell = &c[k].streamField[idx];
+                    double *currentCell = &c[k].field[idx];
 
                     for(int i=0; i<Q ; ++i){
             		    currentCell[i] = currentCell[i] - (currentCell[i] - c[k].feq[i])/(c[k].tau);
@@ -115,7 +115,7 @@ void doStreaming(const t_component * const c, t_procData const * const procData)
                     for(int j=0; j<Q ; ++j){
                         nextCellIndex = p_computeCellOffsetXYZ_Q(x+LATTICEVELOCITIES[j][0],
                             y+LATTICEVELOCITIES[j][1], z+LATTICEVELOCITIES[j][2], procData->xLength);
-                        c[k].collideField[cellIdx+Q-j-1] = c[k].streamField[nextCellIndex+Q-j-1];
+                        c[k].field_new[cellIdx+Q-j-1] = c[k].field[nextCellIndex+Q-j-1];
                     }
             	}
             }
@@ -200,8 +200,8 @@ void computeGlobalMomentum(const t_component *const c, const int *const xlength,
                     idx = p_computeCellOffsetXYZ_Q(x, y, z, xlength);
                     double cellMomentum[3];
 
-                    //TODO: (check if streamField is correct)...
-                    computeCellMomentum(&c[i].streamField[idx], cellMomentum);
+                    //TODO: (check if field is correct)...
+                    computeCellMomentum(&c[i].field[idx], cellMomentum);
                     tempMomentum[0] += c[i].m*cellMomentum[0];
                     tempMomentum[1] += c[i].m*cellMomentum[1];
                     tempMomentum[2] += c[i].m*cellMomentum[2];

@@ -89,8 +89,8 @@ typedef struct {
 } t_procData;
 
 typedef struct {
-    double* streamField;
-    double* collideField;
+    double* field;
+    double* field_new;
     double* feq;
     double* rho;
     double** force;

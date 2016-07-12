@@ -17,7 +17,7 @@
 // however, currently we only support multiphase simulation entirly.
 //--------------------------------------------------------
 
-//TODO: (TKS) Rename streamField and collideField.
+//TODO: (TKS) Rename field and field_new.
 
 int main(int argc, char *argv[]){
 
@@ -108,8 +108,8 @@ int main(int argc, char *argv[]){
     /*Allocate memory*/
     int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
     for (int i = 0; i < numComp; i++) {
-        c[i].collideField = (double *)   malloc(Q*totalsize * sizeof( double ));
-        c[i].streamField  = (double *)   malloc(Q*totalsize * sizeof( double ));
+        c[i].field_new = (double *)   malloc(Q*totalsize * sizeof( double ));
+        c[i].field  = (double *)   malloc(Q*totalsize * sizeof( double ));
         c[i].feq          = (double *)   malloc(Q*totalsize * sizeof( double ));
         c[i].rho          = (double *)   malloc(totalsize   * sizeof( double ));
         c[i].force        = (double **)  malloc(totalsize   * sizeof( double* ));
@@ -175,9 +175,9 @@ int main(int argc, char *argv[]){
         // Swap fields. new --> old
         double *swap = NULL;
         for (int k = 0; k < numComp; ++k) {
-            swap              = c[k].streamField;
-            c[k].streamField  = c[k].collideField;
-            c[k].collideField = swap;
+            swap              = c[k].field;
+            c[k].field  = c[k].field_new;
+            c[k].field_new = swap;
         }
 
         // Print VTS files at given interval
@@ -224,8 +224,8 @@ int main(int argc, char *argv[]){
     //free allocated heap memory
     //TODO: Remember to free memory
     for (int i = 0; i < numComp; i++) {
-        free(c[i].streamField);
-        free(c[i].collideField);
+        free(c[i].field);
+        free(c[i].field_new);
         free(c[i].rho);
         free(c[i].feq);
 

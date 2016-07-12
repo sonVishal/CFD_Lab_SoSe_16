@@ -140,7 +140,7 @@ void initialiseBuffers(double *sendBuffer[6], double *readBuffer[6], int const *
 */
 void communicateComponents(double** sendBuffer, double**readBuffer, t_component *c, t_procData const * const procData){
     for (int i = 0; i < numComp; ++i) {
-        communicate(sendBuffer, readBuffer, c[i].streamField, procData, 0);
+        communicate(sendBuffer, readBuffer, c[i].field, procData, 0);
 		communicate(sendBuffer, readBuffer, c[i].feq, procData, 1);
 		communicateDensity(sendBuffer, readBuffer, c[i].rho, procData);
     }
@@ -150,7 +150,7 @@ void communicateComponents(double** sendBuffer, double**readBuffer, t_component 
 /*
  * Main algorithm to carry out the communication between the processes.
  */
-void communicate(double** sendBuffer, double**readBuffer, double* collideField, t_procData const * const procData, int tag){
+void communicate(double** sendBuffer, double**readBuffer, double* field_new, t_procData const * const procData, int tag){
     //Run extract, swap, inject for all sides and cells.
     int 		index1[5], index2[5];
     t_iterPara  iterPara1, iterPara2;
@@ -170,20 +170,20 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
         p_assignIndices(face2, index2);
 
         if(procData->neighbours[face1] != MPI_PROC_NULL && procData->neighbours[face2] != MPI_PROC_NULL) {
-		    // Extract the distributions from collideField to the send buffer
-			extract(sendBuffer[face1], collideField, &iterPara1, procData, face1, index1);
-			extract(sendBuffer[face2], collideField, &iterPara2, procData, face2, index2);
+		    // Extract the distributions from field_new to the send buffer
+			extract(sendBuffer[face1], field_new, &iterPara1, procData, face1, index1);
+			extract(sendBuffer[face2], field_new, &iterPara2, procData, face2, index2);
 
             // Swap the distributions
             swap(sendBuffer, readBuffer, procData, direction, tag);
 
             // Inject the distributions from read buffer to collide field
             //NOTE: opposite index get injected from the readBuffer
-            inject(readBuffer[face1], collideField, &iterPara1, procData, face1, index2);
-            inject(readBuffer[face2], collideField, &iterPara2, procData, face2, index1);
+            inject(readBuffer[face1], field_new, &iterPara1, procData, face1, index2);
+            inject(readBuffer[face2], field_new, &iterPara2, procData, face2, index1);
 		}
         else if (procData->neighbours[face1] == MPI_PROC_NULL && procData->neighbours[face2] == MPI_PROC_NULL) {
-			swapNoComm(collideField, &iterPara1, &iterPara2, procData, direction, index1, index2);
+			swapNoComm(field_new, &iterPara1, &iterPara2, procData, direction, index1, index2);
 		}
         else {
             ERROR("No communication of distributions happened!");
@@ -194,7 +194,7 @@ void communicate(double** sendBuffer, double**readBuffer, double* collideField, 
 /*
  * Copy distributions into sendBuffer.
  */
-void extract(double sendBuffer[], double const * const collideField, t_iterPara const * const iterPara, t_procData const * const procData,
+void extract(double sendBuffer[], double const * const field_new, t_iterPara const * const iterPara, t_procData const * const procData,
              const int direction, int const * const index){
 
     int currentIndexField = -1; //initially invalid assignment
@@ -214,7 +214,7 @@ void extract(double sendBuffer[], double const * const collideField, t_iterPara 
             for (int i = 0; i < 5; i++) {
 				// Out of bounds check
 				assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
-                sendBuffer[currentIndexBuff++] = collideField[currentIndexField+index[i]];
+                sendBuffer[currentIndexBuff++] = field_new[currentIndexField+index[i]];
             }
         }
     }
@@ -254,9 +254,9 @@ void swap(double** sendBuffer, double** readBuffer, t_procData const * const pro
 }
 
 /*
- * Copy read buffer into ghost layer of collideField.
+ * Copy read buffer into ghost layer of field_new.
  */
-void inject(double const * const readBuffer, double* collideField, t_iterPara const * const iterPara, t_procData const * const procData,
+void inject(double const * const readBuffer, double* field_new, t_iterPara const * const iterPara, t_procData const * const procData,
             const int direction, int const * const index){
 
     int currentIndexField = -1; //Initially assign to invalid
@@ -282,14 +282,14 @@ void inject(double const * const readBuffer, double* collideField, t_iterPara co
             for (int i = 0; i < 5; i++) {
 				//out of bound checks
 				assert(currentIndexBuff < procData->bufferSize[direction/2] && currentIndexBuff >=0);
-                collideField[currentIndexField+index[i]] = readBuffer[currentIndexBuff++];
+                field_new[currentIndexField+index[i]] = readBuffer[currentIndexBuff++];
             }
         }
     }
 }
 
 /*For periodic boundaries where one process can be its own neihbour. Does the same as swap from above*/
-void swapNoComm(double* collideField, t_iterPara const * const iterPara1,t_iterPara const * const iterPara2,
+void swapNoComm(double* field_new, t_iterPara const * const iterPara1,t_iterPara const * const iterPara2,
 	t_procData const * const procData, const int direction, int const * const index1, int const * const index2) {
 
 	int fromFixedValue1, toFixedValue1, fromFixedValue2, toFixedValue2;
@@ -313,8 +313,8 @@ void swapNoComm(double* collideField, t_iterPara const * const iterPara1,t_iterP
 			int toIdx2   = Q*p_computeCellOffset(k, j, toFixedValue2, procData->xLength, direction);
 
 			for (int i = 0; i < 5; i++) {
-				collideField[toIdx1+index1[i]] = collideField[fromIdx1+index1[i]];
-				collideField[toIdx2+index2[i]] = collideField[fromIdx2+index2[i]];
+				field_new[toIdx1+index1[i]] = field_new[fromIdx1+index1[i]];
+				field_new[toIdx2+index2[i]] = field_new[fromIdx2+index2[i]];
 			}
 		}
 	}
@@ -338,7 +338,7 @@ void communicateDensity(double** sendBuffer, double**readBuffer, double* rho,
 
 		int bufferSize1 = 0, bufferSize2 = 0;
 
-		// Extract the distributions from collideField to the send buffer
+		// Extract the distributions from field_new to the send buffer
         if(procData->neighbours[face1] != MPI_PROC_NULL && procData->neighbours[face2] != MPI_PROC_NULL) {
 			bufferSize1 = extractDensity(sendBuffer[face1], rho, &iterPara1, procData, face1);
 			bufferSize2 = extractDensity(sendBuffer[face2], rho, &iterPara2, procData, face2);

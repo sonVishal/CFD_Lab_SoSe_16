@@ -20,27 +20,27 @@ void communicateComponents(double** sendBuffer, double**readBuffer, t_component 
                            t_procData const * const procData);
 
 // Performs extract, swap and inject for all the directions
-void communicate(double** sendBuffer, double**readBuffer, double* collideField,
+void communicate(double** sendBuffer, double**readBuffer, double* field_new,
                  t_procData const * const procData, int tag);
 
 // Exracts the collide field to the send buffer
-void extract( double sendBuffer[], double const * const collideField,
+void extract( double sendBuffer[], double const * const field_new,
               t_iterPara const * const iterPara, t_procData const * const procData,
               const int direction, int const * const index);
 
 // Swaps the data between neighbors
 void swap(double** sendBuffer, double** readBuffer, const t_procData *procData, int direction, int tag);
 
-void swapNoComm(double* collideField, t_iterPara const * const iterPara1,
+void swapNoComm(double* field_new, t_iterPara const * const iterPara1,
                 t_iterPara const * const iterPara2,	t_procData const * const procData,
                 const int direction, int const * const index1, int const * const index2);
 
 // Copys the data from the read buffer to the collide field
-void inject(double const * const readBuffer, double* collideField, t_iterPara const * const iterPara,
+void inject(double const * const readBuffer, double* field_new, t_iterPara const * const iterPara,
             t_procData const * const procData, const int direction, int const * const index);
 
 // Density communication functions does the same as for the ones above, but for the density
-void communicateDensity(double** sendBuffer, double**readBuffer, double* collideField,
+void communicateDensity(double** sendBuffer, double**readBuffer, double* field_new,
 	t_procData const * const procData);
 
 int extractDensity(double sendBuffer[], double const * const rho,
