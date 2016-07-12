@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include <mpi/mpi.h>
 
-
 //--------------------------------------------------------
 //                        NOTE
 //--------------------------------------------------------
@@ -18,12 +17,7 @@
 // however, currently we only support multiphase simulation entirly.
 //--------------------------------------------------------
 
-//TODO: (TKS) We assume that mass is 1 and use numDensity as density in different places.
-//            This must be fixed if we are doing several components.
 //TODO: (TKS) Rename streamField and collideField.
-//TODO: (TKS) Read in parameters for components from file.
-//TODO: (TKS) Comment the code.
-// TODO: (TKS) Go through all ifndef/ifdef.
 
 int main(int argc, char *argv[]){
 
@@ -109,7 +103,7 @@ int main(int argc, char *argv[]){
     // The current implementation is not optimized with respect to memory.
     //
     // In order to obtain a stable solution we changed the order of computations
-    // in the main loop. For this we also (additional) space for feq and force.
+    // in the main loop. For this we allocated (additional) space for feq and force.
     //------------------------------------------------------
     /*Allocate memory*/
     int totalsize = (procData.xLength[0]+2)*(procData.xLength[1]+2)*(procData.xLength[2]+2);
@@ -121,16 +115,15 @@ int main(int argc, char *argv[]){
         c[i].force        = (double **)  malloc(totalsize   * sizeof( double* ));
 
         for(int j = 0; j < totalsize; ++j){
-            c[i].force[j]    = (double*) malloc(3* sizeof( double));
+            c[i].force[j]    = (double*) malloc(3*sizeof( double ));
         }
     }
 
     //----------------------------------------------------
     //                  NOTE
     //----------------------------------------------------
-    // Currently flagField is not used in the simulation,
-    // but kept as a future extension to incorporate
-    // other boundary conditions again.
+    // Currently flagField is not used in the simulation, but kept as a future
+    // extension to incorporate other boundary conditions again.
     //----------------------------------------------------
 
     /* calloc: only required to set boundary values. Sets every value to zero*/
@@ -146,7 +139,6 @@ int main(int argc, char *argv[]){
     // #endif
 
     // Allocate memory to send and read buffers
-    //TODO: (DL) maybe hand in only procData for consistency?
     initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.neighbours, procData.bufferSize);
 
     //Write the VTK at t = 0
