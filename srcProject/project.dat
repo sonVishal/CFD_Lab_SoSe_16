@@ -62,22 +62,22 @@ psi0		0
 
 
 # Number of timesteps
-timesteps            1000
+timesteps            12800
 
 # timesteps between each plot
-timestepsPerPlotting 10
+timestepsPerPlotting 100
 
 # If timestepsPerPlotting should be doubled in each timestep
 timestepDouble       1
 
 # Set a maximum size of timeStepPerPlotting. Only relevant if timeStepDouble is set.
-timestepMax          40
+timestepMax          6400
 
 # Domain decomposition
 # Number of subdivisions per axis
 # x-axis = iProc
 # y-axis = jProc
 # z-axis = kProc
-iProc		1
+iProc		2
 jProc		2
 kProc		2
