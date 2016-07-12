@@ -1,0 +1,35 @@
+\documentclass[11pt]{article}
+\usepackage{hyperref}
+\title{\textbf{Documentation}}
+\author{Daniel Lehmberg\\
+		Tord Kriznik Sørensen\\
+		Vishal Sontakke}
+\date{}
+\begin{document}
+
+\maketitle
+
+\section{How to run the program}
+Open a terminal at the source folder and type in \verb|make| to build the project with assertion checks enabled (recommended). These checks are done for negative distribution values. Alternatively one can also use \verb|make speed| to build the project without assertion checks (not recommended if randomly chosen values for the parameter $G$ are chosen).
+
+Once the project is built, the scenario file needs to be set up. Go to the \verb|scenarios| folder and open the \verb|project.dat| file with any text editor. This file already consists default values of the input parameters to the code. Following is a description of all the parameters:
+\begin{itemize}
+	\item \verb|xlength|: This is the size of the cubic domain. Each cell in the domain is a cube of length $1$ and thus the parameter \verb|xlength| gives the number of cells in each direction. The total number of cells would thus be $\verb|xlength|^3$.
+	\item \verb|numComp|: The number of components can be specified with this parameter. Currently initialization for \verb|numComp| = 1 and 2 is supported. In case of a single component we have a density initialization with $1\%$ random perturbation. In case of 2 components, the initialization is based on randomly selecting a cell and putting density of one component to \verb|1.0| and the other to \verb|0.0| in this cell, thus creating a random distribution of the 2 components.
+	\item \verb|tau0,tau1|: Based on the number of components one can provide a value for the relaxation time for the component(s). The components are numbered starting with a zero index and thus component 1 has relaxation time \verb|tau0| and component 2 has relaxation time \verb|tau1|.
+	\item \verb|m0,m1|: This is the molecular mass of the component(s).
+	\item \verb|G00, G01, G10, G11|: This is the interaction matrix giving the value for the Green's function based on nearest neighbor interaction. The value of \verb|Gij| gives the strength of the interacting potential between components \verb|i+1| and \verb|j+1| since the components are numbered with index \verb|0|.
+	\item \verb|psi0, psi1|: This takes in integer values and uses the equation corresponding to that integer as the effective number density for that component as given below:
+	\begin{itemize}
+		\item 0: $\psi(x) = 1-\exp(x)$
+		\item 1: $\psi(x) = x$
+	\end{itemize}
+	\item \verb|timesteps|: This gives the number of time steps the simulation should run for.
+	\item \verb|timestepsPerPlotting|: This gives the number of time steps after which an output file must be written for visualization.
+	\item \verb|iProc, jProc, kProc|: These parameters specify the number of sub-domains in each direction for parallel computation. In the \verb|x| direction the domain will be divided into \verb|iProc| sub-domains, in the \verb|y| direction \verb|jProc| sub-domains, and in the \verb|z| direction \verb|kProc| sub-domains. Thus we have \verb|iProc*jProc*kProc| number of processes, each working on a cuboid.
+\end{itemize}
+
+Once the parameters are set up, one can open the terminal in the source folder and type in \verb|mpirun -np <iProc*jProc*kProc> ./lbsim scenarios/project.dat| where \verb|<iProc*jProc*kProc>| is the product of the number of sub-domains in each direction, which equals the total number of processes that are to be used by \verb|MPI|.
+
+If program runs successfully, one can use \verb|Paraview| to visualize the result. In \verb|Paraview|, the files with the extension \verb|*.pvts| should be opened to view the entire domain at once. It is recommended to use the \verb|CelldataToPointdata| filter to view a more smoother interpolated result.
+\end{document}
