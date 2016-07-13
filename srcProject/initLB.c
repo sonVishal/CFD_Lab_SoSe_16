@@ -159,15 +159,15 @@ void initialiseComponents(t_component *c, const t_procData * const procData) {
                 cellIdx = Q*fieldIdx;
 
 				rnd = (double)rand()/(double)RAND_MAX;
-				c[0].rho[fieldIdx] = c[0].rhoRef - 0.5*0.01*c[0].rhoRef + 0.01*c[0].rhoRef*rnd;  // Shan Chen;
-				c[1].rho[fieldIdx] = c[1].rhoRef - 0.5*0.015*c[0].rhoRef + 0.015*c[0].rhoRef*rnd;
-				// if (rnd <= 0.5) {
-				// 	c[0].rho[fieldIdx] = c[0].rhoRef - c[0].rhoRef/100;
-				// 	c[1].rho[fieldIdx] = c[1].rhoRef - c[1].rhoRef/100;
-				// } else {
-				// 	c[0].rho[fieldIdx] = c[0].rhoRef + c[0].rhoRef/100;
-				// 	c[1].rho[fieldIdx] = c[1].rhoRef + c[1].rhoRef/100;
-				// }
+				// c[0].rho[fieldIdx] = c[0].rhoRef - 0.5*0.01*c[0].rhoRef + 0.01*c[0].rhoRef*rnd;  // Shan Chen;
+				// c[1].rho[fieldIdx] = c[1].rhoRef - 0.5*0.015*c[0].rhoRef + 0.015*c[0].rhoRef*rnd;
+				if (rnd <= 2/3) {
+					c[0].rho[fieldIdx] = c[0].rhoRef;
+					c[1].rho[fieldIdx] = c[1].rhoRef;
+				} else {
+					c[0].rho[fieldIdx] = c[1].rhoRef;
+					c[1].rho[fieldIdx] = c[0].rhoRef;
+				}
 				// if (rnd <= 0.5) {
 				// 	c[0].rho[fieldIdx] = 0.0;
 				// 	c[1].rho[fieldIdx] = c[1].rhoRef;

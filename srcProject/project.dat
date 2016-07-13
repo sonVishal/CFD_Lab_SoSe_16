@@ -39,8 +39,8 @@ m0              1.0
 m1              1.0
 
 # Reference density
-rhoRef0           1.0
-rhoRef1           1.0
+rhoRef0           0.8656
+rhoRef1           0.577
 
 # How much the initial density difference is in %
 # from rhoRef. Only used in multiphase.
@@ -49,8 +49,8 @@ rhoFluct        1
 
 # Interaction Matrix
 G00             0.0
-G01             0.05
-G10             0.05
+G01             0.06
+G10             0.06
 G11             0.0
 
 #Psi function
