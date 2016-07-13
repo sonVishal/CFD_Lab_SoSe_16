@@ -47,7 +47,7 @@ for i in range(0,3):
 #   increment for the procs.
 
 increment = 1;
-numRuns   = 2;
+numRuns   = 9;
 
 #Run simulation the given numRun times.
 run = "";
@@ -71,6 +71,7 @@ for i in range(0, numRuns):
     s = sedStr[0] + procStr[j] + sedStr[1] + procStr[j] + "    " + str(procValue[j]) + sedStr[2]
     os.system(s);
     counter+=1;
+
 
 # --------------- #
 #    Plotting     #
