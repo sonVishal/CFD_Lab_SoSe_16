@@ -18,6 +18,30 @@
 // simulation.
 //--------------------------------------------------------
 
+void clearFile(char *file){
+    FILE* f = fopen("scaleData.dat", "w");
+    if(f == NULL)
+    {
+        printf("Error opening file\n");
+        exit(1);
+    }
+    fclose(f);
+}
+
+void writeScaleData(char *file, int iproc, int jproc, int kproc, double elapsedTime, int numCells, double MLUPS){
+    FILE* f = fopen("scaleData.dat", "a");
+    if(f == NULL)
+    {
+        printf("Error opening file\n");
+        exit(1);
+    }
+
+    fprintf(f, "%d %d %d %f %d %f\n", iproc, jproc, kproc, elapsedTime, numCells, MLUPS);
+
+    fclose(f);
+
+}
+
 
 int main(int argc, char *argv[]){
 
@@ -143,12 +167,12 @@ int main(int argc, char *argv[]){
     initialiseBuffers(sendBuffer, readBuffer, procData.xLength, procData.neighbours, procData.bufferSize);
 
     //Write the VTK at t = 0
-    printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
-    writeVtsOutput(c, fName, t, xlength, &procData, procsPerAxis);
+    //printf("R %i INFO: write vts file at time t = %d \n", procData.rank, t);
+    //writeVtsOutput(c, fName, t, xlength, &procData, procsPerAxis);
 
     // Combine VTS file at t = 0  -- only done by root
     if (procData.rank == 0) {
-        p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
+        //p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
     }
 
     beginProcTime = MPI_Wtime();
@@ -178,22 +202,22 @@ int main(int argc, char *argv[]){
         }
 
         // Print VTS files at given interval
-		if (t%timestepsPerPlotting == 0){
+		//if (t%timestepsPerPlotting == 0){
 
-            //Double timestep for write in each iteration
-            if(timestepDouble && timestepsPerPlotting < timestepMax)
-                timestepsPerPlotting = timestepsPerPlotting*2;
+            ////Double timestep for write in each iteration
+            //if(timestepDouble && timestepsPerPlotting < timestepMax)
+                //timestepsPerPlotting = timestepsPerPlotting*2;
 
-            printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
-            writeVtsOutput(c, fName, t, xlength, &procData, procsPerAxis);
+            //printf("R %i, INFO: write vts file at time t = %d \n", procData.rank, t);
+            //writeVtsOutput(c, fName, t, xlength, &procData, procsPerAxis);
 
-            // Combine VTS file at t
-            if (procData.rank == 0) {
-                p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
-            }
-	    }
+            //// Combine VTS file at t
+            //if (procData.rank == 0) {
+                //p_writeCombinedPVTSFile(fName, t, xlength, procsPerAxis);
+            //}
+		//}
 
-        if(t%10 == 0 && procData.rank == 0)
+        if(t%1 == 0 && procData.rank == 0)
             printf("R %d Time t = %d done\n",procData.rank, t);
     }
     endProcTime = MPI_Wtime();
@@ -208,13 +232,18 @@ int main(int argc, char *argv[]){
     if(procData.rank == 0){
     	double elapsedTime = endSimTime - beginSimTime;
     	int domTotalsize   = (xlength+2)*(xlength+2)*(xlength+2);
+        double MLUPS = (domTotalsize/(1000000*elapsedTime))*timesteps;
     	printf("\n===============================================================\n");
 		printf("\nINFO TIMING:\n");
 		printf("Execution time (main loop): \t\t %.3f seconds \n", elapsedTime);
 		printf("#cells (including boundary): \t\t %i cells \n", domTotalsize);
-		printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",
-				(domTotalsize/(1000000*elapsedTime))*timesteps);
+		printf("Mega Lattice Updates per Seconds: \t %f MLUPS \n",MLUPS);
 		printf("\n===============================================================\n");
+        
+        // Write scaling data to file
+        char *file = "scaleData.dat";
+        writeScaleData(file, procsPerAxis[0], procsPerAxis[1], procsPerAxis[2],
+                       elapsedTime, domTotalsize, MLUPS);
     }
 
     //free allocated heap memory

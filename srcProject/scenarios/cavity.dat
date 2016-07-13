@@ -25,7 +25,7 @@
 #      v
 
 # Size of mesh
-xlength             64 
+xlength             320
 
 # Number of components
 numComp              1
@@ -48,7 +48,7 @@ rhoFluct        0.001
 
 
 # Interaction Matrix
-G00              -0.03
+G00              -0.27
 #G01             0.02
 #G10             0.02
 #G11             0.04
@@ -62,7 +62,7 @@ psi0		0
 
 
 # Number of timesteps
-timesteps            1000
+timesteps            500
 
 # timesteps between each plot
 timestepsPerPlotting 10
@@ -78,6 +78,6 @@ timestepMax          40
 # x-axis = iProc
 # y-axis = jProc
 # z-axis = kProc
-iProc		1
-jProc		2
-kProc		2
+iProc    1
+jProc    1
+kProc    1
