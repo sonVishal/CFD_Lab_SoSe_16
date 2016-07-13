@@ -2,7 +2,7 @@
 
 // Function to write VTS output files for visualization
 void writeVtsOutput(const t_component * const c, const char * filename,
-    unsigned int t, int xlen, const t_procData * const procData,
+    unsigned int t, const int * const xlen, const t_procData * const procData,
     const int * const procsPerAxis) {
     // Files related variables
     char pFileName[80];
@@ -100,15 +100,15 @@ void writeVtsOutput(const t_component * const c, const char * filename,
 }
 
 // Function to write coordinates of the points
-void writevtsPointCoordinates(FILE * fp, const int xlen, const int * const xlength,
+void writevtsPointCoordinates(FILE * fp, const int * const xlen, const int * const xlength,
     const int * const myPos, const int * const procsPerAxis) {
     int x, y, z;
-    int baseLength[3] = {xlen/procsPerAxis[0], xlen/procsPerAxis[1], xlen/procsPerAxis[2]};
+    int baseLength[3] = {xlen[0]/procsPerAxis[0], xlen[1]/procsPerAxis[1], xlen[2]/procsPerAxis[2]};
     // If the proc is at the end of some axis then add the remaining length
     int myLen[3] = {0,0,0};
-    myLen[0] = (myPos[0] == procsPerAxis[0]-1)?xlen-(procsPerAxis[0]-1)*baseLength[0]:baseLength[0];
-    myLen[1] = (myPos[1] == procsPerAxis[1]-1)?xlen-(procsPerAxis[1]-1)*baseLength[1]:baseLength[1];
-    myLen[2] = (myPos[2] == procsPerAxis[2]-1)?xlen-(procsPerAxis[2]-1)*baseLength[2]:baseLength[2];
+    myLen[0] = (myPos[0] == procsPerAxis[0]-1)?xlen[0]-(procsPerAxis[0]-1)*baseLength[0]:baseLength[0];
+    myLen[1] = (myPos[1] == procsPerAxis[1]-1)?xlen[1]-(procsPerAxis[1]-1)*baseLength[1]:baseLength[1];
+    myLen[2] = (myPos[2] == procsPerAxis[2]-1)?xlen[2]-(procsPerAxis[2]-1)*baseLength[2]:baseLength[2];
     unsigned int x1 = myPos[0]*baseLength[0];
     unsigned int x2 = x1 + myLen[0];
     unsigned int y1 = myPos[1]*baseLength[1];
@@ -133,7 +133,7 @@ void writevtsPointCoordinates(FILE * fp, const int xlen, const int * const xleng
 
 // Function to combine the VTS files into one
 void p_writeCombinedPVTSFile(const char * const filename, const unsigned int t,
-    const int xlen, const int * const procsPerAxis) {
+    const int * const xlen, const int * const procsPerAxis) {
     // Files related variables
     char pFileName[80];
     FILE *fp = NULL;
@@ -152,7 +152,7 @@ void p_writeCombinedPVTSFile(const char * const filename, const unsigned int t,
     }
 
     fprintf(fp, "<VTKFile type=\"PStructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n");
-    fprintf(fp, "<PStructuredGrid WholeExtent=\"0 %d 0 %d 0 %d\" GhostLevel=\"1\">\n",xlen,xlen,xlen);
+    fprintf(fp, "<PStructuredGrid WholeExtent=\"0 %d 0 %d 0 %d\" GhostLevel=\"1\">\n",xlen[0],xlen[1],xlen[2]);
     fprintf(fp, "<PPoints>\n");
     fprintf(fp, "%s\n","<PDataArray NumberOfComponents=\"3\" type=\"UInt32\" />");
     fprintf(fp, "</PPoints>\n");
@@ -163,16 +163,16 @@ void p_writeCombinedPVTSFile(const char * const filename, const unsigned int t,
     }
     fprintf(fp, "</PCellData>\n");
 
-    int baseLength[3] = {xlen/procsPerAxis[0], xlen/procsPerAxis[1], xlen/procsPerAxis[2]};
+    int baseLength[3] = {xlen[0]/procsPerAxis[0], xlen[1]/procsPerAxis[1], xlen[2]/procsPerAxis[2]};
 
     int myLen[3] = {0,0,0};
 
     for (int k = 0; k < procsPerAxis[2]; k++) {
         for (int j = 0; j < procsPerAxis[1]; j++) {
             for (int i = 0; i < procsPerAxis[0]; i++) {
-                myLen[0] = (i == procsPerAxis[0]-1)?xlen-(procsPerAxis[0]-1)*baseLength[0]:baseLength[0];
-                myLen[1] = (j == procsPerAxis[1]-1)?xlen-(procsPerAxis[1]-1)*baseLength[1]:baseLength[1];
-                myLen[2] = (k == procsPerAxis[2]-1)?xlen-(procsPerAxis[2]-1)*baseLength[2]:baseLength[2];
+                myLen[0] = (i == procsPerAxis[0]-1)?xlen[0]-(procsPerAxis[0]-1)*baseLength[0]:baseLength[0];
+                myLen[1] = (j == procsPerAxis[1]-1)?xlen[1]-(procsPerAxis[1]-1)*baseLength[1]:baseLength[1];
+                myLen[2] = (k == procsPerAxis[2]-1)?xlen[2]-(procsPerAxis[2]-1)*baseLength[2]:baseLength[2];
                 unsigned int x1 = i*baseLength[0];
                 unsigned int x2 = x1 + myLen[0];
                 unsigned int y1 = j*baseLength[1];

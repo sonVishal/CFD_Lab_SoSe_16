@@ -17,7 +17,7 @@ void readNumComp(int argc, char *argv[]) {
 
 
 /*Read parameters from the input file*/
-int readParameters(int *xlength, double* rhoFluct, t_component *c, double G[numComp][numComp],
+int readParameters(int *xlength_global, double* rhoFluct, t_component *c, double G[numComp][numComp],
     int *procsPerAxis, int *timesteps, int *timestepsPerPlotting, int *timestepDouble,
 	int *timestepMax, int argc, char *argv[]){
 
@@ -32,7 +32,13 @@ int readParameters(int *xlength, double* rhoFluct, t_component *c, double G[numC
 	int iProc, jProc, kProc;
 
     // Read values from file given in argv
-    READ_INT(*argv, *xlength);
+	int xlength, ylength, zlength;
+    READ_INT(*argv, xlength);
+	READ_INT(*argv, ylength);
+	READ_INT(*argv, zlength);
+	xlength_global[0] = xlength;
+	xlength_global[1] = ylength;
+	xlength_global[2] = zlength;
     READ_DOUBLE(*argv, *rhoFluct);
 
 	// Read the tau and mass for each component
@@ -83,14 +89,14 @@ int readParameters(int *xlength, double* rhoFluct, t_component *c, double G[numC
 
 
 	// Check if iProc, jProc and kProc are less than the domain size and nonzero
-	if (iProc <= 0 || iProc > *xlength || jProc <= 0 || jProc > *xlength ||
-		kProc <= 0 || kProc > *xlength) {
+	if (iProc <= 0 || iProc > xlength_global[0] || jProc <= 0 || jProc > xlength_global[1] ||
+		kProc <= 0 || kProc > xlength_global[2]) {
 		char buffer[120];
-        snprintf(buffer, 120, "Please make sure that iProc, jProc and kProc are greater than 0 and less than xlength = %d (aborting)! \n",*xlength);
+        snprintf(buffer, 120, "Please make sure that iProc, jProc and kProc are greater than 0 and less than xlength = %d, %d, %d (aborting)! \n",xlength_global[0],xlength_global[1],xlength_global[2]);
         ERROR(buffer);
 	}
 
-	if (*xlength%iProc != 0 || *xlength%jProc != 0 || *xlength%kProc != 0) {
+	if (xlength_global[0]%iProc != 0 || xlength_global[1]%jProc != 0 || xlength_global[2]%kProc != 0) {
         printf("WARNING: The domain decomposition is not uniform. This might create load unbalances between processes.\n");
 	}
 
@@ -159,12 +165,12 @@ void initialiseComponents(t_component *c, const t_procData * const procData) {
                 cellIdx = Q*fieldIdx;
 
 				rnd = (double)rand()/(double)RAND_MAX;
-				if (rnd < 0.5) {
-					c[0].rho[fieldIdx] = 0.0;
+				if (rnd <= 0.5) {
+					c[0].rho[fieldIdx] = c[0].rhoRef;
 					c[1].rho[fieldIdx] = c[1].rhoRef;
 				} else {
 					c[0].rho[fieldIdx] = c[0].rhoRef;
-					c[1].rho[fieldIdx] = 0.0;
+					c[1].rho[fieldIdx] = c[1].rhoRef;
 				}
 				computeFeqCell(&c[0].rho[fieldIdx], u0, &c[0].feq[cellIdx]);
 				computeFeqCell(&c[1].rho[fieldIdx], u0, &c[1].feq[cellIdx]);

@@ -22,7 +22,7 @@
 int main(int argc, char *argv[]){
 
     // Simulation parameters
-    int xlength;
+    int xlength[3];
     int t = 0;
     int timesteps;
     int timestepsPerPlotting;
@@ -62,12 +62,12 @@ int main(int argc, char *argv[]){
     /* Read parameters*/
     //Only performed by the root and then broadcasted in 'broadcastValues'
     if (procData.rank == 0) {
-        readParameters(&xlength, &rhoFluct, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting,
+        readParameters(xlength, &rhoFluct, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting,
                        &timestepDouble, &timestepMax, argc, &argv[1]);
     }
 
     // Broadcast the data from rank 0 (root) to other processes
-    broadcastValues(procData.rank, &xlength, &rhoFluct, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting,
+    broadcastValues(procData.rank, xlength, &rhoFluct, c, G, procsPerAxis, &timesteps, &timestepsPerPlotting,
                     &timestepDouble, &timestepMax);
 
     // Abort if the number of processes given by user do not match with the dat file
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
 				"correctness are carried out at the cost of execution speed!\n"
 				"      Use \"make speed\" for a faster execution time.\n");
         #endif
-        
+
         printf("\nINFO: Storing cell data in VTS files.\n      Please use the"
         " \"Cell Data to Point Data\" filter in paraview to view nicely interpolated data. \n\n");
     }
@@ -207,7 +207,7 @@ int main(int argc, char *argv[]){
 
     if(procData.rank == 0){
     	double elapsedTime = endSimTime - beginSimTime;
-    	int domTotalsize   = (xlength+2)*(xlength+2)*(xlength+2);
+    	int domTotalsize   = (xlength[0]+2)*(xlength[1]+2)*(xlength[2]+2);
     	printf("\n===============================================================\n");
 		printf("\nINFO TIMING:\n");
 		printf("Execution time (main loop): \t\t %.3f seconds \n", elapsedTime);

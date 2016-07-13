@@ -10,7 +10,7 @@ void initialiseMPI(int *rank, int *numRanks, int argc, char *argv[]) {
 void broadcastValues(int rank, int *xlength, double* rhoFluct, t_component *c, double G[numComp][numComp],
 	int *procsPerAxis, int *timesteps, int *timestepsPerPlotting, int* timestepDouble, int* timestepMax) {
 
-	MPI_Bcast(xlength, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	MPI_Bcast(xlength, 3, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(timesteps, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(timestepsPerPlotting, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(timestepDouble, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -32,7 +32,7 @@ void broadcastValues(int rank, int *xlength, double* rhoFluct, t_component *c, d
 * Divides the entire domain into sub-domains. The function sets the processor specific data to determine the size
 * of the sub-domain and determines the neighbours.
 */
-void domainDecompositionAndNeighbors(t_procData *const procData, const int xlength, int const * const procsPerAxis) {
+void domainDecompositionAndNeighbors(t_procData *const procData, const int * const xlength, int const * const procsPerAxis) {
 
 	#define M_NBGH procData->neighbours
 
@@ -42,17 +42,17 @@ void domainDecompositionAndNeighbors(t_procData *const procData, const int xleng
 	p_rankToPos(procsPerAxis,procData->rank,procPos);
 
 	// Compute the subdomain size and save it into procData
-	int baseLength[3] = {xlength/procsPerAxis[0], xlength/procsPerAxis[1], xlength/procsPerAxis[2]};
+	int baseLength[3] = {xlength[0]/procsPerAxis[0], xlength[1]/procsPerAxis[1], xlength[2]/procsPerAxis[2]};
 
 	// If the proc is at the end of some axis then add the remaining length
 	procData->xLength[0] =  (procPos[0] == procsPerAxis[0]-1)?
-                            xlength-(procsPerAxis[0]-1)*baseLength[0]:baseLength[0];
+                            xlength[0]-(procsPerAxis[0]-1)*baseLength[0]:baseLength[0];
 
 	procData->xLength[1] = (procPos[1] == procsPerAxis[1]-1)?
-                           xlength-(procsPerAxis[1]-1)*baseLength[1]:baseLength[1];
+                           xlength[1]-(procsPerAxis[1]-1)*baseLength[1]:baseLength[1];
 
 	procData->xLength[2] = (procPos[2] == procsPerAxis[2]-1)?
-                           xlength-(procsPerAxis[2]-1)*baseLength[2]:baseLength[2];
+                           xlength[2]-(procsPerAxis[2]-1)*baseLength[2]:baseLength[2];
 
 	// Set neighbours for parallel boundaries
 	// Decide whether it is a ghost boundary (= MPI_PROC_NULL) or a parallel boundary (assign rank of neighbor)

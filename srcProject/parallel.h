@@ -64,7 +64,7 @@ void p_setCommIterationParameters(t_iterPara * const iterPara, t_procData const*
 void p_assignIndices(const int face, int *const index);
 
 // Domain decomposition and setting of neighbors
-void domainDecompositionAndNeighbors(t_procData *const procData, const int xlength,
+void domainDecompositionAndNeighbors(t_procData *const procData, const int * const xlength,
                                      const int * const procsPerAxis);
 
 // Initialise the message passing interface

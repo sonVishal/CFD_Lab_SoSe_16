@@ -26,6 +26,8 @@
 
 # Size of mesh
 xlength             64
+ylength             64
+zlength             1
 
 # Number of components
 numComp              1
@@ -62,7 +64,7 @@ psi0		0
 
 
 # Number of timesteps
-timesteps            12800
+timesteps            800
 
 # timesteps between each plot
 timestepsPerPlotting 100
@@ -71,7 +73,7 @@ timestepsPerPlotting 100
 timestepDouble       1
 
 # Set a maximum size of timeStepPerPlotting. Only relevant if timeStepDouble is set.
-timestepMax          6400
+timestepMax          400
 
 # Domain decomposition
 # Number of subdivisions per axis
@@ -80,4 +82,4 @@ timestepMax          6400
 # z-axis = kProc
 iProc		2
 jProc		2
-kProc		2
+kProc		1
