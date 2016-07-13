@@ -161,7 +161,7 @@ void initialiseComponents(t_component *c, const t_procData * const procData) {
 				rnd = (double)rand()/(double)RAND_MAX;
 				// c[0].rho[fieldIdx] = c[0].rhoRef - 0.5*0.01*c[0].rhoRef + 0.01*c[0].rhoRef*rnd;  // Shan Chen;
 				// c[1].rho[fieldIdx] = c[1].rhoRef - 0.5*0.015*c[0].rhoRef + 0.015*c[0].rhoRef*rnd;
-				if (rnd <= 2/3) {
+				if (rnd <= 2.0/3.0) {
 					c[0].rho[fieldIdx] = c[0].rhoRef;
 					c[1].rho[fieldIdx] = c[1].rhoRef;
 				} else {
