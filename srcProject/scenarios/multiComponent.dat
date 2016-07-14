@@ -28,7 +28,7 @@
 xlength             64
 
 # Number of components
-numComp              1
+numComp              2
 
 # Relaxation time
 tau0               1
