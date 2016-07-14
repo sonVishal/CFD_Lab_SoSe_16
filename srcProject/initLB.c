@@ -159,12 +159,12 @@ void initialiseComponents(t_component *c, const t_procData * const procData) {
                 cellIdx = Q*fieldIdx;
 
 				rnd = (double)rand()/(double)RAND_MAX;
-				if (rnd < 0.5) {
-					c[0].rho[fieldIdx] = 0.0;
+				if (rnd <= 0.5) {
+					c[0].rho[fieldIdx] = c[0].rhoRef;
 					c[1].rho[fieldIdx] = c[1].rhoRef;
 				} else {
-					c[0].rho[fieldIdx] = c[0].rhoRef;
-					c[1].rho[fieldIdx] = 0.0;
+					c[0].rho[fieldIdx] = c[1].rhoRef;
+					c[1].rho[fieldIdx] = c[0].rhoRef;
 				}
 				computeFeqCell(&c[0].rho[fieldIdx], u0, &c[0].feq[cellIdx]);
 				computeFeqCell(&c[1].rho[fieldIdx], u0, &c[1].feq[cellIdx]);
