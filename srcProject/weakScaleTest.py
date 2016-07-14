@@ -3,7 +3,7 @@
 import math
 from subprocess import call
 import os
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 
 ###########################################################
 #Quick and dirty script to test the scaling of lbsim.     #
@@ -51,7 +51,7 @@ os.system(s);
 #Define increment which the number of processes is increased by.
 
 increment = 1;
-numRuns   = 2;
+numRuns   = 5;
 
 #Run simulation the given numRun times.
 run = "";
