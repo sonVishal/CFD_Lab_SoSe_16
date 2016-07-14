@@ -94,6 +94,7 @@ _elapsedTime = []
 _numCells = []
 _MLUPS = []
 
+
 #Read each variables from file
 with open(f) as g:
     for line in g:
@@ -105,23 +106,43 @@ with open(f) as g:
         _numCells.append(int(z[4]));
         _MLUPS.append(float(z[5]));
 
-numVar = len(_iproc);
+numVar = len(_elapsedTime);
+speedup    = [0]*numVar
+efficiency = [0]*numVar
 
 
 
 totProcs = [a*b for a,b in zip(_iproc,_jproc)]
 totProcs = [a*b for a,b in zip(totProcs,_kproc)]
 
+for i in range(0, len(_elapsedTime)):
+    print(i)
+    speedup[i] = _elapsedTime[0]/ _elapsedTime[i]
+    efficiency[i] = speedup[i]/ totProcs[i]
+
 plt.plot(totProcs, _MLUPS,"*")
 plt.xlabel('# processes')
 plt.ylabel('MLUPS')
-plt.savefig('procsVSMLUPS.pdf')
+plt.savefig('procsVSMLUPS.png')
 
 plt.figure();
 plt.plot(totProcs, _elapsedTime, "*");
 plt.xlabel('# processes')
 plt.ylabel('elapsed time')
-plt.savefig('procsVStime.pdf')
+plt.savefig('procsVStime.png')
+
+
+plt.figure();
+plt.plot(totProcs, speedup, "*", label='speedup');
+plt.xlabel('# processes')
+plt.ylabel('speedup')
+plt.savefig('procsVSspeedup.png')
+
+plt.figure();
+plt.plot(totProcs, efficiency, "*", label='efficiency');
+plt.xlabel('# processes')
+plt.ylabel('efficiency')
+plt.savefig('procsVSefficiancy.png')
 
 plt.show();
 
