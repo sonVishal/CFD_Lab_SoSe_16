@@ -1,0 +1,16 @@
+#!/bin/bash
+#SBATCH -o /scratch/t1221/t1221ac/CFD_Lab_SoSe_16/srcProject/JOB.out
+#SBATCH -D /scratch/t1221/t1221ac/CFD_Lab_SoSe_16/srcProject
+#SBATCH -J JOB
+#SBATCH --get-user-env
+#SBATCH --partition=bdz
+#SBATCH --ntasks=128 # 2 nodes * 64 processes per node = 128
+#SBATCH --cpus-per-task=1 # one thread per process
+#SBATCH --mail-type=end
+#SBATCH --mail-user=tordks@stud.ntnu.no
+#SBATCH --export=NONE
+#SBATCH --time=02:00:00
+source /etc/profile.d/modules.sh
+# -ppn = processes per node
+# -n = total number of processes
+python /scratch/t1221/t1221ac/CFD_Lab_SoSe_16/srcProject/weakScaleTest.py
