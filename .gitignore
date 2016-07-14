@@ -2,6 +2,9 @@
 *.array
 *.csv
 
+#pycharm files (in folder .idea)
+.idea
+
 # vim created files
 *.swp
 .ycm*
