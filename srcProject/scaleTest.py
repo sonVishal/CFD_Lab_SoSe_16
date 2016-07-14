@@ -3,7 +3,7 @@
 import math
 from subprocess import call
 import os
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 
 ###########################################################
 #Quick and dirty script to test the scaling of lbsim.     #

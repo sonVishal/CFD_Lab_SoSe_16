@@ -62,7 +62,7 @@ psi0		0
 
 
 # Number of timesteps
-timesteps            500
+timesteps            50
 
 # timesteps between each plot
 timestepsPerPlotting 10
@@ -78,6 +78,6 @@ timestepMax          40
 # x-axis = iProc
 # y-axis = jProc
 # z-axis = kProc
-iProc    1
-jProc    1
-kProc    1
+iProc    6
+jProc    3
+kProc    3
