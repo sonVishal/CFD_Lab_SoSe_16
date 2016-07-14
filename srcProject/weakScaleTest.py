@@ -51,7 +51,7 @@ os.system(s);
 #Define increment which the number of processes is increased by.
 
 increment = 1;
-numRuns   = 2;
+numRuns   = 5;
 
 #Run simulation the given numRun times.
 run = "";
