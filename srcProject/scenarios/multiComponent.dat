@@ -25,59 +25,59 @@
 #      v
 
 # Size of mesh
-xlength             64 
+xlength             64
 
 # Number of components
 numComp              1
 
 # Relaxation time
 tau0               1
-tau1               0.8
+tau1               1
 
 # Molecular mass
 m0              1.0
-#m1              0.4
+m1              1.0
 
 # Reference density
-rhoRef0           0.693
-rhoRef1           0.693
+rhoRef0           0.8656
+rhoRef1           0.577
 
 # How much the initial density difference is in %
 # from rhoRef. Only used in multiphase.
-rhoFluct        0.001
+rhoFluct        1
 
 
 # Interaction Matrix
-G00              -0.03
-#G01             0.02
-#G10             0.02
-#G11             0.04
+G00              0.0
+G01             0.06
+G10             0.06
+G11             0.0
 
 #Psi function
 #Select of the following implemented functions:
 #0: (1-exp(-numberDensity))
 #1: numberDensity
-psi0		0
-#psi1		1
+psi0		1
+psi1		1
 
 
 # Number of timesteps
-timesteps            1000
+timesteps            12800
 
 # timesteps between each plot
-timestepsPerPlotting 10
+timestepsPerPlotting 100
 
 # If timestepsPerPlotting should be doubled in each timestep
 timestepDouble       1
 
 # Set a maximum size of timeStepPerPlotting. Only relevant if timeStepDouble is set.
-timestepMax          40
+timestepMax          6400
 
 # Domain decomposition
 # Number of subdivisions per axis
 # x-axis = iProc
 # y-axis = jProc
 # z-axis = kProc
-iProc		1
+iProc		2
 jProc		2
 kProc		2
