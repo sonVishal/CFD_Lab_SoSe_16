@@ -25,7 +25,7 @@
 #      v
 
 # Size of mesh
-xlength             320
+xlength     675
 
 # Number of components
 numComp              1
@@ -78,6 +78,6 @@ timestepMax          40
 # x-axis = iProc
 # y-axis = jProc
 # z-axis = kProc
-iProc    6
+iProc    3
 jProc    3
 kProc    3
