@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -o /scratch/t1221/t1221ac/CFD_Lab_SoSe_16/srcProject/JOB.out
 #SBATCH -D /scratch/t1221/t1221ac/CFD_Lab_SoSe_16/srcProject
-#SBATCH -J JOB
+#SBATCH -J LBMJOB
 #SBATCH --get-user-env
 #SBATCH --partition=bdz
 #SBATCH --ntasks=128 # 2 nodes * 64 processes per node = 128
