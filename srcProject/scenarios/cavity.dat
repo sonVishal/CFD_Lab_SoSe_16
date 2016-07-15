@@ -78,6 +78,6 @@ timestepMax          40
 # x-axis = iProc
 # y-axis = jProc
 # z-axis = kProc
-iProc    3
-jProc    3
+iProc    6
+jProc    4
 kProc    3
